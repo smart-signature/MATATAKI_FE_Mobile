@@ -12,7 +12,8 @@
           <span class="coin-symbol">EOS</span>
         </p>
       </div>
-      <za-button bordered style="float: right" @click="$router.push({name: 'About'})">玩法介绍</za-button>
+      <za-button bordered style="float: right"
+      @click="$router.push({name: 'About'})">玩法介绍</za-button>
     </div>
     <div class="articles">
       <za-tabs v-model="activeNameSwipe" @change="handleClick">
@@ -35,7 +36,7 @@ export default {
   },
   methods: {
     handleClick(tab, event) {
-      // console.log(tab, event);
+      console.log(tab, event);
     },
   },
   data() {

@@ -6,7 +6,7 @@ import PriceFormatter from './priceFormatter';
 
 ScatterJS.plugins(new ScatterEOS());
 
-const account = 'signature.bp';
+// const account = 'signature.bp';
 
 // api https://get-scatter.com/docs/api-create-transaction
 
@@ -46,7 +46,7 @@ const API = {
       currentEOSAccount().name,
       to,
       PriceFormatter.formatPrice(amount),
-      getInviteCode() ? `${memo} ${getInviteCode()}` : memo, {
+      memo, {
         authorization: [`${currentEOSAccount().name}@${currentEOSAccount().authority}`],
       },
     );
@@ -63,7 +63,7 @@ const API = {
       currentEOSAccount().name,
       to,
       amount,
-      getInviteCode() ? `${memo} ${getInviteCode()}` : memo, {
+      memo, {
         authorization: [`${currentEOSAccount().name}@${currentEOSAccount().authority}`],
       },
     );
