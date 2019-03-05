@@ -29,32 +29,32 @@
 // import HelloWorld from "@/components/HelloWorld.vue";
 
 export default {
-  name: "home",
+  name: 'home',
   components: {
     // HelloWorld
   },
   methods: {
     handleClick(tab, event) {
       // console.log(tab, event);
-    }
+    },
   },
   data() {
     return {
-      activeNameSwipe: "文章列表",
-      selectedLabelDefault: "文章列表",
+      activeNameSwipe: '文章列表',
+      selectedLabelDefault: '文章列表',
       tabs: [
         {
-          label: "文章列表"
+          label: '文章列表',
         },
         {
-          label: "最多支持"
+          label: '最多支持',
         },
         {
-          label: "最多分享"
-        }
-      ]
+          label: '最多分享',
+        },
+      ],
     };
-  }
+  },
 };
 </script>
 

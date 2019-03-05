@@ -17,17 +17,18 @@
 </template>
 
 <script>
-import items from "../assets/QuestionAndAnswer.json";
+import items from '../assets/QuestionAndAnswer.json';
+
 export default {
-  name: "About",
+  name: 'About',
   data: () => ({
-    items
+    items,
   }),
   methods: {
     goBack() {
-      this.$router.go(-1)
-    }
-  }
+      this.$router.go(-1);
+    },
+  },
 };
 </script>
 
