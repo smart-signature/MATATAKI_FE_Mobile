@@ -21,5 +21,20 @@ export default new Router({
       // 只有使用该 route 的场合才会下载这个页面的代码 (惰性加载).
       component: () => import(/* webpackChunkName: "about" */ './views/About.vue'),
     },
+    {
+      path: '/article',
+      name: 'Article',
+      component: () => import(/* webpackChunkName: "article" */ './views/Article.vue'),
+    },
+    {
+      path: '/login',
+      name: 'Login',
+      component: () => import(/* webpackChunkName: "login" */ './views/Login.vue'),
+    },
+    {
+      path: '/user',
+      name: 'User',
+      component: () => import(/* webpackChunkName: "user" */ './views/User.vue'),
+    },
   ],
 });
