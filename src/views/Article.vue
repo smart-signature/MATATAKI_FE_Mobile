@@ -26,14 +26,14 @@
 
 <script>
 export default {
-  name: "Article",
+  name: 'Article',
   data: () => ({
-    title: "Blog Post Test",
-    author: "Frank Wei"
+    title: 'Blog Post Test',
+    author: 'Frank Wei',
   }),
   created() {
-      document.title = `${this.title} - Smart Signature`
-  }
+    document.title = `${this.title} - Smart Signature`;
+  },
 };
 </script>
 

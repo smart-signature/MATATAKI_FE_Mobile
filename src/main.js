@@ -1,9 +1,10 @@
 import Vue from 'vue';
-import './cube-ui';
 import App from './App.vue';
+import './zarm';
 import router from './router';
 import store from './store';
 import './registerServiceWorker';
+import 'zarm-vue/zarm-vue.default.css';
 
 Vue.config.productionTip = false;
 

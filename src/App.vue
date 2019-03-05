@@ -12,7 +12,12 @@ export default {
 
 
 <style>
+body {
+  background: #f7f7f7;
+}
 #app {
+  margin: auto;
+  text-align: center;
   font-family: PingFang SC, STHeitiSC-Light, Helvetica-Light, arial, sans-serif;
 }
 /* #app {

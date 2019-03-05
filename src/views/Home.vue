@@ -12,16 +12,14 @@
           <span class="coin-symbol">EOS</span>
         </p>
       </div>
-      <cube-button :inline="true" style="float: right">玩法介绍</cube-button>
+      <za-button bordered style="float: right" @click="$router.push({name: 'About'})">玩法介绍</za-button>
     </div>
     <div class="articles">
-      <cube-tab-bar
-        v-model="selectedLabelDefault"
-        :data="tabs"
-        showSlider
-        @click="clickHandler"
-        @change="changeHandler"
-      ></cube-tab-bar>
+      <za-tabs v-model="activeNameSwipe" @change="handleClick">
+        <za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label">
+          <div class="content">{{tab.label}}</div>
+        </za-tab-pane>
+      </za-tabs>
     </div>
   </div>
 </template>
@@ -31,35 +29,32 @@
 // import HelloWorld from "@/components/HelloWorld.vue";
 
 export default {
-  name: 'home',
+  name: "home",
   components: {
     // HelloWorld
   },
+  methods: {
+    handleClick(tab, event) {
+      // console.log(tab, event);
+    }
+  },
   data() {
     return {
-      selectedLabelDefault: '文章列表',
+      activeNameSwipe: "文章列表",
+      selectedLabelDefault: "文章列表",
       tabs: [
         {
-          label: '文章列表',
+          label: "文章列表"
         },
         {
-          label: '最多支持',
+          label: "最多支持"
         },
         {
-          label: '最多分享',
-        },
-      ],
+          label: "最多分享"
+        }
+      ]
     };
-  },
-  methods: {
-    clickHandler(label) {
-      // if you clicked home tab, then print 'Home'
-      console.log(label);
-    },
-    changeHandler(label) {
-      // if you clicked different tab, this methods can be emitted
-    },
-  },
+  }
 };
 </script>
 
@@ -67,7 +62,7 @@ export default {
 .head {
   background: #478970;
   color: #fff;
-  padding-top: 101px;
+  padding-top: 10px;
   height: 155px;
   text-align: center;
   align-items: center;
@@ -92,9 +87,12 @@ h2.subtitle {
   letter-spacing: 1px;
 }
 .my-banner {
+  margin: auto;
+  margin-top: -32px;
+  text-align: center;
   max-width: 335px;
-  margin: -32px 20px 0 20px;
-  height: 44px;
+  /* margin: -32px 20px 0 20px; */
+  height: 110px;
   padding: 16px;
   background: rgba(255, 255, 255, 1);
   box-shadow: 0px 5px 5px 0px rgba(213, 213, 213, 0.5);
@@ -116,7 +114,7 @@ h2.subtitle {
 }
 .articles {
   /* background: rgba(240, 240, 240, 1); */
-  /* margin-top: -80px; */
-  /* padding-top: 50px; */
+  margin-top: -80px;
+  padding-top: 80px;
 }
 </style>
