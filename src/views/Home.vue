@@ -17,7 +17,8 @@
     <div class="articles">
       <cube-tab-bar
         v-model="selectedLabelDefault"
-        :data="tabs" showSlider
+        :data="tabs"
+        showSlider
         @click="clickHandler"
         @change="changeHandler"
       ></cube-tab-bar>
@@ -30,24 +31,24 @@
 // import HelloWorld from "@/components/HelloWorld.vue";
 
 export default {
-  name: "home",
+  name: 'home',
   components: {
     // HelloWorld
   },
   data() {
     return {
-      selectedLabelDefault: "文章列表",
+      selectedLabelDefault: '文章列表',
       tabs: [
         {
-          label: "文章列表",
+          label: '文章列表',
         },
         {
-          label: "最多支持",
+          label: '最多支持',
         },
         {
-          label: "最多分享",
-        }
-      ]
+          label: '最多分享',
+        },
+      ],
     };
   },
   methods: {
@@ -57,8 +58,8 @@ export default {
     },
     changeHandler(label) {
       // if you clicked different tab, this methods can be emitted
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -66,15 +67,18 @@ export default {
 .head {
   background: #478970;
   color: #fff;
-  height: 375px;
+  padding-top: 101px;
+  height: 155px;
   text-align: center;
-  align-content: center;
   align-items: center;
+  vertical-align: middle;
 }
 h1.title {
   font-size: 22px;
+  /* padding-top: 101px; */
   font-family: BodoniSvtyTwoSCITCTT-Book;
   font-weight: normal;
+  width: 100%;
   color: rgba(255, 255, 255, 1);
   line-height: 27px;
   letter-spacing: 2px;
@@ -89,8 +93,8 @@ h2.subtitle {
 }
 .my-banner {
   max-width: 335px;
-  margin: -32px 20px;
-  height: 76px;
+  margin: -32px 20px 0 20px;
+  height: 44px;
   padding: 16px;
   background: rgba(255, 255, 255, 1);
   box-shadow: 0px 5px 5px 0px rgba(213, 213, 213, 0.5);
@@ -111,6 +115,8 @@ h2.subtitle {
   letter-spacing: 1px;
 }
 .articles {
-  background: rgba(240, 240, 240, 1);
+  /* background: rgba(240, 240, 240, 1); */
+  /* margin-top: -80px; */
+  /* padding-top: 50px; */
 }
 </style>
