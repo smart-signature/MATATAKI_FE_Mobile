@@ -21,7 +21,7 @@
           <za-button bordered @click="$router.push({name: 'Login'})">使用钱包登录</za-button>
         </div>
       </div>
-      <za-button bordered style="float: right" 
+      <za-button bordered style="float: right"
        @click="$router.push({name: 'About'})">玩法介绍</za-button>
     </div>
     <div class="articles">
