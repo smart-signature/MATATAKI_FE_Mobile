@@ -13,6 +13,7 @@
           <h1 dir="auto">{{title}}</h1>
           <address dir="auto">
             <a rel="author">{{author}}</a>
+            <p>IPFS Hash: {{hash}}</p>
           </address>
         </header>
 
@@ -25,15 +26,25 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
-  name: 'Article',
+  name: "Article",
+  props: ["hash"],
   data: () => ({
-    title: 'Blog Post Test',
-    author: 'Frank Wei',
+    title: "Blog Post Test",
+    author: "Frank Wei"
   }),
-  created() {
-    document.title = `${this.title} - Smart Signature`;
+  methods: {
+    async getArticleData() {
+      const url = `https://ipfs.libra.bet/catJSON/${this.hash}`
+      const result = await axios.get(url)
+      console.info(result)
+    }
   },
+  created() {
+    this.getArticleData()
+    document.title = `${this.title} - Smart Signature`;
+  }
 };
 </script>
 

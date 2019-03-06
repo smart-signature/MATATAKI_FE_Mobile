@@ -27,15 +27,7 @@
       <za-tabs v-model="activeNameSwipe" @change="handleClick">
         <za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label">
           <div class="content">
-            <div class="card">
-              <h4 class="title">震惊！123546789</h4>
-            </div>
-            <div class="card">
-              <h4 class="title">1145141919810</h4>
-            </div>
-            <div class="card">
-              <h4 class="title">我觉得似李</h4>
-            </div>
+            <ArticleCard :article="article" v-for="article in articles" :key="article.id"></ArticleCard>
           </div>
         </za-tab-pane>
       </za-tabs>
@@ -44,8 +36,8 @@
 </template>
 
 <script>
-// @ is an alias to /src
-// import HelloWorld from "@/components/HelloWorld.vue";
+import axios from "axios";
+import { ArticleCard } from "@/components/";
 import { mapState, mapActions, mapGetters } from "vuex";
 
 export default {
@@ -60,14 +52,24 @@ export default {
       return this.scatterAccount !== null;
     }
   },
+  components: { ArticleCard },
+  created() {
+    this.getArticlesList();
+  },
   methods: {
     ...mapActions(["loginScatterAsync"]),
+    async getArticlesList() {
+      const articles = "https://smartsignature.azurewebsites.net/api/article";
+      const { data } = await axios.get(articles);
+      this.articles = data;
+    },
     handleClick(tab, event) {
       console.log(tab, event);
     }
   },
   data() {
     return {
+      articles: [],
       activeNameSwipe: "文章列表",
       selectedLabelDefault: "文章列表",
       tabs: [
@@ -144,9 +146,16 @@ h2.subtitle {
   line-height: 22px;
   letter-spacing: 1px;
 }
+
 .articles {
   /* background: rgba(240, 240, 240, 1); */
   margin-top: -100px;
   padding-top: 100px;
+}
+.article {
+  text-align: left;
+}
+.card {
+  margin: 5px;
 }
 </style>

@@ -22,8 +22,9 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ './views/About.vue'),
     },
     {
-      path: '/article',
+      path: '/article/:hash',
       name: 'Article',
+      props: true,
       component: () => import(/* webpackChunkName: "article" */ './views/Article.vue'),
     },
     {
