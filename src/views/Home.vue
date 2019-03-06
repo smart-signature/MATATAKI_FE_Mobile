@@ -13,14 +13,12 @@
             <span class="coin-symbol">EOS</span>
           </p>
         </div>
-        <div class="not-login-yet" v-else>欢迎来到 Smart Signature
-          <za-button bordered @click="$router.push({name: 'About'})">使用钱包登录</za-button>
+        <div class="not-login-yet" v-else>
+          <p>欢迎来到 Smart Signature</p>
+          <za-button bordered @click="$router.push({name: 'Login'})">使用钱包登录</za-button>
         </div>
       </div>
-      <za-button bordered style="float: right" 
-        @click="$router.push({name: 'About'})">
-        玩法介绍
-        </za-button>
+      <za-button bordered style="float: right" @click="$router.push({name: 'About'})">玩法介绍</za-button>
     </div>
     <div class="articles">
       <za-tabs v-model="activeNameSwipe" @change="handleClick">
@@ -35,40 +33,40 @@
 <script>
 // @ is an alias to /src
 // import HelloWorld from "@/components/HelloWorld.vue";
-import { mapState, mapActions, mapGetters } from 'vuex';
+import { mapState, mapActions, mapGetters } from "vuex";
 
 export default {
-  name: 'home',
+  name: "home",
   computed: {
-    ...mapState(['scatterAccount']),
-    ...mapGetters(['currentUsername']),
+    ...mapState(["scatterAccount"]),
+    ...mapGetters(["currentUsername"]),
     isLogined() {
       return this.scatterAccount !== null;
-    },
+    }
   },
   methods: {
-    ...mapActions(['loginScatterAsync']),
+    ...mapActions(["loginScatterAsync"]),
     handleClick(tab, event) {
       console.log(tab, event);
-    },
+    }
   },
   data() {
     return {
-      activeNameSwipe: '文章列表',
-      selectedLabelDefault: '文章列表',
+      activeNameSwipe: "文章列表",
+      selectedLabelDefault: "文章列表",
       tabs: [
         {
-          label: '文章列表',
+          label: "文章列表"
         },
         {
-          label: '最多支持',
+          label: "最多支持"
         },
         {
-          label: '最多分享',
-        },
-      ],
+          label: "最多分享"
+        }
+      ]
     };
-  },
+  }
 };
 </script>
 
