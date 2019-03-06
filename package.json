@@ -4,10 +4,12 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "add-redirect-netlify": "echo '/*    /index.html   200' >> ./dist/_redirects",
+    "build": "vue-cli-service build && npm run add-redirect-netlify",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "eosjs": "^16.0.9",
     "register-service-worker": "^1.5.2",
     "scatterjs-core": "^2.7.16",

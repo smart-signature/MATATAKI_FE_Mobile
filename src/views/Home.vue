@@ -7,9 +7,12 @@
     <div class="my-banner">
       <div class="my-stat">
         <div class="logined" v-if="isLogined">
-          <p @click="$router.push({ name: 'User' })" class="username">{{currentUsername}}</p>
+          <p
+            @click="$router.push({ name: 'User', params: {username: currentUsername } })"
+            class="username"
+          >{{currentUsername}}</p>
           <p class="my-balance">
-            1234.1234
+            {{eosBalance}}
             <span class="coin-symbol">EOS</span>
           </p>
         </div>
@@ -18,12 +21,15 @@
           <za-button bordered @click="$router.push({name: 'Login'})">使用钱包登录</za-button>
         </div>
       </div>
-      <za-button bordered style="float: right" @click="$router.push({name: 'About'})">玩法介绍</za-button>
+      <za-button bordered style="float: right"
+       @click="$router.push({name: 'About'})">玩法介绍</za-button>
     </div>
     <div class="articles">
       <za-tabs v-model="activeNameSwipe" @change="handleClick">
         <za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label">
-          <div class="content">{{tab.label}}</div>
+          <div class="content">
+            <ArticleCard :article="a" v-for="a in articles" :key="a.id" />
+          </div>
         </za-tab-pane>
       </za-tabs>
     </div>
@@ -31,27 +37,40 @@
 </template>
 
 <script>
-// @ is an alias to /src
-// import HelloWorld from "@/components/HelloWorld.vue";
+import axios from 'axios';
+import { ArticleCard } from '@/components/';
 import { mapState, mapActions, mapGetters } from 'vuex';
 
 export default {
   name: 'home',
   computed: {
-    ...mapState(['scatterAccount']),
+    ...mapState(['scatterAccount', 'balances']),
     ...mapGetters(['currentUsername']),
+    eosBalance() {
+      return this.balances.eos.slice(0, -4);
+    },
     isLogined() {
       return this.scatterAccount !== null;
     },
   },
+  components: { ArticleCard },
+  created() {
+    this.getArticlesList();
+  },
   methods: {
     ...mapActions(['loginScatterAsync']),
+    async getArticlesList() {
+      const articles = 'https://smartsignature.azurewebsites.net/api/article';
+      const { data } = await axios.get(articles);
+      this.articles = data;
+    },
     handleClick(tab, event) {
       console.log(tab, event);
     },
   },
   data() {
     return {
+      articles: [],
       activeNameSwipe: '文章列表',
       selectedLabelDefault: '文章列表',
       tabs: [
@@ -81,7 +100,7 @@ export default {
   vertical-align: middle;
 }
 h1.title {
-  font-size: 22px;
+  font-size: 32px;
   /* padding-top: 101px; */
   font-family: BodoniSvtyTwoSCITCTT-Book;
   font-weight: normal;
@@ -94,7 +113,7 @@ h1.title {
   font-weight: bold;
 }
 h2.subtitle {
-  font-size: 13px;
+  font-size: 16px;
   font-family: PingFangSC-Light;
   font-weight: 300;
   color: rgba(255, 255, 255, 1);
@@ -128,9 +147,16 @@ h2.subtitle {
   line-height: 22px;
   letter-spacing: 1px;
 }
+
 .articles {
   /* background: rgba(240, 240, 240, 1); */
   margin-top: -100px;
   padding-top: 100px;
+}
+.article {
+  text-align: left;
+}
+.card {
+  margin: 5px;
 }
 </style>
