@@ -30,8 +30,11 @@ const API = {
   connectScatterAsync() {
     return ScatterJS.scatter.connect(config.appScatterName, { initTimeout: 2000 });
   },
+  suggestNetworkAsync() {
+    return ScatterJS.scatter.suggestNetwork(config.network.eos);
+  },
   loginScatterAsync() {
-    const requiredFields = { accounts: [config.network] };
+    const requiredFields = { accounts: [config.network.eos] };
     return ScatterJS.scatter.getIdentity(requiredFields);
   },
   logoutScatterAsync() {

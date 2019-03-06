@@ -6,14 +6,18 @@
     </div>
     <div class="my-banner">
       <div class="my-stat">
-        <p>MINAKOKOJIMA</p>
-        <p class="my-balance">
-          1234.1234
-          <span class="coin-symbol">EOS</span>
-        </p>
+        <div class="logined" v-if="isLogined">
+          <p @click="$router.push({ name: 'User' })" class="username">{{currentUsername}}</p>
+          <p class="my-balance">
+            1234.1234
+            <span class="coin-symbol">EOS</span>
+          </p>
+        </div>
+        <div class="not-login-yet" v-else>欢迎来到 Smart Signature
+          <za-button bordered @click="$router.push({name: 'About'})">使用钱包登录</za-button>
+        </div>
       </div>
-      <za-button bordered style="float: right"
-      @click="$router.push({name: 'About'})">玩法介绍</za-button>
+      <za-button bordered style="float: right" @click="$router.push({name: 'About'})">玩法介绍</za-button>
     </div>
     <div class="articles">
       <za-tabs v-model="activeNameSwipe" @change="handleClick">
@@ -28,34 +32,40 @@
 <script>
 // @ is an alias to /src
 // import HelloWorld from "@/components/HelloWorld.vue";
+import { mapState, mapActions,mapGetters } from "vuex";
 
 export default {
-  name: 'home',
-  components: {
-    // HelloWorld
+  name: "home",
+  computed: {
+    ...mapState(["scatterAccount"]),
+    ...mapGetters(['currentUsername']),
+    isLogined() {
+      return this.scatterAccount !== null;
+    }
   },
   methods: {
+    ...mapActions(["loginScatterAsync"]),
     handleClick(tab, event) {
       console.log(tab, event);
-    },
+    }
   },
   data() {
     return {
-      activeNameSwipe: '文章列表',
-      selectedLabelDefault: '文章列表',
+      activeNameSwipe: "文章列表",
+      selectedLabelDefault: "文章列表",
       tabs: [
         {
-          label: '文章列表',
+          label: "文章列表"
         },
         {
-          label: '最多支持',
+          label: "最多支持"
         },
         {
-          label: '最多分享',
-        },
-      ],
+          label: "最多分享"
+        }
+      ]
     };
-  },
+  }
 };
 </script>
 
@@ -79,6 +89,9 @@ h1.title {
   line-height: 27px;
   letter-spacing: 2px;
 }
+.username {
+  font-weight: bold;
+}
 h2.subtitle {
   font-size: 13px;
   font-family: PingFangSC-Light;
@@ -94,12 +107,13 @@ h2.subtitle {
   max-width: 335px;
   /* margin: -32px 20px 0 20px; */
   height: 110px;
-  padding: 16px;
+  padding: 8px;
   background: rgba(255, 255, 255, 1);
   box-shadow: 0px 5px 5px 0px rgba(213, 213, 213, 0.5);
   border-radius: 4px;
 }
 .my-stat {
+  text-align: left;
   float: left;
 }
 .coin-symbol {
@@ -115,7 +129,7 @@ h2.subtitle {
 }
 .articles {
   /* background: rgba(240, 240, 240, 1); */
-  margin-top: -80px;
-  padding-top: 80px;
+  margin-top: -100px;
+  padding-top: 100px;
 }
 </style>
