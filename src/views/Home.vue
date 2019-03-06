@@ -21,13 +21,14 @@
           <za-button bordered @click="$router.push({name: 'Login'})">使用钱包登录</za-button>
         </div>
       </div>
-      <za-button bordered style="float: right" @click="$router.push({name: 'About'})">玩法介绍</za-button>
+      <za-button bordered style="float: right" 
+       @click="$router.push({name: 'About'})">玩法介绍</za-button>
     </div>
     <div class="articles">
       <za-tabs v-model="activeNameSwipe" @change="handleClick">
         <za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label">
           <div class="content">
-            <ArticleCard :article="article" v-for="article in articles" :key="article.id"></ArticleCard>
+            <ArticleCard :article="a" v-for="a in articles" :key="a.id" />
           </div>
         </za-tab-pane>
       </za-tabs>
