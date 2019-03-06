@@ -24,19 +24,20 @@
 </template>
 
 <script>
-import axios from "axios";
+import axios from 'axios';
+
 export default {
-  name: "Article",
-  props: ["hash"],
+  name: 'Article',
+  props: ['hash'],
   data: () => ({
-    title: "Blog Post Test",
-    author: "Frank Wei",
+    title: 'Blog Post Test',
+    author: 'Frank Wei',
     post: {
-      author: "",
-      title: "Loading...",
-      content: "<b>Please wait for connection to IPFS</b>",
-      desc: ""
-    }
+      author: '',
+      title: 'Loading...',
+      content: '<b>Please wait for connection to IPFS</b>',
+      desc: '',
+    },
   }),
   methods: {
     async getArticleData() {
@@ -44,12 +45,12 @@ export default {
       const { data } = await axios.get(url);
       this.post = data.data;
       console.info(data);
-    }
+    },
   },
   created() {
     this.getArticleData();
     document.title = `${this.title} - Smart Signature`;
-  }
+  },
 };
 </script>
 

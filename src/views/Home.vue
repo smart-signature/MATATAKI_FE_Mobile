@@ -36,55 +36,55 @@
 </template>
 
 <script>
-import axios from "axios";
-import { ArticleCard } from "@/components/";
-import { mapState, mapActions, mapGetters } from "vuex";
+import axios from 'axios';
+import { ArticleCard } from '@/components/';
+import { mapState, mapActions, mapGetters } from 'vuex';
 
 export default {
-  name: "home",
+  name: 'home',
   computed: {
-    ...mapState(["scatterAccount", "balances"]),
-    ...mapGetters(["currentUsername"]),
+    ...mapState(['scatterAccount', 'balances']),
+    ...mapGetters(['currentUsername']),
     eosBalance() {
       return this.balances.eos.slice(0, -4);
     },
     isLogined() {
       return this.scatterAccount !== null;
-    }
+    },
   },
   components: { ArticleCard },
   created() {
     this.getArticlesList();
   },
   methods: {
-    ...mapActions(["loginScatterAsync"]),
+    ...mapActions(['loginScatterAsync']),
     async getArticlesList() {
-      const articles = "https://smartsignature.azurewebsites.net/api/article";
+      const articles = 'https://smartsignature.azurewebsites.net/api/article';
       const { data } = await axios.get(articles);
       this.articles = data;
     },
     handleClick(tab, event) {
       console.log(tab, event);
-    }
+    },
   },
   data() {
     return {
       articles: [],
-      activeNameSwipe: "文章列表",
-      selectedLabelDefault: "文章列表",
+      activeNameSwipe: '文章列表',
+      selectedLabelDefault: '文章列表',
       tabs: [
         {
-          label: "文章列表"
+          label: '文章列表',
         },
         {
-          label: "最多支持"
+          label: '最多支持',
         },
         {
-          label: "最多分享"
-        }
-      ]
+          label: '最多分享',
+        },
+      ],
     };
-  }
+  },
 };
 </script>
 

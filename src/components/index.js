@@ -1,3 +1,3 @@
-import ArticleCard from "./ArticleCard.vue";
+import ArticleCard from './ArticleCard.vue';
 
-export { ArticleCard }
+export { ArticleCard };

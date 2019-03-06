@@ -7,7 +7,7 @@
 
 <script>
 export default {
-  name: "ArticleCard",
-  props: ["article"]
+  name: 'ArticleCard',
+  props: ['article'],
 };
 </script>
