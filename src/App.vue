@@ -5,23 +5,28 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from "vuex";
+import { mapActions } from 'vuex';
+
 export default {
   data: () => ({}),
   methods: {
-    ...mapActions(["connectScatterAsync", 'suggestNetworkAsync', "loginScatterAsync"])
+    ...mapActions([
+      'connectScatterAsync',
+      'suggestNetworkAsync',
+      'loginScatterAsync',
+    ]),
   },
   async created() {
     try {
       await this.connectScatterAsync();
       // Scatter 10.0 need to suggestNetwork, if not, scatter is not working on login
       const suggestNetworkResult = await this.suggestNetworkAsync();
-      console.info(suggestNetworkResult)
+      console.info(suggestNetworkResult);
       await this.loginScatterAsync();
     } catch (e) {
-      console.warn("Unable to connect wallets");
+      console.warn('Unable to connect wallets');
     }
-  }
+  },
 };
 </script>
 

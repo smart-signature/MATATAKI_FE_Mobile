@@ -1,8 +1,11 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import api, { currentEOSAccount } from "./api/scatter";
+import api, { currentEOSAccount } from './api/scatter';
 
 Vue.use(Vuex);
+
+// That's vuex's need, sorry eslint
+/* eslint-disable no-param-reassign */
 
 export default new Vuex.Store({
   state: {
@@ -15,9 +18,7 @@ export default new Vuex.Store({
     isLoadingData: false,
   },
   getters: {
-    currentUsername: ({ scatterAccount }) => {
-      return scatterAccount ? scatterAccount.name : null
-    }
+    currentUsername: ({ scatterAccount }) => (scatterAccount ? scatterAccount.name : null),
   },
   mutations: {
     setIsScatterLoggingIn(state, isScatterLoggingIn) {
@@ -34,7 +35,7 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    async connectScatterAsync({ commit, dispatch, state }) {
+    async connectScatterAsync({ commit, dispatch }) {
       console.log('Connecting to Scatter desktop...');
       const connected = await api.connectScatterAsync();
       console.log('Connect Scatter result: ', connected);
@@ -51,16 +52,16 @@ export default new Vuex.Store({
       const contractType = 'eos';
       if (contractType) {
         const balances = await Promise.all([
-          api.getBalancesByContract({ symbol: 'eos', accountName: name })
+          api.getBalancesByContract({ symbol: 'eos', accountName: name }),
         ]);
         const eos = balances[0][0];
         commit('setMyBalance', { symbol: 'eos', balance: eos });
       }
     },
     async suggestNetworkAsync() {
-      return api.suggestNetworkAsync()
+      return api.suggestNetworkAsync();
     },
-    async loginScatterAsync({ commit, dispatch, state }) {
+    async loginScatterAsync({ commit, dispatch }) {
       commit('setIsScatterLoggingIn', true);
       try {
         const identity = await api.loginScatterAsync();
@@ -73,12 +74,6 @@ export default new Vuex.Store({
         dispatch('getMyBalances');
       } catch (err) {
         console.error('Failed to login Scatter', err);
-        Toast.open({
-          message: `Failed to login Scatter: ${err.message}.`,
-          type: 'is-danger',
-          queue: false,
-          duration: 5000,
-        });
       }
       commit('setIsScatterLoggingIn', false);
     },
@@ -89,11 +84,6 @@ export default new Vuex.Store({
         console.error('Failed to logout Scatter', err);
       }
       commit('setScatterAccount', null);
-      Toast.open({
-        message: 'You successfully logged out!',
-        type: 'is-success',
-        queue: false,
-      });
     },
   },
 });

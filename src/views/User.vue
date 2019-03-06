@@ -11,21 +11,21 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions } from "vuex";
+import { mapGetters, mapActions } from 'vuex';
+
 export default {
-  name: "User",
+  name: 'User',
   computed: {
-    ...mapGetters(["currentUsername"]),
+    ...mapGetters(['currentUsername']),
     ifLogined() {
       return this.currentUsername !== null;
-    }
+    },
   },
   methods: {
-    ...mapActions(["loginScatterAsync"]),
+    ...mapActions(['loginScatterAsync']),
     loginWithWallet() {
       this.loginScatterAsync();
-    }
-  }
+    },
+  },
 };
 </script>
-
