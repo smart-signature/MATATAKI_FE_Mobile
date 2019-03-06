@@ -7,9 +7,12 @@
     <div class="my-banner">
       <div class="my-stat">
         <div class="logined" v-if="isLogined">
-          <p @click="$router.push({ name: 'User' })" class="username">{{currentUsername}}</p>
+          <p
+            @click="$router.push({ name: 'User', params: {username: currentUsername } })"
+            class="username"
+          >{{currentUsername}}</p>
           <p class="my-balance">
-            1234.1234
+            {{eosBalance}}
             <span class="coin-symbol">EOS</span>
           </p>
         </div>
@@ -33,40 +36,43 @@
 <script>
 // @ is an alias to /src
 // import HelloWorld from "@/components/HelloWorld.vue";
-import { mapState, mapActions, mapGetters } from 'vuex';
+import { mapState, mapActions, mapGetters } from "vuex";
 
 export default {
-  name: 'home',
+  name: "home",
   computed: {
-    ...mapState(['scatterAccount']),
-    ...mapGetters(['currentUsername']),
+    ...mapState(["scatterAccount", "balances"]),
+    ...mapGetters(["currentUsername"]),
+    eosBalance() {
+      return this.balances.eos.slice(0, -4);
+    },
     isLogined() {
       return this.scatterAccount !== null;
-    },
+    }
   },
   methods: {
-    ...mapActions(['loginScatterAsync']),
+    ...mapActions(["loginScatterAsync"]),
     handleClick(tab, event) {
       console.log(tab, event);
-    },
+    }
   },
   data() {
     return {
-      activeNameSwipe: '文章列表',
-      selectedLabelDefault: '文章列表',
+      activeNameSwipe: "文章列表",
+      selectedLabelDefault: "文章列表",
       tabs: [
         {
-          label: '文章列表',
+          label: "文章列表"
         },
         {
-          label: '最多支持',
+          label: "最多支持"
         },
         {
-          label: '最多分享',
-        },
-      ],
+          label: "最多分享"
+        }
+      ]
     };
-  },
+  }
 };
 </script>
 
