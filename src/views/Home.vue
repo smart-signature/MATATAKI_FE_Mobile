@@ -26,7 +26,17 @@
     <div class="articles">
       <za-tabs v-model="activeNameSwipe" @change="handleClick">
         <za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label">
-          <div class="content">{{tab.label}}</div>
+          <div class="content">
+            <div class="card">
+              <h4 class="title">震惊！123546789</h4>
+            </div>
+            <div class="card">
+              <h4 class="title">1145141919810</h4>
+            </div>
+            <div class="card">
+              <h4 class="title">我觉得似李</h4>
+            </div>
+          </div>
         </za-tab-pane>
       </za-tabs>
     </div>
@@ -87,7 +97,7 @@ export default {
   vertical-align: middle;
 }
 h1.title {
-  font-size: 22px;
+  font-size: 32px;
   /* padding-top: 101px; */
   font-family: BodoniSvtyTwoSCITCTT-Book;
   font-weight: normal;
@@ -100,7 +110,7 @@ h1.title {
   font-weight: bold;
 }
 h2.subtitle {
-  font-size: 13px;
+  font-size: 16px;
   font-family: PingFangSC-Light;
   font-weight: 300;
   color: rgba(255, 255, 255, 1);
