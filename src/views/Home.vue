@@ -33,40 +33,40 @@
 <script>
 // @ is an alias to /src
 // import HelloWorld from "@/components/HelloWorld.vue";
-import { mapState, mapActions, mapGetters } from "vuex";
+import { mapState, mapActions, mapGetters } from 'vuex';
 
 export default {
-  name: "home",
+  name: 'home',
   computed: {
-    ...mapState(["scatterAccount"]),
-    ...mapGetters(["currentUsername"]),
+    ...mapState(['scatterAccount']),
+    ...mapGetters(['currentUsername']),
     isLogined() {
       return this.scatterAccount !== null;
-    }
+    },
   },
   methods: {
-    ...mapActions(["loginScatterAsync"]),
+    ...mapActions(['loginScatterAsync']),
     handleClick(tab, event) {
       console.log(tab, event);
-    }
+    },
   },
   data() {
     return {
-      activeNameSwipe: "文章列表",
-      selectedLabelDefault: "文章列表",
+      activeNameSwipe: '文章列表',
+      selectedLabelDefault: '文章列表',
       tabs: [
         {
-          label: "文章列表"
+          label: '文章列表',
         },
         {
-          label: "最多支持"
+          label: '最多支持',
         },
         {
-          label: "最多分享"
-        }
-      ]
+          label: '最多分享',
+        },
+      ],
     };
-  }
+  },
 };
 </script>
 

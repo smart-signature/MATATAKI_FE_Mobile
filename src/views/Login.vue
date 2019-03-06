@@ -5,16 +5,16 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from "vuex";
+import { mapState, mapActions, mapGetters } from 'vuex';
 
 export default {
-  name: "Login Page",
+  name: 'Login Page',
   methods: {
     ...mapActions([
-      "connectScatterAsync",
-      "suggestNetworkAsync",
-      "loginScatterAsync"
-    ])
+      'connectScatterAsync',
+      'suggestNetworkAsync',
+      'loginScatterAsync',
+    ]),
   },
   async created() {
     try {
@@ -24,8 +24,8 @@ export default {
       console.info(suggestNetworkResult);
       await this.loginScatterAsync();
     } catch (e) {
-      console.warn("Unable to connect wallets");
+      console.warn('Unable to connect wallets');
     }
-  }
+  },
 };
 </script>
