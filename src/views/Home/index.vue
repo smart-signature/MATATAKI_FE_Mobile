@@ -18,10 +18,10 @@
         </div>
         <div class="not-login-yet" v-else>
           <p>欢迎来到 Smart Signature</p>
-          <za-button bordered @click="$router.push({name: 'Login'})">使用钱包登录</za-button>
+          <za-button block theme="primary" @click="$router.push({name: 'Login'})">使用钱包登录</za-button>
         </div>
       </div>
-      <za-button bordered style="float: right"
+      <za-button block bordered 
        @click="$router.push({name: 'About'})">玩法介绍</za-button>
     </div>
     <div class="articles">
@@ -126,7 +126,7 @@ h2.subtitle {
   text-align: center;
   max-width: 335px;
   /* margin: -32px 20px 0 20px; */
-  height: 110px;
+  height: 220px;
   padding: 8px;
   background: rgba(255, 255, 255, 1);
   box-shadow: 0px 5px 5px 0px rgba(213, 213, 213, 0.5);
@@ -134,7 +134,7 @@ h2.subtitle {
 }
 .my-stat {
   text-align: left;
-  float: left;
+  /* float: left; */
 }
 .coin-symbol {
   color: #999999;
