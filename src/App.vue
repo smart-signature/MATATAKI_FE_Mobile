@@ -20,9 +20,8 @@ export default {
     try {
       await this.connectScatterAsync();
       // Scatter 10.0 need to suggestNetwork, if not, scatter is not working on login
-      const suggestNetworkResult = await this.suggestNetworkAsync();
-      console.info(suggestNetworkResult);
-      await this.loginScatterAsync();
+      // const suggestNetworkResult = await this.suggestNetworkAsync();
+      // await this.loginScatterAsync();
     } catch (e) {
       console.warn('Unable to connect wallets');
     }
