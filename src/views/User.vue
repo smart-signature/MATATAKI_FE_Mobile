@@ -1,8 +1,8 @@
 <template>
   <div class="card user">
       <h1>{{username}} 的文章</h1>
-      <h1>签名收入：{{playerincome.sign_income}}</h1>
-      <h1>分享收入：{{playerincome.share_income}}</h1>
+      <h1>签名收入：{{playerincome.sign_income/1000}} EOS</h1>
+      <h1>分享收入：{{playerincome.share_income/1000}} EOS</h1>
       <h2 class="is-me" v-if="username === currentUsername">是你的用户页</h2>
       <za-button block theme="primary" @click="$router.go(-1)">Go Back</za-button>
       <br/>
