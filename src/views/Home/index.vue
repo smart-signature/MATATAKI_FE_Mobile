@@ -47,14 +47,17 @@ export default {
     return {
       visible1: false,
       actions1: [{
-        text: '操作一',
+        text: 'English',
         onClick: () => console.log('action 1'),
       }, {
-        text: '操作二',
+        text: '简体中文',
         onClick: () => console.log('action 2'),
       }, {
+        text: '日本語',
+        onClick: () => console.log('action 2'),
+      },{
         theme: 'error',
-        text: '操作三',
+        text: '取消',
         onClick: () => console.log('action 3'),
       }],
     };
