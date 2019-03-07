@@ -18,7 +18,7 @@
           >{{ isScatterConnected ? '使用钱包登录' : '没有检测到钱包' }}</za-button>
         </div>
       </div>
-      <za-button block bordered @click="$router.push({name: 'About'})">玩法介绍</za-button>
+      <za-button theme='warning' style="float: right" block bordered @click="$router.push({name: 'About'})">玩法介绍</za-button>
     </div>
 </template>
 
@@ -56,7 +56,7 @@ export default {
 <style scoped>
 .my-banner {
   margin: auto;
-  margin-top: -32px;
+  /*margin-top: -32px;*/
   text-align: center;
   max-width: 335px;
   /* margin: -32px 20px 0 20px; */
