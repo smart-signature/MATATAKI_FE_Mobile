@@ -4,9 +4,8 @@
       <link rel="icon" type="image/png" sizes="32x32" href="./img/Andoromeda logo@2x.png">
       <link rel="icon" type="image/png" sizes="16x16" href="./img/Andoromeda logo.png">
       <div style="float:left">
-        <img src="/img/Andoromeda logo.png" alt="Andoromeda logo"> 
+        <img src="/img/Andoromeda logo.png" alt="Andoromeda logo">
         Andoromeda</div>
-      <div style="float:right" >En</div>
 
       <div class="logined" v-if="isLogined">
           <p
@@ -15,7 +14,11 @@
           >{{currentUsername}}</p>
         </div>
       <div class="not-login-yet" style="float:right" v-else>
-          <za-button theme='primary' size='xs'  @click="$router.push({name: 'Login'})">登录</za-button>
+          <za-button
+            theme='primary' size='xs' 
+            @click="$router.push({name: 'Login'})">登录
+          </za-button>
+          <div>En</div>
       </div>
       <br />
       <br />
