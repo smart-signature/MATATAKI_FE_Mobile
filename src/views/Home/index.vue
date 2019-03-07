@@ -15,11 +15,17 @@
         </div>
       <div class="not-login-yet" style="float:right" v-else>
           <za-button
-            theme='primary' size='xs' 
+            size='xs'
             @click="$router.push({name: 'Login'})">登录
           </za-button>
-          <div>En</div>
-      </div>
+          <za-cell>
+            <za-button size="xs" slot="description" @click="visible1 = true">En</za-button>
+          </za-cell>
+          <za-actionsheet
+            :visible.sync="visible1" :actions="actions1"
+            :showCancel="false" @cancel="cancelCb">
+          </za-actionsheet>
+        </div>
       <br />
       <br />
       <h1 class="title">-SmartSignature-</h1>
@@ -37,7 +43,27 @@ import ArticlesList from './ArticlesList.vue';
 export default {
   name: 'Home',
   components: { ArticlesList, MyBanner },
-  data: () => ({}),
+  data() {
+    return {
+      visible1: false,
+      actions1: [{
+        text: '操作一',
+        onClick: () => console.log('action 1'),
+      }, {
+        text: '操作二',
+        onClick: () => console.log('action 2'),
+      }, {
+        theme: 'error',
+        text: '操作三',
+        onClick: () => console.log('action 3'),
+      }],
+    };
+  },
+  methods: {
+    cancelCb(reason, event) {
+      console.log(reason, event);
+    },
+  },
 };
 </script>
 
