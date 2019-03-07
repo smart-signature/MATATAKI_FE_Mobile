@@ -1,9 +1,29 @@
 <template>
   <div class="home">
     <div class="head">
-      <h1 class="title">-SmartSignature-</h1>
+      <link rel="icon" type="image/png" sizes="32x32" href="./img/Andoromeda logo@2x.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="./img/Andoromeda logo.png">
+      <div style="float:left">
+        <img src="/img/Andoromeda logo.png" alt="Andoromeda logo"> 
+        Andoromeda</div>
+      <div style="float:right" >En</div>
+      
+      <div class="logined" v-if="isLogined">
+          <p
+            @click="$router.push({ name: 'User', params: {username: currentUsername } })"
+            class="username"
+          >{{currentUsername}}</p>
+        </div>
+      <div class="not-login-yet" style="float:right" v-else>
+          <za-button theme='primary' size='xs'  @click="$router.push({name: 'Login'})">登录</za-button>
+      </div>
+      <br />
+      <br />
+      <h1 class="title" style="display:inline;overflow:visible;" >-SmartSignature-</h1>
       <h2 class="subtitle">首个EOS去中心化智能签名项目</h2>
     </div>
+    <br />
+    <br />
     <div class="my-banner">
       <div class="my-stat">
         <div class="logined" v-if="isLogined">
@@ -16,12 +36,13 @@
             <span class="coin-symbol">EOS</span>
           </p>
         </div>
+        
         <div class="not-login-yet" v-else>
-          <p>欢迎来到 Smart Signature</p>
-          <za-button bordered @click="$router.push({name: 'Login'})">使用钱包登录</za-button>
+          <p>请在右上角登录钱包</p>
         </div>
+        
       </div>
-      <za-button bordered style="float: right"
+      <za-button bordered theme='warning' style="float: right"
        @click="$router.push({name: 'About'})">玩法介绍</za-button>
     </div>
     <div class="articles">
