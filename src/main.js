@@ -1,6 +1,6 @@
 import Vue from 'vue';
+import moment from 'moment';
 import App from './App.vue';
-import moment from "moment";
 import './zarm';
 import router from './router';
 import store from './store';

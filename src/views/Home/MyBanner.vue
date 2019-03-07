@@ -23,33 +23,33 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from "vuex";
+import { mapState, mapActions, mapGetters } from 'vuex';
 
 export default {
-  name: "My Banner",
+  name: 'My Banner',
   computed: {
-    ...mapState(["scatterAccount", "balances", "isScatterConnected"]),
-    ...mapGetters(["currentUsername"]),
+    ...mapState(['scatterAccount', 'balances', 'isScatterConnected']),
+    ...mapGetters(['currentUsername']),
     eosBalance() {
       return this.balances.eos.slice(0, -4);
     },
     isLogined() {
       return this.scatterAccount !== null;
-    }
+    },
   },
   created() {
 
   },
   methods: {
-    ...mapActions(["loginScatterAsync"]),
+    ...mapActions(['loginScatterAsync']),
     toUserPage(username) {
-      this.$router.push({ name: "User", params: { username } });
+      this.$router.push({ name: 'User', params: { username } });
     },
     handleClick(tab, event) {
       console.log(tab, event);
-    }
+    },
   },
-  data: () => ({})
+  data: () => ({}),
 };
 </script>
 

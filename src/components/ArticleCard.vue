@@ -8,15 +8,16 @@
 </template>
 
 <script>
-import moment from "moment";
+import moment from 'moment';
+
 export default {
-  name: "ArticleCard",
-  props: ["article"],
+  name: 'ArticleCard',
+  props: ['article'],
   computed: {
     friendlyDate() {
       return moment(this.article.time).fromNow();
-    }
-  }
+    },
+  },
 };
 </script>
 

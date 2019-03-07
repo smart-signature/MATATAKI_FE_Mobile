@@ -10,13 +10,13 @@
 </template>
 
 <script>
-import MyBanner from "./MyBanner.vue";
-import ArticlesList from "./ArticlesList.vue";
+import MyBanner from './MyBanner.vue';
+import ArticlesList from './ArticlesList.vue';
 
 export default {
-  name: "Home",  
+  name: 'Home',
   components: { ArticlesList, MyBanner },
-  data: () => ({})
+  data: () => ({}),
 };
 </script>
 
