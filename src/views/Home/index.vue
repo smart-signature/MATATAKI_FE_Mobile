@@ -53,7 +53,7 @@ export default {
       }, {
         text: '日本語',
         onClick: () => console.log('action 2'),
-      },{
+      }, {
         theme: 'error',
         text: '取消',
         onClick: () => console.log('action 3'),
