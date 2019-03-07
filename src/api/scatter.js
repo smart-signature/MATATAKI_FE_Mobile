@@ -71,7 +71,28 @@ const API = {
       },
     );
   },
+  async withdraw(){
+    if (currentEOSAccount() == null) { alert('请先登录'); }
+    const contract = await eos().contract('signature.bp');
+    await contract.claim(
+      currentEOSAccount().name,
+      {
+        authorization: [`${currentEOSAccount().name}@${currentEOSAccount().authority}`],
+      },
+    );
+  },
+  async getplayerincome(name) {
+    const { rows } = await eos().getTableRows({
+      json: true,
+      code: 'signature.bp',
+      scope: name,
+      table: 'players',
+      limit: 10000,
+    });
+    return rows;
+  }
 };
+
 
 export default API;
 export { eos, currentEOSAccount };
