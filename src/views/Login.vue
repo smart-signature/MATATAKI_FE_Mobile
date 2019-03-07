@@ -47,7 +47,7 @@ export default {
     ]),
     async loginWithWallet() {
       try {
-        await this.connectScatterAsync();
+        // await this.connectScatterAsync();
         // Scatter 10.0 need to suggestNetwork, if not, scatter is not working on login
         const suggestNetworkResult = await this.suggestNetworkAsync();
         await this.loginScatterAsync();
