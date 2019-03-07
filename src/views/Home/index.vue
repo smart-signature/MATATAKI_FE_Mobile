@@ -18,9 +18,7 @@
             size='xs'
             @click="$router.push({name: 'Login'})">登录
           </za-button>
-          <za-cell>
-            <za-button size="xs" slot="description" @click="visible1 = true">En</za-button>
-          </za-cell>
+          <za-button size="xs" slot="description" @click="visible1 = true">En</za-button>
           <za-actionsheet
             :visible.sync="visible1" :actions="actions1"
             :showCancel="false" @cancel="cancelCb">
