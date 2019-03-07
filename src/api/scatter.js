@@ -71,7 +71,7 @@ const API = {
       },
     );
   },
-  async withdraw(){
+  async withdraw() {
     if (currentEOSAccount() == null) { alert('请先登录'); }
     const contract = await eos().contract('signature.bp');
     await contract.claim(
@@ -90,7 +90,7 @@ const API = {
       limit: 10000,
     });
     return rows;
-  }
+  },
 };
 
 

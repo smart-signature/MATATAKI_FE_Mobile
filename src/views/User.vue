@@ -29,12 +29,12 @@ export default {
     },
   },
   methods: {
-    withdraw(){
+    withdraw() {
       API.withdraw();
     },
-    async getplayerincome(){
-      return await API.getplayerincome(this.currentUsername);
-    }
+    async getplayerincome() {
+      return API.getplayerincome(this.currentUsername);
+    },
     // ...mapActions(["loginScatterAsync"]),
     // loginWithWallet() {
     //   this.loginScatterAsync();

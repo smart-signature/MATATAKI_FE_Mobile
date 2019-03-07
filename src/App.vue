@@ -17,7 +17,7 @@ export default {
     ]),
   },
   computed: {
-    ...mapState(['scatterAccount'])
+    ...mapState(['scatterAccount']),
   },
   async created() {
     try {
