@@ -1,17 +1,27 @@
 <template>
   <div class="card user">
       <h1>{{username}} 的文章</h1>
+      <h1>签名收入：{{playerincome.sign_income}}</h1>
+      <h1>分享收入：{{playerincome.share_income}}</h1>
       <h2 class="is-me" v-if="username === currentUsername">是你的用户页</h2>
       <za-button block theme="primary" @click="$router.go(-1)">Go Back</za-button>
+      <br/>
+      <za-button block theme="primary" @click="withdraw">Withdraw</za-button>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
+import API from '../api/scatter.js';
 
 export default {
   name: 'User',
   props: ['username'],
+  data() {
+    return {
+      playerincome: {},
+    };
+  },
   computed: {
     ...mapGetters(['currentUsername']),
     ifLogined() {
@@ -19,12 +29,21 @@ export default {
     },
   },
   methods: {
+    withdraw(){
+      API.withdraw();
+    },
+    async getplayerincome(){
+      return await API.getplayerincome(this.currentUsername);
+    }
     // ...mapActions(["loginScatterAsync"]),
     // loginWithWallet() {
     //   this.loginScatterAsync();
     // }
   },
-  created() {
+  async created() {
+    const playerincome = await this.getplayerincome();
+    this.playerincome = playerincome[0];
+    console.log(this.playerincome);
   },
 };
 </script>
