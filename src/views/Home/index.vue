@@ -4,9 +4,8 @@
       <link rel="icon" type="image/png" sizes="32x32" href="./img/Andoromeda logo@2x.png">
       <link rel="icon" type="image/png" sizes="16x16" href="./img/Andoromeda logo.png">
       <div style="float:left">
-        <img src="/img/Andoromeda logo.png" alt="Andoromeda logo"> 
+        <img src="/img/Andoromeda logo.png" alt="Andoromeda logo">
         Andoromeda</div>
-      <div style="float:right" >En</div>
 
       <div class="logined" v-if="isLogined">
           <p
@@ -15,8 +14,16 @@
           >{{currentUsername}}</p>
         </div>
       <div class="not-login-yet" style="float:right" v-else>
-          <za-button theme='primary' size='xs'  @click="$router.push({name: 'Login'})">登录</za-button>
-      </div>
+          <za-button
+            size='xs'
+            @click="$router.push({name: 'Login'})">登录
+          </za-button>
+          <za-button size="xs" slot="description" @click="visible1 = true">En</za-button>
+          <za-actionsheet
+            :visible.sync="visible1" :actions="actions1"
+            :showCancel="false" @cancel="cancelCb">
+          </za-actionsheet>
+        </div>
       <br />
       <br />
       <h1 class="title">-SmartSignature-</h1>
@@ -34,7 +41,30 @@ import ArticlesList from './ArticlesList.vue';
 export default {
   name: 'Home',
   components: { ArticlesList, MyBanner },
-  data: () => ({}),
+  data() {
+    return {
+      visible1: false,
+      actions1: [{
+        text: 'English',
+        onClick: () => console.log('action 1'),
+      }, {
+        text: '简体中文',
+        onClick: () => console.log('action 2'),
+      }, {
+        text: '日本語',
+        onClick: () => console.log('action 2'),
+      }, {
+        theme: 'error',
+        text: '取消',
+        onClick: () => console.log('action 3'),
+      }],
+    };
+  },
+  methods: {
+    cancelCb(reason, event) {
+      console.log(reason, event);
+    },
+  },
 };
 </script>
 

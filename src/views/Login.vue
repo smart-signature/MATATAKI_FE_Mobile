@@ -30,20 +30,20 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters } from "vuex";
+import { mapActions, mapState, mapGetters } from 'vuex';
 
 export default {
-  name: "Login Page",
+  name: 'Login Page',
   computed: {
-    ...mapState(["isScatterConnected", "scatterAccount"]),
-    ...mapGetters(["currentUsername"])
+    ...mapState(['isScatterConnected', 'scatterAccount']),
+    ...mapGetters(['currentUsername']),
   },
   methods: {
     ...mapActions([
-      "connectScatterAsync",
-      "suggestNetworkAsync",
-      "loginScatterAsync",
-      "logoutScatterAsync"
+      'connectScatterAsync',
+      'suggestNetworkAsync',
+      'loginScatterAsync',
+      'logoutScatterAsync',
     ]),
     async loginWithWallet() {
       try {
@@ -52,10 +52,10 @@ export default {
         const suggestNetworkResult = await this.suggestNetworkAsync();
         await this.loginScatterAsync();
       } catch (e) {
-        console.warn("Unable to connect wallets");
+        console.warn('Unable to connect wallets');
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
