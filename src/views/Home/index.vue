@@ -1,37 +1,37 @@
 <template>
-  <div class="home">
-    <div class="head">
-      <link rel="icon" type="image/png" sizes="32x32" href="./img/Andoromeda logo@2x.png">
-      <link rel="icon" type="image/png" sizes="16x16" href="./img/Andoromeda logo.png">
-      <div style="float:left">
-        <img src="/img/Andoromeda logo.png" alt="Andoromeda logo">
-        Andoromeda</div>
+  <scroller :on-infinite="infinite" :on-refresh="refresh" ref="my_scroller">
+    <div class="home">
+      <div class="head">
+        <link rel="icon" type="image/png" sizes="32x32" href="./img/Andoromeda logo@2x.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="./img/Andoromeda logo.png">
+        <div style="float:left">
+          <img src="/img/Andoromeda logo.png" alt="Andoromeda logo">
+          Andoromeda</div>
 
-      <div class="logined" v-if="isLogined">
-          <p
-            @click="$router.push({ name: 'User', params: {username: currentUsername } })"
-            class="username"
-          >{{currentUsername}}</p>
-        </div>
-      <div class="not-login-yet" style="float:right" v-else>
-          <za-button
-            size='xs'
-            @click="$router.push({name: 'Login'})">登录
-          </za-button>
-          <za-button size="xs" slot="description" @click="visible1 = true">En</za-button>
-          <za-actionsheet
-            :visible.sync="visible1" :actions="actions1"
-            :showCancel="false" @cancel="cancelCb">
-          </za-actionsheet>
-        </div>
-      <br />
-      <br />
-      <h1 class="title">-SmartSignature-</h1>
-      <h2 class="subtitle">首个EOS去中心化智能签名项目</h2>
+        <div class="logined" v-if="isLogined">
+            <p
+              @click="$router.push({ name: 'User', params: {username: currentUsername } })"
+              class="username"
+            >{{currentUsername}}</p>
+          </div>
+        <div class="not-login-yet" style="float:right" v-else>
+            <za-button
+              size='xs'
+              @click="$router.push({name: 'Login'})">登录
+            </za-button>
+            <za-button size="xs" slot="description" @click="visible1 = true">En</za-button>
+            <za-actionsheet
+              :visible.sync="visible1" :actions="actions1"
+              :showCancel="false" @cancel="cancelCb">
+            </za-actionsheet>
+          </div>
+        <br />
+        <br />
+        <h1 class="title">-SmartSignature-</h1>
+        <h2 class="subtitle">首个EOS去中心化智能签名项目</h2>
+      </div>
     </div>
-    <MyBanner />
-    <ArticlesList/>
-  </div>
+  </scroller>
 </template>
 
 <script>
@@ -72,6 +72,17 @@ export default {
     cancelCb(reason, event) {
       console.log(reason, event);
     },
+    infinite(done) {
+      setTimeout(()=>{
+        done();
+      },1500);
+    },
+    refresh(done) {
+      setTimeout(()=>{
+        done();
+      },1500);
+      // this.$refs.ArticlesList.getArticlesList().then(() => {
+    }
   },
 };
 </script>
