@@ -7,7 +7,6 @@
         <div style="float:left">
           <img src="/img/Andoromeda logo.png" alt="Andoromeda logo">
           Andoromeda</div>
-
         <div class="logined" v-if="isLogined">
             <p
               @click="$router.push({ name: 'User', params: {username: currentUsername } })"
