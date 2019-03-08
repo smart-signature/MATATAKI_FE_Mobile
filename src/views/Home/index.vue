@@ -1,43 +1,41 @@
 <template>
-  <za-pull :on-refresh="refresh" :refreshing="refreshing" ref="my_scroller">
-    <div class="home">
-      <div class="head">
-        <link rel="icon" type="image/png" sizes="32x32" href="./img/Andoromeda logo@2x.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="./img/Andoromeda logo.png">
-        <div style="float:left">
-          <img src="/img/Andoromeda logo.png" alt="Andoromeda logo">
-          Andoromeda</div>
+  <div class="home">
+    <div class="head">
+      <link rel="icon" type="image/png" sizes="32x32" href="./img/Andoromeda logo@2x.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="./img/Andoromeda logo.png">
+      <div style="float:left">
+        <img src="/img/Andoromeda logo.png" alt="Andoromeda logo">
+        Andoromeda</div>
 
-        <div class="logined" v-if="isLogined">
-            <p
-              @click="$router.push({ name: 'User', params: {username: currentUsername } })"
-              class="username"
-            >{{currentUsername}}</p>
-          </div>
-        <div class="not-login-yet" style="float:right" v-else>
-            <za-button
-              size='xs'
-              @click="$router.push({name: 'Login'})">登录
-            </za-button>
-            <za-button size="xs" slot="description" @click="visible1 = true">En</za-button>
-            <za-actionsheet
-              :visible.sync="visible1" :actions="actions1"
-              :showCancel="false" @cancel="cancelCb">
-            </za-actionsheet>
-          </div>
-        <br />
-        <br />
-        <h1 class="title">-SmartSignature-</h1>
-        <h2 class="subtitle">首个EOS去中心化智能签名项目</h2>
-      </div>
-      <MyBanner />
-      <ArticlesList ref="ArticlesList"/>
+      <div class="logined" v-if="isLogined">
+          <p
+            @click="$router.push({ name: 'User', params: {username: currentUsername } })"
+            class="username"
+          >{{currentUsername}}</p>
+        </div>
+      <div class="not-login-yet" style="float:right" v-else>
+          <za-button
+            size='xs'
+            @click="$router.push({name: 'Login'})">登录
+          </za-button>
+          <za-button size="xs" slot="description" @click="visible1 = true">En</za-button>
+          <za-actionsheet
+            :visible.sync="visible1" :actions="actions1"
+            :showCancel="false" @cancel="cancelCb">
+          </za-actionsheet>
+        </div>
+      <br />
+      <br />
+      <h1 class="title">-SmartSignature-</h1>
+      <h2 class="subtitle">首个EOS去中心化智能签名项目</h2>
     </div>
-  </za-pull>
+    <MyBanner />
+    <ArticlesList ref="ArticlesList"/>
+  </div>
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { mapState, mapGetters } from 'vuex';
 import MyBanner from './MyBanner.vue';
 import ArticlesList from './ArticlesList.vue';
 
@@ -48,12 +46,11 @@ export default {
     ...mapState(['scatterAccount']),
     ...mapGetters(['currentUsername']),
     isLogined() {
-      return this.scatterAccount !== null
-    }
+      return this.scatterAccount !== null;
+    },
   },
   data() {
     return {
-      refreshing: false,
       visible1: false,
       actions1: [{
         text: 'English',
@@ -74,18 +71,6 @@ export default {
   methods: {
     cancelCb(reason, event) {
       console.log(reason, event);
-    },
-    refresh() {
-      this.refreshing = true;
-      return new Promise((resolve, reject) => {
-        this.$refs.ArticlesList.getArticlesList().then(() => {
-          this.refreshing = false;
-          resolve(true);
-        }).catch(e => {
-          this.refreshing = false;
-          reject(false)
-        })
-      });
     },
   },
 };

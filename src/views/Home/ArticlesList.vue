@@ -2,9 +2,11 @@
   <div class="articles">
     <za-tabs v-model="activeNameSwipe" @change="handleClick">
       <za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label">
-        <div class="content">
-          <ArticleCard :article="a" v-for="a in articles" :key="a.id"/>
-        </div>
+        <za-pull :on-refresh="refresh" :refreshing="refreshing" :loading="true">
+          <div class="content">
+            <ArticleCard :article="a" v-for="a in articles" :key="a.id"/>
+          </div>
+        </za-pull>
       </za-tab-pane>
     </za-tabs>
   </div>
@@ -33,9 +35,15 @@ export default {
     handleClick(tab, event) {
       console.log(tab, event);
     },
+    async refresh() {
+      this.refreshing = true;
+      await this.getArticlesList();
+      this.refreshing = false;
+    },
   },
   data() {
     return {
+      refreshing: false,
       articles: [],
       activeNameSwipe: '文章列表',
       selectedLabelDefault: '文章列表',
