@@ -1,5 +1,5 @@
 <template>
-  <scroller :on-infinite="infinite" :on-refresh="refresh" ref="my_scroller">
+  <za-pull :on-refresh="refresh" :refreshing="refreshing" ref="my_scroller">
     <div class="home">
       <div class="head">
         <link rel="icon" type="image/png" sizes="32x32" href="./img/Andoromeda logo@2x.png">
@@ -31,9 +31,9 @@
         <h2 class="subtitle">首个EOS去中心化智能签名项目</h2>
       </div>
       <MyBanner />
-      <ArticlesList/>
+      <ArticlesList ref="ArticlesList"/>
     </div>
-  </scroller>
+  </za-pull>
 </template>
 
 <script>
@@ -53,6 +53,7 @@ export default {
   },
   data() {
     return {
+      refreshing: false,
       visible1: false,
       actions1: [{
         text: 'English',
@@ -74,17 +75,18 @@ export default {
     cancelCb(reason, event) {
       console.log(reason, event);
     },
-    infinite(done) {
-      setTimeout(()=>{
-        done();
-      },1500);
+    refresh() {
+      this.refreshing = true;
+      return new Promise((resolve, reject) => {
+        this.$refs.ArticlesList.getArticlesList().then(() => {
+          this.refreshing = false;
+          resolve(true);
+        }).catch(e => {
+          this.refreshing = false;
+          reject(false)
+        })
+      });
     },
-    refresh(done) {
-      setTimeout(()=>{
-        done();
-      },1500);
-      // this.$refs.ArticlesList.getArticlesList().then(() => {
-    }
   },
 };
 </script>
