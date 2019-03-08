@@ -30,6 +30,8 @@
         <h1 class="title">-SmartSignature-</h1>
         <h2 class="subtitle">首个EOS去中心化智能签名项目</h2>
       </div>
+      <MyBanner />
+      <ArticlesList/>
     </div>
   </scroller>
 </template>
