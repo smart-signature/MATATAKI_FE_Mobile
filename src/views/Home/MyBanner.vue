@@ -26,7 +26,7 @@
 import { mapState, mapActions, mapGetters } from 'vuex';
 
 export default {
-  name: 'My Banner',
+  name: 'My-Banner',
   computed: {
     ...mapState(['scatterAccount', 'balances', 'isScatterConnected']),
     ...mapGetters(['currentUsername']),

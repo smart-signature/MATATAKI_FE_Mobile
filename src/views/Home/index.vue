@@ -35,12 +35,20 @@
 </template>
 
 <script>
+import { mapState, mapGetters } from "vuex";
 import MyBanner from './MyBanner.vue';
 import ArticlesList from './ArticlesList.vue';
 
 export default {
   name: 'Home',
   components: { ArticlesList, MyBanner },
+  computed: {
+    ...mapState(['scatterAccount']),
+    ...mapGetters(['currentUsername']),
+    isLogined() {
+      return this.scatterAccount !== null
+    }
+  },
   data() {
     return {
       visible1: false,
