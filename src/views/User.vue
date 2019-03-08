@@ -19,7 +19,10 @@ export default {
   props: ['username'],
   data() {
     return {
-      playerincome: {},
+      playerincome: {
+        sign_income: 0,
+        share_income: 0
+      },
     };
   },
   computed: {
@@ -32,8 +35,8 @@ export default {
     withdraw() {
       API.withdraw();
     },
-    async getplayerincome() {
-      return API.getplayerincome(this.currentUsername);
+    async getPlayerIncome() {
+      return API.getPlayerIncome(this.currentUsername);
     },
     // ...mapActions(["loginScatterAsync"]),
     // loginWithWallet() {
@@ -41,7 +44,7 @@ export default {
     // }
   },
   async created() {
-    const playerincome = await this.getplayerincome();
+    const playerincome = await this.getPlayerIncome();
     this.playerincome = playerincome[0];
     console.log(this.playerincome);
   },

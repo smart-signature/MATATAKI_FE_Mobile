@@ -81,7 +81,7 @@ const API = {
       },
     );
   },
-  async getplayerincome(name) {
+  async getPlayerIncome(name) {
     const { rows } = await eos().getTableRows({
       json: true,
       code: 'signature.bp',
