@@ -11,6 +11,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "eosjs": "^16.0.9",
+    "mavon-editor": "^2.7.0",
     "moment": "^2.24.0",
     "register-service-worker": "^1.5.2",
     "scatterjs-core": "^2.7.16",
@@ -18,6 +19,7 @@
     "vue": "^2.6.6",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1",
+    "wangeditor": "^3.1.1",
     "zarm-vue": "^2.0.0-alpha.8"
   },
   "devDependencies": {

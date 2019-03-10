@@ -68,6 +68,7 @@ export default {
   /* background: rgba(240, 240, 240, 1); */
   margin-top: -100px;
   padding-top: 100px;
+  font-weight: bold;
 }
 .article {
   text-align: left;
