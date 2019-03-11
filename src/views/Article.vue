@@ -1,24 +1,32 @@
 <template>
   <div class="article">
-    <!-- <a id="share">Copy
-      <input type="text" style="opacity: 0;">
-    </a>-->
-    <div class="tl_page">
-      <input type="button" name="button" id="button" value="Login">
-      <input id="share1" type="button" name="Share" value="Share">
-    </div>
+    <za-nav-bar>
+      <div slot="left">
+        <za-icon theme="primary" type="arrow-left" @click="goBack"></za-icon>
+      </div>
+      <div slot="title">smartsignature.io</div>
+      <div slot="right"></div>
+    </za-nav-bar>
     <div class="tl_page">
       <main class="ta">
         <header class="ta_header">
           <h1 dir="auto">{{post.title}}</h1>
           <address dir="auto">
-            <a rel="author"> Author: {{post.author}} </a>
-            <span>Hash: {{hash}}</span>
+            <a rel="/"> Author: {{post.author}}</a>
+            <br/>
+            <span>IPFS Hash: {{hash}}</span>
           </address>
         </header>
 
         <article class="tac" v-html="post.content"></article>
       </main>
+    </div>
+    <div style="float:right">
+      <za-button
+         size='xl'
+         theme="primary"
+         @click="$router.push({name: 'Sheare'})">分享
+      </za-button>
     </div>
   </div>
 </template>
@@ -30,10 +38,10 @@ export default {
   name: 'Article',
   props: ['hash'],
   data: () => ({
-    title: 'Blog Post Test',
-    author: 'Frank Wei',
+    title: 'title',
+    author: 'author',
     post: {
-      author: '',
+      author: 'Loading...',
       title: 'Loading...',
       content: '<b>Please wait for connection to IPFS</b>',
       desc: '',
@@ -45,6 +53,9 @@ export default {
       const { data } = await axios.get(url);
       this.post = data.data;
       console.info(data);
+    },
+    goBack() {
+      this.$router.go(-1);
     },
   },
   created() {

@@ -1,10 +1,12 @@
 <template>
   <div class="card article">
-    <a :href="article.articleUrl">
-      <h2 class="title">{{article.title}}</h2>
-      <p class="article-infomation">{{friendlyDate}} by {{article.author}}</p>
-    </a>
-  </div>
+    <router-link :to="{ name: 'Article', params: { hash: article.articleUrl.substr(37, 46) }}">
+      <a>
+        <h2 class="title">{{article.title}}</h2>
+        <p class="article-infomation">{{friendlyDate}} by {{article.author}}</p>
+      </a>
+    </router-link>
+    </div>
 </template>
 
 <script>
