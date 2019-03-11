@@ -15,6 +15,7 @@
 <script>
 import { sendPost } from "@/api/ipfs";
 import { mavonEditor } from 'mavon-editor';
+//MarkdownIt 实例
 const mdit = mavonEditor.getMarkdownIt();
 
 export default {
@@ -32,7 +33,26 @@ export default {
   methods: {
       async sendThePost() {
           const { title, author, markdownData} = this
-          sendPost({title, author, content: markdownData, desc: 'whatever'})
+          try {
+            const {data} = await sendPost({title, author, content: markdownData, desc: 'whatever'})
+            const { code, hash } = data
+            if (code === 200) {
+                this.$Notice.success({
+                    title: '发送成功',
+                    desc: '3秒后跳转到你发表的文章'
+                });
+                const jumpToArticle = () => this.$router.push({ name: 'Article', params: { hash } })
+                setTimeout(jumpToArticle, 3 * 1000)
+            } else {
+                this.$Notice.error({
+                    title: '发送失败',
+                });
+            }
+          } catch (error) {
+            this.$Notice.error({
+                title: '发送失败',
+            });
+          }
       },
       uploadImage(filename, imgfile) {
           console.info(filename)
