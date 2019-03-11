@@ -6,27 +6,28 @@
 </template>
 
 <script>
-    import E from 'wangeditor'
-    export default {
-      name: 'WangEditor',
-      data () {
-        return {
-          editorContent: ''
-        }
-      },
-      methods: {
-        getContent: function () {
-            alert(this.editorContent)
-        }
-      },
-      mounted() {
-        var editor = new E(this.$refs.editor)
-        editor.customConfig.onchange = (html) => {
-          this.editorContent = html
-        }
-        editor.create()
-      }
-    }
+import E from 'wangeditor';
+
+export default {
+  name: 'WangEditor',
+  data() {
+    return {
+      editorContent: '',
+    };
+  },
+  methods: {
+    getContent() {
+      alert(this.editorContent);
+    },
+  },
+  mounted() {
+    const editor = new E(this.$refs.editor);
+    editor.customConfig.onchange = (html) => {
+      this.editorContent = html;
+    };
+    editor.create();
+  },
+};
 </script>
 
 <style scoped>

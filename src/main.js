@@ -9,7 +9,7 @@ import mavonEditor from 'mavon-editor';
 import './registerServiceWorker';
 
 // CSS Style
-import 'mavon-editor/dist/css/index.css'
+import 'mavon-editor/dist/css/index.css';
 import 'iview/dist/styles/iview.css';
 
 [

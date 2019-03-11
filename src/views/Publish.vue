@@ -13,12 +13,12 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import { sendPost } from "@/api/ipfs";
-import { publishOnChain } from "@/api/signature";
-import { publishArticle } from "@/api/backend";
+import { mapGetters } from 'vuex';
+import { sendPost } from '@/api/ipfs';
+import { publishOnChain } from '@/api/signature';
+import { publishArticle } from '@/api/backend';
 import { mavonEditor } from 'mavon-editor';
-//MarkdownIt 实例
+// MarkdownIt 实例
 const mdit = mavonEditor.getMarkdownIt();
 
 export default {
@@ -35,39 +35,43 @@ export default {
     },
   },
   methods: {
-      async sendThePost() {
-          const { title, author, markdownData, currentUsername } = this
-          try {
-            const { data } = await sendPost({title, author, content: markdownData, desc: 'whatever'})
-            const { code, hash } = data
-            if (code === 200) {
-                const { transaction_id } = await publishOnChain()
-                const data = await publishArticle({ 
-                  hash, title, author, transactionId: transaction_id, accountName: currentUsername 
-                })
-                this.$Notice.success({
-                    title: '发送成功',
-                    desc: '3秒后跳转到你发表的文章'
-                });
-                const jumpToArticle = () => this.$router.push({ name: 'Article', params: { hash } })
-                setTimeout(jumpToArticle, 3 * 1000)
-            } else {
-                this.$Notice.error({
-                    title: '发送失败',
-                });
-            }
-          } catch (error) {
-            console.error(error)
-            this.$Notice.error({
-                title: '发送失败',
-            });
-          }
-      },
-      uploadImage(filename, imgfile) {
-          console.info(filename)
-          console.info(imgfile)
-      },
-      
+    async sendThePost() {
+      const {
+        title, author, markdownData, currentUsername,
+      } = this;
+      try {
+        const { data } = await sendPost({
+          title, author, content: markdownData, desc: 'whatever',
+        });
+        const { code, hash } = data;
+        if (code === 200) {
+          const { transaction_id } = await publishOnChain();
+          const data = await publishArticle({
+            hash, title, author, transactionId: transaction_id, accountName: currentUsername,
+          });
+          this.$Notice.success({
+            title: '发送成功',
+            desc: '3秒后跳转到你发表的文章',
+          });
+          const jumpToArticle = () => this.$router.push({ name: 'Article', params: { hash } });
+          setTimeout(jumpToArticle, 3 * 1000);
+        } else {
+          this.$Notice.error({
+            title: '发送失败',
+          });
+        }
+      } catch (error) {
+        console.error(error);
+        this.$Notice.error({
+          title: '发送失败',
+        });
+      }
+    },
+    uploadImage(filename, imgfile) {
+      console.info(filename);
+      console.info(imgfile);
+    },
+
   },
 };
 </script>
