@@ -1,7 +1,7 @@
 <template>
-  <div class="card article">
+  <div class="card asset">
     <a>
-      <h2 class="title">3.2333 EOS // 應該要有單位我想</h2>
+      <h2 class="asset-quantity">{{asset.quantity}}</h2>
       <p class="asset-infomation">{{friendlyDate}}</p>
     </a>
   </div>
@@ -12,10 +12,10 @@ import moment from 'moment';
 
 export default {
   name: 'AssetCard',
-  props: ['article'],
+  props: ['asset'],
   computed: {
     friendlyDate() {
-      return moment(this.article.time).fromNow();
+      return moment(this.asset.timestamp).fromNow();
     },
   },
 };
@@ -26,13 +26,13 @@ a {
   color: #000;
   text-decoration: none; /* no underline */
 }
-h2.title {
+h2.asset-quantity {
   font-size: 18px;
   font-weight: 600;
-  color: rgb(35, 241, 0);
+  color: #478970;
   /* line-height: 25px; */
 }
-.article-infomation {
+.asset-infomation {
   color: rgb(105,105,105);
 }
 </style>

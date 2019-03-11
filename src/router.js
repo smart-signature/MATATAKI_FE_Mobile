@@ -39,6 +39,12 @@ export default new Router({
       component: () => import(/* webpackChunkName: "user" */ './views/User.vue'),
     },
     {
+      path: '/user/:username/asset',
+      name: 'Asset',
+      props: true,
+      component: () => import(/* webpackChunkName: "asset" */ './views/Asset.vue'),
+    },
+    {
       path: '/publish',
       name: 'Publish',
       props: true,
