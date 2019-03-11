@@ -18,7 +18,7 @@
           </address>
         </header>
 
-        <article class="tac" v-html="post.content"></article>
+        <article class="tac" v-html="compiledMarkdown"></article>
       </main>
     </div>
     <div style="float:right">
@@ -33,17 +33,25 @@
 
 <script>
 import axios from 'axios';
+import { mavonEditor } from 'mavon-editor';
+// MarkdownIt 实例
+const markdownIt = mavonEditor.getMarkdownIt();
 
 export default {
   name: 'Article',
   props: ['hash'],
+  computed: {
+    compiledMarkdown() {
+      return markdownIt.render(this.post.content);
+    },
+  },
   data: () => ({
     title: 'title',
     author: 'author',
     post: {
       author: 'Loading...',
       title: 'Loading...',
-      content: '<b>Please wait for connection to IPFS</b>',
+      content: '**Please wait for connection to IPFS**',
       desc: '',
     },
   }),

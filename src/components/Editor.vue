@@ -14,10 +14,10 @@ export default {
   },
   methods: {
     $imgAdd(pos, file) {
-      //在这里上传图片
+      // 在这里上传图片
     },
   },
-  created(){
+  created() {
     // window.mavonvue = this;
   },
 };

@@ -4,13 +4,17 @@ import App from './App.vue';
 import './zarm';
 import router from './router';
 import store from './store';
-import './registerServiceWorker';
-import 'zarm-vue/zarm-vue.default.css';
-  //-- iview --//
 import iView from 'iview';
+import mavonEditor from 'mavon-editor';
+import './registerServiceWorker';
+
+// CSS Style
+import 'mavon-editor/dist/css/index.css';
 import 'iview/dist/styles/iview.css';
-Vue.use(iView);
-  //           //
+
+[
+  iView, mavonEditor,
+].map(c => Vue.use(c));
 
 Vue.config.productionTip = false;
 

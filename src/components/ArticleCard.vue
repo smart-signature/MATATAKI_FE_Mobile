@@ -1,6 +1,6 @@
 <template>
   <div class="card article">
-    <router-link :to="{ name: 'Article', params: { hash: article.articleUrl.substr(37, 46) }}">
+    <router-link :to="{ name: 'Article', params: { hash }}">
       <a>
         <h2 class="title">{{article.title}}</h2>
         <p class="article-infomation">{{friendlyDate}} by {{article.author}}</p>
@@ -19,6 +19,9 @@ export default {
     friendlyDate() {
       return moment(this.article.time).fromNow();
     },
+    hash() {
+      return this.article.articleUrl.substr(-46)
+    }
   },
 };
 </script>
