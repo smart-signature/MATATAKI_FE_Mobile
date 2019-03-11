@@ -38,5 +38,11 @@ export default new Router({
       props: true,
       component: () => import(/* webpackChunkName: "user" */ './views/User.vue'),
     },
+    {
+      path: '/new-post',
+      name: 'New Post',
+      props: true,
+      component: () => import(/* webpackChunkName: "new-post" */ './views/NewPost.vue'),
+    },
   ],
 });
