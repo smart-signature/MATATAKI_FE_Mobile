@@ -13,17 +13,21 @@
     <div class="centercard">
       <Row type="flex" justify="center" class="code-row-bg">
           <Col span="5">
-            <p class="centervalue">89</p>
-            <p class="centertext">支持收入</p>
+            <router-link :to="{ name: 'Asset', params: { username }}">
+              <p class="centervalue">{{playerincome.sign_income/1000}}</p>
+              <p class="centertext">支持收入</p>
+            </router-link>
           </Col>
           <Col span="1"><Divider type="vertical" /></Col>
           <Col span="5">
-            <p class="centervalue">25</p>
-            <p class="centertext">转发收入</p>
+            <router-link :to="{ name: 'Asset', params: { username }}">
+              <p class="centervalue">{{playerincome.share_income/1000}}</p>
+              <p class="centertext">转发收入</p>
+            </router-link>
           </Col>
           <Col span="1"><Divider type="vertical" /></Col>
           <Col span="5">
-            <p class="centervalue">8</p>
+            <p class="centervalue">8000</p>
             <p class="centertext">收藏夹子</p>
           </Col>
           <Col span="1"><Divider type="vertical" /></Col>
@@ -34,7 +38,7 @@
       </Row>
     </div>
     <div class="usercard">
-      <h1>{{username}} 的文章</h1>
+      <h1>{{username}} 的文章 // 這部分似乎是個歷史遺留</h1>
       <div class="income" v-if="playerincome">
         <h1>签名收入：{{playerincome.sign_income/1000}} EOS</h1>
         <h1>分享收入：{{playerincome.share_income/1000}} EOS</h1>
@@ -84,6 +88,10 @@ export default {
 };
 </script>
 <style>
+a {
+  color: #000;
+  text-decoration: none; /* no underline */
+}
 .user{
   background-color: #F7F7F7;
 }
@@ -129,6 +137,7 @@ export default {
 }
 .centertext{
   font-size: 14px;
+  font-weight: bold;
   opacity: 0.4;
 }
 </style>

@@ -4,7 +4,7 @@
       <div slot="left">
         <za-icon theme="primary" type="arrow-left" @click="goBack"></za-icon>
       </div>
-      <div slot="title">资产明细</div>
+      <div slot="title">{{username}} 的资产明细</div>
       <div slot="right"></div>
     </za-nav-bar>
     <div class="assets">
@@ -12,7 +12,7 @@
       <za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label">
         <za-pull :on-refresh="refresh" :refreshing="refreshing" :loading="true">
           <div class="content">
-            <ArticleCard :article="a" v-for="a in articles" :key="a.id"/>
+            <AssetCard :asset="a" v-for="a in assets" :key="a.timestamp"/>
           </div>
         </za-pull>
       </za-tab-pane>
@@ -23,13 +23,25 @@
 </template>
 
 <script>
-
+import { AssetCard } from '@/components/';
 export default {
   name: 'Asset',
+  props: ['username'],
+  components: { AssetCard },
   data() {
     return {
       refreshing: false,
-      articles: [],
+      assets: [{
+        // sample
+        quantity: '+ 10.2333 EOS',
+        timestamp: Date.now(),
+        },
+        {
+        // sample
+        quantity: '+ 100.2333 EOS',
+        timestamp: Date.now(),
+        },
+      ],
       activeNameSwipe: '全部',
       selectedLabelDefault: '全部',
       tabs: [
@@ -46,6 +58,20 @@ export default {
     };
   },
   methods: {
+    // ...mapActions(['loginScatterAsync']),
+    async getAssetsList() {
+      // const articles = 'https://smartsignature.azurewebsites.net/api/article';
+      const { data } = await axios.get(articles);
+      this.assets = data;
+    },
+    handleClick(tab, event) {
+      console.log(tab, event);
+    },
+    async refresh() {
+      this.refreshing = true;
+      await this.getAssetsList();
+      this.refreshing = false;
+    },
     goBack() {
       this.$router.go(-1);
     },
@@ -55,20 +81,14 @@ export default {
 
 
 <style scoped>
-.about {
-  background: #f7f7f7;
-  margin: auto;
-  text-align: center;
+.asset {
+  text-align: left;
 }
-
-.about-card {
-  margin: 10px;
-  text-align: center;
-  /* max-width: 335px; */
-  background: rgba(255, 255, 255, 1);
-  box-shadow: 0px 2px 5px 3px rgba(233, 233, 233, 0.5);
-  border-radius: 8px;
-  padding: 18px;
+.assets {
+  /* background: rgba(240, 240, 240, 1); */
+  margin-top: -100px;
+  padding-top: 100px;
+  font-weight: bold;
 }
 .q-and-a {
   color: rgba(0, 0, 0, 1);
