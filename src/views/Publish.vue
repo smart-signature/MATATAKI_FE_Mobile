@@ -13,7 +13,10 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import { sendPost } from "@/api/ipfs";
+import { publishOnChain } from "@/api/signature";
+import { publishArticle } from "@/api/backend";
 import { mavonEditor } from 'mavon-editor';
 //MarkdownIt 实例
 const mdit = mavonEditor.getMarkdownIt();
@@ -26,17 +29,22 @@ export default {
     markdownData: '',
   }),
   computed: {
+    ...mapGetters(['currentUsername']),
     compiledMarkdown() {
       return mdit.render(this.markdownData);
     },
   },
   methods: {
       async sendThePost() {
-          const { title, author, markdownData} = this
+          const { title, author, markdownData, currentUsername } = this
           try {
-            const {data} = await sendPost({title, author, content: markdownData, desc: 'whatever'})
+            const { data } = await sendPost({title, author, content: markdownData, desc: 'whatever'})
             const { code, hash } = data
             if (code === 200) {
+                const { transaction_id } = await publishOnChain()
+                const data = await publishArticle({ 
+                  hash, title, author, transactionId: transaction_id, accountName: currentUsername 
+                })
                 this.$Notice.success({
                     title: '发送成功',
                     desc: '3秒后跳转到你发表的文章'
@@ -49,6 +57,7 @@ export default {
                 });
             }
           } catch (error) {
+            console.error(error)
             this.$Notice.error({
                 title: '发送失败',
             });
@@ -57,7 +66,8 @@ export default {
       uploadImage(filename, imgfile) {
           console.info(filename)
           console.info(imgfile)
-      }
+      },
+      
   },
 };
 </script>
