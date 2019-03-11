@@ -1,19 +1,17 @@
 <template>
   <div class="card article">
-    <router-link :to="{ name: 'Article', params: { hash: article.articleUrl.substr(37, 46) }}">
-      <a>
-        <h2 class="title">{{article.title}}</h2>
-        <p class="article-infomation">{{friendlyDate}} by {{article.author}}</p>
-      </a>
-    </router-link>
-    </div>
+    <a>
+      <h2 class="title">3.2333 EOS // 應該要有單位我想</h2>
+      <p class="asset-infomation">{{friendlyDate}}</p>
+    </a>
+  </div>
 </template>
 
 <script>
 import moment from 'moment';
 
 export default {
-  name: 'ArticleCard',
+  name: 'AssetCard',
   props: ['article'],
   computed: {
     friendlyDate() {
@@ -31,7 +29,7 @@ a {
 h2.title {
   font-size: 18px;
   font-weight: 600;
-  color: rgb(76,76,76);
+  color: rgb(35, 241, 0);
   /* line-height: 25px; */
 }
 .article-infomation {
