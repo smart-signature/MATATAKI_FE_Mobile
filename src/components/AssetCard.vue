@@ -1,6 +1,6 @@
 <template>
   <div class="card article">
-      <a :href="這裡要一個跳轉到這筆的詳細資料？">
+    <a>
       <h2 class="title">3.2333 EOS // 應該要有單位我想</h2>
       <p class="asset-infomation">{{friendlyDate}}</p>
     </a>
