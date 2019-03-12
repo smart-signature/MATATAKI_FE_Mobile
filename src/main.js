@@ -6,6 +6,7 @@ import router from './router';
 import store from './store';
 import iView from 'iview';
 import './registerServiceWorker';
+import clipboard from 'clipboard';
 
 // CSS Style
 import 'mavon-editor/dist/css/index.css';
@@ -16,6 +17,8 @@ import 'iview/dist/styles/iview.css';
 ].map(c => Vue.use(c));
 
 Vue.config.productionTip = false;
+
+Vue.prototype.clipboard = clipboard;
 
 // Register moment's default language
 moment.locale('zh-CN');

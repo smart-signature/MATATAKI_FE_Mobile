@@ -45,17 +45,14 @@ export default {
     return {
       refreshing: false,
       articles: [],
-      activeNameSwipe: '文章列表',
-      selectedLabelDefault: '文章列表',
+      activeNameSwipe: '订阅更新',
+      selectedLabelDefault: '订阅更新',
       tabs: [
         {
-          label: '文章列表',
+          label: '订阅更新',
         },
         {
-          label: '最多支持',
-        },
-        {
-          label: '最多分享',
+          label: '最受欢迎',
         },
       ],
     };
