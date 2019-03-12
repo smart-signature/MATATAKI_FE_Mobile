@@ -5,7 +5,6 @@ import './zarm';
 import router from './router';
 import store from './store';
 import iView from 'iview';
-import mavonEditor from 'mavon-editor';
 import './registerServiceWorker';
 
 // CSS Style
@@ -13,7 +12,7 @@ import 'mavon-editor/dist/css/index.css';
 import 'iview/dist/styles/iview.css';
 
 [
-  iView, mavonEditor,
+  iView,
 ].map(c => Vue.use(c));
 
 Vue.config.productionTip = false;

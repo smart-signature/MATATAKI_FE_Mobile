@@ -17,8 +17,8 @@
             <span>IPFS Hash: {{hash}}</span>
           </address>
         </header>
-
-        <article class="tac" v-html="compiledMarkdown"></article>
+        <mavon-editor v-show="false" style="display: none;"/>
+        <div class="markdown-body tac" v-html="compiledMarkdown"></div>
       </main>
     </div>
     <div style="float:right">
@@ -34,12 +34,17 @@
 <script>
 import axios from 'axios';
 import { mavonEditor } from 'mavon-editor';
+import "mavon-editor/dist/css/index.css"
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
+// markdownIt.set({ breaks: false });
 
 export default {
   name: 'Article',
   props: ['hash'],
+  components: {
+    mavonEditor
+  },
   computed: {
     compiledMarkdown() {
       return markdownIt.render(this.post.content);
@@ -75,6 +80,7 @@ export default {
 
 
 <style scoped>
+@import url(https://cdn.bootcss.com/github-markdown-css/2.10.0/github-markdown.min.css);
 .ta address a[rel="author"]:empty + time:before,
 .ta address.empty,
 .ta time:empty:before {
