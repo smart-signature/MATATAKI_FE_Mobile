@@ -1,12 +1,20 @@
 <template>
   <div class="user">
+    <za-nav-bar>
+      <div slot="left">
+        <za-icon theme="primary" type="arrow-left" @click="goBack"></za-icon>
+      </div>
+      <div slot="title" v-if="username === currentUsername">个人主页</div>
+      <div slot="right" v-if="username === currentUsername">我的</div>
+    </za-nav-bar>
     <div class="usercard">
       <img width="50px" class="userpic" src="../assets/logo.png" />
+      <img style="position:absolute; z-index:1;left:20px;" width="50px" src="/img/camera.png" v-if="editing"/>
       <div class="texts">
         <p class="username">{{username}}</p>
         <p class="userstatu">关注：13 粉丝：20.8w</p>
       </div>
-      <Button class="rightbutton" size="small" type="success" ghost>
+      <Button class="rightbutton" size="small" type="success" ghost @click="edit">
         <div>编辑</div>
       </Button>
     </div>
@@ -37,7 +45,8 @@
           </Col>
       </Row>
     </div>
-    <div class="usercard">
+    <ArticlesList ref="ArticlesList"/>
+    <!-- <div class="usercard">
       <h1>{{username}} 的文章 // 這部分似乎是個歷史遺留</h1>
       <div class="income" v-if="playerincome">
         <h1>签名收入：{{playerincome.sign_income/1000}} EOS</h1>
@@ -47,20 +56,23 @@
       <za-button block theme="primary" @click="$router.go(-1)">Go Back</za-button>
       <br/>
       <za-button block theme="primary" @click="withdraw">Withdraw</za-button>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
 import API from '../api/scatter.js';
+import ArticlesList from './Home/ArticlesList.vue';
 
 export default {
   name: 'User',
   props: ['username'],
+  components: { ArticlesList },
   data() {
     return {
       playerincome: null,
+      editing: false,
     };
   },
   computed: {
@@ -76,6 +88,13 @@ export default {
     async getPlayerIncome() {
       return API.getPlayerIncome(this.username);
     },
+    goBack() {
+      this.$router.go(-1);
+    },
+    edit(){
+      console.log("editing");
+      this.editing = !this.editing;
+    }
     // ...mapActions(["loginScatterAsync"]),
     // loginWithWallet() {
     //   this.loginScatterAsync();
