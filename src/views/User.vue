@@ -5,9 +5,8 @@
         <za-icon theme="primary" type="arrow-left" @click="goBack"></za-icon>
       </div>
       <div slot="title" v-if="username === currentUsername">个人主页</div>
-      <div slot="right" v-if="username === currentUsername">我的</div>
     </za-nav-bar>
-    <div class="usercard">
+    <div class="usercard" >
       <img width="50px" class="userpic" src="../assets/logo.png" />
       <img style="position:absolute; z-index:1;left:20px;" width="50px" src="/img/camera.png" v-if="editing"/>
       <div class="texts">
@@ -15,10 +14,11 @@
         <p class="userstatu">关注：13 粉丝：20.8w</p>
       </div>
       <Button class="rightbutton" size="small" type="success" ghost @click="edit">
-        <div>编辑</div>
+        <div v-if="username === currentUsername">编辑</div>
+        <div v-else>关注</div>
       </Button>
     </div>
-    <div class="centercard">
+    <div class="centercard" v-if="username === currentUsername">
       <Row type="flex" justify="center" class="code-row-bg">
           <Col span="5">
             <router-link :to="{ name: 'Asset', params: { username }}">
@@ -33,30 +33,9 @@
               <p class="centertext">转发收入</p>
             </router-link>
           </Col>
-          <Col span="1"><Divider type="vertical" /></Col>
-          <Col span="5">
-            <p class="centervalue">8000</p>
-            <p class="centertext">收藏夹子</p>
-          </Col>
-          <Col span="1"><Divider type="vertical" /></Col>
-          <Col span="5">
-            <p class="centervalue">89</p>
-            <p class="centertext">最近浏览</p>
-          </Col>
       </Row>
     </div>
-    <ArticlesList ref="ArticlesList"/>
-    <!-- <div class="usercard">
-      <h1>{{username}} 的文章 // 這部分似乎是個歷史遺留</h1>
-      <div class="income" v-if="playerincome">
-        <h1>签名收入：{{playerincome.sign_income/1000}} EOS</h1>
-        <h1>分享收入：{{playerincome.share_income/1000}} EOS</h1>
-      </div>
-      <h2 class="is-me" v-if="username === currentUsername">是你的用户页</h2>
-      <za-button block theme="primary" @click="$router.go(-1)">Go Back</za-button>
-      <br/>
-      <za-button block theme="primary" @click="withdraw">Withdraw</za-button>
-    </div> -->
+    <ArticlesList v-if="username !== currentUsername" ref="ArticlesList"/>
   </div>
 </template>
 
