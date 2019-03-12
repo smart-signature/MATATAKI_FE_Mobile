@@ -81,6 +81,15 @@ const API = {
       },
     );
   },
+  async share({hash = null, upstream_share_id = null,}) {
+    if (currentEOSAccount() == null) { alert('请先登录'); }
+    const sign = getSignbyhash(hash);
+    const contract = await eos().contract('signature.bp');
+    await contract.share_to_action({
+      sign_id: sign.id,
+      upstream_share_id,
+    });
+  },
   async getPlayerIncome(name) {
     const { rows } = await eos().getTableRows({
       json: true,

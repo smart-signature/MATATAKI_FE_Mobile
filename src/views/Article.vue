@@ -25,12 +25,32 @@
       <div style="float:left;opacity:0.404;color: #000000;">
           4.0k 已贊助
       </div>
-      <za-button class="button-share"
-        style="float:right"   
-        size='xl'
-        theme="primary"
-        @click="share">分享
-      </za-button>
+      <div style="float:right;white-space:nowrap;" >
+        <div class="supported" v-if="isSupported">
+          <za-button class="button-support"
+            size='xl'
+            theme="primary"
+            disabled>支持過了
+          </za-button> 
+          <za-button class="button-supershare"
+            size='xl'
+            theme="primary"
+            @click="supershare">超分享
+          </za-button>
+        </div>
+        <div class="not-support-yet" v-else>
+          <za-button class="button-support"
+            size='xl'
+            theme="primary"
+            @click="support">支持
+          </za-button> 
+          <za-button class="button-share"
+            size='xl'
+            theme="primary"
+            @click="share">一般分享
+          </za-button>
+        </div>
+      </div>
       <!-- <za-toast :visible.sync="toastvisible" @close="toastClose" :duration="1000">ok</za-toast> -->
     </footer>
   </div>
@@ -38,6 +58,7 @@
 
 <script>
 import axios from 'axios';
+import API from '../api/scatter.js';
 import { mavonEditor } from 'mavon-editor';
 import "mavon-editor/dist/css/index.css"
 // MarkdownIt 实例
@@ -51,8 +72,18 @@ export default {
     mavonEditor
   },
   computed: {
+    ...mapState(['scatterAccount']),
     compiledMarkdown() {
       return markdownIt.render(this.post.content);
+    },
+    isLogined() {
+      return this.scatterAccount !== null;
+    },
+    isSupported() {
+      if ( isLogined() ) {
+        return true;
+      }
+      return false;
     },
   },
   data: () => ({
@@ -81,10 +112,22 @@ export default {
       this.post = data.data;
       console.info(data);
     },
-    goBack() {
-      this.$router.go(-1);
-    },
     share() {
+      let _this = this;
+      let clipboard = _this.copyBtn;
+      clipboard.on('success', function() {
+        alert('复制成功！');
+          //_this.$zaToast('复制成功！');
+          //toastvisible = true;
+      });
+      clipboard.on('error', function() {
+        alert('复制失败！');
+          //_this.$zaToast('复制失败！這不該出現！');
+          //toastvisible = true;
+      });
+    },
+    supershare() {
+      API.share(hash);
       let _this = this;
       let clipboard = _this.copyBtn;
       clipboard.on('success', function() {
@@ -100,7 +143,10 @@ export default {
     },
     toastClose(reason, event){
       console.log(reason, event);
-    }
+    },
+    goBack() {
+      this.$router.go(-1);
+    },
   },
   created() {
     this.getArticleData();

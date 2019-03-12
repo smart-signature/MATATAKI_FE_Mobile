@@ -40,7 +40,7 @@ const claim = (callback) => {
   });
 };
 
-function transferEOS({ memo = '', amount = 0 }) {
+function transferEOS({ amount = 0, memo = '', }) {
   if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
 
   eos().transaction({
@@ -67,41 +67,42 @@ function transferEOS({ memo = '', amount = 0 }) {
   });
 }
 
-function input() {
-  const amountStr = prompt('请输入打赏金额', '');
-  const amount = parseFloat(amountStr);
-  console.log(amount);
-  const shareaccount = getRefer();
-  let shareid = null;
-  if (shareaccount == null) {
-    transferEOS({
-      amount,
-      memo: `share ${signid}`,
-    });
-  } else {
-    for (let i = sharerows.length - 1; i >= 0; i--) {
-      if (sharerows[i].reader === shareaccount) {
-        shareid = sharerows[i].id;
-        break;
-      }
-    }
-
-    if (shareid != null) {
-      if (amount != null) {
-        transferEOS({
-          amount,
-          memo: `share ${signid} ${shareid}`,
-        });
-      }
-    } else if (amount != null) {
-      transferEOS({
-        amount,
-        memo: `share ${signid}`,
-      });
-    }
+function share_to_action({sign_id = null, upstream_share_id = null,}) {
+  if (sign_id == null ) {
+    alert('sign_id cant be null');
+    return ;
   }
+  const amountStr = prompt('请输入打赏金额(EOS)', '');
+  const amount = parseFloat(amountStr);
+  if (amount == null ) {
+    alert('amount cant be 0');
+    return ;
+  }
+
+  console.log(amount);
+  transferEOS({
+    amount,
+    memo: ( (upstream_share_id != null) ? `share ${sign_id} ${upstream_share_id}` : `share ${upstream_share_id}` ),
+  });
 }
 
+async function getSignbyhash({hash = null,}) {
+  if ( hash == null ) {
+    alert('hash cant be null');
+    return ;
+  }
+  const resp = await eos().get_table_rows({
+    json: true,
+    code: 'signature.bp',
+    scope: 'signature.bp',
+    table: 'signs',
+    table_key: 'hash',
+    lower_bound: hash,
+    limit: 1,
+  });
+  console.log(resp.rows);
+  return resp;
+}
 
 async function getSharesInfo() {
   const { rows } = await eos().getTableRows({
@@ -169,4 +170,4 @@ async function getMaxSignId() {
   return maxId;
 }
 
-export { publishOnChain, claim, transferEOS };
+export { publishOnChain, claim, transferEOS, share_to_action };
