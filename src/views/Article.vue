@@ -21,13 +21,18 @@
         <div class="markdown-body tac" v-html="compiledMarkdown"></div>
       </main>
     </div>
-    <div style="float:right">
-      <za-button
-         size='xl'
-         theme="primary"
-         @click="$router.push({name: 'Sheare'})">分享
+    <footer class="article-footer">
+      <div style="float:left;opacity:0.404;color: #000000;">
+          4.0k 已贊助
+      </div>
+      <za-button class="button-share"
+        style="float:right"   
+        size='xl'
+        theme="primary"
+        @click="share">分享
       </za-button>
-    </div>
+      <!-- <za-toast :visible.sync="toastvisible" @close="toastClose" :duration="1000">ok</za-toast> -->
+    </footer>
   </div>
 </template>
 
@@ -59,7 +64,16 @@ export default {
       content: '**Please wait for connection to IPFS**',
       desc: '',
     },
+    copyBtn: null, //存储初始化复制按钮事件
+    toastvisible: false,
   }),
+  mounted() {
+    this.copyBtn = new this.clipboard('.button-share',{
+      text: function(trigger) {
+        return window.location.href;
+      }
+    });
+  },
   methods: {
     async getArticleData() {
       const url = `https://ipfs.libra.bet/catJSON/${this.hash}`;
@@ -70,6 +84,23 @@ export default {
     goBack() {
       this.$router.go(-1);
     },
+    share() {
+      let _this = this;
+      let clipboard = _this.copyBtn;
+      clipboard.on('success', function() {
+        alert('复制成功！');
+          //_this.$zaToast('复制成功！');
+          //toastvisible = true;
+      });
+      clipboard.on('error', function() {
+        alert('复制失败！');
+          //_this.$zaToast('复制失败！這不該出現！');
+          //toastvisible = true;
+      });
+    },
+    toastClose(reason, event){
+      console.log(reason, event);
+    }
   },
   created() {
     this.getArticleData();
@@ -413,39 +444,7 @@ textarea {
 .tac address {
   display: none !important;
 }
-#share {
-  position: absolute;
-  z-index: 99;
-  top: 10px;
-  right: 10px;
-  text-transform: uppercase;
-  color: #777;
-  font-family: CustomSansSerif, "Lucida Grande", Arial, sans-serif;
-  padding: 5px 10px 0px 10px;
-  width: 50px;
-  height: 25px;
-
-  text-decoration: none;
-}
-#share:hover {
-  opacity: 0.8;
-}
 #button {
-  font-family: CustomSansSerif, "Lucida Grande", Arial, sans-serif;
-  font-weight: 600;
-  font-style: normal;
-  font-size: 17px;
-  color: #000;
-  text-decoration: none;
-  border: 2px solid #333;
-  border-radius: 16px;
-  text-transform: uppercase;
-  padding: 4px 12px;
-  margin: 0 0 15px;
-  background-color: #fff;
-  cursor: pointer;
-}
-#share1 {
   font-family: CustomSansSerif, "Lucida Grande", Arial, sans-serif;
   font-weight: 600;
   font-style: normal;
