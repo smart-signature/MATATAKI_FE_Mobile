@@ -15,14 +15,27 @@
         <p class="userstatu">关注：13 粉丝：20.8w</p>
       </div>
 
-      <Button v-if="username === currentUsername"
-              class="rightbutton" size="small" type="success" ghost @click="edit">
-        <div>编辑</div>
-      </Button>
-      <Button v-else
-              class="rightbutton" size="small" type="success" ghost @click="follow">
-        <div>关注</div>
-      </Button>
+      <div v-if="editing">
+        <Button class="rightbutton" size="small" type="success" 
+                ghost @click="cancel">
+          <div>取消</div>
+        </Button>
+        <Button class="rightbutton" size="small" type="success" 
+                ghost @click="save">
+          <div>保存</div>
+        </Button>  
+      </div>    
+
+      <div v-else>
+        <Button v-if="username === currentUsername"
+                class="rightbutton" size="small" type="success" ghost @click="edit">
+          <div>编辑</div>
+        </Button>
+        <Button v-else
+                class="rightbutton" size="small" type="success" ghost @click="follow">
+          <div>关注</div>
+        </Button>
+      </div>
 
     </div>
     <div class="centercard" v-if="username === currentUsername">
@@ -80,6 +93,13 @@ export default {
     },
     edit() {
       console.log('editing');
+      this.editing = !this.editing;
+    },
+    cancel() {
+      this.editing = !this.editing;
+    },
+    save() {
+      alert('save');
       this.editing = !this.editing;
     },
     follow() {
