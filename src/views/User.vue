@@ -13,10 +13,14 @@
         <p class="username">{{username}}</p>
         <p class="userstatu">关注：13 粉丝：20.8w</p>
       </div>
-      <Button class="rightbutton" size="small" type="success" ghost @click="edit">
-        <div v-if="username === currentUsername">编辑</div>
-        <div v-else>关注</div>
+
+      <Button v-if="username === currentUsername" class="rightbutton" size="small" type="success" ghost @click="edit">
+        <div>编辑</div>
       </Button>
+      <Button v-else class="rightbutton" size="small" type="success" ghost @click="follow">
+        <div>关注</div>
+      </Button>
+
     </div>
     <div class="centercard" v-if="username === currentUsername">
       <Row type="flex" justify="center" class="code-row-bg">
@@ -70,10 +74,13 @@ export default {
     goBack() {
       this.$router.go(-1);
     },
-    edit(){
+    edit() {
       console.log("editing");
       this.editing = !this.editing;
-    }
+    },
+    follow() {
+      alert("follow");
+    },
     // ...mapActions(["loginScatterAsync"]),
     // loginWithWallet() {
     //   this.loginScatterAsync();
