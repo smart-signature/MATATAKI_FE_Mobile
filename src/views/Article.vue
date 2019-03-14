@@ -86,13 +86,14 @@ export default {
       }
       return false;
     },
+    updateTitle() {
+
+    },
     support() {
 
     },
   },
   data: () => ({
-    title: 'title',
-    author: 'author',
     post: {
       author: 'Loading...',
       title: 'Loading...',
@@ -102,6 +103,11 @@ export default {
     copyBtn: null, // 存储初始化复制按钮事件
     toastvisible: false,
   }),
+  watch: {
+    post({author, title}) {
+      document.title = `${title} by ${author} - Smart Signature`;
+    }
+  },
   mounted() {
     this.copyBtn = new this.clipboard('.button-share', {
       text(trigger) {
@@ -154,7 +160,7 @@ export default {
   },
   created() {
     this.getArticleData();
-    document.title = `${this.title} - Smart Signature`;
+    document.title = `正在加载文章 - Smart Signature`;
   },
 };
 </script>
