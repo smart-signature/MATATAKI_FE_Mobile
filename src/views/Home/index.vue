@@ -6,6 +6,8 @@
       <!-- <div style="float:left">
         <img src="/img/Andoromeda logo.png" alt="Andoromeda logo">
         Andoromeda</div> -->
+      <Button class="publish" @click="$router.push({name: 'Publish'})"
+              ><za-icon class="icon" theme="warning" :type="add"/></Button>
 
       <!-- <div class="logined" v-if="isLogined">
           <p
@@ -24,14 +26,13 @@
             :showCancel="false" @cancel="cancelCb">
           </za-actionsheet>
         </div> -->
-      <br />
-      <br />
-      <h1 class="title">-SmartSignature-</h1>
-      <h2 class="subtitle">首个EOS去中心化智能签名项目</h2>
-      <br>
-      <Button @click="$router.push({name: 'About'})">规则说明</Button>
+      <div class="titles">
+        <h1 class="title">-SmartSignature-</h1>
+        <h2 class="subtitle">首个EOS去中心化智能签名项目</h2>
+        <Button @click="$router.push({name: 'About'})" style="margin-top: 17px;">规则说明</Button>
+      </div>
     </div>
-    <MyBanner />
+    <MyBanner/>
     <ArticlesList ref="ArticlesList"/>
   </div>
 </template>
@@ -109,6 +110,10 @@ export default {
   text-align: center;
   align-items: center;
   vertical-align: middle;
+  margin-bottom: 28px;
+}
+.titles {
+  margin: 63px auto;
 }
 h1.title {
   font-size: 32px;
@@ -127,5 +132,16 @@ h2.subtitle {
   color: rgba(255, 255, 255, 1);
   line-height: 18px;
   letter-spacing: 1px;
+  margin-top: 6px;
+}
+Button.publish {
+  color: rgb(245, 45, 45);
+  float: right;
+  width: 27px;
+  height: 27px;
+  margin-right: 45px;
+}
+.MyBanner {
+  margin-top: 28px;
 }
 </style>
