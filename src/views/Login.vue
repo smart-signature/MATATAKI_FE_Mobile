@@ -52,7 +52,11 @@ export default {
         const suggestNetworkResult = await this.suggestNetworkAsync();
         await this.loginScatterAsync();
       } catch (e) {
-        console.warn('Unable to connect wallets');
+        // console.warn('Unable to connect wallets');
+        this.$Modal.error({
+            title: "无法与你的钱包建立链接",
+            content: "请检查钱包是否打开并解锁"
+        });
       }
     },
   },
