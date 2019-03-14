@@ -6,8 +6,9 @@
       <!-- <div style="float:left">
         <img src="/img/Andoromeda logo.png" alt="Andoromeda logo">
         Andoromeda</div> -->
-      <Button class="publish" @click="$router.push({name: 'Publish'})"
-              ><za-icon class="icon" theme="warning" :type="add"/></Button>
+      <Button class="publish" @click="$router.push({name: 'Publish'})">
+        <za-icon class="publish-icon" type="add"/>
+      </Button>
 
       <!-- <div class="logined" v-if="isLogined">
           <p
@@ -135,11 +136,15 @@ h2.subtitle {
   margin-top: 6px;
 }
 Button.publish {
-  color: rgb(245, 45, 45);
+  background: #478970;
+  color: rgb(255, 255, 255);
   float: right;
   width: 27px;
   height: 27px;
   margin-right: 45px;
+}
+.publish-icon{
+  margin: -5px -6px;
 }
 .MyBanner {
   margin-top: 28px;
