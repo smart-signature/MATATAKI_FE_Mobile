@@ -72,7 +72,7 @@ const API = {
     );
   },
   async withdraw() {
-    if (currentEOSAccount() == null) { 
+    if (currentEOSAccount() == null) {
       alert('请先登录');
       return;
     }
@@ -84,7 +84,7 @@ const API = {
       },
     );
   },
-  async support({amount = null, hash = null, share_id = null,}) {
+  async support({ amount = null, hash = null, share_id = null }) {
     if (currentEOSAccount() == null) { 
       alert('请先登录'); 
       return;
@@ -108,19 +108,21 @@ const API = {
     return rows;
   },
   getPublicKey() {
-    return ScatterJS.scatter.getPublicKey('eos').then(publicKey => {
+    return ScatterJS.scatter.getPublicKey('eos').then((publicKey) => {
       console.log(publicKey);
-      return publicKey ;
-    }).catch(error => {
-      //...
+      return publicKey;
+    }).catch((error) => {
+      // todo(minakokojima): better error message.
+      alert(error);
     });
   },
-  getArbitrarySignatureAsync({publicKey, data}) {
-    return ScatterJS.scatter.getArbitrarySignature({publicKey, data}).then(signature => {
-      console.log({publicKey, data, signature});
-      return signature ;
-    }).catch(error => {
-      //...
+  getArbitrarySignatureAsync({ publicKey, data }) {
+    return ScatterJS.scatter.getArbitrarySignature({ publicKey, data }).then((signature) => {
+      console.log({ publicKey, data, signature });
+      return signature;
+    }).catch((error) => {
+      // todo(minakokojima): better error message.
+      alert(error);
     });
   },
 };
