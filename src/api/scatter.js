@@ -72,7 +72,10 @@ const API = {
     );
   },
   async withdraw() {
-    if (currentEOSAccount() == null) { alert('请先登录'); }
+    if (currentEOSAccount() == null) { 
+      alert('请先登录'); 
+      return;
+    }
     const contract = await eos().contract('signature.bp');
     await contract.claim(
       currentEOSAccount().name,
@@ -81,13 +84,17 @@ const API = {
       },
     );
   },
-  async share({hash = null, upstream_share_id = null,}) {
-    if (currentEOSAccount() == null) { alert('请先登录'); }
-    const sign = getSignbyhash(hash);
+  async support({amount = null, hash = null, share_id = null,}) {
+    if (currentEOSAccount() == null) { 
+      alert('请先登录'); 
+      return;
+    }
     const contract = await eos().contract('signature.bp');
-    await contract.share_to_action({
+    const sign = await contract.getSignbyhash(hash);
+    await contract.support({
+      amount,
       sign_id: sign.id,
-      upstream_share_id,
+      share_id,
     });
   },
   async getPlayerIncome(name) {

@@ -67,22 +67,19 @@ function transferEOS({ amount = 0, memo = '', }) {
   });
 }
 
-function share_to_action({sign_id = null, upstream_share_id = null,}) {
-  if (sign_id == null ) {
-    alert('sign_id cant be null');
-    return ;
-  }
-  const amountStr = prompt('请输入打赏金额(EOS)', '');
-  const amount = parseFloat(amountStr);
-  if (amount == null ) {
+function support({amount = null, sign_id = null, share_id = null,}) {
+  if (amount == null) {
     alert('amount cant be 0');
     return ;
   }
-
-  console.log(amount);
+  if (sign_id == null) {
+    alert('sign_id cant be null');
+    return ;
+  }
+  const upstream_share_id = share_id;
   transferEOS({
     amount,
-    memo: ( (upstream_share_id != null) ? `share ${sign_id} ${upstream_share_id}` : `share ${upstream_share_id}` ),
+    memo: ( (upstream_share_id != null) ? `share ${sign_id} ${upstream_share_id}` : `share ${sign_id}` ),
   });
 }
 
@@ -170,4 +167,4 @@ async function getMaxSignId() {
   return maxId;
 }
 
-export { publishOnChain, claim, transferEOS, share_to_action };
+export { publishOnChain, claim, transferEOS, support, getSignbyhash };
