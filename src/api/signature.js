@@ -1,7 +1,9 @@
 import { eos, currentEOSAccount as currentAccount } from './scatter';
 
 const publishOnChain = async ({hash = '',}) => {
-  if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
+  if (currentAccount() == null) { 
+    alert('请先登录'); 
+    throw new Error('NOT-LOGINED'); }
   return eos().transaction({
     actions: [
       {
@@ -12,11 +14,11 @@ const publishOnChain = async ({hash = '',}) => {
           permission: currentAccount().authority,
         }],
         data: {
-          sign:
+          'sign':
           {
-            id: 0, 
             author: currentAccount().name,
             fission_factor: 2000,
+            id: 0, /* 一定會被覆蓋 */
             ipfs_hash: hash,
             /* 下面兩個需要一個預設值 */
             public_key: 'EOS5P9HXdVTcAVMph4ZppDKBMkBuT6ihnkLqTUrVFBtGR94cPjykJ',

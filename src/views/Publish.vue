@@ -48,7 +48,9 @@ export default {
         });
         const { code, hash } = data;
         if (code === 200) {
-          const { transaction_id } = await publishOnChain(hash);
+          alert('發布到鏈上... (這裡需要进度条)');
+          console.log('Push action to signature.bp...');
+          const { transaction_id } = await publishOnChain({hash,});
           const data = await publishArticle({
             hash, title, author, transactionId: transaction_id, accountName: currentUsername,
           });
@@ -74,6 +76,10 @@ export default {
       console.info(filename);
       console.info(imgfile);
     },
+    test() {
+      publishOnChain( {hash:'QmfJsZmbsFcaNEBejP6HcXQEXycVXKfFwbMM3eju4VdsN3'});
+      // transferEOS({amount: 0, memo: '', });
+    }
 
   },
 };
