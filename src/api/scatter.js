@@ -81,7 +81,7 @@ const API = {
       },
     );
   },
-  async share({hash = null, upstream_share_id = null,}) {
+  async share({ hash = null, upstream_share_id = null }) {
     if (currentEOSAccount() == null) { alert('请先登录'); }
     const sign = getSignbyhash(hash);
     const contract = await eos().contract('signature.bp');

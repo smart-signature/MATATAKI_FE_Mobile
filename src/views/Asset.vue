@@ -24,6 +24,7 @@
 
 <script>
 import { AssetCard } from '@/components/';
+
 export default {
   name: 'Asset',
   props: ['username'],
@@ -35,12 +36,12 @@ export default {
         // sample
         quantity: '+ 10.2333 EOS',
         timestamp: Date.now(),
-        },
-        {
+      },
+      {
         // sample
         quantity: '+ 100.2333 EOS',
         timestamp: Date.now(),
-        },
+      },
       ],
       activeNameSwipe: '全部',
       selectedLabelDefault: '全部',

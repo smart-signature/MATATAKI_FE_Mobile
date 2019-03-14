@@ -40,7 +40,7 @@ const claim = (callback) => {
   });
 };
 
-function transferEOS({ amount = 0, memo = '', }) {
+function transferEOS({ amount = 0, memo = '' }) {
   if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
 
   eos().transaction({
@@ -67,29 +67,29 @@ function transferEOS({ amount = 0, memo = '', }) {
   });
 }
 
-function share_to_action({sign_id = null, upstream_share_id = null,}) {
-  if (sign_id == null ) {
+function share_to_action({ sign_id = null, upstream_share_id = null }) {
+  if (sign_id == null) {
     alert('sign_id cant be null');
-    return ;
+    return;
   }
   const amountStr = prompt('请输入打赏金额(EOS)', '');
   const amount = parseFloat(amountStr);
-  if (amount == null ) {
+  if (amount == null) {
     alert('amount cant be 0');
-    return ;
+    return;
   }
 
   console.log(amount);
   transferEOS({
     amount,
-    memo: ( (upstream_share_id != null) ? `share ${sign_id} ${upstream_share_id}` : `share ${upstream_share_id}` ),
+    memo: ((upstream_share_id != null) ? `share ${sign_id} ${upstream_share_id}` : `share ${upstream_share_id}`),
   });
 }
 
-async function getSignbyhash({hash = null,}) {
-  if ( hash == null ) {
+async function getSignbyhash({ hash = null }) {
+  if (hash == null) {
     alert('hash cant be null');
-    return ;
+    return;
   }
   const resp = await eos().get_table_rows({
     json: true,
@@ -170,4 +170,6 @@ async function getMaxSignId() {
   return maxId;
 }
 
-export { publishOnChain, claim, transferEOS, share_to_action };
+export {
+  publishOnChain, claim, transferEOS, share_to_action,
+};
