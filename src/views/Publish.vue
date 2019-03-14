@@ -48,7 +48,7 @@ export default {
         });
         const { code, hash } = data;
         if (code === 200) {
-          const { transaction_id } = await publishOnChain(hash);
+          const { transaction_id } = await publishOnChain({ hash });
           const data = await publishArticle({
             hash, title, author, transactionId: transaction_id, accountName: currentUsername,
           });
