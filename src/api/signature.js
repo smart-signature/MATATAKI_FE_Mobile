@@ -48,7 +48,7 @@ const claim = (callback) => {
   });
 };
 
-function transferEOS({ amount = 0, memo = '', }) {
+function transferEOS({ amount = 0, memo = '' }) {
   if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
 
   eos().transaction({
@@ -91,10 +91,10 @@ function support({amount = null, sign_id = null, share_id = null,}) {
   });
 }
 
-async function getSignbyhash({hash = null,}) {
-  if ( hash == null ) {
+async function getSignbyhash({ hash = null }) {
+  if (hash == null) {
     alert('hash cant be null');
-    return ;
+    return;
   }
   const resp = await eos().get_table_rows({
     json: true,

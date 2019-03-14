@@ -20,8 +20,8 @@ export default {
       return moment(this.article.time).fromNow();
     },
     hash() {
-      return this.article.articleUrl.substr(-46)
-    }
+      return this.article.articleUrl.substr(-46);
+    },
   },
 };
 </script>

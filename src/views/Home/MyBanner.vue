@@ -9,16 +9,16 @@
           </p>
         </div>
         <div class="not-login-yet" v-else>
-          <p>欢迎来到 Smart Signature</p>
-          <za-button
-            block
-            theme="primary"
-            :disabled="!isScatterConnected"
-            @click="$router.push({name: 'Login'})"
-          >{{ isScatterConnected ? '使用钱包登录' : '没有检测到钱包' }}</za-button>
+         <Row>
+            <Col span="14"><p class="login-notification">登录即可分享和发布文章！ 看好文，上智能签名！</p></Col>
+            <Col span="10">
+              <Button class="login-btn" ghost type="text"
+              @click="loginWithWallet"
+              style="float: right">立即登录</Button>
+            </Col>
+          </Row>
         </div>
       </div>
-      <za-button theme='warning' style="float: right" block bordered @click="$router.push({name: 'About'})">玩法介绍</za-button>
     </div>
 </template>
 
@@ -41,9 +41,34 @@ export default {
 
   },
   methods: {
-    ...mapActions(['loginScatterAsync']),
+    ...mapActions([
+      'connectScatterAsync',
+      'suggestNetworkAsync',
+      'loginScatterAsync',
+      'logoutScatterAsync']),
     toUserPage(username) {
       this.$router.push({ name: 'User', params: { username } });
+    },
+    async loginWithWallet() {
+      if (!this.isScatterConnected) {
+        this.$Modal.error({
+          title: '无法与你的钱包建立链接',
+          content: '请检查钱包是否打开并解锁',
+        });
+        return;
+      }
+      try {
+        // await this.connectScatterAsync();
+        // Scatter 10.0 need to suggestNetwork, if not, scatter is not working on login
+        await this.suggestNetworkAsync();
+        await this.loginScatterAsync();
+      } catch (e) {
+        console.warn('Unable to connect wallets');
+        this.$Modal.error({
+          title: '无法与你的钱包建立链接',
+          content: '请检查钱包是否打开并解锁',
+        });
+      }
     },
     handleClick(tab, event) {
       console.log(tab, event);
@@ -56,11 +81,11 @@ export default {
 <style scoped>
 .my-banner {
   margin: auto;
-  /*margin-top: -32px;*/
+  margin-top: -32px;
   text-align: center;
   max-width: 335px;
   /* margin: -32px 20px 0 20px; */
-  height: 220px;
+  height: 110px;
   padding: 8px;
   background: rgba(255, 255, 255, 1);
   box-shadow: 0px 5px 5px 0px rgba(213, 213, 213, 0.5);
@@ -80,5 +105,19 @@ export default {
   color: rgba(0, 0, 0, 1);
   line-height: 22px;
   letter-spacing: 1px;
+}
+
+.login-notification {
+  font-size: 14px;
+  font-weight:bold;
+  /* line-height:10px; */
+  color:rgba(39,39,39,1);
+}
+.login-btn, .login-btn:focus, .login-btn:hover {
+  color: #FFF;
+  background-color: #000;
+  border-radius: 2px;
+  font-size:16px;
+  letter-spacing: 2px;
 }
 </style>

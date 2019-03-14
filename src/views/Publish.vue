@@ -24,7 +24,7 @@ const mdit = mavonEditor.getMarkdownIt();
 export default {
   name: 'New-Post',
   components: {
-    'mavon-editor': mavonEditor
+    'mavon-editor': mavonEditor,
   },
   data: () => ({
     title: '',
