@@ -57,6 +57,7 @@
 </template>
 
 <script>
+import { mapState, mapGetters } from 'vuex';
 import axios from 'axios';
 import API from '../api/scatter.js';
 import { mavonEditor } from 'mavon-editor';
@@ -80,10 +81,13 @@ export default {
       return this.scatterAccount !== null;
     },
     isSupported() {
-      if ( isLogined() ) {
+      if ( this.scatterAccount !== null ) {
         return true;
       }
       return false;
+    },
+    support() {
+
     },
   },
   data: () => ({
