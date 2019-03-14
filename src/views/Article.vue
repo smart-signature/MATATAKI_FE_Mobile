@@ -81,15 +81,9 @@ export default {
       return this.scatterAccount !== null;
     },
     isSupported() {
-      if (this.scatterAccount !== null) {
-        return true;
-      }
-      return false;
+      return false; // 
     },
     updateTitle() {
-
-    },
-    support() {
 
     },
   },
@@ -121,6 +115,14 @@ export default {
       const { data } = await axios.get(url);
       this.post = data.data;
       console.info(data);
+    },
+    support() {
+      const amountStr = prompt('请输入打赏金额(EOS)', '');
+      const amount = parseFloat(amountStr);
+      console.log(amount);
+      const share_id = null; // sample
+      const hash = this.hash;
+      API.support({amount, hash, share_id});
     },
     share() {
       const _this = this;
