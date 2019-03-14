@@ -8,15 +8,35 @@
     </za-nav-bar>
     <div class="usercard" >
       <img width="50px" class="userpic" src="../assets/logo.png" />
-      <img style="position:absolute; z-index:1;left:20px;" width="50px" src="/img/camera.png" v-if="editing"/>
+      <img style="position:absolute; z-index:1;left:20px;"
+           width="50px" src="/img/camera.png" v-if="editing"/>
       <div class="texts">
         <p class="username">{{username}}</p>
         <p class="userstatu">关注：13 粉丝：20.8w</p>
       </div>
-      <Button class="rightbutton" size="small" type="success" ghost @click="edit">
-        <div v-if="username === currentUsername">编辑</div>
-        <div v-else>关注</div>
-      </Button>
+
+      <div v-if="editing">
+        <Button class="rightbutton" size="small" type="success" 
+                ghost @click="cancel">
+          <div>取消</div>
+        </Button>
+        <Button class="rightbutton" size="small" type="success" 
+                ghost @click="save">
+          <div>保存</div>
+        </Button>  
+      </div>    
+
+      <div v-else>
+        <Button v-if="username === currentUsername"
+                class="rightbutton" size="small" type="success" ghost @click="edit">
+          <div>编辑</div>
+        </Button>
+        <Button v-else
+                class="rightbutton" size="small" type="success" ghost @click="follow">
+          <div>关注</div>
+        </Button>
+      </div>
+
     </div>
     <div class="centercard" v-if="username === currentUsername">
       <Row type="flex" justify="center" class="code-row-bg">
@@ -35,7 +55,8 @@
           </Col>
       </Row>
     </div>
-    <ArticlesList v-if="username !== currentUsername" ref="ArticlesList"/>
+    <!-- todo(minakokojima): 顯示該作者發表的文章。 !--> >
+    <ArticlesList ref="ArticlesList"/>
   </div>
 </template>
 
@@ -70,10 +91,20 @@ export default {
     goBack() {
       this.$router.go(-1);
     },
-    edit(){
-      console.log("editing");
+    edit() {
+      console.log('editing');
       this.editing = !this.editing;
-    }
+    },
+    cancel() {
+      this.editing = !this.editing;
+    },
+    save() {
+      alert('save');
+      this.editing = !this.editing;
+    },
+    follow() {
+      alert('follow');
+    },
     // ...mapActions(["loginScatterAsync"]),
     // loginWithWallet() {
     //   this.loginScatterAsync();
