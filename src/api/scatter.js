@@ -112,7 +112,7 @@ const API = {
       console.log(publicKey);
       return publicKey ;
     }).catch(error => {
-      //...
+      console.error('getPublicKey 失敗', error);
     });
   },
   getArbitrarySignatureAsync({publicKey, data}) {
@@ -120,7 +120,7 @@ const API = {
       console.log({publicKey, data, signature});
       return signature ;
     }).catch(error => {
-      //...
+      console.error('getArbitrarySignature 失敗', error);
     });
   },
 };
