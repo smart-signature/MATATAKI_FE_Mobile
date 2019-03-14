@@ -120,9 +120,9 @@ export default {
       const amountStr = prompt('请输入打赏金额(EOS)', '');
       const amount = parseFloat(amountStr);
       console.log(amount);
-      const share_id = null; // sample
+      const shareId = null; // sample
       const hash = this.hash;
-      API.support({amount, hash, share_id});
+      API.support({ amount, hash, shareId });
     },
     share() {
       const clipboard = this.copyBtn;
