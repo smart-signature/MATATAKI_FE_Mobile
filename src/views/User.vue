@@ -16,15 +16,15 @@
       </div>
 
       <div v-if="editing">
-        <Button class="rightbutton" size="small" type="success" 
+        <Button class="rightbutton" size="small" type="success"
                 ghost @click="cancel">
           <div>取消</div>
         </Button>
-        <Button class="rightbutton" size="small" type="success" 
+        <Button class="rightbutton" size="small" type="success"
                 ghost @click="save">
           <div>保存</div>
-        </Button>  
-      </div>    
+        </Button>
+      </div>
 
       <div v-else>
         <Button v-if="username === currentUsername"

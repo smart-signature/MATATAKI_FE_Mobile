@@ -53,10 +53,10 @@ export default {
     async loginWithWallet() {
       if (!this.isScatterConnected) {
         this.$Modal.error({
-            title: "无法与你的钱包建立链接",
-            content: "请检查钱包是否打开并解锁"
+          title: '无法与你的钱包建立链接',
+          content: '请检查钱包是否打开并解锁',
         });
-        return ;
+        return;
       }
       try {
         // await this.connectScatterAsync();
@@ -66,8 +66,8 @@ export default {
       } catch (e) {
         console.warn('Unable to connect wallets');
         this.$Modal.error({
-            title: "无法与你的钱包建立链接",
-            content: "请检查钱包是否打开并解锁"
+          title: '无法与你的钱包建立链接',
+          content: '请检查钱包是否打开并解锁',
         });
       }
     },
@@ -122,4 +122,3 @@ export default {
   letter-spacing: 2px;
 }
 </style>
-

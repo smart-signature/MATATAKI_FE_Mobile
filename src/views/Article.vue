@@ -31,7 +31,7 @@
             size='xl'
             theme="primary"
             disabled>支持過了
-          </za-button> 
+          </za-button>
           <za-button class="button-supershare"
             size='xl'
             theme="primary"
@@ -43,7 +43,7 @@
             size='xl'
             theme="primary"
             @click="support">支持
-          </za-button> 
+          </za-button>
           <za-button class="button-share"
             size='xl'
             theme="primary"
@@ -59,9 +59,9 @@
 <script>
 import { mapState, mapGetters } from 'vuex';
 import axios from 'axios';
-import API from '../api/scatter.js';
 import { mavonEditor } from 'mavon-editor';
-import "mavon-editor/dist/css/index.css"
+import API from '../api/scatter.js';
+import 'mavon-editor/dist/css/index.css';
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
 // markdownIt.set({ breaks: false });
@@ -70,7 +70,7 @@ export default {
   name: 'Article',
   props: ['hash'],
   components: {
-    mavonEditor
+    mavonEditor,
   },
   computed: {
     ...mapState(['scatterAccount']),
@@ -81,7 +81,7 @@ export default {
       return this.scatterAccount !== null;
     },
     isSupported() {
-      if ( this.scatterAccount !== null ) {
+      if (this.scatterAccount !== null) {
         return true;
       }
       return false;
@@ -99,14 +99,14 @@ export default {
       content: '**Please wait for connection to IPFS**',
       desc: '',
     },
-    copyBtn: null, //存储初始化复制按钮事件
+    copyBtn: null, // 存储初始化复制按钮事件
     toastvisible: false,
   }),
   mounted() {
-    this.copyBtn = new this.clipboard('.button-share',{
-      text: function(trigger) {
+    this.copyBtn = new this.clipboard('.button-share', {
+      text(trigger) {
         return window.location.href;
-      }
+      },
     });
   },
   methods: {
@@ -117,35 +117,35 @@ export default {
       console.info(data);
     },
     share() {
-      let _this = this;
-      let clipboard = _this.copyBtn;
-      clipboard.on('success', function() {
+      const _this = this;
+      const clipboard = _this.copyBtn;
+      clipboard.on('success', () => {
         alert('复制成功！');
-          //_this.$zaToast('复制成功！');
-          //toastvisible = true;
+        // _this.$zaToast('复制成功！');
+        // toastvisible = true;
       });
-      clipboard.on('error', function() {
+      clipboard.on('error', () => {
         alert('复制失败！');
-          //_this.$zaToast('复制失败！這不該出現！');
-          //toastvisible = true;
+        // _this.$zaToast('复制失败！這不該出現！');
+        // toastvisible = true;
       });
     },
     supershare() {
       API.share(hash);
-      let _this = this;
-      let clipboard = _this.copyBtn;
-      clipboard.on('success', function() {
+      const _this = this;
+      const clipboard = _this.copyBtn;
+      clipboard.on('success', () => {
         alert('复制成功！');
-          //_this.$zaToast('复制成功！');
-          //toastvisible = true;
+        // _this.$zaToast('复制成功！');
+        // toastvisible = true;
       });
-      clipboard.on('error', function() {
+      clipboard.on('error', () => {
         alert('复制失败！');
-          //_this.$zaToast('复制失败！這不該出現！');
-          //toastvisible = true;
+        // _this.$zaToast('复制失败！這不該出現！');
+        // toastvisible = true;
       });
     },
-    toastClose(reason, event){
+    toastClose(reason, event) {
       console.log(reason, event);
     },
     goBack() {
