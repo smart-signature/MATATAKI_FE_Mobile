@@ -30,7 +30,7 @@
           <za-button class="button-support"
             size='xl'
             theme="primary"
-            disabled>支持過了
+            disabled>支持
           </za-button>
           <za-button class="button-supershare"
             size='xl'
@@ -120,13 +120,12 @@ export default {
       const amountStr = prompt('请输入打赏金额(EOS)', '');
       const amount = parseFloat(amountStr);
       console.log(amount);
-      const share_id = null; // sample
+      const shareId = null; // sample
       const hash = this.hash;
-      API.support({amount, hash, share_id});
+      API.support({ amount, hash, shareId });
     },
     share() {
-      const _this = this;
-      const clipboard = _this.copyBtn;
+      const clipboard = this.copyBtn;
       clipboard.on('success', () => {
         alert('复制成功！');
         // _this.$zaToast('复制成功！');
@@ -139,9 +138,8 @@ export default {
       });
     },
     supershare() {
-      API.share(hash);
-      const _this = this;
-      const clipboard = _this.copyBtn;
+      API.share(this.hash);
+      const clipboard = this.copyBtn;
       clipboard.on('success', () => {
         alert('复制成功！');
         // _this.$zaToast('复制成功！');
@@ -162,7 +160,7 @@ export default {
   },
   created() {
     this.getArticleData();
-    document.title = `正在加载文章 - Smart Signature`;
+    document.title = '正在加载文章 - Smart Signature';
   },
 };
 </script>
