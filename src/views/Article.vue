@@ -47,7 +47,7 @@
           <za-button class="button-share"
             size='xl'
             theme="primary"
-            @click="share">一般分享
+            @click="share">分享
           </za-button>
         </div>
       </div>
@@ -81,7 +81,8 @@ export default {
       return this.scatterAccount !== null;
     },
     isSupported() {
-      return false; // 
+      // todo(minakokojima): to be implemented.
+      return false; 
     },
     updateTitle() {
 
@@ -104,7 +105,7 @@ export default {
   },
   mounted() {
     this.copyBtn = new this.clipboard('.button-share', {
-      text(trigger) {
+      text() {
         return window.location.href;
       },
     });
@@ -120,8 +121,9 @@ export default {
       const amountStr = prompt('请输入打赏金额(EOS)', '');
       const amount = parseFloat(amountStr);
       console.log(amount);
-      const shareId = null; // sample
-      const hash = this.hash;
+      // todo(minakokojima): fetch correct shareId
+      const shareId = 0;
+      const { hash } = this;
       API.support({ amount, hash, shareId });
     },
     share() {
