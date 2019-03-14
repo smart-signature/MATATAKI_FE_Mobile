@@ -44,6 +44,9 @@ import ArticlesList from './ArticlesList.vue';
 export default {
   name: 'Home',
   components: { ArticlesList, MyBanner },
+  created() {
+    document.title = "首页 - SmartSignature"
+  },
   computed: {
     ...mapState(['scatterAccount']),
     ...mapGetters(['currentUsername']),

@@ -4,7 +4,7 @@
       <div slot="left">
         <za-icon theme="primary" type="arrow-left" @click="goBack"></za-icon>
       </div>
-      <div slot="title" v-if="username === currentUsername">个人主页</div>
+      <div slot="title" v-if="isMe">个人主页</div>
     </za-nav-bar>
     <div class="usercard" >
       <img width="50px" class="userpic" src="../assets/logo.png" />
@@ -27,7 +27,7 @@
       </div>
 
       <div v-else>
-        <Button v-if="username === currentUsername"
+        <Button v-if="isMe"
                 class="rightbutton" size="small" type="success" ghost @click="edit">
           <div>编辑</div>
         </Button>
@@ -38,7 +38,7 @@
       </div>
 
     </div>
-    <div class="centercard" v-if="username === currentUsername">
+    <div class="centercard" v-if="isMe">
       <Row type="flex" justify="center" class="code-row-bg">
           <Col span="5">
             <router-link :to="{ name: 'Asset', params: { username }}">
@@ -80,6 +80,10 @@ export default {
     ifLogined() {
       return this.currentUsername !== null;
     },
+    isMe() {
+      const { username, currentUsername } = this
+      return username === currentUsername
+    }
   },
   methods: {
     withdraw() {
@@ -113,6 +117,8 @@ export default {
   async created() {
     const playerincome = await this.getPlayerIncome();
     this.playerincome = playerincome[0] || 0;
+    const user = this.isMe ? "我" : this.username
+    document.title = `${this.username} 的用户页 - SmartSignature`
   },
 };
 </script>
