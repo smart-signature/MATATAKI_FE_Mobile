@@ -7,12 +7,12 @@
         <img src="/img/Andoromeda logo.png" alt="Andoromeda logo">
         Andoromeda</div> -->
 
-      <div class="logined" v-if="isLogined">
+      <!-- <div class="logined" v-if="isLogined">
           <p
             @click="$router.push({ name: 'User', params: {username: currentUsername } })"
             class="username"
           >{{currentUsername}}</p>
-        </div>
+        </div> -->
       <!-- <div class="not-login-yet" style="float:right" v-else>
           <za-button
             size='xs'
@@ -28,6 +28,8 @@
       <br />
       <h1 class="title">-SmartSignature-</h1>
       <h2 class="subtitle">首个EOS去中心化智能签名项目</h2>
+      <br>
+      <Button @click="$router.push({name: 'About'})">规则说明</Button>
     </div>
     <MyBanner />
     <ArticlesList ref="ArticlesList"/>
@@ -100,7 +102,7 @@ export default {
   background: #478970;
   color: #fff;
   padding-top: 10px;
-  height: 155px;
+  height: 205px;
   text-align: center;
   align-items: center;
   vertical-align: middle;
