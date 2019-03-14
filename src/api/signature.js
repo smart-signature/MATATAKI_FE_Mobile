@@ -12,8 +12,16 @@ const publishOnChain = async () => {
           permission: currentAccount().authority,
         }],
         data: {
-          from: currentAccount().name,
-          fission_factor: 2000,
+          sign:
+          {
+            id: 0, 
+            author: currentAccount().name,
+            fission_factor: 2000,
+            ipfs_hash: '',
+            /* 下面兩個需要一個預設值 */
+            public_key: 'EOS5P9HXdVTcAVMph4ZppDKBMkBuT6ihnkLqTUrVFBtGR94cPjykJ',
+            signature: 'SIG_K1_KZU9PyXP8YAePjCfCcmBjGHARkvTVDjKpKvVgS6XL8o2FXTXUdhP3rqrL38dJYgJo2WNBdYubsY9LKTo47RUUE4N3ZHjZQ'
+          }
         },
       },
     ],
