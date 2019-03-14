@@ -47,7 +47,7 @@
           <za-button class="button-share"
             size='xl'
             theme="primary"
-            @click="share">一般分享
+            @click="share">分享
           </za-button>
         </div>
       </div>
