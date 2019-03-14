@@ -45,14 +45,11 @@ export default {
     return {
       refreshing: false,
       articles: [],
-      activeNameSwipe: '订阅更新',
-      selectedLabelDefault: '订阅更新',
+      activeNameSwipe: 'TimeLine',
+      selectedLabelDefault: 'TimeLine',
       tabs: [
         {
-          label: '订阅更新',
-        },
-        {
-          label: '最受欢迎',
+          label: 'TimeLine',
         },
       ],
     };

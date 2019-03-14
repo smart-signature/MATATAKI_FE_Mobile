@@ -2,11 +2,15 @@
     <div class="my-banner">
       <div class="my-stat">
         <div class="logined" v-if="isLogined">
-          <p @click="toUserPage(currentUsername)" class="username">{{currentUsername}}</p>
+          <img src="/img/20190314205225.jpg" class="round_icon">
+          <Button class="my-user-page" ghost type="text"
+              @click="toUserPage(currentUsername)">我的主页</Button>
+          <p class="username">{{currentUsername}}</p>
           <p class="my-balance">
             {{eosBalance}}
             <span class="coin-symbol">EOS</span>
           </p>
+
         </div>
         <div class="not-login-yet" v-else>
          <Row>
@@ -18,7 +22,9 @@
             </Col>
           </Row>
         </div>
+
       </div>
+
     </div>
 </template>
 
@@ -84,21 +90,47 @@ export default {
   margin-top: -32px;
   text-align: center;
   max-width: 335px;
+  max-height: 76px;
   /* margin: -32px 20px 0 20px; */
-  height: 110px;
   padding: 8px;
   background: rgba(255, 255, 255, 1);
   box-shadow: 0px 5px 5px 0px rgba(213, 213, 213, 0.5);
   border-radius: 4px;
 }
+
 .my-stat {
   text-align: left;
   /* float: left; */
+  margin-left: 12px;
+  margin-top: 16px;
+  margin-bottom: 19px;
+}
+.round_icon{
+  float: left;
+
+  width: 38px;
+  height: 38px;
+  display: flex;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+Button.my-user-page {
+  background-color: #000;
+  float: right;
+  margin-right: 18px;
 }
 .coin-symbol {
   color: #999999;
 }
+.username {
+  margin-left: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
 .my-balance {
+  margin-left: 12px;
   font-size: 16px;
   font-family: PingFang SC, STHeitiSC-Light, Helvetica-Light, arial, sans-serif;
   font-weight: 600;

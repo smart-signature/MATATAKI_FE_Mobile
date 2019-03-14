@@ -30,7 +30,7 @@
           <za-button class="button-support"
             size='xl'
             theme="primary"
-            disabled>支持過了
+            disabled>支持
           </za-button>
           <za-button class="button-supershare"
             size='xl'
@@ -47,7 +47,7 @@
           <za-button class="button-share"
             size='xl'
             theme="primary"
-            @click="share">一般分享
+            @click="share">分享
           </za-button>
         </div>
       </div>
@@ -81,7 +81,8 @@ export default {
       return this.scatterAccount !== null;
     },
     isSupported() {
-      return false; // 
+      // todo(minakokojima): to be implemented.
+      return false; 
     },
     updateTitle() {
 
@@ -104,7 +105,7 @@ export default {
   },
   mounted() {
     this.copyBtn = new this.clipboard('.button-share', {
-      text(trigger) {
+      text() {
         return window.location.href;
       },
     });
@@ -120,13 +121,13 @@ export default {
       const amountStr = prompt('请输入打赏金额(EOS)', '');
       const amount = parseFloat(amountStr);
       console.log(amount);
-      const share_id = null; // sample
-      const hash = this.hash;
-      API.support({amount, hash, share_id});
+      // todo(minakokojima): fetch correct shareId
+      const shareId = 0;
+      const { hash } = this;
+      API.support({ amount, hash, shareId });
     },
     share() {
-      const _this = this;
-      const clipboard = _this.copyBtn;
+      const clipboard = this.copyBtn;
       clipboard.on('success', () => {
         alert('复制成功！');
         // _this.$zaToast('复制成功！');
@@ -139,9 +140,8 @@ export default {
       });
     },
     supershare() {
-      API.share(hash);
-      const _this = this;
-      const clipboard = _this.copyBtn;
+      API.share(this.hash);
+      const clipboard = this.copyBtn;
       clipboard.on('success', () => {
         alert('复制成功！');
         // _this.$zaToast('复制成功！');
@@ -162,7 +162,7 @@ export default {
   },
   created() {
     this.getArticleData();
-    document.title = `正在加载文章 - Smart Signature`;
+    document.title = '正在加载文章 - Smart Signature';
   },
 };
 </script>
