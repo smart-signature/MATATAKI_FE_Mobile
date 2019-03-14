@@ -107,6 +107,22 @@ const API = {
     });
     return rows;
   },
+  getPublicKey() {
+    return ScatterJS.scatter.getPublicKey('eos').then(publicKey => {
+      console.log(publicKey);
+      return publicKey ;
+    }).catch(error => {
+      //...
+    });
+  },
+  getArbitrarySignatureAsync({publicKey, data}) {
+    return ScatterJS.scatter.getArbitrarySignature({publicKey, data}).then(signature => {
+      console.log({publicKey, data, signature});
+      return signature ;
+    }).catch(error => {
+      //...
+    });
+  },
 };
 
 

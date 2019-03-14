@@ -15,6 +15,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import { sendPost } from '@/api/ipfs';
+import API from '@/api/scatter.js';
 import { publishOnChain } from '@/api/signature';
 import { publishArticle } from '@/api/backend';
 import { mavonEditor } from 'mavon-editor';
@@ -58,6 +59,7 @@ export default {
             title: '发送成功',
             desc: '3秒后跳转到你发表的文章',
           });
+          const signature = API.getArbitrarySignatureAsync({publicKey:API.getPublicKey(), data:hash});
           const jumpToArticle = () => this.$router.push({ name: 'Article', params: { hash } });
           setTimeout(jumpToArticle, 3 * 1000);
         } else {
