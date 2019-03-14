@@ -19,7 +19,6 @@
           </Row>
         </div>
       </div>
-      <!-- <za-button theme='warning' style="float: right" block bordered @click="$router.push({name: 'About'})">玩法介绍</za-button> -->
     </div>
 </template>
 
@@ -61,7 +60,7 @@ export default {
       try {
         // await this.connectScatterAsync();
         // Scatter 10.0 need to suggestNetwork, if not, scatter is not working on login
-        const suggestNetworkResult = await this.suggestNetworkAsync();
+        await this.suggestNetworkAsync();
         await this.loginScatterAsync();
       } catch (e) {
         console.warn('Unable to connect wallets');
