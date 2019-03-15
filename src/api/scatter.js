@@ -106,42 +106,6 @@ const API = {
       },
     );
   },
-  async withdraw() {
-    if (currentEOSAccount() == null) {
-      alert('请先登录');
-      return;
-    }
-    const contract = await eos().contract('signature.bp');
-    await contract.claim(
-      currentEOSAccount().name,
-      {
-        authorization: [`${currentEOSAccount().name}@${currentEOSAccount().authority}`],
-      },
-    );
-  },
-  async support({ amount = null, hash = null, share_id = null }) {
-    if (currentEOSAccount() == null) {
-      alert('请先登录');
-      return;
-    }
-    const contract = await eos().contract('signature.bp');
-    const sign = await contract.getSignbyhash(hash);
-    await contract.support({
-      amount,
-      sign_id: sign.id,
-      share_id,
-    });
-  },
-  async getPlayerIncome(name) {
-    const { rows } = await eos().getTableRows({
-      json: true,
-      code: 'signature.bp',
-      scope: name,
-      table: 'players',
-      limit: 10000,
-    });
-    return rows;
-  },
   getAccount() {
     return ScatterJS.scatter.identity.accounts.find(x => x.blockchain === 'eos');
   },

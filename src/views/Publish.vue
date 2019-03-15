@@ -19,9 +19,7 @@
   import { mapGetters } from 'vuex';
   import { sendPost } from '@/api/ipfs';
   import API from '@/api/scatter.js';
-  import { publishOnChain } from '@/api/signature';
-  import { publishArticle } from '@/api/backend';
-  import { publishArticle2 } from '@/api/backend';
+  import { publishArticle, publishArticle2 } from '@/api/backend';
   import { mavonEditor } from 'mavon-editor';
   // MarkdownIt 实例
   const mdit = mavonEditor.getMarkdownIt();
@@ -108,7 +106,7 @@
         console.info(imgfile);
       },
       test() {
-        publishOnChain({ hash: 'QmfJsZmbsFcaNEBejP6HcXQEXycVXKfFwbMM3eju4VdsN3' });
+        // publishOnChain({ hash: 'QmfJsZmbsFcaNEBejP6HcXQEXycVXKfFwbMM3eju4VdsN3' });
         // transferEOS({amount: 0, memo: '', });
       }
 
@@ -116,10 +114,6 @@
     uploadImage(filename, imgfile) {
       console.info(filename);
       console.info(imgfile);
-    },
-    test() {
-      publishOnChain({ hash: 'QmfJsZmbsFcaNEBejP6HcXQEXycVXKfFwbMM3eju4VdsN3' });
-      // transferEOS({amount: 0, memo: '', });
     },
   }
 

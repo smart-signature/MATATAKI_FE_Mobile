@@ -1,4 +1,4 @@
-import { eos, currentEOSAccount as currentAccount } from './scatter';
+import { eos, eosapi, currentEOSAccount as currentAccount } from './scatter';
 
 const publishOnChain = async ({ hash = '' }) => {
   if (currentAccount() == null) {
@@ -31,7 +31,51 @@ const publishOnChain = async ({ hash = '' }) => {
   });
 };
 
-const claim = () => {
+async function support({ amount = null, sign_id = null, share_id = null }) {
+  if (currentAccount() == null) { 
+    alert('请先登录'); 
+    return;
+  }
+  const contract = await eos().contract('signature.bp');
+  await contract.action_support({
+    amount,
+    sign_id,
+    share_id,
+  });
+}
+
+const action_support = ({amount = null, sign_id = null, share_id = null,}) => {
+  if (amount == null) {
+    alert('amount cant be 0');
+    return ;
+  }
+  if (sign_id == null) {
+    alert('sign_id cant be null');
+    return ;
+  }
+
+  return transferEOS({
+    amount,
+    memo: ( (share_id != null) ? `share ${sign_id} ${share_id}` : `share ${sign_id}` ),
+  });
+}
+
+async function withdraw() {
+  if (currentAccount() == null) {
+    alert('请先登录');
+    return;
+  }
+
+  const contract = await eos().contract('signature.bp');
+  await contract.action_claim(
+    currentEOSAccount().name,
+    {
+      authorization: [`${currentEOSAccount().name}@${currentEOSAccount().authority}`],
+    },
+  );
+};
+
+const action_claim = () => {
   if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
 
   return eos().transaction({
@@ -78,41 +122,36 @@ function transferEOS({ amount = 0, memo = '' }) {
   });
 }
 
-async function support({ amount = null, hash = null, share_id = null }) {
-  if (currentAccount() == null) {
-    alert('请先登录');
-    return;
-  }
-  const contract = await eos().contract('signature.bp');
-  const sign = await contract.getSignbyhash(hash);
-  
-  await contract.support({
-    amount,
-    sign_id: sign.id,
-    share_id,
+async function getPlayerIncome(name) {
+  const { rows } = await eos().getTableRows({
+    json: true,
+    code: 'signature.bp',
+    scope: name,
+    table: 'players',
+    limit: 10000,
   });
+  return rows;
 }
-
+/*
 async function getSignbyhash({ hash = null }) {
   if (hash == null) {
     alert('hash cant be null');
     return;
   }
-  const resp = await eos().get_table_rows({
+  const resp = await eosapi.getTableRows({
     json: true,
     code: 'signature.bp',
     scope: 'signature.bp',
     table: 'signs',
-    table_key: 'hash',
     lower_bound: hash,
     limit: 1,
   });
   console.log(resp.rows);
   return resp;
-}
+}*/
 
 async function getSharesInfo() {
-  const { rows } = await eos().getTableRows({
+  const { rows } = await eosapi.getTableRows({
     json: true,
     code: 'signature.bp',
     scope: 'signature.bp',
@@ -123,7 +162,7 @@ async function getSharesInfo() {
 }
 
 async function getSignsInfo() {
-  const { rows } = await eos().getTableRows({
+  const { rows } = await eosapi.getTableRows({
     json: true,
     code: 'signature.bp',
     scope: 'signature.bp',
@@ -132,24 +171,13 @@ async function getSignsInfo() {
   });
   return rows;
 }
-
+/*
 async function getGoods() {
-  const { rows } = await eos().getTableRows({
+  const { rows } = await eosapi().getTableRows({
     json: true,
     code: 'signature.bp',
     scope: 'signature.bp',
     table: 'goods',
-    limit: 10000,
-  });
-  return rows;
-}
-
-async function getPlayerIncome(name) {
-  const { rows } = await eos().getTableRows({
-    json: true,
-    code: 'signature.bp',
-    scope: name,
-    table: 'players',
     limit: 10000,
   });
   return rows;
@@ -175,22 +203,11 @@ async function getMaxSignId() {
     }
   }
   return maxId;
-}
-
-async function withdraw() {
-  if (currentAccount() == null) {
-    alert('请先登录');
-    return;
-  }
-  const contract = await eos().contract('signature.bp');
-  await contract.claim(
-    currentAccount().name,
-    {
-      authorization: [`${currentAccount().name}@${currentAccount().authority}`],
-    },
-  );
-}
+}*/
 
 export {
-  publishOnChain, claim, transferEOS, support, getSignbyhash, withdraw, getMaxShareId, getMaxSignId, getPlayerIncome, getGoods,
+  publishOnChain, 
+  support, withdraw,
+  action_support, action_claim,
+  getPlayerIncome,
 };
