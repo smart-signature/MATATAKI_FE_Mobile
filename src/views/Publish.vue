@@ -16,7 +16,7 @@
 import { mapGetters } from 'vuex';
 import { sendPost } from '@/api/ipfs';
 import API from '@/api/scatter.js';
-import { publishOnChain } from '@/api/signature';
+import { ezpublishOnChain } from '@/api/signature';
 import { publishArticle } from '@/api/backend';
 import { mavonEditor } from 'mavon-editor';
 // MarkdownIt 实例
@@ -52,7 +52,7 @@ export default {
         if (code === 200) {
           alert('發布到鏈上... (這裡需要进度条)');
           console.log('Push action to signature.bp...');
-          const { transaction_id } = await publishOnChain({hash,});
+          const { transaction_id } = await ezpublishOnChain({hash,});
           console.log(transaction_id);
           const data = await publishArticle({
             hash, title, author, transactionId: transaction_id, accountName: currentUsername,
