@@ -60,6 +60,7 @@
 import { mapState, mapGetters } from 'vuex';
 import axios from 'axios';
 import { mavonEditor } from 'mavon-editor';
+import { support } from '../api/signature.js';
 import API from '../api/scatter.js';
 import 'mavon-editor/dist/css/index.css';
 // MarkdownIt 实例
@@ -82,7 +83,7 @@ export default {
     },
     isSupported() {
       // todo(minakokojima): to be implemented.
-      return false; 
+      return false;
     },
     updateTitle() {
 
@@ -99,9 +100,9 @@ export default {
     toastvisible: false,
   }),
   watch: {
-    post({author, title}) {
+    post({ author, title }) {
       document.title = `${title} by ${author} - Smart Signature`;
-    }
+    },
   },
   mounted() {
     this.copyBtn = new this.clipboard('.button-share', {
@@ -124,7 +125,7 @@ export default {
       // todo(minakokojima): fetch correct shareId
       const shareId = 0;
       const { hash } = this;
-      API.support({ amount, hash, shareId });
+      support({ amount, hash, shareId });
     },
     share() {
       const clipboard = this.copyBtn;

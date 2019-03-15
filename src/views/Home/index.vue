@@ -47,7 +47,7 @@ export default {
   name: 'Home',
   components: { ArticlesList, MyBanner },
   created() {
-    document.title = "首页 - SmartSignature"
+    document.title = '首页 - SmartSignature';
   },
   computed: {
     ...mapState(['scatterAccount']),
