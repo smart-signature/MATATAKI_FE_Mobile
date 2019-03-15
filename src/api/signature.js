@@ -79,12 +79,13 @@ function transferEOS({ amount = 0, memo = '' }) {
 }
 
 async function support({ amount = null, hash = null, share_id = null }) {
-  if (currentEOSAccount() == null) {
+  if (currentAccount() == null) {
     alert('请先登录');
     return;
   }
   const contract = await eos().contract('signature.bp');
   const sign = await contract.getSignbyhash(hash);
+  
   await contract.support({
     amount,
     sign_id: sign.id,
@@ -177,15 +178,15 @@ async function getMaxSignId() {
 }
 
 async function withdraw() {
-  if (currentEOSAccount() == null) {
+  if (currentAccount() == null) {
     alert('请先登录');
     return;
   }
   const contract = await eos().contract('signature.bp');
   await contract.claim(
-    currentEOSAccount().name,
+    currentAccount().name,
     {
-      authorization: [`${currentEOSAccount().name}@${currentEOSAccount().authority}`],
+      authorization: [`${currentAccount().name}@${currentAccount().authority}`],
     },
   );
 }
