@@ -113,7 +113,7 @@ export default {
   },
   methods: {
     async getArticleData() {
-      const url = `https://ipfs.libra.bet/catJSON/${this.hash}`;
+      const url = `http://api.smartsignature.io/ipfs/catJSON/${this.hash}`;
       const { data } = await axios.get(url);
       this.post = data.data;
       console.info(data);
