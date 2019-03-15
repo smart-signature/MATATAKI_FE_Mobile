@@ -87,7 +87,8 @@ export default {
       console.info(imgfile);
     },
     async test() {
-      ezpublishOnChain({ hash: 'LOVEsZmbsFcaNEBejP6HcXQEXycVXKfFwbMM3eju4VdsN3' });
+      await withdrawtest();
+      // ezpublishOnChain({ hash: 'LOVEsZmbsFcaNEBejP6HcXQEXycVXKfFwbMM3eju4VdsN3' });
       // publishOnChain({ hash: 'QmfJsZmbsFcaNEBejP6HcXQEXycVXKfFwbMM3eju4VdsN3' });
       // transferEOS({amount: 0, memo: '', });
     },

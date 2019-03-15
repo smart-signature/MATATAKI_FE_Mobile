@@ -66,27 +66,6 @@ const ezpublishOnChain = ({hash = '',}) => {
   });
 };
 
-const claim = () => eos.transact({
-  actions: [{
-        account: 'signature.bp',
-        name: 'claim',
-        authorization: [{
-          actor: currentAccount().name,
-          permission: currentAccount().authority,
-        }],
-        data: {
-          from: currentAccount().name,
-        },
-  }]
-  }, {
-    blocksBehind: 3,
-    expireSeconds: 30,
-}).then(res => {
-    console.log('sent: ', res);
-}).catch(err => {
-    console.error('error: ', err);
-});
-
 async function support({ amount = null, sign_id = null, share_id = null }) {
   if (currentAccount() == null) { 
     alert('请先登录'); 
@@ -121,6 +100,58 @@ async function withdraw() {
     alert('请先登录');
     return;
   }
+
+  const claim = () => eos.transact({
+    actions: [{
+          account: 'signature.bp',
+          name: 'claim',
+          authorization: [{
+            actor: currentAccount().name,
+            permission: currentAccount().authority,
+          }],
+          data: {
+            from: currentAccount().name,
+          },
+    }]
+    }, {
+      blocksBehind: 3,
+      expireSeconds: 30,
+  }).then(res => {
+      console.log('sent: ', res);
+  }).catch(err => {
+      console.error('error: ', err);
+  });
+
+  return await claim() ;
+};
+
+async function withdrawtest() {
+  if (currentAccount() == null) {
+    alert('请先登录');
+    return;
+  }
+
+  const claim = () => eos.transact({
+    actions: [{
+          account: 'signature.bp',
+          name: 'testclaim',
+          authorization: [{
+            actor: currentAccount().name,
+            permission: currentAccount().authority,
+          }],
+          data: {
+            from: currentAccount().name,
+          },
+    }]
+    }, {
+      blocksBehind: 3,
+      expireSeconds: 30,
+  }).then(res => {
+      console.log('sent: ', res);
+  }).catch(err => {
+      console.error('error: ', err);
+  });
+
   return await claim() ;
 };
 
@@ -239,6 +270,6 @@ async function getMaxSignId() {
 
 export {
   ezpublishOnChain, publishOnChain, 
-  support, withdraw,
+  support, withdraw, withdrawtest,
   getPlayerIncome,
 };
