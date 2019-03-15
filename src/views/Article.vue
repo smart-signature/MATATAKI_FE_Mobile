@@ -130,7 +130,7 @@ export default {
       const { data } = await axios.get(url);
       const sign_id = data.id;
 
-      support({ amount, sign_id: sign_id, share_Id: null });
+      support({ amount, sign_id, share_Id: null });
     },
     share() {
       const clipboard = this.copyBtn;
