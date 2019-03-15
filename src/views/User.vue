@@ -55,7 +55,7 @@
           </Col>
       </Row>
     </div>
-    <!-- todo(minakokojima): 顯示該作者發表的文章。 !--> >
+    <!-- todo(minakokojima): 顯示該作者發表的文章。 !-->
     <ArticlesList ref="ArticlesList"/>
   </div>
 </template>
@@ -109,7 +109,7 @@ export default {
     // }
   },
   async created() {
-    const playerincome = await getPlayerIncome();
+    const playerincome = await getPlayerIncome(this.username);
     this.playerincome = playerincome[0] || 0;
     const user = this.isMe ? '我' : this.username;
     document.title = `${user} 的用户页 - SmartSignature`;
