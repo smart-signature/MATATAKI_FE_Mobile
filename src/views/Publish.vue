@@ -4,7 +4,6 @@
         <div slot="left"><za-icon theme="primary" type="arrow-left" @click="$router.go(-1)"></za-icon></div>
         <div slot="title">发布文章</div>
         <div slot="right"><Button type="text" size="large" @click="sendThePost">确认发布</Button></div>
-        <div slot="right"><Button type="text" size="large" @click="test">我是測試</Button></div>
     </za-nav-bar>
     <Input v-model="title" placeholder="标题" size="large" clearable  />
     <Input v-model="author" placeholder="署名" clearable />
@@ -86,13 +85,12 @@ export default {
       console.info(filename);
       console.info(imgfile);
     },
-    async test() {
-      await withdrawtest();
+    test() {
+      // withdrawtest();
       // ezpublishOnChain({ hash: 'LOVEsZmbsFcaNEBejP6HcXQEXycVXKfFwbMM3eju4VdsN3' });
       // publishOnChain({ hash: 'QmfJsZmbsFcaNEBejP6HcXQEXycVXKfFwbMM3eju4VdsN3' });
       // transferEOS({amount: 0, memo: '', });
     },
-
   },
 };
 </script>

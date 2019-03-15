@@ -125,36 +125,6 @@ async function withdraw() {
   return await claim() ;
 };
 
-async function withdrawtest() {
-  if (currentAccount() == null) {
-    alert('请先登录');
-    return;
-  }
-
-  const claim = () => eos.transact({
-    actions: [{
-          account: 'signature.bp',
-          name: 'testclaim',
-          authorization: [{
-            actor: currentAccount().name,
-            permission: currentAccount().authority,
-          }],
-          data: {
-            from: currentAccount().name,
-          },
-    }]
-    }, {
-      blocksBehind: 3,
-      expireSeconds: 30,
-  }).then(res => {
-      console.log('sent: ', res);
-  }).catch(err => {
-      console.error('error: ', err);
-  });
-
-  return await claim() ;
-};
-
 function transferEOS({ amount = 0, memo = '' }) {
   if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
 
