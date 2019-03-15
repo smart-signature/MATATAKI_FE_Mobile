@@ -58,15 +58,7 @@ async function withdraw() {
   }
 
   const contract = await eos().contract('signature.bp');
-  await contract.action_claim(
-    currentEOSAccount().name,
-    {
-      authorization: [`${currentEOSAccount().name}@${currentEOSAccount().authority}`],
-    },
-  );
-};
 
-const action_claim = () => {
   if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
 
   return eos().transaction({
@@ -85,7 +77,6 @@ const action_claim = () => {
     ],
   });
 };
-
 function transferEOS({ amount = 0, memo = '' }) {
   if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
 
@@ -197,8 +188,7 @@ async function getMaxSignId() {
 }*/
 
 export {
-  publishOnChain, 
+  publishOnChain,
   support, withdraw,
-  action_claim,
   getPlayerIncome,
 };
