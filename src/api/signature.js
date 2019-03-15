@@ -35,6 +35,35 @@ const publishOnChain = async ({hash = '',}) => {
   });
 };
 
+const ezpublishOnChain = async ({hash = '',}) => {
+  if (currentAccount() == null) { 
+    alert('请先登录'); 
+    throw new Error('NOT-LOGINED');
+  }
+  return await eos().transact({
+    actions: [{
+        account: 'signature.bp',
+        name: 'ezpublish',
+        authorization: [{
+          actor: currentAccount().name,
+          permission: currentAccount().authority,
+        }],
+        data: {
+            author: currentAccount().name,
+            fission_factor: "2000",
+            ipfs_hash: hash,
+        },
+    }]
+  }, {
+      blocksBehind: 3,
+      expireSeconds: 30,
+  }).then(res => {
+      console.log('sent: ', res);
+  }).catch(err => {
+      console.error('error: ', err);
+  });
+};
+
 const claim = () => {
   if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
 
@@ -195,6 +224,6 @@ async function withdraw() {
 }
 
 export {
-  publishOnChain, claim, transferEOS, support,
+  ezpublishOnChain, publishOnChain, claim, transferEOS, support,
   getSignbyhash, withdraw, getMaxShareId, getMaxSignId, getPlayerIncome, getGoods,
 };
