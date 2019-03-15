@@ -97,6 +97,7 @@
           }
         } catch (error) {
           console.error(error);
+
           this.$Notice.error({
             title: '发送失败',
           });
@@ -112,7 +113,15 @@
       }
 
     },
-  };
+    uploadImage(filename, imgfile) {
+      console.info(filename);
+      console.info(imgfile);
+    },
+    test() {
+      publishOnChain({ hash: 'QmfJsZmbsFcaNEBejP6HcXQEXycVXKfFwbMM3eju4VdsN3' });
+      // transferEOS({amount: 0, memo: '', });
+    },
+  }
 
 </script>
 
