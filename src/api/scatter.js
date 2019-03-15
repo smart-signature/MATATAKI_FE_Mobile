@@ -23,6 +23,10 @@ const eos = () => ScatterJS.eos(config.network, Api, {rpc, beta3:true});
 // const account = ScatterJS.account('eos');
 const currentEOSAccount = () => ScatterJS.identity && ScatterJS.identity.accounts.find(x => x.blockchain === 'eos');
 
+// backup
+/* () => ScatterJS.identity && ScatterJS.identity.accounts.find(x => x.blockchain === 'eos'); */
+
+// new
 /*{
   ScatterJS.login().then(id => {
      return account;
@@ -30,8 +34,8 @@ const currentEOSAccount = () => ScatterJS.identity && ScatterJS.identity.account
     console.error('error: ', err);
     return null ;
   });
-};
-/* () => ScatterJS.identity && ScatterJS.identity.accounts.find(x => x.blockchain === 'eos'); */
+};*/
+
 
 const API = {
   async getBalancesByContract({ tokenContract = 'eosio.token', accountName, symbol }) {
@@ -54,7 +58,7 @@ const API = {
   },
   loginScatterAsync() {
     const requiredFields = { accounts: [config.network.eos] };
-    return ScatterJS.login(); /* ScatterJS.getIdentity(requiredFields); */
+    return ScatterJS.login(); /* ScatterJS.getIdentity(requiredFields);*/
   },
   logoutScatterAsync() {
     return ScatterJS.scatter.logout();
@@ -91,42 +95,6 @@ const API = {
       },
     );
   },*/
-  async withdraw() {
-    if (currentEOSAccount() == null) {
-      alert('请先登录');
-      return;
-    }
-    const contract = await eos().contract('signature.bp');
-    await contract.claim(
-      currentEOSAccount().name,
-      {
-        authorization: [`${currentEOSAccount().name}@${currentEOSAccount().authority}`],
-      },
-    );
-  },
-  async support({ amount = null, hash = null, share_id = null }) {
-    if (currentEOSAccount() == null) { 
-      alert('请先登录'); 
-      return;
-    }
-    const contract = await eos().contract('signature.bp');
-    const sign = await contract.getSignbyhash(hash);
-    await contract.support({
-      amount,
-      sign_id: sign.id,
-      share_id,
-    });
-  },
-  async getsignPlayerIncome(name){
-    const { rows } = eosapi.getTableRows({
-      json: true,
-      code: 'signature.bp',
-      scope: name,
-      table: 'players',
-      limit: 10000,
-    });
-    return rows;
-  },
   getPublicKey() {
     return ScatterJS.getPublicKey('eos').then(publicKey => {
       console.log(publicKey);

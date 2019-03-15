@@ -4,6 +4,7 @@
         <div slot="left"><za-icon theme="primary" type="arrow-left" @click="$router.go(-1)"></za-icon></div>
         <div slot="title">发布文章</div>
         <div slot="right"><Button type="text" size="large" @click="sendThePost">确认发布</Button></div>
+        <div slot="right"><Button type="text" size="large" @click="test">我是測試</Button></div>
     </za-nav-bar>
     <Input v-model="title" placeholder="标题" size="large" clearable  />
     <Input v-model="author" placeholder="署名" clearable />
@@ -52,11 +53,13 @@ export default {
         if (code === 200) {
           alert('發布到鏈上... (這裡需要进度条)');
           console.log('Push action to signature.bp...');
-          const { transaction_id } = await ezpublishOnChain({hash,});
-          console.log(transaction_id);
+          ezpublishOnChain({hash,});
+          return ;
+          // console.log(transaction_id);
           const data = await publishArticle({
             hash, title, author, transactionId: transaction_id, accountName: currentUsername,
           });
+          alert('xxxx');
           this.$Notice.success({
             title: '发送成功',
             desc: '3秒后跳转到你发表的文章',
@@ -83,8 +86,9 @@ export default {
       console.info(filename);
       console.info(imgfile);
     },
-    test() {
-      publishOnChain({ hash: 'QmfJsZmbsFcaNEBejP6HcXQEXycVXKfFwbMM3eju4VdsN3' });
+    async test() {
+      ezpublishOnChain({ hash: 'LOVEsZmbsFcaNEBejP6HcXQEXycVXKfFwbMM3eju4VdsN3' });
+      // publishOnChain({ hash: 'QmfJsZmbsFcaNEBejP6HcXQEXycVXKfFwbMM3eju4VdsN3' });
       // transferEOS({amount: 0, memo: '', });
     },
 
