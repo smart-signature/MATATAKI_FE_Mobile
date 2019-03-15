@@ -17,10 +17,10 @@ export default {
   props: ['article'],
   computed: {
     friendlyDate() {
-      return moment(this.article.time).fromNow();
+      return moment(this.article.create_time).fromNow();
     },
     hash() {
-      return this.article.articleUrl.substr(-46);
+      return this.article.hash;
     },
   },
 };
