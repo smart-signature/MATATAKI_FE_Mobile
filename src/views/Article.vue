@@ -118,13 +118,19 @@ export default {
       this.post = data.data;
       console.info(data);
     },
-    support() {
+    async support() {
       const amountStr = prompt('请输入打赏金额(EOS)', '');
       const amount = parseFloat(amountStr);
       console.log(amount);
       // todo(minakokojima): fetch correct shareId
       // const { hash } = this;
-      support({ amount, sign_id: null, share_Id:null });
+      
+      // fetch sign_id
+      const url = `http://api.smartsignature.io/post/${this.hash}`;
+      const { data } = await axios.get(url);
+      const sign_id = data.id;
+
+      support({ amount, sign_id: sign_id, share_Id: null });
     },
     share() {
       const clipboard = this.copyBtn;
