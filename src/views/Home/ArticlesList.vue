@@ -28,7 +28,9 @@ export default {
   },
   methods: {
     async getArticlesList() {
-      const articles = 'https://smartsignature.azurewebsites.net/api/article';
+      // const articles = 'https://smartsignature.azurewebsites.net/api/article';
+      // const articles = 'http://localhost:7001/posts';
+      const articles = 'http://api.smartsignature.io/posts'; // new backend api url
       const { data } = await axios.get(articles);
       this.articles = data;
     },
