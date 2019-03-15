@@ -7,7 +7,7 @@ import PriceFormatter from './priceFormatter';
 
 // for eosjs-api
 const options = {
-  httpEndpoint: 'http://api.eosnewyork.io:80', // great one
+  httpEndpoint: 'https://api.eosnewyork.io:80', // great one
   verbose: false, // API logging
 }
 const eosapi = EosApi(options);
