@@ -91,10 +91,26 @@ async function support({ amount = null, hash = null, share_id = null }) {
   }
   const contract = await eos().contract('signature.bp');
   const sign = await contract.getSignbyhash(hash);
-  return await contract.support({
+  return await contract.action_support({
     amount,
     sign_id: sign.id,
     share_id,
+  });
+}
+
+const action_support = ({amount = null, sign_id = null, share_id = null,}) => {
+  if (amount == null) {
+    alert('amount cant be 0');
+    return ;
+  }
+  if (sign_id == null) {
+    alert('sign_id cant be null');
+    return ;
+  }
+
+  return transferEOS({
+    amount,
+    memo: ( (share_id != null) ? `share ${sign_id} ${share_id}` : `share ${sign_id}` ),
   });
 }
 
@@ -110,7 +126,7 @@ async function withdraw() {
 function transferEOS({ amount = 0, memo = '' }) {
   if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
 
-  eos.transact({
+  return eos.transact({
     actions: [
       {
         account: 'eosio.token',
@@ -219,6 +235,6 @@ async function getMaxSignId() {
 */
 
 export {
-  ezpublishOnChain, publishOnChain, claim, transferEOS, support,
+  ezpublishOnChain, publishOnChain, claim, transferEOS, support, action_support,
   getSignbyhash, withdraw, getMaxShareId, getMaxSignId, getPlayerIncome, getGoods,
 };

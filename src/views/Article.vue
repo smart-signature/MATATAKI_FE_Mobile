@@ -123,7 +123,7 @@ export default {
       const amount = parseFloat(amountStr);
       console.log(amount);
       // todo(minakokojima): fetch correct shareId
-      const shareId = 0;
+      const shareId = null;
       const { hash } = this;
       support({ amount, hash, shareId });
     },
