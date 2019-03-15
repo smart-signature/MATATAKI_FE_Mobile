@@ -8,7 +8,7 @@ function publishArticle({
   const url = `${apiServer}/api/article`;
   return axios.post(url, JSON.stringify({
     account: accountName,
-    articleUrl: `https://smasin-dev.netlify.com/article/${hash}`,
+    articleUrl: `https://sign-dev.dravatar.xyz/article/${hash}`,
     title,
     author,
     transactionId,

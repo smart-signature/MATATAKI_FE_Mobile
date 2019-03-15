@@ -51,7 +51,7 @@ export default {
         if (code === 200) {
           alert('發布到鏈上... (這裡需要进度条)');
           console.log('Push action to signature.bp...');
-          const { transaction_id } = await publishOnChain({hash,});
+          const { transaction_id } = await publishOnChain({ hash });
           const data = await publishArticle({
             hash, title, author, transactionId: transaction_id, accountName: currentUsername,
           });
@@ -59,7 +59,10 @@ export default {
             title: '发送成功',
             desc: '3秒后跳转到你发表的文章',
           });
-          const signature = API.getArbitrarySignatureAsync({publicKey:API.getPublicKey(), data:hash});
+          const signature = API.getArbitrarySignatureAsync({ 
+            publicKey: API.getPublicKey(),
+            data: hash 
+          });
           const jumpToArticle = () => this.$router.push({ name: 'Article', params: { hash } });
           setTimeout(jumpToArticle, 3 * 1000);
         } else {
@@ -79,9 +82,9 @@ export default {
       console.info(imgfile);
     },
     test() {
-      publishOnChain( {hash:'QmfJsZmbsFcaNEBejP6HcXQEXycVXKfFwbMM3eju4VdsN3'});
+      publishOnChain({ hash: 'QmfJsZmbsFcaNEBejP6HcXQEXycVXKfFwbMM3eju4VdsN3' });
       // transferEOS({amount: 0, memo: '', });
-    }
+    },
 
   },
 };
