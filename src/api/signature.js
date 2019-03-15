@@ -185,7 +185,8 @@ async function getMaxSignId() {
     }
   }
   return maxId;
-}*/
+}
+*/
 
 export {
   publishOnChain,
