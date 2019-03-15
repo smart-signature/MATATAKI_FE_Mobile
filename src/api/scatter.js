@@ -92,7 +92,7 @@ const API = {
     );
   },*/
   async withdraw() {
-    if (currentEOSAccount() == null) { 
+    if (currentEOSAccount() == null) {
       alert('请先登录');
       return;
     }
@@ -104,7 +104,7 @@ const API = {
       },
     );
   },
-  async support({amount = null, hash = null, share_id = null,}) {
+  async support({ amount = null, hash = null, share_id = null }) {
     if (currentEOSAccount() == null) { 
       alert('请先登录'); 
       return;
