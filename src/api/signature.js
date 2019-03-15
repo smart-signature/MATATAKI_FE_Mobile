@@ -1,9 +1,10 @@
 import { eos, currentEOSAccount as currentAccount } from './scatter';
 
-const publishOnChain = async ({hash = '',}) => {
-  if (currentAccount() == null) { 
-    alert('请先登录'); 
-    throw new Error('NOT-LOGINED'); }
+const publishOnChain = async ({ hash = '' }) => {
+  if (currentAccount() == null) {
+    alert('请先登录');
+    throw new Error('NOT-LOGINED');
+  }
   return eos().transaction({
     actions: [
       {
@@ -14,7 +15,7 @@ const publishOnChain = async ({hash = '',}) => {
           permission: currentAccount().authority,
         }],
         data: {
-          'sign':
+          sign:
           {
             author: currentAccount().name,
             fission_factor: 2000,
@@ -22,15 +23,15 @@ const publishOnChain = async ({hash = '',}) => {
             ipfs_hash: hash,
             /* 下面兩個需要一個預設值 */
             public_key: 'EOS5P9HXdVTcAVMph4ZppDKBMkBuT6ihnkLqTUrVFBtGR94cPjykJ',
-            signature: 'SIG_K1_KZU9PyXP8YAePjCfCcmBjGHARkvTVDjKpKvVgS6XL8o2FXTXUdhP3rqrL38dJYgJo2WNBdYubsY9LKTo47RUUE4N3ZHjZQ'
-          }
+            signature: 'SIG_K1_KZU9PyXP8YAePjCfCcmBjGHARkvTVDjKpKvVgS6XL8o2FXTXUdhP3rqrL38dJYgJo2WNBdYubsY9LKTo47RUUE4N3ZHjZQ',
+          },
         },
       },
     ],
   });
 };
 
-const claim = (callback) => {
+const claim = () => {
   if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
 
   return eos().transaction({
@@ -77,19 +78,17 @@ function transferEOS({ amount = 0, memo = '' }) {
   });
 }
 
-function support({amount = null, sign_id = null, share_id = null,}) {
-  if (amount == null) {
-    alert('amount cant be 0');
-    return ;
+async function support({ amount = null, hash = null, share_id = null }) {
+  if (currentEOSAccount() == null) {
+    alert('请先登录');
+    return;
   }
-  if (sign_id == null) {
-    alert('sign_id cant be null');
-    return ;
-  }
-  const upstream_share_id = share_id;
-  transferEOS({
+  const contract = await eos().contract('signature.bp');
+  const sign = await contract.getSignbyhash(hash);
+  await contract.support({
     amount,
-    memo: ( (upstream_share_id != null) ? `share ${sign_id} ${upstream_share_id}` : `share ${sign_id}` ),
+    sign_id: sign.id,
+    share_id,
   });
 }
 
@@ -177,4 +176,20 @@ async function getMaxSignId() {
   return maxId;
 }
 
-export { publishOnChain, claim, transferEOS, support, getSignbyhash };
+async function withdraw() {
+  if (currentEOSAccount() == null) {
+    alert('请先登录');
+    return;
+  }
+  const contract = await eos().contract('signature.bp');
+  await contract.claim(
+    currentEOSAccount().name,
+    {
+      authorization: [`${currentEOSAccount().name}@${currentEOSAccount().authority}`],
+    },
+  );
+}
+
+export {
+  publishOnChain, claim, transferEOS, support, getSignbyhash, withdraw, getMaxShareId, getMaxSignId, getPlayerIncome, getGoods,
+};
