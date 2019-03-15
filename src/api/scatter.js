@@ -14,7 +14,42 @@ ScatterJS.plugins(new ScatterEOS());
 const eos = () => ScatterJS.scatter.eos(config.network.eos, Eos, { expireInSeconds: 60 });
 const currentEOSAccount = () => ScatterJS.scatter.identity && ScatterJS.scatter.identity.accounts.find(x => x.blockchain === 'eos');
 
+// {
+//     chainId: "aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906",
+//     protocol: "https",
+//     host: 'proxy.eosnode.tools',
+//     port: 443,
+//     httpEndpoint: "https://proxy.eosnode.tools",
+// },
+
+const eosClient = Eos({
+  chainId: "aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906",
+  httpEndpoint: "https://proxy.eosnode.tools"
+});
+
 const API = {
+  getSignature(author, hash, callback) {
+
+    const account = this.getAccount();
+
+    eosClient.getAccount(account.name, (error, result) => {
+      // 获取当前权限
+      const permissions = result.permissions.find(x => x.perm_name === account.authority)
+      
+      // 获取当前权限的public key
+      const publicKey = permissions.required_auth.keys[0].key
+
+      // 需要签名的数据
+      const sign_data = `${author} ${hash}`;
+      
+      // 申请签名
+      ScatterJS.scatter.getArbitrarySignature(publicKey, sign_data, "Smart Signature").then(signature => {
+         callback(null, signature, publicKey, account.name);
+      }).catch(error => {
+        console.log(error);
+      });
+    })
+  },
   async getBalancesByContract({ tokenContract = 'eosio.token', accountName, symbol }) {
     return eos().getCurrencyBalance(tokenContract, accountName, symbol);
   },
@@ -85,8 +120,8 @@ const API = {
     );
   },
   async support({ amount = null, hash = null, share_id = null }) {
-    if (currentEOSAccount() == null) { 
-      alert('请先登录'); 
+    if (currentEOSAccount() == null) {
+      alert('请先登录');
       return;
     }
     const contract = await eos().contract('signature.bp');
@@ -106,6 +141,9 @@ const API = {
       limit: 10000,
     });
     return rows;
+  },
+  getAccount() {
+    return ScatterJS.scatter.identity.accounts.find(x => x.blockchain === 'eos');
   },
   getPublicKey() {
     return ScatterJS.scatter.getPublicKey('eos').then((publicKey) => {
