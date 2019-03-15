@@ -57,19 +57,17 @@ const ezpublishOnChain = ({hash = '',}) => {
         },
     }]
   }, {
-      blocksBehind: 3,
-      expireSeconds: 30,
+    blocksBehind: 3,
+    expireSeconds: 30,
   }).then(res => {
-      console.log('sent: ', res);
+    console.log('sent: ', res);
   }).catch(err => {
-      console.error('error: ', err);
+    console.error('error: ', err);
   });
 };
 
-const claim = () => {
-  return eos.transact({
-    actions: [
-      {
+const claim = () => eos.transact({
+  actions: [{
         account: 'signature.bp',
         name: 'claim',
         authorization: [{
@@ -79,10 +77,15 @@ const claim = () => {
         data: {
           from: currentAccount().name,
         },
-      },
-    ],
-  });
-};
+  }]
+  }, {
+    blocksBehind: 3,
+    expireSeconds: 30,
+}).then(res => {
+    console.log('sent: ', res);
+}).catch(err => {
+    console.error('error: ', err);
+});
 
 async function support({ amount = null, sign_id = null, share_id = null }) {
   if (currentAccount() == null) { 
@@ -118,8 +121,7 @@ async function withdraw() {
     alert('请先登录');
     return;
   }
-  const contract = await eos().contract('signature.bp');
-  return await contract.claim() ;
+  return await claim() ;
 };
 
 function transferEOS({ amount = 0, memo = '' }) {
@@ -236,6 +238,7 @@ async function getMaxSignId() {
 */
 
 export {
-  ezpublishOnChain, publishOnChain, claim, transferEOS, support, action_support,
-  withdraw, getMaxShareId, getMaxSignId, getPlayerIncome, getGoods,
+  ezpublishOnChain, publishOnChain, 
+  support, withdraw,
+  getPlayerIncome,
 };
