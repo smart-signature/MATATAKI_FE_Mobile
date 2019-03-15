@@ -26,23 +26,22 @@
           4.0k 已贊助
       </div>
       <div style="float:right;white-space:nowrap;" >
-        <div class="supported" v-if="isSupported">
-          <za-button class="button-support"
-            size='xl' theme="primary"
-            disabled>支持</za-button>
-          <za-button class="button-supershare"
-            size='xl' theme="primary"
-            @click="supershare">超分享</za-button>
-        </div>
-        <div class="not-support-yet" v-else>
-          <za-button class="button-support"
-            size='xl' theme="primary"
-            @click="support">支持</za-button>
-          <za-button class="button-share"
-            size='xl' theme="primary"
-            :data-clipboard-text="getClipboard"
-            @click="share">分享</za-button>
-        </div>
+        <za-button class="button-support" v-if="isSupported"
+          size='xl' theme="primary" 
+          disabled>
+          支持
+        </za-button>
+        <za-button class="button-support" v-else
+          size='xl' theme="primary"
+          @click="support">
+          支持
+        </za-button>
+        <za-button class="button-share"
+          size='xl' theme="primary"
+          :data-clipboard-text="getClipboard"
+          @click="share">
+          分享
+        </za-button>
       </div>
       <!-- <za-toast :visible.sync="toastvisible" @close="toastClose" :duration="1000">ok</za-toast> -->
     </footer>
@@ -138,9 +137,6 @@ export default {
         alert('该浏览器不支持自动复制');
         clipboard.destroy();
       })
-    },
-    supershare() {
-      // to be deleted.      
     },
     toastClose(reason, event) {
       console.log(reason, event);
