@@ -63,7 +63,6 @@
 <script>
 import { mapGetters } from 'vuex';
 import { getPlayerIncome } from '../api/signature';
-import API from '../api/scatter.js';
 import ArticlesList from './Home/ArticlesList.vue';
 
 export default {
@@ -113,7 +112,7 @@ export default {
     const playerincome = await getPlayerIncome();
     this.playerincome = playerincome[0] || 0;
     const user = this.isMe ? '我' : this.username;
-    document.title = `${this.username} 的用户页 - SmartSignature`;
+    document.title = `${user} 的用户页 - SmartSignature`;
   },
 };
 </script>
