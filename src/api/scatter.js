@@ -18,7 +18,7 @@ ScatterJS.plugins( new ScatterEOS() );
 const rpc = new JsonRpc(config.network.fullhost());
 
 // @trick: use function to lazy eval Scatter eos, in order to avoid no ID problem.
-const eos = () => ScatterJS.eos(config.network, Api, {rpc, beta3:true});
+const eos = ScatterJS.eos(config.network, Api, {rpc, beta3:true});
 
 // const account = ScatterJS.account('eos');
 const currentEOSAccount = () => ScatterJS.identity && ScatterJS.identity.accounts.find(x => x.blockchain === 'eos');

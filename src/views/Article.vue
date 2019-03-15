@@ -123,9 +123,8 @@ export default {
       const amount = parseFloat(amountStr);
       console.log(amount);
       // todo(minakokojima): fetch correct shareId
-      const shareId = null;
-      const { hash } = this;
-      support({ amount, hash, shareId });
+      // const { hash } = this;
+      support({ amount, sign_id: null, share_Id:null });
     },
     share() {
       const clipboard = this.copyBtn;

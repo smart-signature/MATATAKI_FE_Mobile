@@ -84,16 +84,15 @@ const claim = () => {
   });
 };
 
-async function support({ amount = null, hash = null, share_id = null }) {
-  if (currentEOSAccount() == null) { 
+async function support({ amount = null, sign_id = null, share_id = null }) {
+  if (currentAccount() == null) { 
     alert('请先登录'); 
     return;
   }
-  const contract = await eos().contract('signature.bp');
-  const sign = await contract.getSignbyhash(hash);
-  return await contract.action_support({
+  // const sign = await getSignbyhash({hash});
+  return await action_support({
     amount,
-    sign_id: sign.id,
+    sign_id,
     share_id,
   });
 }
@@ -115,7 +114,7 @@ const action_support = ({amount = null, sign_id = null, share_id = null,}) => {
 }
 
 async function withdraw() {
-  if (currentEOSAccount() == null) {
+  if (currentAccount() == null) {
     alert('请先登录');
     return;
   }
@@ -131,7 +130,10 @@ function transferEOS({ amount = 0, memo = '' }) {
       {
         account: 'eosio.token',
         name: 'transfer',
-        authorization: [`${currentAccount().name}@${currentAccount().authority}`],
+        authorization: [{
+          actor: currentAccount().name,
+          permission: currentAccount().authority,
+        }],
         data: {
           from: currentAccount().name,
           to: 'signature.bp',
@@ -157,24 +159,23 @@ const getPlayerIncome = (name) => {
   });
   return rows;
 }
-
+/*
 async function getSignbyhash({ hash = null }) {
   if (hash == null) {
     alert('hash cant be null');
     return;
   }
-  const resp = await eosapi.get_table_rows({
+  const resp = await eosapi.getTableRows({
     json: true,
     code: 'signature.bp',
     scope: 'signature.bp',
     table: 'signs',
-    table_key: 'hash',
     lower_bound: hash,
     limit: 1,
   });
   console.log(resp.rows);
   return resp;
-}
+}*/
 
 async function getSharesInfo() {
   const { rows } = await eosapi.getTableRows({
@@ -236,5 +237,5 @@ async function getMaxSignId() {
 
 export {
   ezpublishOnChain, publishOnChain, claim, transferEOS, support, action_support,
-  getSignbyhash, withdraw, getMaxShareId, getMaxSignId, getPlayerIncome, getGoods,
+  withdraw, getMaxShareId, getMaxSignId, getPlayerIncome, getGoods,
 };
