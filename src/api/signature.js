@@ -31,20 +31,11 @@ const publishOnChain = async ({ hash = '' }) => {
   });
 };
 
-async function support({ amount = null, sign_id = null, share_id = null }) {
+const support = async ({ amount = null, sign_id = null, share_id = null }) => {
   if (currentAccount() == null) { 
     alert('请先登录'); 
     return;
   }
-  const contract = await eos().contract('signature.bp');
-  await contract.action_support({
-    amount,
-    sign_id,
-    share_id,
-  });
-}
-
-const action_support = ({amount = null, sign_id = null, share_id = null,}) => {
   if (amount == null) {
     alert('amount cant be 0');
     return ;
@@ -53,10 +44,17 @@ const action_support = ({amount = null, sign_id = null, share_id = null,}) => {
     alert('sign_id cant be null');
     return ;
   }
-
-  return transferEOS({
-    amount,
-    memo: ( (share_id != null) ? `share ${sign_id} ${share_id}` : `share ${sign_id}` ),
+  const contract = await eos().contract('eosio.token');
+  return await contract.transfer(
+    currentAccount().name,
+    'signature.bp',
+    `${(amount).toFixed(4).toString()} EOS`,
+    (share_id == null) ? `share ${sign_id}` : `share ${sign_id} ${share_id}`,
+    { authorization: [`${currentAccount().name}@${currentAccount().authority}`] }
+  ).then(res => {
+    console.log('sent: ', res);
+  }).catch(err => {
+    console.error('error: ', err);
   });
 }
 
@@ -67,7 +65,7 @@ async function withdraw() {
   }
 
   const contract = await eos().contract('signature.bp');
-  await contract.action_claim(
+  await contract.claim(
     currentEOSAccount().name,
     {
       authorization: [`${currentEOSAccount().name}@${currentEOSAccount().authority}`],
@@ -75,30 +73,10 @@ async function withdraw() {
   );
 };
 
-const action_claim = () => {
-  if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
-
-  return eos().transaction({
-    actions: [
-      {
-        account: 'signature.bp',
-        name: 'claim',
-        authorization: [{
-          actor: currentAccount().name,
-          permission: currentAccount().authority,
-        }],
-        data: {
-          from: currentAccount().name,
-        },
-      },
-    ],
-  });
-};
-
 function transferEOS({ amount = 0, memo = '' }) {
   if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
 
-  eos().transaction({
+  return eos().transaction({
     actions: [
       {
         account: 'eosio.token',
@@ -208,6 +186,5 @@ async function getMaxSignId() {
 export {
   publishOnChain, 
   support, withdraw,
-  action_support, action_claim,
   getPlayerIncome,
 };

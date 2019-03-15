@@ -28,27 +28,19 @@
       <div style="float:right;white-space:nowrap;" >
         <div class="supported" v-if="isSupported">
           <za-button class="button-support"
-            size='xl'
-            theme="primary"
-            disabled>支持
-          </za-button>
+            size='xl' theme="primary"
+            disabled>支持</za-button>
           <za-button class="button-supershare"
-            size='xl'
-            theme="primary"
-            @click="supershare">超分享
-          </za-button>
+            size='xl' theme="primary"
+            @click="supershare">超分享</za-button>
         </div>
         <div class="not-support-yet" v-else>
           <za-button class="button-support"
-            size='xl'
-            theme="primary"
-            @click="support">支持
-          </za-button>
+            size='xl' theme="primary"
+            @click="support">支持</za-button>
           <za-button class="button-share"
-            size='xl'
-            theme="primary"
-            @click="share">分享
-          </za-button>
+            size='xl' theme="primary"
+            @click="share">分享</za-button>
         </div>
       </div>
       <!-- <za-toast :visible.sync="toastvisible" @close="toastClose" :duration="1000">ok</za-toast> -->
@@ -121,16 +113,14 @@ export default {
     async support() {
       const amountStr = prompt('请输入打赏金额(EOS)', '');
       const amount = parseFloat(amountStr);
-      console.log(amount);
-      // todo(minakokojima): fetch correct shareId
+      console.log('amount :', amount);
       // const { hash } = this;
       
       // fetch sign_id
       const url = `http://api.smartsignature.io/post/${this.hash}`;
       const { data } = await axios.get(url);
       const sign_id = data.id;
-
-      support({ amount, sign_id, share_Id: null });
+      await support({ amount, sign_id, share_Id: null });
     },
     share() {
       const clipboard = this.copyBtn;
