@@ -55,7 +55,7 @@
           </Col>
       </Row>
     </div>
-    <!-- todo(minakokojima): 顯示該作者發表的文章。 !--> >
+    <!-- todo(minakokojima): 顯示該作者發表的文章。 !-->
     <ArticlesList ref="ArticlesList"/>
   </div>
 </template>
@@ -89,8 +89,8 @@ export default {
     withdraw() {
       API.withdraw();
     },
-    async getPlayerIncome() {
-      return API.getPlayerIncome(this.username);
+    getPlayerIncome() {
+      return API.getsignPlayerIncome(this.username);
     },
     goBack() {
       this.$router.go(-1);
@@ -117,8 +117,8 @@ export default {
   async created() {
     const playerincome = await this.getPlayerIncome();
     this.playerincome = playerincome[0] || 0;
-    const user = this.isMe ? "我" : this.username
-    document.title = `${this.username} 的用户页 - SmartSignature`
+    const user = this.isMe ? "我" : this.username;
+    document.title = `${this.username} 的用户页 - SmartSignature`;
   },
 };
 </script>

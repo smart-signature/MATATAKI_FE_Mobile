@@ -48,10 +48,12 @@ export default {
           title, author, content: markdownData, desc: 'whatever',
         });
         const { code, hash } = data;
+        console.log(data);
         if (code === 200) {
           alert('發布到鏈上... (這裡需要进度条)');
           console.log('Push action to signature.bp...');
           const { transaction_id } = await publishOnChain({hash,});
+          console.log(transaction_id);
           const data = await publishArticle({
             hash, title, author, transactionId: transaction_id, accountName: currentUsername,
           });

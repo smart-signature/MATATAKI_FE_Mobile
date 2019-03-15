@@ -1,22 +1,41 @@
 import ScatterJS from 'scatterjs-core';
-import ScatterEOS from 'scatterjs-plugin-eosjs';
-import Eos from 'eosjs';
+import ScatterEOS from 'scatterjs-plugin-eosjs2';
+import {JsonRpc, Api} from 'eosjs';
+import EosApi from 'eosjs-api';
 import * as config from '@/config';
 import PriceFormatter from './priceFormatter';
 
-ScatterJS.plugins(new ScatterEOS());
-
-// const account = 'signature.bp';
+// for eosjs-api
+const options = {
+  httpEndpoint: 'http://api.eosnewyork.io:80', // great one
+  verbose: false, // API logging
+}
+const eosapi = EosApi(options);
 
 // api https://get-scatter.com/docs/api-create-transaction
 
+ScatterJS.plugins( new ScatterEOS() );
+const rpc = new JsonRpc(config.network.fullhost());
+
 // @trick: use function to lazy eval Scatter eos, in order to avoid no ID problem.
-const eos = () => ScatterJS.scatter.eos(config.network.eos, Eos, { expireInSeconds: 60 });
-const currentEOSAccount = () => ScatterJS.scatter.identity && ScatterJS.scatter.identity.accounts.find(x => x.blockchain === 'eos');
+const eos = () => ScatterJS.eos(config.network, Api, {rpc, beta3:true});
+
+// const account = ScatterJS.account('eos');
+const currentEOSAccount = () => ScatterJS.identity && ScatterJS.identity.accounts.find(x => x.blockchain === 'eos');
+
+/*{
+  ScatterJS.login().then(id => {
+     return account;
+  }).catch(err => {
+    console.error('error: ', err);
+    return null ;
+  });
+};
+/* () => ScatterJS.identity && ScatterJS.identity.accounts.find(x => x.blockchain === 'eos'); */
 
 const API = {
   async getBalancesByContract({ tokenContract = 'eosio.token', accountName, symbol }) {
-    return eos().getCurrencyBalance(tokenContract, accountName, symbol);
+    return eosapi.getCurrencyBalance(tokenContract, accountName, symbol);
   },
   install(Vue) {
     Object.defineProperties(Vue.prototype, {
@@ -28,18 +47,19 @@ const API = {
     });
   },
   connectScatterAsync() {
-    return ScatterJS.scatter.connect(config.appScatterName, { initTimeout: 2000 });
+    return ScatterJS.connect(config.appScatterName, {network:config.network});
   },
   suggestNetworkAsync() {
-    return ScatterJS.scatter.suggestNetwork(config.network.eos);
+    return ScatterJS.suggestNetwork(config.network.eos);
   },
   loginScatterAsync() {
     const requiredFields = { accounts: [config.network.eos] };
-    return ScatterJS.scatter.getIdentity(requiredFields);
+    return ScatterJS.login(); /* ScatterJS.getIdentity(requiredFields); */
   },
   logoutScatterAsync() {
-    return ScatterJS.scatter.forgetIdentity();
+    return ScatterJS.scatter.logout();
   },
+  /*
   transferEOSAsync({
     to,
     memo = '',
@@ -70,7 +90,7 @@ const API = {
         authorization: [`${currentEOSAccount().name}@${currentEOSAccount().authority}`],
       },
     );
-  },
+  },*/
   async withdraw() {
     if (currentEOSAccount() == null) { 
       alert('请先登录');
@@ -97,8 +117,8 @@ const API = {
       share_id,
     });
   },
-  async getPlayerIncome(name) {
-    const { rows } = await eos().getTableRows({
+  async getsignPlayerIncome(name){
+    const { rows } = eosapi.getTableRows({
       json: true,
       code: 'signature.bp',
       scope: name,
@@ -108,7 +128,7 @@ const API = {
     return rows;
   },
   getPublicKey() {
-    return ScatterJS.scatter.getPublicKey('eos').then(publicKey => {
+    return ScatterJS.getPublicKey('eos').then(publicKey => {
       console.log(publicKey);
       return publicKey ;
     }).catch(error => {
@@ -116,7 +136,7 @@ const API = {
     });
   },
   getArbitrarySignatureAsync({publicKey, data}) {
-    return ScatterJS.scatter.getArbitrarySignature({publicKey, data}).then(signature => {
+    return ScatterJS.getArbitrarySignature({publicKey, data}).then(signature => {
       console.log({publicKey, data, signature});
       return signature ;
     }).catch(error => {
@@ -127,4 +147,4 @@ const API = {
 
 
 export default API;
-export { eos, currentEOSAccount };
+export { eos, eosapi, currentEOSAccount };

@@ -1,12 +1,12 @@
-import { eos, currentEOSAccount as currentAccount } from './scatter';
+import { eos, eosapi, currentEOSAccount as currentAccount } from './scatter';
 
 const publishOnChain = async ({hash = '',}) => {
   if (currentAccount() == null) { 
     alert('请先登录'); 
-    throw new Error('NOT-LOGINED'); }
-  return eos().transaction({
-    actions: [
-      {
+    throw new Error('NOT-LOGINED');
+  }
+  return await eos().transact({
+    actions: [{
         account: 'signature.bp',
         name: 'publish',
         authorization: [{
@@ -14,26 +14,31 @@ const publishOnChain = async ({hash = '',}) => {
           permission: currentAccount().authority,
         }],
         data: {
-          'sign':
-          {
+          sign: {
+            id: "0", /* 一定會被覆蓋 */
             author: currentAccount().name,
-            fission_factor: 2000,
-            id: 0, /* 一定會被覆蓋 */
+            fission_factor: "2000",
             ipfs_hash: hash,
             /* 下面兩個需要一個預設值 */
             public_key: 'EOS5P9HXdVTcAVMph4ZppDKBMkBuT6ihnkLqTUrVFBtGR94cPjykJ',
-            signature: 'SIG_K1_KZU9PyXP8YAePjCfCcmBjGHARkvTVDjKpKvVgS6XL8o2FXTXUdhP3rqrL38dJYgJo2WNBdYubsY9LKTo47RUUE4N3ZHjZQ'
-          }
+            signature: 'SIG_K1_KZU9PyXP8YAePjCfCcmBjGHARkvTVDjKpKvVgS6XL8o2FXTXUdhP3rqrL38dJYgJo2WNBdYubsY9LKTo47RUUE4N3ZHjZQ',
+          },
         },
-      },
-    ],
+    }]
+  }, {
+      blocksBehind: 3,
+      expireSeconds: 30,
+  }).then(res => {
+      console.log('sent: ', res);
+  }).catch(err => {
+      console.error('error: ', err);
   });
 };
 
 const claim = (callback) => {
   if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
 
-  return eos().transaction({
+  return eos.transact({
     actions: [
       {
         account: 'signature.bp',
@@ -53,15 +58,12 @@ const claim = (callback) => {
 function transferEOS({ amount = 0, memo = '' }) {
   if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
 
-  eos().transaction({
+  eos.transact({
     actions: [
       {
         account: 'eosio.token',
         name: 'transfer',
-        authorization: [{
-          actor: currentAccount().name,
-          permission: currentAccount().authority,
-        }],
+        authorization: [`${currentAccount().name}@${currentAccount().authority}`],
         data: {
           from: currentAccount().name,
           to: 'signature.bp',
@@ -98,7 +100,7 @@ async function getSignbyhash({ hash = null }) {
     alert('hash cant be null');
     return;
   }
-  const resp = await eos().get_table_rows({
+  const resp = await eosapi.get_table_rows({
     json: true,
     code: 'signature.bp',
     scope: 'signature.bp',
@@ -112,7 +114,7 @@ async function getSignbyhash({ hash = null }) {
 }
 
 async function getSharesInfo() {
-  const { rows } = await eos().getTableRows({
+  const { rows } = await eosapi.getTableRows({
     json: true,
     code: 'signature.bp',
     scope: 'signature.bp',
@@ -123,7 +125,7 @@ async function getSharesInfo() {
 }
 
 async function getSignsInfo() {
-  const { rows } = await eos().getTableRows({
+  const { rows } = await eosapi.getTableRows({
     json: true,
     code: 'signature.bp',
     scope: 'signature.bp',
@@ -132,9 +134,9 @@ async function getSignsInfo() {
   });
   return rows;
 }
-
+/*
 async function getGoods() {
-  const { rows } = await eos().getTableRows({
+  const { rows } = await eosapi().getTableRows({
     json: true,
     code: 'signature.bp',
     scope: 'signature.bp',
@@ -143,9 +145,9 @@ async function getGoods() {
   });
   return rows;
 }
-
-async function getPlayerIncome(name) {
-  const { rows } = await eos().getTableRows({
+*/
+const getPlayerIncome = (name) => {
+  const { rows } = eosapi.getTableRows({
     json: true,
     code: 'signature.bp',
     scope: name,
@@ -154,7 +156,7 @@ async function getPlayerIncome(name) {
   });
   return rows;
 }
-
+/*
 async function getMaxShareId() {
   const rows = await getSharesInfo();
   const len = rows.length;
@@ -176,5 +178,6 @@ async function getMaxSignId() {
   }
   return maxId;
 }
-
-export { publishOnChain, claim, transferEOS, support, getSignbyhash };
+*/
+export { publishOnChain, claim, transferEOS, support,
+         getSignbyhash, getPlayerIncome };
