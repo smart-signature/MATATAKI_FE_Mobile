@@ -1,4 +1,4 @@
-import { eos, eosapi, currentEOSAccount as currentAccount } from './scatter';
+import { eos, currentEOSAccount as currentAccount } from './scatter';
 
 const publishOnChain = async ({ hash = '' }) => {
   if (currentAccount() == null) {
