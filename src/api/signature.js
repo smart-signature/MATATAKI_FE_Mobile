@@ -31,7 +31,7 @@ const publishOnChain = async ({ hash = '' }) => {
   });
 };
 
-const support = async ({ amount = null, sign_id = null, share_id = null }) => {
+async function support({ amount = null, sign_id = null, share_id = null }) {
   if (currentAccount() == null) { 
     alert('请先登录'); 
     return;
@@ -44,17 +44,10 @@ const support = async ({ amount = null, sign_id = null, share_id = null }) => {
     alert('sign_id cant be null');
     return ;
   }
-  const contract = await eos().contract('eosio.token');
-  return await contract.transfer(
-    currentAccount().name,
-    'signature.bp',
-    `${(amount).toFixed(4).toString()} EOS`,
-    (share_id == null) ? `share ${sign_id}` : `share ${sign_id} ${share_id}`,
-    { authorization: [`${currentAccount().name}@${currentAccount().authority}`] }
-  ).then(res => {
-    console.log('sent: ', res);
-  }).catch(err => {
-    console.error('error: ', err);
+
+  return transferEOS({
+    amount,
+    memo: ( (share_id != null) ? `share ${sign_id} ${share_id}` : `share ${sign_id}` ),
   });
 }
 
@@ -65,7 +58,7 @@ async function withdraw() {
   }
 
   const contract = await eos().contract('signature.bp');
-  await contract.claim(
+  await contract.action_claim(
     currentEOSAccount().name,
     {
       authorization: [`${currentEOSAccount().name}@${currentEOSAccount().authority}`],
@@ -73,10 +66,30 @@ async function withdraw() {
   );
 };
 
-function transferEOS({ amount = 0, memo = '' }) {
+const action_claim = () => {
   if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
 
   return eos().transaction({
+    actions: [
+      {
+        account: 'signature.bp',
+        name: 'claim',
+        authorization: [{
+          actor: currentAccount().name,
+          permission: currentAccount().authority,
+        }],
+        data: {
+          from: currentAccount().name,
+        },
+      },
+    ],
+  });
+};
+
+function transferEOS({ amount = 0, memo = '' }) {
+  if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
+
+  eos().transaction({
     actions: [
       {
         account: 'eosio.token',
@@ -186,5 +199,6 @@ async function getMaxSignId() {
 export {
   publishOnChain, 
   support, withdraw,
+  action_claim,
   getPlayerIncome,
 };
