@@ -145,6 +145,8 @@ Button.publish {
 }
 .publish-icon{
   margin: -5px -6px;
+  margin-left: -8px;
+  line-height: 16px;
 }
 .MyBanner {
   margin-top: 28px;
