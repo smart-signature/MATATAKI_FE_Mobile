@@ -1,4 +1,5 @@
 import { eos, currentEOSAccount as currentAccount } from './scatter';
+const SIGNATURE_CONTRACT = 'signature.bp'
 
 const publishOnChain = async ({ hash = '' }) => {
   if (currentAccount() == null) {
@@ -8,7 +9,7 @@ const publishOnChain = async ({ hash = '' }) => {
   return eos().transaction({
     actions: [
       {
-        account: 'signature.bp',
+        account: SIGNATURE_CONTRACT,
         name: 'publish',
         authorization: [{
           actor: currentAccount().name,
@@ -36,15 +37,6 @@ async function support({ amount = null, sign_id = null, share_id = null }) {
     alert('请先登录'); 
     return;
   }
-  const contract = await eos().contract('signature.bp');
-  await contract.action_support({
-    amount,
-    sign_id,
-    share_id,
-  });
-}
-
-const action_support = ({amount = null, sign_id = null, share_id = null,}) => {
   if (amount == null) {
     alert('amount cant be 0');
     return ;
@@ -66,22 +58,14 @@ async function withdraw() {
     return;
   }
 
-  const contract = await eos().contract('signature.bp');
-  await contract.action_claim(
-    currentEOSAccount().name,
-    {
-      authorization: [`${currentEOSAccount().name}@${currentEOSAccount().authority}`],
-    },
-  );
-};
+  const contract = await eos().contract(SIGNATURE_CONTRACT);
 
-const action_claim = () => {
   if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
 
   return eos().transaction({
     actions: [
       {
-        account: 'signature.bp',
+        account: SIGNATURE_CONTRACT,
         name: 'claim',
         authorization: [{
           actor: currentAccount().name,
@@ -94,7 +78,6 @@ const action_claim = () => {
     ],
   });
 };
-
 function transferEOS({ amount = 0, memo = '' }) {
   if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
 
@@ -109,7 +92,7 @@ function transferEOS({ amount = 0, memo = '' }) {
         }],
         data: {
           from: currentAccount().name,
-          to: 'signature.bp',
+          to: SIGNATURE_CONTRACT,
           quantity: `${(amount).toFixed(4).toString()} EOS`,
           memo,
         },
@@ -125,7 +108,7 @@ function transferEOS({ amount = 0, memo = '' }) {
 async function getPlayerIncome(name) {
   const { rows } = await eos().getTableRows({
     json: true,
-    code: 'signature.bp',
+    code: SIGNATURE_CONTRACT,
     scope: name,
     table: 'players',
     limit: 10000,
@@ -140,8 +123,8 @@ async function getSignbyhash({ hash = null }) {
   }
   const resp = await eosapi.getTableRows({
     json: true,
-    code: 'signature.bp',
-    scope: 'signature.bp',
+    code: SIGNATURE_CONTRACT,
+    scope: SIGNATURE_CONTRACT,
     table: 'signs',
     lower_bound: hash,
     limit: 1,
@@ -153,8 +136,8 @@ async function getSignbyhash({ hash = null }) {
 async function getSharesInfo() {
   const { rows } = await eosapi.getTableRows({
     json: true,
-    code: 'signature.bp',
-    scope: 'signature.bp',
+    code: SIGNATURE_CONTRACT,
+    scope: SIGNATURE_CONTRACT,
     table: 'shares',
     limit: 10000,
   });
@@ -164,8 +147,8 @@ async function getSharesInfo() {
 async function getSignsInfo() {
   const { rows } = await eosapi.getTableRows({
     json: true,
-    code: 'signature.bp',
-    scope: 'signature.bp',
+    code: SIGNATURE_CONTRACT,
+    scope: SIGNATURE_CONTRACT,
     table: 'signs',
     limit: 10000,
   });
@@ -175,8 +158,8 @@ async function getSignsInfo() {
 async function getGoods() {
   const { rows } = await eosapi().getTableRows({
     json: true,
-    code: 'signature.bp',
-    scope: 'signature.bp',
+    code: SIGNATURE_CONTRACT,
+    scope: SIGNATURE_CONTRACT,
     table: 'goods',
     limit: 10000,
   });
@@ -203,11 +186,11 @@ async function getMaxSignId() {
     }
   }
   return maxId;
-}*/
+}
+*/
 
 export {
-  publishOnChain, 
+  publishOnChain,
   support, withdraw,
-  action_support, action_claim,
   getPlayerIncome,
 };

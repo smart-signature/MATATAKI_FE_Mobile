@@ -26,30 +26,22 @@
           4.0k 已贊助
       </div>
       <div style="float:right;white-space:nowrap;" >
-        <div class="supported" v-if="isSupported">
-          <za-button class="button-support"
-            size='xl'
-            theme="primary"
-            disabled>支持
-          </za-button>
-          <za-button class="button-supershare"
-            size='xl'
-            theme="primary"
-            @click="supershare">超分享
-          </za-button>
-        </div>
-        <div class="not-support-yet" v-else>
-          <za-button class="button-support"
-            size='xl'
-            theme="primary"
-            @click="support">支持
-          </za-button>
-          <za-button class="button-share"
-            size='xl'
-            theme="primary"
-            @click="share">分享
-          </za-button>
-        </div>
+        <za-button class="button-support" v-if="isSupported"
+          size='xl' theme="primary" 
+          disabled>
+          支持
+        </za-button>
+        <za-button class="button-support" v-else
+          size='xl' theme="primary"
+          @click="support">
+          支持
+        </za-button>
+        <za-button class="button-share"
+          size='xl' theme="primary"
+          :data-clipboard-text="getClipboard"
+          @click="share">
+          分享
+        </za-button>
       </div>
       <!-- <za-toast :visible.sync="toastvisible" @close="toastClose" :duration="1000">ok</za-toast> -->
     </footer>
@@ -62,6 +54,7 @@ import axios from 'axios';
 import { mavonEditor } from 'mavon-editor';
 import { support } from '../api/signature.js';
 import API from '../api/scatter.js';
+import Clipboard from 'clipboard';
 import 'mavon-editor/dist/css/index.css';
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
@@ -75,9 +68,7 @@ export default {
   },
   computed: {
     ...mapState(['scatterAccount']),
-    compiledMarkdown() {
-      return markdownIt.render(this.post.content);
-    },
+    ...mapGetters(['currentUsername']),
     isLogined() {
       return this.scatterAccount !== null;
     },
@@ -86,7 +77,20 @@ export default {
       return false;
     },
     updateTitle() {
-
+    },
+    compiledMarkdown() {
+      return markdownIt.render(this.post.content);
+    },
+    getClipboard() {
+      const {currentUsername, scatterAccount} = this;
+      // todo(minakokojima): figure out what is the different between following variables.
+      // alert(currentUsername);
+      // alert(scatterAccount.name);
+      if (this.isLogined) {
+        return `${window.location.href}/?#/invite/${currentUsername}`;
+      } else {
+        return window.location.href; 
+      }     
     },
   },
   data: () => ({
@@ -95,21 +99,14 @@ export default {
       title: 'Loading...',
       content: '**Please wait for connection to IPFS**',
       desc: '',
+      board: '',
     },
-    copyBtn: null, // 存储初始化复制按钮事件
     toastvisible: false,
   }),
   watch: {
     post({ author, title }) {
       document.title = `${title} by ${author} - Smart Signature`;
     },
-  },
-  mounted() {
-    this.copyBtn = new this.clipboard('.button-share', {
-      text() {
-        return window.location.href;
-      },
-    });
   },
   methods: {
     async getArticleData() {
@@ -121,43 +118,25 @@ export default {
     async support() {
       const amountStr = prompt('请输入打赏金额(EOS)', '');
       const amount = parseFloat(amountStr);
-      console.log(amount);
-      // todo(minakokojima): fetch correct shareId
+      console.log('amount :', amount);
       // const { hash } = this;
       
       // fetch sign_id
       const url = `http://api.smartsignature.io/post/${this.hash}`;
       const { data } = await axios.get(url);
       const sign_id = data.id;
-
-      support({ amount, sign_id, share_Id: null });
+      await support({ amount, sign_id, share_Id: null });
     },
     share() {
-      const clipboard = this.copyBtn;
-      clipboard.on('success', () => {
-        alert('复制成功！');
-        // _this.$zaToast('复制成功！');
-        // toastvisible = true;
-      });
-      clipboard.on('error', () => {
-        alert('复制失败！');
-        // _this.$zaToast('复制失败！這不該出現！');
-        // toastvisible = true;
-      });
-    },
-    supershare() {
-      API.share(this.hash);
-      const clipboard = this.copyBtn;
-      clipboard.on('success', () => {
-        alert('复制成功！');
-        // _this.$zaToast('复制成功！');
-        // toastvisible = true;
-      });
-      clipboard.on('error', () => {
-        alert('复制失败！');
-        // _this.$zaToast('复制失败！這不該出現！');
-        // toastvisible = true;
-      });
+      var clipboard = new Clipboard('.button-share');
+      clipboard.on('success', e => {
+        alert('复制成功');
+        clipboard.destroy();
+      })
+      clipboard.on('error', e => {
+        alert('该浏览器不支持自动复制');
+        clipboard.destroy();
+      })
     },
     toastClose(reason, event) {
       console.log(reason, event);
@@ -167,6 +146,7 @@ export default {
     },
   },
   created() {
+    this.board = this.getClipboard;
     this.getArticleData();
     document.title = '正在加载文章 - Smart Signature';
   },
