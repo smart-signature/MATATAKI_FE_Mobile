@@ -1,66 +1,66 @@
 <template>
-  <div class="home" @click="addShow=false">
-    <div class="head">
-      <link rel="icon" type="image/png" sizes="32x32" href="./img/Andoromeda logo@2x.png">
-      <link rel="icon" type="image/png" sizes="16x16" href="./img/Andoromeda logo.png">
-      <!-- <div style="float:left">
-        <img src="/img/Andoromeda logo.png" alt="Andoromeda logo">
+  <div class='home' @click='addShow=false'>
+    <div class='head'>
+      <link rel='icon' type='image/png' sizes='32x32' href='./img/Andoromeda logo@2x.png'>
+      <link rel='icon' type='image/png' sizes='16x16' href='./img/Andoromeda logo.png'>
+      <!-- <div style='float:left'>
+        <img src='/img/Andoromeda logo.png' alt='Andoromeda logo'>
       Andoromeda</div>-->
-      <!-- <Button class="publish" @click="$router.push({name: 'Publish'})">
-        <za-icon class="publish-icon" type="add"/>1
+      <!-- <Button class='publish' @click='$router.push({name: 'Publish'})'>
+        <za-icon class='publish-icon' type='add'/>1
       </Button>-->
-      <div class="add">
-        <Button class="publish">
-          <za-icon class="publish-icon" type="add" @click.stop="addShow=!addShow"/>
+      <div class='add'>
+        <Button class='publish'>
+          <za-icon class='publish-icon' type='add' @click.stop='addShow=!addShow'/>
         </Button>
-        <div v-show="addShow" class="add-menu">
-          <a href="javascript:void(0);">搬运</a>
-          <a href="javascript:void(0);" @click="$router.push({name: 'Publish'})">新建</a>
+        <div v-show='addShow' class='add-menu'>
+          <a href='javascript:void(0);'>搬运</a>
+          <a href='javascript:void(0);' @click='$router.push({name: 'Publish'})'>新建</a>
         </div>
       </div>
 
-      <!-- <div class="logined" v-if="isLogined">
+      <!-- <div class='logined' v-if='isLogined'>
           <p
-            @click="$router.push({ name: 'User', params: {username: currentUsername } })"
-            class="username"
+            @click='$router.push({ name: 'User', params: {username: currentUsername } })'
+            class='username'
           >{{currentUsername}}</p>
       </div>-->
-      <!-- <div class="not-login-yet" style="float:right" v-else>
+      <!-- <div class='not-login-yet' style='float:right' v-else>
           <za-button
             size='xs'
-            @click="loginWithWallet">登录
+            @click='loginWithWallet'>登录
           </za-button>
-          <za-button size="xs" slot="description" @click="visible1 = true">En</za-button>
+          <za-button size='xs' slot='description' @click='visible1 = true'>En</za-button>
           <za-actionsheet
-            :visible.sync="visible1" :actions="actions1"
-            :showCancel="false" @cancel="cancelCb">
+            :visible.sync='visible1' :actions='actions1'
+            :showCancel='false' @cancel='cancelCb'>
           </za-actionsheet>
       </div>-->
-      <div class="titles">
-        <h1 class="title">-SmartSignature-</h1>
-        <h2 class="subtitle">首个EOS去中心化智能签名项目</h2>
-        <Button @click="$router.push({name: 'About'})" style="margin-top: 17px;">规则说明</Button>
+      <div class='titles'>
+        <h1 class='title'>-SmartSignature-</h1>
+        <h2 class='subtitle'>首个EOS去中心化智能签名项目</h2>
+        <Button @click='$router.push({name: 'About'})' style='margin-top: 17px;'>规则说明</Button>
       </div>
     </div>
     <MyBanner/>
-    <ArticlesList ref="ArticlesList"/>
+    <ArticlesList ref='ArticlesList'/>
   </div>
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions } from "vuex";
-import MyBanner from "./MyBanner.vue";
-import ArticlesList from "./ArticlesList.vue";
+import { mapState, mapGetters, mapActions } from 'vuex';
+import MyBanner from './MyBanner.vue';
+import ArticlesList from './ArticlesList.vue';
 
 export default {
-  name: "Home",
+  name: 'Home',
   components: { ArticlesList, MyBanner },
   created() {
-    document.title = "首页 - SmartSignature";
+    document.title = '首页 - SmartSignature';
   },
   computed: {
-    ...mapState(["scatterAccount"]),
-    ...mapGetters(["currentUsername"]),
+    ...mapState(['scatterAccount']),
+    ...mapGetters(['currentUsername']),
     isLogined() {
       return this.scatterAccount !== null;
     }
@@ -70,21 +70,21 @@ export default {
       visible1: false,
       actions1: [
         {
-          text: "English",
-          onClick: () => console.log("action 1")
+          text: 'English',
+          onClick: () => console.log('action 1')
         },
         {
-          text: "简体中文",
-          onClick: () => console.log("action 2")
+          text: '简体中文',
+          onClick: () => console.log('action 2')
         },
         {
-          text: "日本語",
-          onClick: () => console.log("action 2")
+          text: '日本語',
+          onClick: () => console.log('action 2')
         },
         {
-          theme: "error",
-          text: "取消",
-          onClick: () => console.log("action 3")
+          theme: 'error',
+          text: '取消',
+          onClick: () => console.log('action 3')
         }
       ],
       addShow: false // 显示新增菜单
@@ -92,10 +92,10 @@ export default {
   },
   methods: {
     ...mapActions([
-      "connectScatterAsync",
-      "suggestNetworkAsync",
-      "loginScatterAsync",
-      "logoutScatterAsync"
+      'connectScatterAsync',
+      'suggestNetworkAsync',
+      'loginScatterAsync',
+      'logoutScatterAsync'
     ]),
     cancelCb(reason, event) {
       console.log(reason, event);
@@ -107,10 +107,10 @@ export default {
         await this.suggestNetworkAsync();
         await this.loginScatterAsync();
       } catch (e) {
-        console.warn("Unable to connect wallets");
+        console.warn('Unable to connect wallets');
         this.$Modal.error({
-          title: "无法与你的钱包建立链接",
-          content: "请检查钱包是否打开并解锁",
+          title: '无法与你的钱包建立链接',
+          content: '请检查钱包是否打开并解锁',
         });
       }
     },
@@ -174,7 +174,7 @@ button.publish {
 }
 .add::after {
   display: block;
-  content: "";
+  content: '';
   width: 0;
   height: 0;
   clear: both;
@@ -188,7 +188,7 @@ button.publish {
 }
 .add .add-menu::after {
   display: block;
-  content: "";
+  content: '';
   width: 0;
   height: 0;
   position: absolute;

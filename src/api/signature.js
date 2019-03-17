@@ -43,7 +43,7 @@ async function support({ amount = null, sign_id = null, share_id = null }) {
   }
   if (sign_id == null) {
     alert('sign_id cant be null');
-    return ;
+    return;
   }
 
   return transferEOS({
@@ -100,6 +100,7 @@ function transferEOS({ amount = 0, memo = '' }) {
     ],
   }).then((result) => {
     alert('publish success!');
+    console.log(result);
   }).catch((error) => {
     alert(`error:${JSON.stringify(error)}`);
   });
