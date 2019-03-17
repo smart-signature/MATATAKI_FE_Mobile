@@ -110,7 +110,7 @@ export default {
   },
   methods: {
     async getArticleData() {
-      const url = `http://api.smartsignature.io/ipfs/catJSON/${this.hash}`;
+      const url = `https://api.smartsignature.io/ipfs/catJSON/${this.hash}`;
       const { data } = await axios.get(url);
       this.post = data.data;
       console.info(data);
@@ -122,7 +122,7 @@ export default {
       // const { hash } = this;
       
       // fetch sign_id
-      const url = `http://api.smartsignature.io/post/${this.hash}`;
+      const url = `https://api.smartsignature.io/post/${this.hash}`;
       const { data } = await axios.get(url);
       const sign_id = data.id;
       await support({ amount, sign_id, share_Id: null });

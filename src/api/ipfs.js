@@ -1,7 +1,7 @@
 import axios from 'axios';
 import qs from 'qs';
 
-const server = 'http://api.smartsignature.io/ipfs/';
+const server = 'https://api.smartsignature.io/ipfs/';
 
 function sendPost({
   title, author, desc, content,

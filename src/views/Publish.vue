@@ -19,7 +19,7 @@
   import { mapGetters } from 'vuex';
   import { sendPost } from '@/api/ipfs';
   import API from '@/api/scatter.js';
-  import { publishArticle, publishArticle2 } from '@/api/backend';
+  import { publishArticle } from '@/api/backend';
   import { mavonEditor } from 'mavon-editor';
   // MarkdownIt 实例
   const mdit = mavonEditor.getMarkdownIt();
@@ -65,8 +65,7 @@
                   title: '发送失败',
                 });
               } else {
-
-                publishArticle2({
+                publishArticle({
                   author, title, hash, publicKey, signature, username
                 }).then(() => {
                   _this.$Notice.success({
