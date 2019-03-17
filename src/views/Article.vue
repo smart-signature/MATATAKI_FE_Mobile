@@ -27,7 +27,7 @@
       </div>
       <div style="float:right;white-space:nowrap;" >
         <za-button class="button-support" v-if="isSupported"
-          size='xl' theme="primary" 
+          size='xl' theme="primary"
           disabled>
           支持
         </za-button>
@@ -43,7 +43,8 @@
           分享
         </za-button>
       </div>
-      <!-- <za-toast :visible.sync="toastvisible" @close="toastClose" :duration="1000">ok</za-toast> -->
+      <!-- <za-toast :visible.sync="toastvisible"
+      @close="toastClose" :duration="1000">ok</za-toast> -->
     </footer>
   </div>
 </template>
@@ -51,10 +52,9 @@
 <script>
 import { mapState, mapGetters } from 'vuex';
 import axios from 'axios';
-import { mavonEditor } from 'mavon-editor';
-import { support } from '../api/signature.js';
-import API from '../api/scatter.js';
 import Clipboard from 'clipboard';
+import { mavonEditor } from 'mavon-editor';
+import { support } from '../api/signature';
 import 'mavon-editor/dist/css/index.css';
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
@@ -77,20 +77,20 @@ export default {
       return false;
     },
     updateTitle() {
+      return false;
     },
     compiledMarkdown() {
       return markdownIt.render(this.post.content);
     },
     getClipboard() {
-      const {currentUsername, scatterAccount} = this;
+      const { currentUsername } = this;
       // todo(minakokojima): figure out what is the different between following variables.
       // alert(currentUsername);
       // alert(scatterAccount.name);
       if (this.isLogined) {
         return `${window.location.href}/?#/invite/${currentUsername}`;
-      } else {
-        return window.location.href; 
-      }     
+      }
+      return window.location.href;
     },
   },
   data: () => ({
@@ -120,23 +120,24 @@ export default {
       const amount = parseFloat(amountStr);
       console.log('amount :', amount);
       // const { hash } = this;
-      
       // fetch sign_id
       const url = `https://api.smartsignature.io/post/${this.hash}`;
       const { data } = await axios.get(url);
-      const sign_id = data.id;
-      await support({ amount, sign_id, share_Id: null });
+      const signId = data.id;
+      await support({ amount, signId, share_Id: null });
     },
     share() {
-      var clipboard = new Clipboard('.button-share');
-      clipboard.on('success', e => {
+      const clipboard = new Clipboard('.button-share');
+      clipboard.on('success', (e) => {
         alert('复制成功');
+        console.log(e);
         clipboard.destroy();
-      })
-      clipboard.on('error', e => {
+      });
+      clipboard.on('error', (e) => {
         alert('该浏览器不支持自动复制');
+        console.log(e);
         clipboard.destroy();
-      })
+      });
     },
     toastClose(reason, event) {
       console.log(reason, event);

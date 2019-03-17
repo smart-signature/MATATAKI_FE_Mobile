@@ -37,7 +37,7 @@ const API = {
       const permissions = result.permissions.find(x => x.perm_name === account.authority)
       
       // 获取当前权限的public key
-      const publicKey = permissions.required_auth.keys[0].key
+      const publicKey = permissions.required_auth.keys[0].key;
 
       // 需要签名的数据
       const sign_data = `${author} ${hash}`;

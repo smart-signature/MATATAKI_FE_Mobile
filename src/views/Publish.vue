@@ -16,106 +16,94 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex';
-  import { sendPost } from '@/api/ipfs';
-  import API from '@/api/scatter.js';
-  import { publishArticle } from '@/api/backend';
-  import { mavonEditor } from 'mavon-editor';
-  // MarkdownIt 实例
-  const mdit = mavonEditor.getMarkdownIt();
+import { mapGetters } from 'vuex';
+import { sendPost } from '@/api/ipfs';
+import API from '@/api/scatter.js';
+import { publishArticle } from '@/api/backend';
+import { mavonEditor } from 'mavon-editor';
+// MarkdownIt 实例
+const mdit = mavonEditor.getMarkdownIt();
 
-  export default {
-    name: 'New-Post',
-    components: {
-      'mavon-editor': mavonEditor,
+export default {
+  name: 'New-Post',
+  components: {
+    'mavon-editor': mavonEditor,
+  },
+  data: () => ({
+    title: '',
+    author: '',
+    markdownData: '',
+  }),
+  computed: {
+  ...mapGetters(['currentUsername']),
+    compiledMarkdown() {
+      return mdit.render(this.markdownData);
     },
-    data: () => ({
-      title: '',
-      author: '',
-      markdownData: '',
-    }),
-    computed: {
-    ...mapGetters(['currentUsername']),
-      compiledMarkdown() {
-        return mdit.render(this.markdownData);
-      },
-    },
-    methods: {
-      async sendThePost() {
-        const {
-          title, author, markdownData, currentUsername,
-        } = this;
-        try {
-          const { data } = await sendPost({
-            title, author, content: markdownData, desc: 'whatever',
-          });
-          const { code, hash } = data;
-          if (code === 200) {
-            // alert('發布到鏈上... (這裡需要进度条)');
-            console.log('Push action to signature.bp...', hash);
-            // const { transaction_id } = await publishOnChain({hash,});
+  },
+  methods: {
+    async sendThePost() {
+      const {
+        title, author, markdownData, currentUsername,
+      } = this;
+      try {
+        const { data } = await sendPost({
+          title, author, content: markdownData, desc: 'whatever',
+        });
+        const { code, hash } = data;
+        if (code === 200) {
+          // alert('發布到鏈上... (這裡需要进度条)');
+          console.log('Push action to signature.bp...', hash);
+          // const { transaction_id } = await publishOnChain({hash,});
+          const _this = this;
 
-            const _this = this;
+          API.getSignature(author, hash, function (err, signature, publicKey, username) {
+            // console.log("签名成功后调", signature, publicKey)
+            if (err) {
+              _this.$Notice.error({
+                title: '发送失败',
+              });
+            } else {
+              publishArticle({
+                author, title, hash, publicKey, signature, username
+              }).then(() => {
+                _this.$Notice.success({
+                  title: '发送成功',
+                  desc: '3秒后跳转到你发表的文章',
+                });
 
-            API.getSignature(author, hash, function (err, signature, publicKey, username) {
-              // console.log("签名成功后调", signature, publicKey)
+                const jumpToArticle = () => _this.$router.push({ name: 'Article', params: { hash } });
 
-              if (err) {
+                setTimeout(jumpToArticle, 3 * 1000);
+
+              }).catch(() => {
                 _this.$Notice.error({
                   title: '发送失败',
                 });
-              } else {
-                publishArticle({
-                  author, title, hash, publicKey, signature, username
-                }).then(() => {
-                  _this.$Notice.success({
-                    title: '发送成功',
-                    desc: '3秒后跳转到你发表的文章',
-                  });
-
-                  const jumpToArticle = () => _this.$router.push({ name: 'Article', params: { hash } });
-
-                  setTimeout(jumpToArticle, 3 * 1000);
-
-                }).catch(() => {
-                  _this.$Notice.error({
-                    title: '发送失败',
-                  });
-                })
-
-              }
-
-            });
-
-          } else {
-            this.$Notice.error({
-              title: '发送失败',
-            });
-          }
-        } catch (error) {
-          console.error(error);
-
+              })
+            }
+          });
+        } else {
           this.$Notice.error({
             title: '发送失败',
           });
         }
-      },
-      uploadImage(filename, imgfile) {
-        console.info(filename);
-        console.info(imgfile);
-      },
-      test() {
-        // publishOnChain({ hash: 'QmfJsZmbsFcaNEBejP6HcXQEXycVXKfFwbMM3eju4VdsN3' });
-        // transferEOS({amount: 0, memo: '', });
+      } catch (error) {
+        console.error(error);
+        this.$Notice.error({
+          title: '发送失败',
+        });
       }
-
     },
-    uploadImage(filename, imgfile) {
-      console.info(filename);
-      console.info(imgfile);
-    },
-  }
-
+  },
+  uploadImage(filename, imgfile) {
+    console.info(filename);
+    console.info(imgfile);
+  },
+  test() {
+  // publishOnChain({ hash: 'QmfJsZmbsFcaNEBejP6HcXQEXycVXKfFwbMM3eju4VdsN3' });
+  // transferEOS({amount: 0, memo: '', });
+  }    
+}
 </script>
 
 <style scoped>

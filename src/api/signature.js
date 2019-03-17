@@ -131,8 +131,8 @@ async function getSignbyhash({ hash = null }) {
   });
   console.log(resp.rows);
   return resp;
-}*/
-
+}
+*/
 async function getSharesInfo() {
   const { rows } = await eosapi.getTableRows({
     json: true,

@@ -17,17 +17,17 @@ const apiServer = 'https://api.smartsignature.io';
 // }
 
 function publishArticle({
-   author, title, hash, publicKey, signature,username
+  author, title, hash, publicKey, signature, username
 }) {
   const url = `https://${apiServer}/publish`;
   // const url = `http://localhost:7001/publish`;
   return axios.post(url, JSON.stringify({
-    hash: hash,
+    hash,
     publickey: publicKey,
     sign: signature,
-    title,title,
-    author:author,
-    username:username
+    title,
+    author,
+    username,
   }), { headers: { 'Content-Type': 'application/json' } });
 }
 
