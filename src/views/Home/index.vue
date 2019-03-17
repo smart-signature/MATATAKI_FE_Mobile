@@ -1,21 +1,30 @@
 <template>
-  <div class="home">
+  <div class="home" @click="addShow=false">
     <div class="head">
       <link rel="icon" type="image/png" sizes="32x32" href="./img/Andoromeda logo@2x.png">
       <link rel="icon" type="image/png" sizes="16x16" href="./img/Andoromeda logo.png">
       <!-- <div style="float:left">
         <img src="/img/Andoromeda logo.png" alt="Andoromeda logo">
-        Andoromeda</div> -->
-      <Button class="publish" @click="$router.push({name: 'Publish'})">
-        <za-icon class="publish-icon" type="add"/>
-      </Button>
+      Andoromeda</div>-->
+      <!-- <Button class="publish" @click="$router.push({name: 'Publish'})">
+        <za-icon class="publish-icon" type="add"/>1
+      </Button>-->
+      <div class="add">
+        <Button class="publish">
+          <za-icon class="publish-icon" type="add" @click.stop="addShow=!addShow"/>
+        </Button>
+        <div v-show="addShow" class="add-menu">
+          <a href="javascript:void(0);">搬运</a>
+          <a href="javascript:void(0);" @click="$router.push({name: 'Publish'})">新建</a>
+        </div>
+      </div>
 
       <!-- <div class="logined" v-if="isLogined">
           <p
             @click="$router.push({ name: 'User', params: {username: currentUsername } })"
             class="username"
           >{{currentUsername}}</p>
-        </div> -->
+      </div>-->
       <!-- <div class="not-login-yet" style="float:right" v-else>
           <za-button
             size='xs'
@@ -26,7 +35,7 @@
             :visible.sync="visible1" :actions="actions1"
             :showCancel="false" @cancel="cancelCb">
           </za-actionsheet>
-        </div> -->
+      </div>-->
       <div class="titles">
         <h1 class="title">-SmartSignature-</h1>
         <h2 class="subtitle">首个EOS去中心化智能签名项目</h2>
@@ -39,48 +48,55 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions } from 'vuex';
-import MyBanner from './MyBanner.vue';
-import ArticlesList from './ArticlesList.vue';
+import { mapState, mapGetters, mapActions } from "vuex";
+import MyBanner from "./MyBanner.vue";
+import ArticlesList from "./ArticlesList.vue";
 
 export default {
-  name: 'Home',
+  name: "Home",
   components: { ArticlesList, MyBanner },
   created() {
-    document.title = '首页 - SmartSignature';
+    document.title = "首页 - SmartSignature";
   },
   computed: {
-    ...mapState(['scatterAccount']),
-    ...mapGetters(['currentUsername']),
+    ...mapState(["scatterAccount"]),
+    ...mapGetters(["currentUsername"]),
     isLogined() {
       return this.scatterAccount !== null;
-    },
+    }
   },
   data() {
     return {
       visible1: false,
-      actions1: [{
-        text: 'English',
-        onClick: () => console.log('action 1'),
-      }, {
-        text: '简体中文',
-        onClick: () => console.log('action 2'),
-      }, {
-        text: '日本語',
-        onClick: () => console.log('action 2'),
-      }, {
-        theme: 'error',
-        text: '取消',
-        onClick: () => console.log('action 3'),
-      }],
+      actions1: [
+        {
+          text: "English",
+          onClick: () => console.log("action 1")
+        },
+        {
+          text: "简体中文",
+          onClick: () => console.log("action 2")
+        },
+        {
+          text: "日本語",
+          onClick: () => console.log("action 2")
+        },
+        {
+          theme: "error",
+          text: "取消",
+          onClick: () => console.log("action 3")
+        }
+      ],
+      addShow: false // 显示新增菜单
     };
   },
   methods: {
     ...mapActions([
-      'connectScatterAsync',
-      'suggestNetworkAsync',
-      'loginScatterAsync',
-      'logoutScatterAsync']),
+      "connectScatterAsync",
+      "suggestNetworkAsync",
+      "loginScatterAsync",
+      "logoutScatterAsync"
+    ]),
     cancelCb(reason, event) {
       console.log(reason, event);
     },
@@ -91,14 +107,14 @@ export default {
         await this.suggestNetworkAsync();
         await this.loginScatterAsync();
       } catch (e) {
-        console.warn('Unable to connect wallets');
+        console.warn("Unable to connect wallets");
         this.$Modal.error({
-          title: '无法与你的钱包建立链接',
-          content: '请检查钱包是否打开并解锁',
+          title: "无法与你的钱包建立链接",
+          content: "请检查钱包是否打开并解锁"
         });
       }
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -135,20 +151,63 @@ h2.subtitle {
   letter-spacing: 1px;
   margin-top: 6px;
 }
-Button.publish {
+button.publish {
   background: #478970;
   color: rgb(255, 255, 255);
   float: right;
   width: 27px;
   height: 27px;
-  margin-right: 45px;
+  margin-right: 14px;
 }
-.publish-icon{
+.publish-icon {
   margin: -5px -6px;
   margin-left: -8px;
   line-height: 16px;
 }
 .MyBanner {
   margin-top: 28px;
+}
+
+/* 添加 */
+.add {
+  position: relative;
+}
+.add::after {
+  display: block;
+  content: "";
+  width: 0;
+  height: 0;
+  clear: both;
+}
+.add .add-menu {
+  position: absolute;
+  top: 40px;
+  right: 14px;
+  background-color: RGBA(52, 98, 83, 1);
+  border-radius: 3px;
+}
+.add .add-menu::after {
+  display: block;
+  content: "";
+  width: 0;
+  height: 0;
+  position: absolute;
+  top: -14px;
+  right: 14px;
+  border-width: 7px;
+  border-style: solid;
+  border-color: transparent transparent RGBA(52, 98, 83, 1) transparent;
+}
+.add .add-menu a {
+  display: block;
+  padding: 8px 12px;
+  margin: 0 12px;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 1);
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+.add .add-menu a:nth-of-type(1) {
+  border-bottom: 1px solid rgba(133, 255, 223, 0.18);
 }
 </style>
