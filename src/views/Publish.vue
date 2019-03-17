@@ -64,22 +64,19 @@ export default {
               });
             } else {
               publishArticle({
-                author, title, hash, publicKey, signature, username
+                author, title, hash, publicKey, signature, username,
               }).then(() => {
                 _this.$Notice.success({
                   title: '发送成功',
                   desc: '3秒后跳转到你发表的文章',
                 });
-
                 const jumpToArticle = () => _this.$router.push({ name: 'Article', params: { hash } });
-
                 setTimeout(jumpToArticle, 3 * 1000);
-
               }).catch(() => {
                 _this.$Notice.error({
                   title: '发送失败',
                 });
-              })
+              });
             }
           });
         } else {
@@ -102,7 +99,7 @@ export default {
   test() {
   // publishOnChain({ hash: 'QmfJsZmbsFcaNEBejP6HcXQEXycVXKfFwbMM3eju4VdsN3' });
   // transferEOS({amount: 0, memo: '', });
-  }    
+  },    
 }
 </script>
 

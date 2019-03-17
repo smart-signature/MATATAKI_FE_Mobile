@@ -1,3 +1,4 @@
+/* eslint-disable */
 <template>
   <div class='home' @click='addShow=false'>
     <div class='head'>
@@ -39,7 +40,7 @@
       <div class='titles'>
         <h1 class='title'>-SmartSignature-</h1>
         <h2 class='subtitle'>首个EOS去中心化智能签名项目</h2>
-        <Button @click='$router.push({name: 'About'})' style='margin-top: 17px;'>规则说明</Button>
+        <Button @click="$router.push({name: 'About'})" style='margin-top: 17px;'>规则说明</Button>
       </div>
     </div>
     <MyBanner/>
@@ -63,7 +64,7 @@ export default {
     ...mapGetters(['currentUsername']),
     isLogined() {
       return this.scatterAccount !== null;
-    }
+    },
   },
   data() {
     return {
@@ -85,9 +86,9 @@ export default {
           theme: 'error',
           text: '取消',
           onClick: () => console.log('action 3'),
-        }
+        },
       ],
-      addShow: false // 显示新增菜单
+      addShow: false, // 显示新增菜单
     };
   },
   methods: {
@@ -95,7 +96,7 @@ export default {
       'connectScatterAsync',
       'suggestNetworkAsync',
       'loginScatterAsync',
-      'logoutScatterAsync'
+      'logoutScatterAsync',
     ]),
     cancelCb(reason, event) {
       console.log(reason, event);

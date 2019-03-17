@@ -1,3 +1,4 @@
+/* eslint-disable */
 import ScatterJS from 'scatterjs-core';
 import ScatterEOS from 'scatterjs-plugin-eosjs';
 import Eos from 'eosjs';
@@ -24,7 +25,7 @@ const currentEOSAccount = () => ScatterJS.scatter.identity && ScatterJS.scatter.
 
 const eosClient = Eos({
   chainId: "aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906",
-  httpEndpoint: "https://proxy.eosnode.tools"
+  httpEndpoint: "https://proxy.eosnode.tools",
 });
 
 const API = {
@@ -34,16 +35,13 @@ const API = {
 
     eosClient.getAccount(account.name, (error, result) => {
       // 获取当前权限
-      const permissions = result.permissions.find(x => x.perm_name === account.authority)
-      
+      const permissions = result.permissions.find(x => x.perm_name === account.authority);
       // 获取当前权限的public key
       const publicKey = permissions.required_auth.keys[0].key;
-
       // 需要签名的数据
-      const sign_data = `${author} ${hash}`;
-      
+      const sign_data = `${author} ${hash}`;      
       // 申请签名
-      ScatterJS.scatter.getArbitrarySignature(publicKey, sign_data, "Smart Signature").then(signature => {
+      ScatterJS.scatter.getArbitrarySignature(publicKey, sign_data, 'Smart Signature').then(signature => {
          callback(null, signature, publicKey, account.name);
       }).catch(error => {
         console.log(error);

@@ -43,7 +43,7 @@
           <Col span="5">
             <router-link :to="{ name: 'Asset', params: { username }}">
               <!-- TODO(minakokojima): 'sign_income' of null
-              <p class="centervalue">{{playerincome.sign_income/1000}}</p> 
+              <p class="centervalue">{{playerincome.sign_income/1000}}</p>
               -->
               <p class="centervalue">{{0}}
               <p class="centertext">支持收入</p>
