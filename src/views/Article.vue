@@ -54,7 +54,7 @@ import { mapState, mapGetters } from 'vuex';
 import axios from 'axios';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
-import { support } from '../api/signature';
+import { support } from '../api/signature.js';
 import 'mavon-editor/dist/css/index.css';
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
@@ -123,8 +123,8 @@ export default {
       // fetch sign_id
       const url = `https://api.smartsignature.io/post/${this.hash}`;
       const { data } = await axios.get(url);
-      const signId = data.id;
-      await support({ amount, signId, share_Id: null });
+      const sign_id = data.id;
+      await support({ amount, sign_id, share_Id: null });
     },
     share() {
       const clipboard = new Clipboard('.button-share');

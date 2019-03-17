@@ -42,7 +42,7 @@ async function support({ amount = null, sign_id = null, share_id = null }) {
     return ;
   }
   if (sign_id == null) {
-    alert('sign_id cant be null');
+    alert('sign_id can\'t be null');
     return;
   }
 
