@@ -9,13 +9,13 @@
       <!-- <Button class='publish' @click='$router.push({name: 'Publish'})'>
         <za-icon class='publish-icon' type='add'/>1
       </Button>-->
-      <div class='add'>
+      <div class='add' @click.stop='addShow=!addShow'>
         <Button class='publish'>
-          <za-icon class='publish-icon' type='add' @click.stop='addShow=!addShow'/>
+          <za-icon class='publish-icon' type='add' />
         </Button>
         <div v-show='addShow' class='add-menu'>
           <a href='javascript:void(0);'>搬运</a>
-          <a href='javascript:void(0);' @click='$router.push({name: 'Publish'})'>新建</a>
+          <a href='javascript:void(0);' @click="$router.push({name: 'Publish'})">新建</a>
         </div>
       </div>
 
@@ -71,20 +71,20 @@ export default {
       actions1: [
         {
           text: 'English',
-          onClick: () => console.log('action 1')
+          onClick: () => console.log('action 1'),
         },
         {
           text: '简体中文',
-          onClick: () => console.log('action 2')
+          onClick: () => console.log('action 2'),
         },
         {
           text: '日本語',
-          onClick: () => console.log('action 2')
+          onClick: () => console.log('action 2'),
         },
         {
           theme: 'error',
           text: '取消',
-          onClick: () => console.log('action 3')
+          onClick: () => console.log('action 3'),
         }
       ],
       addShow: false // 显示新增菜单
