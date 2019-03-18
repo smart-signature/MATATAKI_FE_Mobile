@@ -1,5 +1,5 @@
 <template>
-  <div class="asset">
+  <div class="assetpage">
     <za-nav-bar>
       <div slot="left">
         <za-icon theme="primary" type="arrow-left" @click="goBack"></za-icon>
@@ -24,11 +24,15 @@
 
 <script>
 import { AssetCard } from '@/components/';
+import { getPlayerBills } from '../api/signature.js';
 
 export default {
   name: 'Asset',
   props: ['username'],
   components: { AssetCard },
+  async created() {
+    await this.refresh();  
+  },
   data() {
     return {
       refreshing: false,
@@ -40,7 +44,8 @@ export default {
       {
         // sample
         quantity: '+ 100.2333 EOS',
-        timestamp: Date.now(),
+        type: 'share income',
+        timestamp: Date.now()+1,
       },
       ],
       activeNameSwipe: '全部',
@@ -61,9 +66,21 @@ export default {
   methods: {
     // ...mapActions(['loginScatterAsync']),
     async getAssetsList() {
-      // const articles = 'https://smartsignature.azurewebsites.net/api/article';
-      // const { data } = await axios.get(articles);
-      // this.assets = data;
+      console.log('Connecting to EOS fetch data...');
+      const actions = await getPlayerBills(this.username);
+      // console.log(actions.map(a => a.action_trace));
+      const _actions = actions.filter(a => a.action_trace.act.account === 'signature.bp'
+          && a.action_trace.act.name === 'bill'
+      );
+      // console.log(_actions);
+      this.assets = _actions.map(a => { 
+        return {
+        quantity: a.action_trace.act.data.quantity,
+        type: a.action_trace.act.data.type,
+        timestamp: a.action_trace.block_time,
+        }
+      });
+      // console.log(this.assets);
     },
     handleClick(tab, event) {
       console.log(tab, event);
@@ -90,17 +107,5 @@ export default {
   margin-top: -100px;
   padding-top: 100px;
   font-weight: bold;
-}
-.q-and-a {
-  color: rgba(0, 0, 0, 1);
-  text-align: left;
-}
-h1.question {
-  font-size: 15px;
-  font-weight: 500;
-}
-p.answer {
-  font-size: 12px;
-  font-weight: 400;
 }
 </style>
