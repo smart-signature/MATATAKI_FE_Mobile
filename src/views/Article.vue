@@ -124,7 +124,8 @@ export default {
       const url = `https://api.smartsignature.io/post/${this.hash}`;
       const { data } = await axios.get(url);
       const sign_id = data.id;
-      await support({ amount, sign_id, share_Id: null });
+      // todo(minakokojima): use Regex to get referrer from the url.
+      await support({ amount, sign_id, referrer: null });
     },
     share() {
       const clipboard = new Clipboard('.button-share');
