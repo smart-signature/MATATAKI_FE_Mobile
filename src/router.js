@@ -42,19 +42,19 @@ export default new Router({
       path: '/user/:username/asset',
       name: 'Asset',
       props: true,
-      component: () => import(/* webpackChunkName: "asset" */ './views/User/Asset.vue'),
+      component: () => import(/* webpackChunkName: "user-asset" */ './views/User/Asset.vue'),
     },
     {
       path: '/user/:username/original',
       name: 'Original',
       props: true,
-      component: () => import(/* webpackChunkName: "asset" */ './views/User/Original.vue'),
+      component: () => import(/* webpackChunkName: "user-original" */ './views/User/Original.vue'),
     },
     {
       path: '/user/:username/reward',
       name: 'Reward',
       props: true,
-      component: () => import(/* webpackChunkName: "asset" */ './views/User/Reward.vue'),
+      component: () => import(/* webpackChunkName: "user-reward" */ './views/User/Reward.vue'),
     },
     {
       path: '/publish',
