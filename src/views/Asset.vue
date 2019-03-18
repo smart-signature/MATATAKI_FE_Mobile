@@ -62,8 +62,8 @@ export default {
     // ...mapActions(['loginScatterAsync']),
     async getAssetsList() {
       // const articles = 'https://smartsignature.azurewebsites.net/api/article';
-      const { data } = await axios.get(articles);
-      this.assets = data;
+      // const { data } = await axios.get(articles);
+      // this.assets = data;
     },
     handleClick(tab, event) {
       console.log(tab, event);

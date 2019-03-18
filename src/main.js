@@ -1,12 +1,15 @@
 import Vue from 'vue';
+
+import clipboard from 'clipboard';
+import iView from 'iview';
 import moment from 'moment';
+
 import App from './App.vue';
 import './zarm';
 import router from './router';
 import store from './store';
-import iView from 'iview';
 import './registerServiceWorker';
-import clipboard from 'clipboard';
+
 
 // CSS Style
 import 'mavon-editor/dist/css/index.css';

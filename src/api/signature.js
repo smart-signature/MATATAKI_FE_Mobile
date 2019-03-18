@@ -42,8 +42,8 @@ async function support({ amount = null, sign_id = null, share_id = null }) {
     return ;
   }
   if (sign_id == null) {
-    alert('sign_id cant be null');
-    return ;
+    alert('sign_id can\'t be null');
+    return;
   }
 
   return transferEOS({
@@ -100,6 +100,7 @@ function transferEOS({ amount = 0, memo = '' }) {
     ],
   }).then((result) => {
     alert('publish success!');
+    console.log(result);
   }).catch((error) => {
     alert(`error:${JSON.stringify(error)}`);
   });
@@ -131,8 +132,8 @@ async function getSignbyhash({ hash = null }) {
   });
   console.log(resp.rows);
   return resp;
-}*/
-
+}
+*/
 async function getSharesInfo() {
   const { rows } = await eosapi.getTableRows({
     json: true,
