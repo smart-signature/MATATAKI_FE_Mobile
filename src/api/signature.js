@@ -116,6 +116,17 @@ async function getPlayerIncome(name) {
   });
   return rows;
 }
+
+async function getPlayerBills(owner) {
+  const { actions } = await eos().getActions({
+    json: true,
+    account_name: owner,
+    /*pos: -1,*/
+    offset: -100,
+  });
+  return actions;
+}
+
 /*
 async function getSignbyhash({ hash = null }) {
   if (hash == null) {
@@ -193,5 +204,5 @@ async function getMaxSignId() {
 export {
   publishOnChain,
   support, withdraw,
-  getPlayerIncome,
+  getPlayerIncome, getPlayerBills,
 };
