@@ -7,7 +7,7 @@
       <div slot="title" v-if="isMe">个人主页</div>
     </za-nav-bar>
     <div class="usercard" >
-      <img width="50px" class="userpic" src="../assets/logo.png" />
+      <img width="50px" class="userpic" src="../../assets/logo.png" />
       <img style="position:absolute; z-index:1;left:20px;"
            width="50px" src="/img/camera.png" v-if="editing"/>
       <div class="texts">
@@ -83,9 +83,9 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { getPlayerIncome } from '../api/signature';
-import ArticlesList from './User/ArticlesList.vue';
-import API from '../api/scatter.js';
+import { getPlayerIncome } from '@/api/signature';
+import ArticlesList from './ArticlesList.vue';
+import API from '@/api/scatter.js';
 
 export default {
   name: 'User',
