@@ -1,7 +1,7 @@
 <template>
   <div class="card asset">
     <a>
-      <h2 class="asset-quantity">{{asset.quantity}}</h2>
+      <h2 class="asset-quantity">+{{asset.quantity}}</h2>
       <p class="asset-infomation">{{friendlyDate}}</p>
     </a>
   </div>

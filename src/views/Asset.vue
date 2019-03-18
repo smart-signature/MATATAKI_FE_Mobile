@@ -18,11 +18,14 @@
       </Row>
       <br>
       <Row type="flex" justify="center" class="row2">
-        <i-col span="5"><span class="title-bar">写作历史收入</span><br></i-col>
+        <i-col span="5"><span class="title-bar">写作历史收入</span><br>
+          <span class="income1">{{130.56}}</span></i-col>
         <i-col span="1"><Divider type="vertical" /></i-col>
-        <i-col span="5"><span class="title-bar">转发历史收入</span><br></i-col>
+        <i-col span="5"><span class="title-bar">转发历史收入</span><br>
+          <span class="income1">{{200.78}}</span></i-col>
         <i-col span="1"><Divider type="vertical" /></i-col>
-        <i-col span="5"><span class="title-bar">打赏历史支出</span><br></i-col>
+        <i-col span="5"><span class="title-bar">打赏历史支出</span><br>
+          <span class="income2">{{30000}}</span></i-col>
       </Row>
     </div>
     <div class="assets">
@@ -160,7 +163,16 @@ export default {
   color: rgba(152,152,152,1);
   opacity: 1;
 }
-
+.income {
+  color: #FF3030;
+  font-size: 16px;
+  font-family: PingFangSC-Semibold;
+}
+.income {
+  color:  #07BB3D;
+  font-size: 16px;
+  font-family: PingFangSC-Semibold;
+}
 .asset {
   text-align: left;
 }
