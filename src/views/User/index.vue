@@ -42,7 +42,7 @@
           </Col>
           <Col span="1"><Divider type="vertical" style="height:33px;margin-top:10px;" /></Col>
           <Col span="11">
-            <p class="centervalue">{{playerincome.share_income/1000}}</p>
+            <p class="centervalue">{{personalIncome}}</p>
             <p class="centertext">转发收入</p>
           </Col>
       </Row>
@@ -50,10 +50,8 @@
     <!-- todo(minakokojima): 顯示該作者發表的文章。-->
     <!-- <ArticlesList ref="ArticlesList"/> -->
     <div class="centercard" v-if="isMe">
-      <za-cell is-link has-arrow @click='() => {}'>
-        <router-link :to="{ name: 'Asset', params: { username }}">
+      <za-cell is-link has-arrow @click='jumpTo({ name: "Asset", params: { username }})'>
           资产明细
-        </router-link>
         <!-- <za-icon type='right' slot='icon'/> -->
       </za-cell>
       <za-cell is-link has-arrow @click='() => {}'>
@@ -93,12 +91,17 @@ export default {
   components: { ArticlesList },
   data() {
     return {
-      playerincome: null,
+      playerincome: {
+        share_income: 0
+      },
       editing: false,
     };
   },
   computed: {
     ...mapGetters(['currentUsername']),
+    personalIncome() {
+      return this.playerincome.share_income / 1000 
+    },
     ifLogined() {
       return this.currentUsername !== null;
     },
@@ -114,6 +117,9 @@ export default {
     edit() {
       console.log('editing');
       this.editing = !this.editing;
+    },
+    jumpTo(params) {
+      this.$router.push(params)
     },
     cancel() {
       this.editing = !this.editing;
@@ -132,7 +138,10 @@ export default {
   },
   async created() {
     const playerincome = await getPlayerIncome(this.username);
-    this.playerincome = playerincome[0] || 0;
+    console.info(playerincome)
+    this.playerincome = playerincome.length != 0 ? playerincome[0] : {
+        share_income: 0
+    };
     const user = this.isMe ? '我' : this.username;
     document.title = `${user} 的用户页 - SmartSignature`;
   },
