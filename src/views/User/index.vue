@@ -54,10 +54,10 @@
           资产明细
         <!-- <za-icon type='right' slot='icon'/> -->
       </za-cell>
-      <za-cell is-link has-arrow @click='() => {}'>
+      <za-cell is-link has-arrow @click='jumpTo({ name: "Original", params: { username }})'>
         原创文章
       </za-cell>
-      <za-cell is-link has-arrow @click='() => {}'>
+      <za-cell is-link has-arrow @click='jumpTo({ name: "Reward", params: { username }})'>
         打赏文章
       </za-cell>
     </div>
