@@ -40,22 +40,22 @@ export default {
   props: {
     listtype: {
       type: String,
-      required: true
+      required: true,
     },
   },
   components: { ArticleCard },
   created() {
     // alert("this is " + this.listtype + " list")
     this.getArticlesList();
-    if(this.listtype == 'others'){
+    if (this.listtype == 'others') {
       this.tabs = [
         { label: '文章列表' },
-        { label: '他打赏的' }
-      ]
+        { label: '他打赏的' },
+      ];
       this.activeNameSwipe = '文章列表';
-    }else if(this.listtype == 'original'){
+    } else if (this.listtype == 'original') {
       this.activeNameSwipe = 'TimeLine';
-    }else if(this.listtype == 'reward'){
+    } else if (this.listtype == 'reward') {
       this.activeNameSwipe = 'TimeLine';
     }
   },
@@ -65,7 +65,7 @@ export default {
       // const articles = 'http://localhost:7001/posts';
       const articles = 'https://api.smartsignature.io/posts'; // new backend api url
       const { data } = await axios.get(articles);
-      if(this.listtype == 'others'){
+      if (this.listtype == 'others') {
         // do something...
       }
       this.articles = data;

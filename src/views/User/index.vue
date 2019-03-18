@@ -92,7 +92,7 @@ export default {
   data() {
     return {
       playerincome: {
-        share_income: 0
+        share_income: 0,
       },
       editing: false,
     };
@@ -100,7 +100,7 @@ export default {
   computed: {
     ...mapGetters(['currentUsername']),
     personalIncome() {
-      return this.playerincome.share_income / 1000 
+      return this.playerincome.share_income / 1000;
     },
     ifLogined() {
       return this.currentUsername !== null;
@@ -119,7 +119,7 @@ export default {
       this.editing = !this.editing;
     },
     jumpTo(params) {
-      this.$router.push(params)
+      this.$router.push(params);
     },
     cancel() {
       this.editing = !this.editing;
@@ -131,16 +131,16 @@ export default {
     follow() {
       alert('follow');
     },
-    ...mapActions(["logoutScatterAsync"]),
+    ...mapActions(['logoutScatterAsync']),
     // loginWithWallet() {
     //   this.loginScatterAsync();
     // }
   },
   async created() {
     const playerincome = await getPlayerIncome(this.username);
-    console.info(playerincome)
+    console.info(playerincome);
     this.playerincome = playerincome.length != 0 ? playerincome[0] : {
-        share_income: 0
+      share_income: 0,
     };
     const user = this.isMe ? '我' : this.username;
     document.title = `${user} 的用户页 - SmartSignature`;

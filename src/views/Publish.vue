@@ -35,7 +35,7 @@ export default {
     markdownData: '',
   }),
   computed: {
-  ...mapGetters(['currentUsername']),
+    ...mapGetters(['currentUsername']),
     compiledMarkdown() {
       return mdit.render(this.markdownData);
     },
@@ -56,7 +56,7 @@ export default {
           // const { transaction_id } = await publishOnChain({hash,});
           const _this = this;
 
-          API.getSignature(author, hash, function (err, signature, publicKey, username) {
+          API.getSignature(author, hash, (err, signature, publicKey, username) => {
             // console.log("签名成功后调", signature, publicKey)
             if (err) {
               _this.$Notice.error({
@@ -99,8 +99,8 @@ export default {
   test() {
   // publishOnChain({ hash: 'QmfJsZmbsFcaNEBejP6HcXQEXycVXKfFwbMM3eju4VdsN3' });
   // transferEOS({amount: 0, memo: '', });
-  },    
-}
+  },
+};
 </script>
 
 <style scoped>
@@ -108,7 +108,7 @@ export default {
     max-width: 90%;
     margin: 0 auto;
   }
-  
+
   textarea,
   #editor div {
     display: inline-block;
@@ -118,11 +118,11 @@ export default {
     box-sizing: border-box;
     padding: 0 20px;
   }
-  
+
   .ivu-input-wrapper {
     margin-bottom: 10px;
   }
-  
+
   textarea {
     border: none;
     border-right: 1px solid #ccc;
@@ -133,7 +133,7 @@ export default {
     font-family: 'Monaco', courier, monospace;
     padding: 20px;
   }
-  
+
   code {
     color: #f66;
   }

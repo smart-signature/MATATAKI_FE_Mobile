@@ -1,5 +1,6 @@
 import { eos, currentEOSAccount as currentAccount } from './scatter';
-const SIGNATURE_CONTRACT = 'signature.bp'
+
+const SIGNATURE_CONTRACT = 'signature.bp';
 
 const publishOnChain = async ({ hash = '' }) => {
   if (currentAccount() == null) {
@@ -33,13 +34,13 @@ const publishOnChain = async ({ hash = '' }) => {
 };
 
 async function support({ amount = null, sign_id = null, share_id = null }) {
-  if (currentAccount() == null) { 
-    alert('请先登录'); 
+  if (currentAccount() == null) {
+    alert('请先登录');
     return;
   }
   if (amount == null) {
     alert('amount cant be 0');
-    return ;
+    return;
   }
   if (sign_id == null) {
     alert('sign_id can\'t be null');
@@ -48,7 +49,7 @@ async function support({ amount = null, sign_id = null, share_id = null }) {
 
   return transferEOS({
     amount,
-    memo: ( (share_id != null) ? `share ${sign_id} ${share_id}` : `share ${sign_id}` ),
+    memo: ((share_id != null) ? `share ${sign_id} ${share_id}` : `share ${sign_id}`),
   });
 }
 
@@ -77,7 +78,7 @@ async function withdraw() {
       },
     ],
   });
-};
+}
 function transferEOS({ amount = 0, memo = '' }) {
   if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
 
@@ -121,7 +122,7 @@ async function getPlayerBills(owner) {
   const { actions } = await eos().getActions({
     json: true,
     account_name: owner,
-    /*pos: -1,*/
+    /* pos: -1, */
     offset: -100,
   });
   return actions;
