@@ -73,14 +73,14 @@
       </za-cell>
     </div>
     <div class="bottomcard" v-if="isMe">
-      <Button class="bottombutton" long>退出登录</Button>
+      <Button class="bottombutton" long @click="logoutScatterAsync">退出登录</Button>
     </div>
     <ArticlesList :listtype="'others'" ref='ArticlesList' v-if="!isMe"/>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import { getPlayerIncome } from '@/api/signature';
 import ArticlesList from './ArticlesList.vue';
 import API from '@/api/scatter.js';
@@ -131,7 +131,7 @@ export default {
     follow() {
       alert('follow');
     },
-    // ...mapActions(["loginScatterAsync"]),
+    ...mapActions(["logoutScatterAsync"]),
     // loginWithWallet() {
     //   this.loginScatterAsync();
     // }
