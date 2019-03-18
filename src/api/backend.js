@@ -17,7 +17,7 @@ const apiServer = 'https://api.smartsignature.io';
 // }
 
 function publishArticle({
-  author, title, hash, publicKey, signature, username
+  author, title, hash, publicKey, signature, username,
 }) {
   const url = `https://${apiServer}/publish`;
   // const url = `http://localhost:7001/publish`;

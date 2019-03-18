@@ -1,20 +1,7 @@
 <template>
 
 
-
-
-
-
-
 <!--   this page is not used ,see User/Asset.vue  -->
-
-
-
-
-
-
-
-
 
 
   <div class="assetpage">
@@ -49,7 +36,7 @@ export default {
   props: ['username'],
   components: { AssetCard },
   async created() {
-    await this.refresh();  
+    await this.refresh();
   },
   data() {
     return {
@@ -63,7 +50,7 @@ export default {
         // sample
         quantity: '+ 100.2333 EOS',
         type: 'share income',
-        timestamp: Date.now()+1,
+        timestamp: Date.now() + 1,
       },
       ],
       activeNameSwipe: '全部',
@@ -88,16 +75,13 @@ export default {
       const actions = await getPlayerBills(this.username);
       // console.log(actions.map(a => a.action_trace));
       const _actions = actions.filter(a => a.action_trace.act.account === 'signature.bp'
-          && a.action_trace.act.name === 'bill'
-      );
+          && a.action_trace.act.name === 'bill');
       // console.log(_actions);
-      this.assets = _actions.map(a => { 
-        return {
+      this.assets = _actions.map(a => ({
         quantity: a.action_trace.act.data.quantity,
         type: a.action_trace.act.data.type,
         timestamp: a.action_trace.block_time,
-        }
-      });
+      }));
       // console.log(this.assets);
     },
     handleClick(tab, event) {

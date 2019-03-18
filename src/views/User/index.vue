@@ -7,7 +7,7 @@
       <div slot="title" v-if="isMe">个人主页</div>
     </za-nav-bar>
     <div class="usercard" >
-      <img width="50px" class="userpic" src="../assets/logo.png" />
+      <img width="50px" class="userpic" src="../../assets/logo.png" />
       <img style="position:absolute; z-index:1;left:20px;"
            width="50px" src="/img/camera.png" v-if="editing"/>
       <div class="texts">
@@ -42,7 +42,7 @@
           </Col>
           <Col span="1"><Divider type="vertical" style="height:33px;margin-top:10px;" /></Col>
           <Col span="11">
-            <p class="centervalue">{{playerincome.share_income/1000}}</p>
+            <p class="centervalue">{{personalIncome}}</p>
             <p class="centertext">转发收入</p>
           </Col>
       </Row>
@@ -50,16 +50,14 @@
     <!-- todo(minakokojima): 顯示該作者發表的文章。-->
     <!-- <ArticlesList ref="ArticlesList"/> -->
     <div class="centercard" v-if="isMe">
-      <za-cell is-link has-arrow @click='() => {}'>
-        <router-link :to="{ name: 'Asset', params: { username }}">
+      <za-cell is-link has-arrow @click='jumpTo({ name: "Asset", params: { username }})'>
           资产明细
-        </router-link>
         <!-- <za-icon type='right' slot='icon'/> -->
       </za-cell>
-      <za-cell is-link has-arrow @click='() => {}'>
+      <za-cell is-link has-arrow @click='jumpTo({ name: "Original", params: { username }})'>
         原创文章
       </za-cell>
-      <za-cell is-link has-arrow @click='() => {}'>
+      <za-cell is-link has-arrow @click='jumpTo({ name: "Reward", params: { username }})'>
         打赏文章
       </za-cell>
     </div>
@@ -75,17 +73,17 @@
       </za-cell>
     </div>
     <div class="bottomcard" v-if="isMe">
-      <Button class="bottombutton" long>退出登录</Button>
+      <Button class="bottombutton" long @click="logoutScatterAsync">退出登录</Button>
     </div>
     <ArticlesList :listtype="'others'" ref='ArticlesList' v-if="!isMe"/>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import { getPlayerIncome } from '../api/signature';
-import ArticlesList from './User/ArticlesList.vue';
-import API from '../api/scatter.js';
+import { mapGetters, mapActions } from 'vuex';
+import { getPlayerIncome } from '@/api/signature';
+import ArticlesList from './ArticlesList.vue';
+import API from '@/api/scatter.js';
 
 export default {
   name: 'User',
@@ -93,12 +91,17 @@ export default {
   components: { ArticlesList },
   data() {
     return {
-      playerincome: null,
+      playerincome: {
+        share_income: 0,
+      },
       editing: false,
     };
   },
   computed: {
     ...mapGetters(['currentUsername']),
+    personalIncome() {
+      return this.playerincome.share_income / 1000;
+    },
     ifLogined() {
       return this.currentUsername !== null;
     },
@@ -115,6 +118,9 @@ export default {
       console.log('editing');
       this.editing = !this.editing;
     },
+    jumpTo(params) {
+      this.$router.push(params);
+    },
     cancel() {
       this.editing = !this.editing;
     },
@@ -125,14 +131,17 @@ export default {
     follow() {
       alert('follow');
     },
-    // ...mapActions(["loginScatterAsync"]),
+    ...mapActions(['logoutScatterAsync']),
     // loginWithWallet() {
     //   this.loginScatterAsync();
     // }
   },
   async created() {
     const playerincome = await getPlayerIncome(this.username);
-    this.playerincome = playerincome[0] || 0;
+    console.info(playerincome);
+    this.playerincome = playerincome.length != 0 ? playerincome[0] : {
+      share_income: 0,
+    };
     const user = this.isMe ? '我' : this.username;
     document.title = `${user} 的用户页 - SmartSignature`;
   },

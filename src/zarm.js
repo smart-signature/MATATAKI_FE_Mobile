@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import {
   Actionsheet, Alert, Button, Cell, Pull,
-  TabPane, Tabs, NavBar, Icon
+  TabPane, Tabs, NavBar, Icon,
 } from 'zarm-vue';
 
 // Instead of doing this: - Frank
