@@ -113,7 +113,7 @@ async function getPlayerIncome(name) {
     code: SIGNATURE_CONTRACT,
     scope: name,
     table: 'players',
-    limit: 10000,
+    limit: 1,
   });
   return rows;
 }

@@ -30,7 +30,6 @@
 <script>
 import { AssetCard } from '@/components/';
 import { getPlayerBills } from '../api/signature.js';
-
 export default {
   name: 'Asset',
   props: ['username'],
