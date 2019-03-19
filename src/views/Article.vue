@@ -170,7 +170,9 @@ export default {
 
     var invite = querystring.parse(location.search.slice(1)).invite;
     if (invite) {
-      localStorage.setItem('invite', invite);
+      // block this feature for now.
+      // https://github.com/smart-signature/smart-signature-future/issues/79
+      // localStorage.setItem('invite', invite);
     }
   },
 };
