@@ -185,7 +185,7 @@ export default {
     this.sign = signs[0];
     console.log('sign :', sign);
 
-    this.post.author = this.sign.author ;
+    this.post.author = this.sign.author;
 
     let invite = querystring.parse(window.location.search.slice(1)).invite;
     if (invite) {
