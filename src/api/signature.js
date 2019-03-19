@@ -49,7 +49,7 @@ async function support({ amount = null, sign_id = null, referrer = null }) {
 
   return transferEOS({
     amount,
-    memo: ((referrer != null) ? `share ${sign_id} ${referrer}` : `share ${sign_id}`),
+    memo: ((referrer != null) ? `support ${sign_id} ${referrer}` : `support ${sign_id}`),
   });
 }
 
