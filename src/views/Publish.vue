@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import { sendPost } from '@/api/ipfs';
 import API from '@/api/scatter.js';
 import { publishArticle } from '@/api/backend';
@@ -37,6 +37,13 @@ export default {
   name: 'New-Post',
   components: {
     'mavon-editor': mavonEditor,
+  },
+  async created() {
+    if (this.currentUsername) {
+      return;
+    }
+    await this.suggestNetworkAsync()
+    await this.loginScatterAsync()
   },
   data: () => ({
     title: '',
@@ -51,6 +58,10 @@ export default {
     },
   },
   methods: {
+    ...mapActions([
+      'suggestNetworkAsync',
+      'loginScatterAsync'
+    ]),
     async sendThePost() {
       const {
         title, author, markdownData, currentUsername, fission_factor,
