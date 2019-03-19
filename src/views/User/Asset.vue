@@ -4,16 +4,14 @@
       <div slot="left">
         <za-icon theme="primary" type="arrow-left" @click="goBack"></za-icon>
       </div>
-      <div slot="title">资产明细</div>
+      <div slot="title">{{username}} 的资产明细</div>
       <div slot="right"></div>
     </za-nav-bar>
     <div class="topcard">
       <div class="toptext1">待提现</div><br/>
-      <div class="topremain">47000</div>
+      <div class="topremain">47,000</div>
       <div style="position:absolute;right:40px;top:90px;">
-        <Button class="rightbutton">
-          <div style="margin-top:-2px;">提现</div>
-        </Button>
+        <Button class="withdraw" ghost @click="withdraw">提现</Button>
       </div>
       <Divider style="margin-top:10px;margin-bottom:10px;"/>
       <Row type="flex" justify="center" class="code-row-bg">
@@ -72,39 +70,33 @@ export default {
   },
   data() {
     return {
-      refreshing: false,
-      assets: [{
-        // sample
-        quantity: '10.2333 EOS',
-        timestamp: Date.now(),
-      },
-      {
-        // sample
-        quantity: '100.2333 EOS',
-        type: 'share income',
-        timestamp: Date.now() + 1,
-      },
+      assets: [
+        { // sample  
+          quantity: '10.2333 EOS',
+          timestamp: Date.now(),
+          type: 'test income',
+        },
+        { // sample
+          quantity: '100.2333 EOS',
+          timestamp: Date.now()+1,
+          type: 'test income',
+        },
       ],
       activeNameSwipe: '全部',
       selectedLabelDefault: '全部',
       tabs: [
-        {
-          label: '全部',
-        },
-        {
-          label: '支持收入',
-        },
-        {
-          label: '转发收入',
-        },
+        { label: '全部', },
+        { label: '支持收入', },
+        { label: '转发收入', },
       ],
       playerincome: {
         share_income: '0.0000 EOS',
         sign_income: '0.0000 EOS',
       },
+      refreshing: false,
       writereward: 23000,
       sharereward: 24000,
-      sharecost: -70000
+      sharecost: -70000,
     };
   },
   methods: {
@@ -155,11 +147,9 @@ export default {
 
 <style scoped>
 .assetpage {
-  text-align: left;
-}
-.asset-page {
   background:rgba(247,247,247,1);
   opacity:1;
+  text-align: left;
 }
 .my-assets {
   margin: auto;
@@ -236,24 +226,20 @@ export default {
   font-size: 14px;
   font-weight: bold;
 }
-.rightbutton{
-  background-color: rgba(0, 0, 0, 1);
-  color: rgba(255,255,255,1);
-  float: right;
-  margin-top: 20px;
-  width: 80px;
-  height: 25px;
-}
 .detailtext{
   font-size: 13px;
   margin-left: 20px;
   font-weight: bold;
 }
 Button.withdraw, Button.withdraw:focus, Button.withdraw:hover {
-  color: #FFF;
-  background-color: #000;
+  background-color: rgba(0, 0, 0, 1);
   border-radius: 2px;
-  font-size:16px;
+  color: rgba(255,255,255,1);
+  float: right;
+  font-size: 12px;
+  margin-top: 20px;
+  width: 80px;
+  height: 25px;
   letter-spacing: 2px;
   max-width: 94px;
   max-height: 35px;
