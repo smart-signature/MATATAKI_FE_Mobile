@@ -28,7 +28,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import { sendPost } from '@/api/ipfs';
 import API from '@/api/scatter.js';
-import { publishArticle } from '@/api/backend';
+import { publishArticle, _newPublishArticle } from '@/api/backend';
 import { mavonEditor } from 'mavon-editor';
 // MarkdownIt 实例
 const mdit = mavonEditor.getMarkdownIt();
@@ -81,6 +81,10 @@ export default {
                 title: '发送失败',
               });
             } else {
+              // NOTICE!! _newPublishArticle will be tested and replaced very soon
+              _newPublishArticle({
+                author, title, hash, publicKey, signature, username,
+              })
               publishArticle({
                 author, title, hash, publicKey, signature, username,
               }).then(() => {

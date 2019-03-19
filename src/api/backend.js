@@ -1,7 +1,8 @@
 import axios from 'axios';
+import request from "request";
 
 // const _OLD_apiServer = 'https://smartsignature.azurewebsites.net';
-const apiServer = 'http://api.smartsignature.io';
+const apiServer = 'https://api.smartsignature.io';
 
 // function __OLD_publishArticle({
 //   hash, title, author, transactionId, accountName,
@@ -31,6 +32,32 @@ function publishArticle({
   }), { headers: { 'Content-Type': 'application/json' } });
 }
 
+// NOTICE!! _newPublishArticle will be tested and replaced very soon
+function _newPublishArticle({
+  author, title, hash, publicKey, signature, username,
+}) {
+  const url = `${apiServer}/publish`;
+  // const url = `http://localhost:7001/publish`;
+  return request({
+    uri: url,
+    rejectUnauthorized: false,
+    json: true,
+    headers: { "Accept": '*/*' },
+    dataType: 'json',
+    method: "POST",
+    form: {
+        username,
+        author,
+        title,
+        publickey: publicKey,
+        hash,
+        sign: signature,
+    }
+}, function (error, response, body) {
+    console.log(body)
+});
+}
+
 const getArticlesList = () => axios.get(`${apiServer}/api/article`);
 
-export { publishArticle, getArticlesList };
+export { publishArticle, getArticlesList, _newPublishArticle };
