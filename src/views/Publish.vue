@@ -86,18 +86,23 @@ export default {
               // })
               publishArticle({
                 author, title, hash, publicKey, signature, username,
-              }).then(() => {
-                this.$Notice.success({
-                  title: '发送成功',
-                  desc: '3秒后跳转到你发表的文章',
-                });
-                const jumpToArticle = () => this.$router.push({ name: 'Article', params: { hash } });
-                setTimeout(jumpToArticle, 3 * 1000);
-              }).catch(() => {
-                this.$Notice.error({
-                  title: '发送失败',
-                });
-              });
+              }, (error, response, body) => {
+                console.info(error)
+                console.info(response)
+                console.info(body)
+                if (body) {
+                  this.$Notice.success({
+                    title: '发送成功',
+                    desc: '3秒后跳转到你发表的文章',
+                  });
+                  const jumpToArticle = () => this.$router.push({ name: 'Article', params: { hash } });
+                  setTimeout(jumpToArticle, 3 * 1000);
+                } else {
+                  this.$Notice.error({
+                    title: '发送失败',
+                  });
+                }
+              })
             }
           });
         } else {

@@ -35,7 +35,7 @@ function _oldPublishArticle({
 // NOTICE!! publishArticle will be tested and replaced very soon
 function publishArticle({
   author, title, hash, publicKey, signature, username,
-}) {
+}, callback) {
   const url = `${apiServer}/publish`;
   // const url = `http://localhost:7001/publish`;
   return request({
@@ -53,9 +53,7 @@ function publishArticle({
         hash,
         sign: signature,
     }
-}, function (error, response, body) {
-    console.log(body)
-});
+}, callback);
 }
 
 const getArticlesList = () => axios.get(`${apiServer}/api/article`);
