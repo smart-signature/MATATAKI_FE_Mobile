@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import { sendPost } from '@/api/ipfs';
 import API from '@/api/scatter.js';
 import { publishArticle } from '@/api/backend';
@@ -37,6 +37,13 @@ export default {
   name: 'New-Post',
   components: {
     'mavon-editor': mavonEditor,
+  },
+  async created() {
+    if (this.currentUsername) {
+      return;
+    }
+    await this.suggestNetworkAsync();
+    await this.loginScatterAsync();
   },
   data: () => ({
     title: '',
@@ -51,6 +58,10 @@ export default {
     },
   },
   methods: {
+    ...mapActions([
+      'suggestNetworkAsync',
+      'loginScatterAsync',
+    ]),
     async sendThePost() {
       const {
         title, author, markdownData, currentUsername, fission_factor,
@@ -70,19 +81,31 @@ export default {
                 title: '发送失败',
               });
             } else {
+              // _oldPublishArticle({
+              //   author, title, hash, publicKey, signature, username,
+              // })
               publishArticle({
                 author, title, hash, publicKey, signature, username,
-              }).then(() => {
-                this.$Notice.success({
-                  title: '发送成功',
-                  desc: '3秒后跳转到你发表的文章',
-                });
-                const jumpToArticle = () => this.$router.push({ name: 'Article', params: { hash } });
-                setTimeout(jumpToArticle, 3 * 1000);
-              }).catch(() => {
-                this.$Notice.error({
-                  title: '发送失败',
-                });
+              }, (error, response, body) => {
+                console.info(error);
+                console.info(response);
+                console.info(body);
+                if (body.msg === 'success' && !error) {
+                  this.$Notice.success({
+                    title: '发送成功',
+                    desc: '3秒后跳转到你发表的文章',
+                  });
+                  const jumpToArticle = () => this.$router.push({
+                    name: 'Article',
+                    params: { hash } 
+                  });
+                  setTimeout(jumpToArticle, 3 * 1000);
+                } else {
+                  this.$Notice.error({
+                    title: '发送失败',
+                    desc: msg,
+                  });
+                }
               });
             }
           });

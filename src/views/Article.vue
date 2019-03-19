@@ -56,11 +56,11 @@ import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
 import { support } from '../api/signature.js';
 import 'mavon-editor/dist/css/index.css';
-// MarkdownIt 实例
-const markdownIt = mavonEditor.getMarkdownIt();
 // markdownIt.set({ breaks: false });
 
-import querystring from 'query-string'
+import querystring from 'query-string';
+// MarkdownIt 实例
+const markdownIt = mavonEditor.getMarkdownIt();
 
 
 export default {
@@ -156,7 +156,7 @@ export default {
       this.$router.go(-1);
     },
     getRef() {
-      var invite = localStorage.getItem('invite');
+      let invite = localStorage.getItem('invite');
       if (!invite) {
         invite = null;
       }
