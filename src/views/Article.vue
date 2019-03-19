@@ -159,7 +159,10 @@ export default {
       this.$router.go(-1);
     },
     getRef() {
-      let invite = localStorage.getItem('invite');
+      // no need to save inviter
+      // let invite = localStorage.getItem('invite');
+      var invite = querystring.parse(location.search.slice(1)).invite;
+
       if (!invite) {
         invite = null;
       }
@@ -171,8 +174,7 @@ export default {
     this.getArticleData();
     document.title = '正在加载文章 - Smart Signature';
 
-    var invite = querystring.parse(location.search.slice(1)).invite;
-    localStorage.setItem('invite', (invite) ? invite : null);
+  
   },
 };
 </script>
