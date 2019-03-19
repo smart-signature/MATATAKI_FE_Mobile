@@ -158,7 +158,7 @@ export default {
     getRef() {
       var invite = localStorage.getItem('invite');
       if (!invite) {
-        invite = "";
+        invite = null;
       }
       return invite;
     },
