@@ -158,7 +158,7 @@ export default {
     getRef() {
       let invite = localStorage.getItem('invite');
       if (!invite) {
-        invite = '';
+        invite = null;
       }
       return invite;
     },
@@ -168,10 +168,8 @@ export default {
     this.getArticleData();
     document.title = '正在加载文章 - Smart Signature';
 
-    const { invite } = querystring.parse(location.search.slice(1));
-    if (invite) {
-      localStorage.setItem('invite', invite);
-    }
+    var invite = querystring.parse(location.search.slice(1)).invite;
+    localStorage.setItem('invite', (invite) ? invite : null);
   },
 };
 </script>
