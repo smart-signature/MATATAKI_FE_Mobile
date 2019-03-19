@@ -4,7 +4,7 @@
       <div slot="left">
         <za-icon theme="primary" type="arrow-left" @click="goBack"></za-icon>
       </div>
-      <div slot="title" v-if="isMe">原创文章</div>
+      <div slot="title" v-if="isMe">{{username}} 的原创文章</div>
     </za-nav-bar>
     <ArticlesList :listtype="'original'" ref='ArticlesList'/>
   </div>
