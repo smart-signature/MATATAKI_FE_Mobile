@@ -23,28 +23,30 @@
         <div class="markdown-body tac" v-html="compiledMarkdown"></div>
       </main>
     </div>
-    <footer class="article-footer">
-      <div style="float:left;opacity:0.404;color: #000000;">
-          4.0k 已贊助
-      </div>
-      <div style="float:right;white-space:nowrap;" >
-        <za-button class="button-support" v-if="isSupported"
-          size='xl' theme="primary"
-          disabled>
-          支持
-        </za-button>
-        <za-button class="button-support" v-else
-          size='xl' theme="primary"
-          @click="support">
-          支持
-        </za-button>
-        <za-button class="button-share"
-          size='xl' theme="primary"
-          :data-clipboard-text="getClipboard"
-          @click="share">
-          分享
-        </za-button>
-      </div>
+    <footer class="footer-article">
+      <Divider />
+      <Row justify="center">
+          <i-col span="11">{{3500}}</i-col>
+          <i-col span="2"><Divider type="vertical" /></i-col>
+          <i-col span="11">裂变系数：{{2}}</i-col>
+      </Row>
+      <Divider />
+      <Row style="white-space:nowrap;">
+        <i-col span="12">
+          <za-button class="button-support" v-if="isSupported"
+            size='xl' theme="primary"
+            disabled>打赏</za-button>
+          <za-button class="button-support" v-else
+            size='xl' theme="primary"
+            @click="support">打赏</za-button>
+        </i-col>
+        <i-col span="12">
+          <za-button class="button-share"
+            size='xl' theme="primary" 
+            :data-clipboard-text="getClipboard"
+            @click="share" ghost="true">分享</za-button>
+        </i-col>
+      </Row>
       <!-- <za-toast :visible.sync="toastvisible"
       @close="toastClose" :duration="1000">ok</za-toast> -->
     </footer>
@@ -525,6 +527,16 @@ textarea {
 .tac address {
   display: none !important;
 }
+.footer-article {
+  font-size: 12px;
+  font-family: PingFangSC-Regular;
+  font-weight: 400;
+  color: rgba(0,0,0,1);
+  text-align: center;
+  line-height: 10px;
+  letter-spacing: 1px;
+}
+
 #button {
   font-family: CustomSansSerif, "Lucida Grande", Arial, sans-serif;
   font-weight: 600;
