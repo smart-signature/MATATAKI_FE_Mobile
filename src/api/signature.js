@@ -147,12 +147,24 @@ async function getSignbyhash({ hash = null }) {
 }
 */
 async function getSharesInfo() {
-  const { rows } = await eosapi.getTableRows({
+  const { rows } = await eos().getTableRows({
     json: true,
     code: SIGNATURE_CONTRACT,
     scope: SIGNATURE_CONTRACT,
     table: 'shares',
     limit: 10000,
+  });
+  return rows;
+}
+
+async function getSignInfo(id) {
+  const { rows } = await eos().getTableRows({
+    json: true,
+    code: SIGNATURE_CONTRACT,
+    scope: SIGNATURE_CONTRACT,
+    table: 'signs',
+    lower_bound: id,
+    limit: 1,
   });
   return rows;
 }
@@ -205,5 +217,6 @@ async function getMaxSignId() {
 export {
   publishOnChain,
   support, withdraw,
+  getSignInfo,
   getPlayerIncome, getPlayerBills,
 };
