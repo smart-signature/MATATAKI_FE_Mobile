@@ -14,7 +14,7 @@
           <Button class="withdraw" ghost @click="visible7 = true">提现</Button>
           <za-confirm
             :visible="visible7"
-            title="提现确认" message="你确定吗？" 
+            title="提现确认" message="你确定吗？"
             :ok="handleOk" :cancel="handleCancel"></za-confirm>
       </div>
       <Divider style="margin-top:10px;margin-bottom:10px;"/>
@@ -62,8 +62,10 @@
 
 <script>
 import { AssetCard } from '@/components/';
-import { getPlayerBills, getPlayerIncome,
-         withdraw } from '../../api/signature.js';
+import {
+  getPlayerBills, getPlayerIncome,
+  withdraw,
+} from '../../api/signature.js';
 
 export default {
   name: 'Asset',
@@ -76,23 +78,23 @@ export default {
   data() {
     return {
       assets: [
-        { // sample  
+        { // sample
           quantity: '10.2333 EOS',
           timestamp: Date.now(),
           type: 'test income',
         },
         { // sample
           quantity: '100.2333 EOS',
-          timestamp: Date.now()+1,
+          timestamp: Date.now() + 1,
           type: 'test income',
         },
       ],
       activeNameSwipe: '全部',
       selectedLabelDefault: '全部',
       tabs: [
-        { label: '全部', },
-        { label: '支持收入', },
-        { label: '转发收入', },
+        { label: '全部' },
+        { label: '支持收入' },
+        { label: '转发收入' },
       ],
       playerincome: {
         share_income: '0.0000 EOS',
@@ -134,10 +136,10 @@ export default {
     handleClick(tab, event) {
       console.log(tab, event);
     },
-    handleCancel(){
+    handleCancel() {
       this.visible7 = false;
     },
-    handleOk(){
+    handleOk() {
       this.withdraw(this.username);
     },
     async refresh() {
@@ -150,7 +152,7 @@ export default {
     },
     async withdraw(name) {
       console.log('Connecting to EOS fetch data...');
-      await withdraw(name).then( () => alert('提現成功') );
+      await withdraw(name).then(() => alert('提現成功'));
     },
   },
 };

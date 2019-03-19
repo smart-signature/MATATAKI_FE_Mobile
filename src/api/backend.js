@@ -1,5 +1,5 @@
 import axios from 'axios';
-import request from "request";
+import request from 'request';
 
 // const _OLD_apiServer = 'https://smartsignature.azurewebsites.net';
 const apiServer = 'https://api.smartsignature.io';
@@ -42,18 +42,18 @@ function publishArticle({
     uri: url,
     rejectUnauthorized: false,
     json: true,
-    headers: { "Accept": '*/*' },
+    headers: { Accept: '*/*' },
     dataType: 'json',
-    method: "POST",
+    method: 'POST',
     form: {
-        username,
-        author,
-        title,
-        publickey: publicKey,
-        hash,
-        sign: signature,
-    }
-}, callback);
+      username,
+      author,
+      title,
+      publickey: publicKey,
+      hash,
+      sign: signature,
+    },
+  }, callback);
 }
 
 const getArticlesList = () => axios.get(`${apiServer}/api/article`);

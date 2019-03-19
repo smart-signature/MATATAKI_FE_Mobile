@@ -42,8 +42,8 @@ export default {
     if (this.currentUsername) {
       return;
     }
-    await this.suggestNetworkAsync()
-    await this.loginScatterAsync()
+    await this.suggestNetworkAsync();
+    await this.loginScatterAsync();
   },
   data: () => ({
     title: '',
@@ -60,7 +60,7 @@ export default {
   methods: {
     ...mapActions([
       'suggestNetworkAsync',
-      'loginScatterAsync'
+      'loginScatterAsync',
     ]),
     async sendThePost() {
       const {
@@ -87,23 +87,26 @@ export default {
               publishArticle({
                 author, title, hash, publicKey, signature, username,
               }, (error, response, body) => {
-                console.info(error)
-                console.info(response)
-                console.info(body)
+                console.info(error);
+                console.info(response);
+                console.info(body);
                 if (body.msg === 'success' && !error) {
                   this.$Notice.success({
                     title: '发送成功',
                     desc: '3秒后跳转到你发表的文章',
                   });
-                  const jumpToArticle = () => this.$router.push({ name: 'Article', params: { hash } });
+                  const jumpToArticle = () => this.$router.push({
+                    name: 'Article',
+                    params: { hash } 
+                  });
                   setTimeout(jumpToArticle, 3 * 1000);
                 } else {
                   this.$Notice.error({
                     title: '发送失败',
-                    desc: msg
+                    desc: msg,
                   });
                 }
-              })
+              });
             }
           });
         } else {
