@@ -11,7 +11,11 @@
       <div class="toptext1">待提现</div><br/>
       <div class="topremain">47,000</div>
       <div style="position:absolute;right:40px;top:90px;">
-        <Button class="withdraw" ghost @click="withdraw">提现</Button>
+          <Button class="withdraw" ghost @click="visible7 = true">提现</Button>
+          <za-confirm
+            :visible="visible7"
+            title="提现确认" message="你确定吗？" 
+            :ok="handleOk" :cancel="handleCancel"></za-confirm>
       </div>
       <Divider style="margin-top:10px;margin-bottom:10px;"/>
       <Row type="flex" justify="center" class="code-row-bg">
@@ -97,6 +101,7 @@ export default {
       writereward: 23000,
       sharereward: 24000,
       sharecost: -70000,
+      visible7: false,
     };
   },
   methods: {
@@ -128,6 +133,12 @@ export default {
     handleClick(tab, event) {
       console.log(tab, event);
     },
+    handleCancel(){
+      this.visible7 = false;
+    },
+    handleOk(){
+      this.withdraw(this.username);
+    },
     async refresh() {
       this.refreshing = true;
       await this.getAssetsList();
@@ -138,7 +149,7 @@ export default {
     },
     async withdraw(name) {
       console.log('Connecting to EOS fetch data...');
-      alert(name);
+      alert('提現成功');
     },
   },
 };
