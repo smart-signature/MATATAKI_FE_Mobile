@@ -34,12 +34,12 @@
     <div class="topcard" v-if="isMe">
       <Row type="flex" justify="center" class="code-row-bg">
           <Col span="11">
-            <p class="centervalue">{{mySignIncome}}</p>
+            <p class="centervalue">{{mySignIncome}} EOS</p>
             <p class="centertext">创作收入</p>
           </Col>
           <Col span="1"><Divider type="vertical" style="height:33px;margin-top:10px;" /></Col>
           <Col span="11">
-            <p class="centervalue">{{myShareIncome}}</p>
+            <p class="centervalue">{{myShareIncome}} EOS</p>
             <p class="centertext">转发收入</p>
           </Col>
       </Row>
@@ -98,7 +98,7 @@ export default {
     ...mapGetters(['currentUsername']),
     mySignIncome() {
       return this.playerincome.sign_income / 10000;
-    },    
+    },
     myShareIncome() {
       return this.playerincome.share_income / 10000;
     },
@@ -139,7 +139,7 @@ export default {
   async created() {
     const playerincome = await getPlayerIncome(this.username);
     console.info(playerincome);
-    this.playerincome = playerincome.length != 0 ? playerincome[0] : {
+    this.playerincome = playerincome.length !== 0 ? playerincome[0] : {
       share_income: 0,
     };
     const user = this.isMe ? '我' : this.username;
