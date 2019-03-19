@@ -184,7 +184,7 @@ export default {
     console.log('sign :', signs[0]);
     this.post.author = signs[0].author ;
 
-    var invite = querystring.parse(location.search.slice(1)).invite;
+    let invite = querystring.parse(window.location.search.slice(1)).invite;
     if (invite) {
       localStorage.setItem('invite', invite);
     }
