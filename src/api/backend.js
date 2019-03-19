@@ -4,7 +4,7 @@ import request from "request";
 // const _OLD_apiServer = 'https://smartsignature.azurewebsites.net';
 const apiServer = 'https://api.smartsignature.io';
 
-// function __OLD_publishArticle({
+// function __OLD__oldPublishArticle({
 //   hash, title, author, transactionId, accountName,
 // }) {
 //   const url = `${apiServer}/api/article`;
@@ -17,7 +17,7 @@ const apiServer = 'https://api.smartsignature.io';
 //   }), { headers: { 'Content-Type': 'application/json' } });
 // }
 
-function publishArticle({
+function _oldPublishArticle({
   author, title, hash, publicKey, signature, username,
 }) {
   const url = `${apiServer}/publish`;
@@ -32,8 +32,8 @@ function publishArticle({
   }), { headers: { 'Content-Type': 'application/json' } });
 }
 
-// NOTICE!! _newPublishArticle will be tested and replaced very soon
-function _newPublishArticle({
+// NOTICE!! publishArticle will be tested and replaced very soon
+function publishArticle({
   author, title, hash, publicKey, signature, username,
 }) {
   const url = `${apiServer}/publish`;
@@ -60,4 +60,4 @@ function _newPublishArticle({
 
 const getArticlesList = () => axios.get(`${apiServer}/api/article`);
 
-export { publishArticle, getArticlesList, _newPublishArticle };
+export { _oldPublishArticle, getArticlesList, publishArticle };
