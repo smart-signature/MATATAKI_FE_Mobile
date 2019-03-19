@@ -90,7 +90,7 @@ export default {
                 console.info(error)
                 console.info(response)
                 console.info(body)
-                if (body) {
+                if (body.msg === 'success' && !error) {
                   this.$Notice.success({
                     title: '发送成功',
                     desc: '3秒后跳转到你发表的文章',
@@ -100,6 +100,7 @@ export default {
                 } else {
                   this.$Notice.error({
                     title: '发送失败',
+                    desc: msg
                   });
                 }
               })
