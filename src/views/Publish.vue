@@ -17,7 +17,7 @@
           <Input v-model="author" placeholder="写上你的大名..." clearable />
         </FormItem> -->
         <FormItem label="裂变系数">
-          <Input v-model="fission_factor" placeholder="输入文章分享裂变系数" clearable />
+          <Input v-model="fissionFactor" placeholder="输入文章分享裂变系数" clearable />
         </FormItem>
     </Form>
     <mavon-editor v-model="markdownData" @imgAdd="uploadImage" placeholder="左边输入 Markdown 格式的文字开始编辑，右边即时预览" />
@@ -49,7 +49,7 @@ export default {
     title: '',
     author: '',
     markdownData: '',
-    fission_factor: 2000,
+    fissionFactor: 2000,
   }),
   computed: {
     ...mapGetters(['currentUsername']),
@@ -64,9 +64,9 @@ export default {
     ]),
     async sendThePost() {
       const {
-        title, markdownData, currentUsername, fission_factor,
+        title, markdownData, currentUsername, fissionFactor,
       } = this;
-      const author = this.currentUsername
+      const author = currentUsername;
       try {
         const { data } = await sendPost({
           title, author, content: markdownData, desc: 'whatever',
@@ -74,7 +74,7 @@ export default {
         const { code, hash } = data;
         if (code === 200) {
           console.log('Push action to signature.bp...', hash);
-          // const { transaction_id } = await publishOnChain({ hash, fission_factor });
+          // const { transaction_id } = await publishOnChain({ hash, fissionFactor });
           API.getSignature(author, hash, (err, signature, publicKey, username) => {
             // console.log("签名成功后调", signature, publicKey)
             if (err) {
