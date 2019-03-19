@@ -9,8 +9,17 @@
         <Button type="text" size="large" @click="sendThePost">确认发布</Button>
       </div>
     </za-nav-bar>
-    <Input v-model="title" placeholder="标题" size="large" clearable />
-    <Input v-model="author" placeholder="署名" clearable />
+    <Form label-position="left" :label-width="100">
+        <FormItem label="标题">
+          <Input v-model="title" placeholder="请输入你的文章标题..." size="large" clearable />
+        </FormItem>
+        <FormItem label="署名">
+          <Input v-model="author" placeholder="写上你的大名..." clearable />
+        </FormItem>
+        <FormItem label="裂变系数">
+          <Input v-model="fission_factor" placeholder="输入文章分享裂变系数" clearable />
+        </FormItem>
+    </Form>
     <mavon-editor v-model="markdownData" @imgAdd="uploadImage" placeholder="左边输入 Markdown 格式的文字开始编辑，右边即时预览" />
   </div>
 </template>
@@ -33,6 +42,7 @@ export default {
     title: '',
     author: '',
     markdownData: '',
+    fission_factor: 2000,
   }),
   computed: {
     ...mapGetters(['currentUsername']),
@@ -43,7 +53,7 @@ export default {
   methods: {
     async sendThePost() {
       const {
-        title, author, markdownData, currentUsername,
+        title, author, markdownData, currentUsername, fission_factor,
       } = this;
       try {
         const { data } = await sendPost({
@@ -51,29 +61,26 @@ export default {
         });
         const { code, hash } = data;
         if (code === 200) {
-          // alert('發布到鏈上... (這裡需要进度条)');
           console.log('Push action to signature.bp...', hash);
-          // const { transaction_id } = await publishOnChain({hash,});
-          const _this = this;
-
+          // const { transaction_id } = await publishOnChain({ hash, fission_factor });
           API.getSignature(author, hash, (err, signature, publicKey, username) => {
             // console.log("签名成功后调", signature, publicKey)
             if (err) {
-              _this.$Notice.error({
+              this.$Notice.error({
                 title: '发送失败',
               });
             } else {
               publishArticle({
                 author, title, hash, publicKey, signature, username,
               }).then(() => {
-                _this.$Notice.success({
+                this.$Notice.success({
                   title: '发送成功',
                   desc: '3秒后跳转到你发表的文章',
                 });
-                const jumpToArticle = () => _this.$router.push({ name: 'Article', params: { hash } });
+                const jumpToArticle = () => this.$router.push({ name: 'Article', params: { hash } });
                 setTimeout(jumpToArticle, 3 * 1000);
               }).catch(() => {
-                _this.$Notice.error({
+                this.$Notice.error({
                   title: '发送失败',
                 });
               });
@@ -117,10 +124,6 @@ export default {
     vertical-align: top;
     box-sizing: border-box;
     padding: 0 20px;
-  }
-
-  .ivu-input-wrapper {
-    margin-bottom: 10px;
   }
 
   textarea {

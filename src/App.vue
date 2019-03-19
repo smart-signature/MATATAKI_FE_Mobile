@@ -46,7 +46,7 @@ body {
 }
 .card {
   margin: 10px;
-  text-align: center;
+  text-align: left;
   /* max-width: 335px; */
   background: rgba(255, 255, 255, 1);
   box-shadow: 0px 2px 5px 3px rgba(233, 233, 233, 0.5);

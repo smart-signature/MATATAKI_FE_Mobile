@@ -2,7 +2,7 @@ import { eos, currentEOSAccount as currentAccount } from './scatter';
 
 const SIGNATURE_CONTRACT = 'signature.bp';
 
-const publishOnChain = async ({ hash = '' }) => {
+const publishOnChain = async ({ hash = '', fission_factor = 2000 }) => {
   if (currentAccount() == null) {
     alert('请先登录');
     throw new Error('NOT-LOGINED');
@@ -20,7 +20,7 @@ const publishOnChain = async ({ hash = '' }) => {
           sign:
           {
             author: currentAccount().name,
-            fission_factor: 2000,
+            fission_factor,
             id: 0, /* 一定會被覆蓋 */
             ipfs_hash: hash,
             /* 下面兩個需要一個預設值 */

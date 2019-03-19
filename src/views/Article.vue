@@ -60,6 +60,9 @@ import 'mavon-editor/dist/css/index.css';
 const markdownIt = mavonEditor.getMarkdownIt();
 // markdownIt.set({ breaks: false });
 
+import querystring from 'query-string'
+
+
 export default {
   name: 'Article',
   props: ['hash'],
@@ -88,7 +91,8 @@ export default {
       // alert(currentUsername);
       // alert(scatterAccount.name);
       if (this.isLogined) {
-        return `${window.location.href}/?#/invite/${currentUsername}`;
+        // return `${window.location.href}?invite=${currentUsername}`;
+        return `${window.location.host}/article/${this.hash}?invite=${currentUsername}`;
       }
       return window.location.href;
     },
@@ -128,8 +132,10 @@ export default {
       const url = `https://api.smartsignature.io/post/${this.hash}`;
       const { data } = await axios.get(url);
       const sign_id = data.id;
-      // todo(minakokojima): use Regex to get referrer from the url.
-      await support({ amount, sign_id, referrer: null });
+      // todo(minakokojima): use Regex to get referrer from the url. // Done (joe)
+      const referrer = this.getRef();
+      console.log("referrer",referrer);
+      await support({ amount, sign_id, referrer: referrer });
     },
     share() {
       const clipboard = new Clipboard('.button-share');
@@ -150,11 +156,23 @@ export default {
     goBack() {
       this.$router.go(-1);
     },
+    getRef() {
+      var invite = localStorage.getItem('invite');
+      if (!invite) {
+        invite = "";
+      }
+      return invite;
+    },
   },
   created() {
     this.board = this.getClipboard;
     this.getArticleData();
     document.title = '正在加载文章 - Smart Signature';
+
+    var invite = querystring.parse(location.search.slice(1)).invite;
+    if (invite) {
+      localStorage.setItem('invite', invite);
+    }
   },
 };
 </script>
