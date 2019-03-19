@@ -19,21 +19,27 @@
       <Row type="flex" justify="center" class="code-row-bg">
         <Col span="6">
           <p class="toptext2">写作收入</p>
-          <p class="toptext3">+23000</p>
+          <p class="toptext3" :style='writereward > 0 ? { color: "#f50" } : { color: "#87d068" }'>
+            {{(writereward > 0 ? "+" : "") + writereward}}
+          </p>
         </Col>
         <Col span="3" style="text-align:center">
           <Divider type="vertical" style="height:20px;margin-top:16px;" />
         </Col>
         <Col span="6">
           <p class="toptext2">转发收入</p>
-          <p class="toptext3">+24000</p>
+          <p class="toptext3" :style='sharereward > 0 ? { color: "#f50" } : { color: "#87d068" }'>
+            {{(sharereward > 0 ? "+" : "") + sharereward}}
+          </p>
         </Col>
         <Col span="3" style="text-align:center">
           <Divider type="vertical" style="height:20px;margin-top:16px;" />
         </Col>
         <Col span="6">
           <p class="toptext2">打赏支出</p>
-          <p class="toptext3">-70000</p>
+          <p class="toptext3" :style='sharecost > 0 ? { color: "#f50" } : { color: "#87d068" }'>
+            {{(sharecost > 0 ? "+" : "") + sharecost}}
+          </p>
         </Col>
       </Row>
     </div>
@@ -96,6 +102,9 @@ export default {
         share_income: '0.0000 EOS',
         sign_income: '0.0000 EOS',
       },
+      writereward: 23000,
+      sharereward: 24000,
+      sharecost: -70000
     };
   },
   methods: {
