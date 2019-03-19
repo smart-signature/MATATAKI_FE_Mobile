@@ -59,7 +59,7 @@ async function withdraw() {
     return;
   }
 
-  const contract = await eos().contract(SIGNATURE_CONTRACT);
+  // const contract = await eos().contract(SIGNATURE_CONTRACT);
 
   if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
 
