@@ -104,7 +104,7 @@ export default {
       },
       writereward: 23000,
       sharereward: 24000,
-      sharecost: -70000
+      sharecost: -70000,
     };
   },
   methods: {

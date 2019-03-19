@@ -42,7 +42,7 @@ export default {
     title: '',
     author: '',
     markdownData: '',
-    fission_factor: 2000
+    fission_factor: 2000,
   }),
   computed: {
     ...mapGetters(['currentUsername']),
@@ -53,7 +53,7 @@ export default {
   methods: {
     async sendThePost() {
       const {
-        title, author, markdownData, currentUsername, fission_factor
+        title, author, markdownData, currentUsername, fission_factor,
       } = this;
       try {
         const { data } = await sendPost({
@@ -71,7 +71,7 @@ export default {
               });
             } else {
               publishArticle({
-                author, title, hash, publicKey, signature, username
+                author, title, hash, publicKey, signature, username,
               }).then(() => {
                 this.$Notice.success({
                   title: '发送成功',
