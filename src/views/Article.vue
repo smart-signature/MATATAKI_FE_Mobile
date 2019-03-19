@@ -28,7 +28,7 @@
       <Row justify="center">
           <i-col span="11">{{3500}}</i-col>
           <i-col span="2"><Divider type="vertical" /></i-col>
-          <i-col span="11">裂变系数：{{2}}</i-col>
+          <i-col span="11">裂变系数：{{sign.fission_factor / 1000}}</i-col>
       </Row>
       <Divider />
       <Row style="white-space:nowrap;">
@@ -109,6 +109,7 @@ export default {
       desc: '',
       board: '',
     },
+    sign: null,
     toastvisible: false,
   }),
   watch: {
@@ -181,8 +182,10 @@ export default {
     const url = `https://api.smartsignature.io/post/${this.hash}`;
     const { data } = await axios.get(url);
     const signs = await getSignInfo(data.id);
-    console.log('sign :', signs[0]);
-    this.post.author = signs[0].author ;
+    this.sign = signs[0];
+    console.log('sign :', sign);
+
+    this.post.author = this.sign.author ;
 
     let invite = querystring.parse(window.location.search.slice(1)).invite;
     if (invite) {
