@@ -2,10 +2,10 @@
   <div class="article">
     <za-nav-bar>
       <div slot="left">
-        <za-icon theme="primary" type="arrow-left" @click="goBack"></za-icon>
+        <Icon type="ios-home" :size="24" @click="goHome" />
       </div>
-      <div slot="title">smartsignature.io</div>
-      <div slot="right"></div>
+      <div slot="title" @click="goHome">Smart Signature</div>
+      <div slot="right"><Icon type="ios-share-alt" :size="24" /></div>
     </za-nav-bar>
     <div class="tl_page">
       <main class="ta">
@@ -151,6 +151,9 @@ export default {
     },
     toastClose(reason, event) {
       console.log(reason, event);
+    },
+    goHome() {
+      this.$router.push({ name: 'home' })
     },
     goBack() {
       this.$router.go(-1);
