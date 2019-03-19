@@ -33,7 +33,7 @@ const publishOnChain = async ({ hash = '' }) => {
   });
 };
 
-async function support({ amount = null, sign_id = null, share_id = null }) {
+async function support({ amount = null, sign_id = null, referrer = null }) {
   if (currentAccount() == null) {
     alert('请先登录');
     return;
@@ -49,7 +49,7 @@ async function support({ amount = null, sign_id = null, share_id = null }) {
 
   return transferEOS({
     amount,
-    memo: ((share_id != null) ? `share ${sign_id} ${share_id}` : `share ${sign_id}`),
+    memo: ((referrer != null) ? `share ${sign_id} ${referrer}` : `share ${sign_id}`),
   });
 }
 

@@ -60,13 +60,14 @@
 
 <script>
 import { AssetCard } from '@/components/';
-import { getPlayerBills } from '../../api/signature.js';
+import { getPlayerBills, getPlayerIncome } from '../../api/signature.js';
 
 export default {
   name: 'Asset',
   props: ['username'],
   components: { AssetCard },
   async created() {
+    await getPlayerIncome(this.username);
     await this.refresh();
   },
   data() {
@@ -74,12 +75,12 @@ export default {
       refreshing: false,
       assets: [{
         // sample
-        quantity: '+ 10.2333 EOS',
+        quantity: '10.2333 EOS',
         timestamp: Date.now(),
       },
       {
         // sample
-        quantity: '+ 100.2333 EOS',
+        quantity: '100.2333 EOS',
         type: 'share income',
         timestamp: Date.now() + 1,
       },
@@ -97,6 +98,10 @@ export default {
           label: '转发收入',
         },
       ],
+      playerincome: {
+        share_income: '0.0000 EOS',
+        sign_income: '0.0000 EOS',
+      },
       writereward: 23000,
       sharereward: 24000,
       sharecost: -70000
@@ -118,6 +123,16 @@ export default {
       }));
       // console.log(this.assets);
     },
+    async getPlayerIncome(name) {
+      console.log('Connecting to EOS fetch data...');
+      const playerincome = await getPlayerIncome(name);
+      if (playerincome === null) {
+        this.playerincome = {
+          share_income: '0.0000 EOS',
+          sign_income: '0.0000 EOS',
+        };
+      }
+    },
     handleClick(tab, event) {
       console.log(tab, event);
     },
@@ -129,6 +144,10 @@ export default {
     goBack() {
       this.$router.go(-1);
     },
+    async withdraw(name) {
+      console.log('Connecting to EOS fetch data...');
+      alert(name);
+    },
   },
 };
 </script>
@@ -137,6 +156,46 @@ export default {
 <style scoped>
 .assetpage {
   text-align: left;
+}
+.asset-page {
+  background:rgba(247,247,247,1);
+  opacity:1;
+}
+.my-assets {
+  margin: auto;
+  margin-top: 13px;
+  text-align: center;
+  max-height: 128px;
+  /* margin: -32px 20px 0 20px; */
+  /*padding: 8px;*/
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0px 5px 5px 0px rgba(213, 213, 213, 0.5);
+  border-radius: 4px;
+}
+.row1 {
+  font: 12px;
+  /*text-align: left;*/
+}
+.row2 {
+  text-align: center;
+}
+.title-bar {
+  white-space: nowrap;
+  font-size: 12px;
+  font-family: PingFangSC-Semibold;
+  line-height: 0px;
+  color: rgba(152,152,152,1);
+  opacity: 1;
+}
+.income {
+  color: #FF3030;
+  font-size: 16px;
+  font-family: PingFangSC-Semibold;
+}
+.income2 {
+  color:  #07BB3D;
+  font-size: 16px;
+  font-family: PingFangSC-Semibold;
 }
 .assets {
   /* background: rgba(240, 240, 240, 1); */
@@ -189,5 +248,15 @@ export default {
   font-size: 13px;
   margin-left: 20px;
   font-weight: bold;
+}
+Button.withdraw, Button.withdraw:focus, Button.withdraw:hover {
+  color: #FFF;
+  background-color: #000;
+  border-radius: 2px;
+  font-size:16px;
+  letter-spacing: 2px;
+  max-width: 94px;
+  max-height: 35px;
+  margin-right: 18px;
 }
 </style>
