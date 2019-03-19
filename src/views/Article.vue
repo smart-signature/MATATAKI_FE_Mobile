@@ -2,17 +2,19 @@
   <div class="article">
     <za-nav-bar>
       <div slot="left">
-        <za-icon theme="primary" type="arrow-left" @click="goBack"></za-icon>
+        <Icon type="ios-home" :size="24" @click="goHome" />
       </div>
-      <div slot="title">smartsignature.io</div>
-      <div slot="right"></div>
+      <div slot="title" @click="goHome">Smart Signature</div>
+      <div slot="right"><Icon type="ios-share-alt" :size="24" /></div>
     </za-nav-bar>
     <div class="tl_page">
       <main class="ta">
         <header class="ta_header">
           <h1 dir="auto">{{post.title}}</h1>
           <address dir="auto">
-            <a rel="/"> Author: {{post.author}}</a>
+            <router-link :to="{ name: 'User', params: { author: post.author }}">
+              <a> Author: {{post.author}}</a>
+            </router-link>
             <br/>
             <span>IPFS Hash: {{hash}}</span>
           </address>
@@ -54,13 +56,13 @@ import { mapState, mapGetters } from 'vuex';
 import axios from 'axios';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
-import { support } from '../api/signature.js';
+import { support, getSignInfo } from '../api/signature.js';
 import 'mavon-editor/dist/css/index.css';
-// MarkdownIt 实例
-const markdownIt = mavonEditor.getMarkdownIt();
 // markdownIt.set({ breaks: false });
 
-import querystring from 'query-string'
+import querystring from 'query-string';
+// MarkdownIt 实例
+const markdownIt = mavonEditor.getMarkdownIt();
 
 
 export default {
@@ -152,21 +154,33 @@ export default {
     toastClose(reason, event) {
       console.log(reason, event);
     },
+    goHome() {
+      this.$router.push({ name: 'home' })
+    },
     goBack() {
       this.$router.go(-1);
     },
     getRef() {
-      var invite = localStorage.getItem('invite');
+      // no need to save inviter
+      // let invite = localStorage.getItem('invite');
+      var invite = querystring.parse(location.search.slice(1)).invite;
+
       if (!invite) {
         invite = null;
       }
       return invite;
     },
   },
-  created() {
-    this.board = this.getClipboard;
-    this.getArticleData();
+  async created() {
     document.title = '正在加载文章 - Smart Signature';
+
+    this.board = this.getClipboard;
+    await this.getArticleData();
+    const url = `https://api.smartsignature.io/post/${this.hash}`;
+    const { data } = await axios.get(url);
+    const signs = await getSignInfo(data.id);
+    console.log('sign :', signs[0]);
+    this.post.author = signs[0].author ;
 
     let invite = querystring.parse(window.location.search.slice(1)).invite;
     if (invite) {

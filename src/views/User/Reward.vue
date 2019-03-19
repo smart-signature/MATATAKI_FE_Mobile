@@ -4,7 +4,7 @@
       <div slot="left">
         <za-icon theme="primary" type="arrow-left" @click="goBack"></za-icon>
       </div>
-      <div slot="title" v-if="isMe">打赏文章</div>
+      <div slot="title" v-if="isMe">{{username}} 的打赏文章</div>
     </za-nav-bar>
     <ArticlesList :listtype="'reward'" ref='ArticlesList'/>
   </div>
