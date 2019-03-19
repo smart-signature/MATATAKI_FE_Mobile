@@ -9,7 +9,7 @@
     </za-nav-bar>
     <div class="topcard">
       <div class="toptext1">待提现</div><br/>
-      <div class="topremain">47,000</div>
+      <div class="topremain">{{(playerincome.share_income + playerincome.sign_income) / 10000}}</div>
       <div style="position:absolute;right:40px;top:90px;">
           <Button class="withdraw" ghost @click="visible7 = true">提现</Button>
           <za-confirm
@@ -97,8 +97,8 @@ export default {
         { label: '转发收入' },
       ],
       playerincome: {
-        share_income: '0.0000 EOS',
-        sign_income: '0.0000 EOS',
+        share_income: 0.0000,
+        sign_income: 0.0000,
       },
       refreshing: false,
       writereward: 23000,
@@ -128,8 +128,8 @@ export default {
       const playerincome = await getPlayerIncome(name);
       if (playerincome === null) {
         this.playerincome = {
-          share_income: '0.0000 EOS',
-          sign_income: '0.0000 EOS',
+          share_income: 0.0000,
+          sign_income: 0.0000,
         };
       }
     },
