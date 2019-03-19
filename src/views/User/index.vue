@@ -34,15 +34,12 @@
     <div class="topcard" v-if="isMe">
       <Row type="flex" justify="center" class="code-row-bg">
           <Col span="11">
-            <!-- TODO(minakokojima): 'sign_income' of null
-            <p class="centervalue">{{playerincome.sign_income/1000}}</p>
-            -->
-            <p class="centervalue">{{0}}</p>
-            <p class="centertext">支持收入</p>
+            <p class="centervalue">{{mySignIncome}}</p>
+            <p class="centertext">创作收入</p>
           </Col>
           <Col span="1"><Divider type="vertical" style="height:33px;margin-top:10px;" /></Col>
           <Col span="11">
-            <p class="centervalue">{{personalIncome}}</p>
+            <p class="centervalue">{{myShareIncome}}</p>
             <p class="centertext">转发收入</p>
           </Col>
       </Row>
@@ -99,8 +96,11 @@ export default {
   },
   computed: {
     ...mapGetters(['currentUsername']),
-    personalIncome() {
-      return this.playerincome.share_income / 1000;
+    mySignIncome() {
+      return this.playerincome.sign_income / 10000;
+    },    
+    myShareIncome() {
+      return this.playerincome.share_income / 10000;
     },
     ifLogined() {
       return this.currentUsername !== null;
