@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import axios from 'axios';
 import { mapGetters, mapActions } from 'vuex';
 import { sendPost } from '@/api/ipfs';
 import API from '@/api/scatter.js';
@@ -62,7 +62,7 @@ export default {
       const {
         title, markdownData, currentUsername, fission_factor,
       } = this;
-      const author = this.currentUsername
+      const author = this.currentUsername;
       try {
         const { data } = await sendPost({
           title, author, content: markdownData, desc: 'whatever',
@@ -94,7 +94,7 @@ export default {
                   });
                   const jumpToArticle = () => this.$router.push({
                     name: 'Article',
-                    params: { hash } 
+                    params: { hash },
                   });
                   setTimeout(jumpToArticle, 3 * 1000);
                 } else {
@@ -119,19 +119,19 @@ export default {
       }
     },
     $imgAdd(pos, imgfile) {
-      var formdata = new FormData();
+      const formdata = new FormData();
       formdata.append('smfile', imgfile);
-           axios({
-               url: 'https://sm.ms/api/upload',
-               method: 'post',
-               data: formdata,
-               headers: { 'Content-Type': 'multipart/form-data' },
-           }).then(({data}) => {
-             const { url } = data.data
-               // 第二步.将返回的url替换到文本原位置![...](0) -> ![...](url)
-               // $vm.$img2Url 详情见本页末尾
-               this.$refs.md.$img2Url(pos, url);
-           })
+      axios({
+        url: 'https://sm.ms/api/upload',
+        method: 'post',
+        data: formdata,
+        headers: { 'Content-Type': 'multipart/form-data' },
+      }).then(({ data }) => {
+        const { url } = data.data;
+        // 第二步.将返回的url替换到文本原位置![...](0) -> ![...](url)
+        // $vm.$img2Url 详情见本页末尾
+        this.$refs.md.$img2Url(pos, url);
+      });
     },
   },
   test() {

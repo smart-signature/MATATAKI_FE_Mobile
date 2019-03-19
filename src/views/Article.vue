@@ -153,7 +153,7 @@ export default {
       console.log(reason, event);
     },
     goHome() {
-      this.$router.push({ name: 'home' })
+      this.$router.push({ name: 'home' });
     },
     goBack() {
       this.$router.go(-1);
@@ -171,8 +171,8 @@ export default {
     this.getArticleData();
     document.title = '正在加载文章 - Smart Signature';
 
-    var invite = querystring.parse(location.search.slice(1)).invite;
-    localStorage.setItem('invite', (invite) ? invite : null);
+    const { invite } = querystring.parse(location.search.slice(1));
+    localStorage.setItem('invite', (invite) || null);
   },
 };
 </script>
