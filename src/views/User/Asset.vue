@@ -62,7 +62,8 @@
 
 <script>
 import { AssetCard } from '@/components/';
-import { getPlayerBills, getPlayerIncome } from '../../api/signature.js';
+import { getPlayerBills, getPlayerIncome,
+         withdraw } from '../../api/signature.js';
 
 export default {
   name: 'Asset',
@@ -149,7 +150,7 @@ export default {
     },
     async withdraw(name) {
       console.log('Connecting to EOS fetch data...');
-      alert('提現成功');
+      await withdraw(name).then( () => alert('提現成功') );
     },
   },
 };
