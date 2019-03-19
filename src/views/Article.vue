@@ -12,7 +12,9 @@
         <header class="ta_header">
           <h1 dir="auto">{{post.title}}</h1>
           <address dir="auto">
-            <a rel="/"> Author: {{post.author}}</a>
+            <router-link :to="{ name: 'User', params: { author: post.author }}">
+              <a> Author: {{post.author}}</a>
+            </router-link>
             <br/>
             <span>IPFS Hash: {{hash}}</span>
           </address>
@@ -54,7 +56,7 @@ import { mapState, mapGetters } from 'vuex';
 import axios from 'axios';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
-import { support } from '../api/signature.js';
+import { support, getSignInfo } from '../api/signature.js';
 import 'mavon-editor/dist/css/index.css';
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
@@ -163,10 +165,14 @@ export default {
       return invite;
     },
   },
-  created() {
-    this.board = this.getClipboard;
-    this.getArticleData();
+  async created() {
     document.title = '正在加载文章 - Smart Signature';
+
+    this.board = this.getClipboard;
+    await this.getArticleData();
+    const signs = await getSignInfo(this.post.id);
+    console.log('sign :', signs[0]);
+    this.post.author = signs[0].author ;
 
     var invite = querystring.parse(location.search.slice(1)).invite;
     if (invite) {

@@ -23,7 +23,7 @@ function publishArticle({
   // const url = `http://localhost:7001/publish`;
   return axios.post(url, JSON.stringify({
     hash,
-    publickey: publicKey,
+    publicKey,
     sign: signature,
     title,
     author,
