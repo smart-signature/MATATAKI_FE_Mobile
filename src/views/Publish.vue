@@ -98,13 +98,13 @@ export default {
                   });
                   const jumpToArticle = () => this.$router.push({
                     name: 'Article',
-                    params: { hash } 
+                    params: { hash },
                   });
                   setTimeout(jumpToArticle, 3 * 1000);
                 } else {
                   this.$Notice.error({
                     title: '发送失败',
-                    desc: msg,
+                    desc: error,
                   });
                 }
               });
