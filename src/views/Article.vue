@@ -122,11 +122,11 @@ export default {
     async support() {
       const amountStr = prompt('请输入打赏金额(EOS)', '');
       const amount = parseFloat(amountStr);
-      console.log('amount :', amount);
       if (isNaN(amount) || amount <= 0) {
         alert('请输入正确金额');
         return;
       }
+      console.log('amount :', amount);
       // const { hash } = this;
       // fetch sign_id
       const url = `https://api.smartsignature.io/post/${this.hash}`;
