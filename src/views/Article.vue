@@ -2,10 +2,10 @@
   <div class="article">
     <za-nav-bar>
       <div slot="left">
-        <za-icon theme="primary" type="arrow-left" @click="goBack"></za-icon>
+        <Icon type="ios-home" :size="24" @click="goHome" />
       </div>
-      <div slot="title">smartsignature.io</div>
-      <div slot="right"></div>
+      <div slot="title" @click="goHome">Smart Signature</div>
+      <div slot="right"><Icon type="ios-share-alt" :size="24" /></div>
     </za-nav-bar>
     <div class="tl_page">
       <main class="ta">
@@ -58,11 +58,11 @@ import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
 import { support, getSignInfo } from '../api/signature.js';
 import 'mavon-editor/dist/css/index.css';
-// MarkdownIt 实例
-const markdownIt = mavonEditor.getMarkdownIt();
 // markdownIt.set({ breaks: false });
 
-import querystring from 'query-string'
+import querystring from 'query-string';
+// MarkdownIt 实例
+const markdownIt = mavonEditor.getMarkdownIt();
 
 
 export default {
@@ -154,11 +154,17 @@ export default {
     toastClose(reason, event) {
       console.log(reason, event);
     },
+    goHome() {
+      this.$router.push({ name: 'home' })
+    },
     goBack() {
       this.$router.go(-1);
     },
     getRef() {
-      var invite = localStorage.getItem('invite');
+      // no need to save inviter
+      // let invite = localStorage.getItem('invite');
+      var invite = querystring.parse(location.search.slice(1)).invite;
+
       if (!invite) {
         invite = null;
       }
