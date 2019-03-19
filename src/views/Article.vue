@@ -169,9 +169,7 @@ export default {
     document.title = '正在加载文章 - Smart Signature';
 
     var invite = querystring.parse(location.search.slice(1)).invite;
-    if (invite) {
-      localStorage.setItem('invite', invite);
-    }
+    localStorage.setItem('invite', (invite) ? invite : null);
   },
 };
 </script>
