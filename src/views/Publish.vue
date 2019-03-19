@@ -13,9 +13,9 @@
         <FormItem label="标题">
           <Input v-model="title" placeholder="请输入你的文章标题..." size="large" clearable />
         </FormItem>
-        <FormItem label="署名">
+        <!-- <FormItem label="署名">
           <Input v-model="author" placeholder="写上你的大名..." clearable />
-        </FormItem>
+        </FormItem> -->
         <FormItem label="裂变系数">
           <Input v-model="fission_factor" placeholder="输入文章分享裂变系数" clearable />
         </FormItem>
@@ -64,8 +64,9 @@ export default {
     ]),
     async sendThePost() {
       const {
-        title, author, markdownData, currentUsername, fission_factor,
+        title, markdownData, currentUsername, fission_factor,
       } = this;
+      const author = this.currentUsername
       try {
         const { data } = await sendPost({
           title, author, content: markdownData, desc: 'whatever',
