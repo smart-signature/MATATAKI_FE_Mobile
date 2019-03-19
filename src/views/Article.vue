@@ -176,7 +176,9 @@ export default {
 
     this.board = this.getClipboard;
     await this.getArticleData();
-    const signs = await getSignInfo(this.post.id);
+    const url = `https://api.smartsignature.io/post/${this.hash}`;
+    const { data } = await axios.get(url);
+    const signs = await getSignInfo(data.id);
     console.log('sign :', signs[0]);
     this.post.author = signs[0].author ;
 
