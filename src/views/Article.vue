@@ -153,7 +153,7 @@ export default {
       console.log(reason, event);
     },
     goHome() {
-      this.$router.push({ name: 'home' })
+      this.$router.push({ name: 'home' });
     },
     goBack() {
       this.$router.go(-1);

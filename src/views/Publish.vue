@@ -20,21 +20,20 @@
           <Input v-model="fission_factor" placeholder="输入文章分享裂变系数" clearable />
         </FormItem>
     </Form>
-    <mavon-editor v-model="markdownData" @imgAdd="uploadImage" placeholder="左边输入 Markdown 格式的文字开始编辑，右边即时预览" />
+    <mavon-editor ref=md v-model="markdownData" @imgAdd="$imgAdd" placeholder="左边输入 Markdown 格式的文字开始编辑，右边即时预览" />
   </div>
 </template>
 
 <script>
+import axios from 'axios';
 import { mapGetters, mapActions } from 'vuex';
 import { sendPost } from '@/api/ipfs';
 import API from '@/api/scatter.js';
 import { publishArticle } from '@/api/backend';
 import { mavonEditor } from 'mavon-editor';
-// MarkdownIt 实例
-const mdit = mavonEditor.getMarkdownIt();
 
 export default {
-  name: 'New-Post',
+  name: 'NewPost',
   components: {
     'mavon-editor': mavonEditor,
   },
@@ -53,9 +52,6 @@ export default {
   }),
   computed: {
     ...mapGetters(['currentUsername']),
-    compiledMarkdown() {
-      return mdit.render(this.markdownData);
-    },
   },
   methods: {
     ...mapActions([
@@ -66,7 +62,7 @@ export default {
       const {
         title, markdownData, currentUsername, fission_factor,
       } = this;
-      const author = this.currentUsername
+      const author = this.currentUsername;
       try {
         const { data } = await sendPost({
           title, author, content: markdownData, desc: 'whatever',
@@ -98,7 +94,7 @@ export default {
                   });
                   const jumpToArticle = () => this.$router.push({
                     name: 'Article',
-                    params: { hash } 
+                    params: { hash },
                   });
                   setTimeout(jumpToArticle, 3 * 1000);
                 } else {
@@ -122,10 +118,21 @@ export default {
         });
       }
     },
-  },
-  uploadImage(filename, imgfile) {
-    console.info(filename);
-    console.info(imgfile);
+    $imgAdd(pos, imgfile) {
+      const formdata = new FormData();
+      formdata.append('smfile', imgfile);
+      axios({
+        url: 'https://sm.ms/api/upload',
+        method: 'post',
+        data: formdata,
+        headers: { 'Content-Type': 'multipart/form-data' },
+      }).then(({ data }) => {
+        const { url } = data.data;
+        // 第二步.将返回的url替换到文本原位置![...](0) -> ![...](url)
+        // $vm.$img2Url 详情见本页末尾
+        this.$refs.md.$img2Url(pos, url);
+      });
+    },
   },
   test() {
   // publishOnChain({ hash: 'QmfJsZmbsFcaNEBejP6HcXQEXycVXKfFwbMM3eju4VdsN3' });
