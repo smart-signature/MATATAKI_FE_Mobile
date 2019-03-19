@@ -30,8 +30,6 @@ import { sendPost } from '@/api/ipfs';
 import API from '@/api/scatter.js';
 import { publishArticle } from '@/api/backend';
 import { mavonEditor } from 'mavon-editor';
-// MarkdownIt 实例
-const mdit = mavonEditor.getMarkdownIt();
 
 export default {
   name: 'New-Post',
@@ -53,9 +51,6 @@ export default {
   }),
   computed: {
     ...mapGetters(['currentUsername']),
-    compiledMarkdown() {
-      return mdit.render(this.markdownData);
-    },
   },
   methods: {
     ...mapActions([
