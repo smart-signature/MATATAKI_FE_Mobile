@@ -26,7 +26,7 @@
 
 <script>
 import axios from 'axios';
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters, mapActions, mapState } from 'vuex';
 import { sendPost } from '@/api/ipfs';
 import API from '@/api/scatter.js';
 import { publishArticle, defaultImagesUploader } from '../api/';
@@ -52,6 +52,7 @@ export default {
   }),
   computed: {
     ...mapGetters(['currentUsername']),
+    ...mapState(['scatterAccount']),
   },
   methods: {
     ...mapActions([
@@ -71,7 +72,7 @@ export default {
         if (code === 200) {
           console.log('Push action to signature.bp...', hash);
           // const { transaction_id } = await publishOnChain({ hash, fissionFactor });
-          const publicKey = await API.getPublicKey()
+          const publicKey = this.scatterAccount.publicKey // So easy to get the pubKey
           const signature = await API.getSignature(author, hash, publicKey);
             // console.log("签名成功后调", signature, publicKey)
           if (!signature) {
