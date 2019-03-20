@@ -21,8 +21,8 @@
       <Row type="flex" justify="center" class="code-row-bg">
         <Col span="6">
           <p class="toptext2">写作收入</p>
-          <p class="toptext3" :style='writereward > 0 ? { color: "#f50" } : { color: "#87d068" }'>
-            {{(writereward > 0 ? "+" : "") + writereward}}
+          <p class="toptext3" :style='writereward >= 0 ? { color: "#f50" } : { color: "#87d068" }'>
+            {{(writereward > 0 ? '+' : '') + writereward}}
           </p>
         </Col>
         <Col span="3" style="text-align:center">
@@ -30,8 +30,8 @@
         </Col>
         <Col span="6">
           <p class="toptext2">转发收入</p>
-          <p class="toptext3" :style='sharereward > 0 ? { color: "#f50" } : { color: "#87d068" }'>
-            {{(sharereward > 0 ? "+" : "") + sharereward}}
+          <p class="toptext3" :style='sharereward >= 0 ? { color: "#f50" } : { color: "#87d068" }'>
+            {{(sharereward > 0 ? '+' : '') + sharereward}}
           </p>
         </Col>
         <Col span="3" style="text-align:center">
@@ -40,7 +40,7 @@
         <Col span="6">
           <p class="toptext2">打赏支出</p>
           <p class="toptext3" :style='sharecost > 0 ? { color: "#f50" } : { color: "#87d068" }'>
-            {{(sharecost > 0 ? "+" : "") + sharecost}}
+            {{sharecost}}
           </p>
         </Col>
       </Row>
@@ -74,6 +74,21 @@ export default {
   async created() {
     await getPlayerIncome(this.username);
     await this.refresh();
+    for (let index = 0; index < this.assets.length; index++) {
+      const element = this.assets[index];
+      if (element.type === 'share income') {
+        this.sharereward += parseFloat(element.quantity.replace(" EOS",""));
+        // console.log(sharecost);
+      }
+      else if (element.type === 'sign income') {
+        this.writereward += parseFloat(element.quantity.replace(" EOS",""));
+        // console.log(sharecost);
+      }
+      else if (element.type === 'support expenses') {
+        this.sharecost += parseFloat(element.quantity.replace(" EOS",""));
+        // console.log(sharecost);
+      }
+    }
   },
   data() {
     return {
@@ -101,9 +116,9 @@ export default {
         sign_income: 0.0000,
       },
       refreshing: false,
-      writereward: 23000,
-      sharereward: 24000,
-      sharecost: -70000,
+      writereward: 0,
+      sharereward: 0,
+      sharecost: 0,
       visible7: false,
     };
   },
@@ -114,14 +129,16 @@ export default {
       const actions = await getPlayerBills(this.username);
       // console.log(actions.map(a => a.action_trace));
       const _actions = actions.filter(a => a.action_trace.act.account === 'signature.bp'
-          && a.action_trace.act.name === 'bill');
+          && a.action_trace.act.name === 'bill'
+          && a.action_trace.act.data.type !== 'test income');
       // console.log(_actions);
       this.assets = _actions.map(a => ({
         quantity: a.action_trace.act.data.quantity,
         type: a.action_trace.act.data.type,
         timestamp: a.action_trace.block_time,
       }));
-      // console.log(this.assets);
+      
+      console.log(this.username, '\'s assets:', this.assets);
     },
     async getPlayerIncome(name) {
       console.log('Connecting to EOS fetch data...');

@@ -1,7 +1,9 @@
 <template>
   <div class="card asset">
     <a>
-      <h2 class="asset-quantity">+{{asset.quantity}}</h2>
+      <h2 class="asset-quantity"
+        :style='asset.quantity.replace(" EOS","") > 0 ? { color: "#f50" } : { color: "#87d068" } '>
+        {{(asset.quantity.substring(0,1) !== '-' ? '+': '') + asset.quantity}}</h2>
       <p class="asset-infomation">{{friendlyDate}}</p>
     </a>
   </div>
@@ -17,6 +19,9 @@ export default {
     friendlyDate() {
       return moment(this.asset.timestamp).fromNow();
     },
+  },
+  created() {
+    // console.log(this.asset.quantity);
   },
 };
 </script>
