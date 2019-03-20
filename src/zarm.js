@@ -1,7 +1,8 @@
 import Vue from 'vue';
 import {
   Actionsheet, Alert, Button, Cell, Pull,
-  TabPane, Tabs, NavBar, Icon, Confirm,
+  TabPane, Tabs, NavBar, Icon, Confirm, Input,
+  Modal, KeyboardPicker,
 } from 'zarm-vue';
 
 // Instead of doing this: - Frank
@@ -12,6 +13,8 @@ import {
 [
   Actionsheet, Alert, Button, Cell, Pull,
   TabPane, Tabs, NavBar, Icon, Confirm,
+  Input,
+  Modal, KeyboardPicker,
 ].map(component => Vue.use(component));
 
 // gimmick for import multiple seperated component in a much simpler way

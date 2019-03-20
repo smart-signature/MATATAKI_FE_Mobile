@@ -38,8 +38,25 @@
             disabled>已打赏</za-button>
           <za-button class="button-support" v-else
             size='xl' theme="primary"
-            @click="support">打赏</za-button>
+            @click="visible3 = true">打赏</za-button>
         </i-col>
+        <za-modal :visible="visible3"
+           @close="handleClose" radius="" @maskClick="visible3 = false" :showClose="true"
+           style="background:rgba(243,243,243,1);">
+            <Row><za-input
+              auto-height="" v-model="v3" type="textarea" placeholder="输入推荐语…"></za-input></Row>
+            <br/>
+            <Row><za-input
+              v-model="v5" type="price" placeholder="输入打赏 EOS" @change="handleChange">
+            </za-input></Row>
+            <br/>
+            <Row><za-button class="button-support"
+              size='xl' theme="primary"
+              @click="support">打赏</za-button></Row>
+            <!-- <Row><za-keyboard-picker
+              :visible="visible7" type="number" @keyClick="handleChange1">
+            </za-keyboard-picker></Row> -->
+        </za-modal>
         <i-col span="12">
           <za-button class="button-share"
             size='xl' theme="primary"
@@ -65,7 +82,12 @@ import 'mavon-editor/dist/css/index.css';
 import querystring from 'query-string';
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
-
+const getValue = (v, key) => {
+  if (key == 'delete') {
+    return v.slice(0, -1)
+  }
+  return `${v}${key}`
+}
 
 export default {
   name: 'Article',
@@ -111,8 +133,13 @@ export default {
       // NO MORE Cannot read property 'fission_factor' of null
       fission_factor: 0,
     },
+    amount: 0.0000,
     isSupported: false,
     toastvisible: false,
+    visible3: false,
+    visible7: false,
+    v3:'',
+    v5:'',
   }),
   watch: {
     post({ author, title }) {
@@ -125,6 +152,20 @@ export default {
       const { data } = await axios.get(url);
       this.post = data.data;
       console.info(data);
+    },
+    handleClose() {
+      this.visible3 = false
+    },
+    handleChange(v) {
+      this.amount = v;
+      console.log('amount :', this.amount);
+    },
+    handleChange1(key) {
+      if (['close', 'ok'].indexOf(key) > -1) {
+        return;
+      }
+      this.v1 = getValue(this.v1, key)
+      console.log(this.v1);
     },
     async setisSupported() {
       if (this.scatterAccount !== null) {
@@ -139,8 +180,8 @@ export default {
       }
     },
     async support() {
-      const amountStr = prompt('请输入打赏金额(EOS)', '');
-      const amount = parseFloat(amountStr);
+      this.visible3 = false;
+      const amount = parseFloat(this.amount);
       if (isNaN(amount) || amount <= 0) {
         alert('请输入正确金额');
         return;
@@ -154,7 +195,7 @@ export default {
       const referrer = this.getRef();
       console.log('referrer :', referrer);
       await support({ amount, sign_id, referrer });
-      await setisSupported();
+      await this.setisSupported();
     },
     share() {
       const clipboard = new Clipboard('.button-share');
