@@ -5,7 +5,7 @@
         <Icon type="ios-home" :size="24" @click="goHome" />
       </div>
       <div slot="title" @click="goHome">Smart Signature</div>
-      <div slot="right"><Icon type="ios-share-alt" :size="24" /></div>
+      <div slot="right"><Icon type="ios-share-alt" :size="24" @click="share" /></div>
     </za-nav-bar>
     <div class="tl_page">
       <main class="ta">
@@ -28,7 +28,7 @@
       <Row justify="center">
           <i-col span="11">{{3500}}</i-col>
           <i-col span="2"><Divider type="vertical" /></i-col>
-          <i-col span="11">裂变系数：{{sign.fission_factor / 1000}}</i-col>
+          <i-col span="11">裂变系数：{{getDisplayedFissionFactor}}</i-col>
       </Row>
       <Divider />
       <Row style="white-space:nowrap;">
@@ -100,6 +100,9 @@ export default {
       }
       return window.location.href;
     },
+    getDisplayedFissionFactor() {
+      return this.sign.fission_factor / 1000
+    }
   },
   data: () => ({
     post: {
@@ -109,7 +112,10 @@ export default {
       desc: '',
       board: '',
     },
-    sign: null,
+    sign: {
+      // NO MORE Cannot read property 'fission_factor' of null
+      fission_factor: 0
+    },
     toastvisible: false,
   }),
   watch: {
@@ -183,7 +189,7 @@ export default {
     const { data } = await axios.get(url);
     const signs = await getSignInfo(data.id);
     this.sign = signs[0];
-    console.log('sign :', sign);
+    console.log('sign :', this.sign); // fix: ReferenceError: sign is not defined
 
     this.post.author = this.sign.author;
 
