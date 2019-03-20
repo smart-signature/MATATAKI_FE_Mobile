@@ -34,7 +34,7 @@ function _oldPublishArticle({
 
 // NOTICE!! publishArticle will be tested and replaced very soon
 function publishArticle({
-  author, title, hash, publicKey, signature, username,
+  author, title, hash, publicKey, signature, username, fissionFactor,
 }, callback) {
   const url = `${apiServer}/publish`;
   // const url = `http://localhost:7001/publish`;
@@ -46,11 +46,12 @@ function publishArticle({
     dataType: 'json',
     method: 'POST',
     form: {
-      username,
       author,
-      title,
-      publickey: publicKey,
+      fissionFactor,
       hash,
+      publicKey,
+      username,
+      title,
       sign: signature,
     },
   }, callback);
