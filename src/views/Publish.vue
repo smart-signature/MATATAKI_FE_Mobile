@@ -29,7 +29,7 @@ import axios from 'axios';
 import { mapGetters, mapActions } from 'vuex';
 import { sendPost } from '@/api/ipfs';
 import API from '@/api/scatter.js';
-import { publishArticle } from '@/api/backend';
+import { publishArticle, defaultImagesUploader } from '../api/';
 import { mavonEditor } from 'mavon-editor';
 
 export default {
@@ -71,18 +71,16 @@ export default {
         if (code === 200) {
           console.log('Push action to signature.bp...', hash);
           // const { transaction_id } = await publishOnChain({ hash, fissionFactor });
-          API.getSignature(author, hash, (err, signature, publicKey, username) => {
+          const publicKey = await API.getPublicKey()
+          const signature = await API.getSignature(author, hash, publicKey);
             // console.log("签名成功后调", signature, publicKey)
-            if (err) {
+          if (!signature) {
               this.$Notice.error({
                 title: '发送失败',
               });
             } else {
-              // _oldPublishArticle({
-              //   author, title, hash, publicKey, signature, username,
-              // })
               publishArticle({
-                author, title, hash, publicKey, signature, username,
+                author, title, hash, publicKey, signature, currentUsername,
               }, (error, response, body) => {
                 console.info(error);
                 console.info(response);
@@ -105,7 +103,6 @@ export default {
                 }
               });
             }
-          });
         } else {
           this.$Notice.error({
             title: '发送失败',
@@ -119,19 +116,13 @@ export default {
       }
     },
     $imgAdd(pos, imgfile) {
-      const formdata = new FormData();
-      formdata.append('smfile', imgfile);
-      axios({
-        url: 'https://sm.ms/api/upload',
-        method: 'post',
-        data: formdata,
-        headers: { 'Content-Type': 'multipart/form-data' },
-      }).then(({ data }) => {
-        const { url } = data.data;
-        // 第二步.将返回的url替换到文本原位置![...](0) -> ![...](url)
-        // $vm.$img2Url 详情见本页末尾
-        this.$refs.md.$img2Url(pos, url);
-      });
+      // 想要更换默认的 uploader， 请在 src/api/imagesUploader.js 修改 currentImagesUploader
+      // 不要在页面组件写具体实现，谢谢合作 - Frank
+      defaultImagesUploader(imgfile)
+        .then(({ data }) => {
+            const { url } = data.data;
+            this.$refs.md.$img2Url(pos, url);
+        });
     },
   },
   test() {
