@@ -90,11 +90,10 @@ export default {
       // todo(minakokojima): figure out what is the different between following variables.
       // alert(currentUsername);
       // alert(scatterAccount.name);
-      if (this.isLogined) {
-        // return `${window.location.href}?invite=${currentUsername}`;
-        return `${window.location.host}/article/${this.hash}?invite=${currentUsername}`;
-      }
-      return window.location.href;
+
+      return 'https://' + (this.isLogined
+        ? `${window.location.host}/article/${this.hash}?invite=${currentUsername}`
+        : `${window.location.href}`);
     },
     getDisplayedFissionFactor() {
       return this.sign.fission_factor / 1000;
