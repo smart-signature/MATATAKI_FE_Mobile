@@ -35,7 +35,7 @@
         <i-col span="12">
           <za-button class="button-support" v-if="isSupported"
             size='xl' theme="primary"
-            disabled>打赏</za-button>
+            disabled>已打赏</za-button>
           <za-button class="button-support" v-else
             size='xl' theme="primary"
             @click="support">打赏</za-button>
@@ -58,7 +58,7 @@ import { mapState, mapGetters } from 'vuex';
 import axios from 'axios';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
-import { support, getSignInfo } from '../api/signature.js';
+import { support, getSignInfo, getSharesInfo } from '../api/signature.js';
 import 'mavon-editor/dist/css/index.css';
 // markdownIt.set({ breaks: false });
 
@@ -79,10 +79,6 @@ export default {
     isLogined() {
       return this.scatterAccount !== null;
     },
-    isSupported() {
-      // todo(minakokojima): to be implemented.
-      return false;
-    },
     updateTitle() {
       return false;
     },
@@ -94,11 +90,10 @@ export default {
       // todo(minakokojima): figure out what is the different between following variables.
       // alert(currentUsername);
       // alert(scatterAccount.name);
-      if (this.isLogined) {
-        // return `${window.location.href}?invite=${currentUsername}`;
-        return `${window.location.host}/article/${this.hash}?invite=${currentUsername}`;
-      }
-      return window.location.href;
+
+      return 'https://' + (this.isLogined
+        ? `${window.location.host}/article/${this.hash}?invite=${currentUsername}`
+        : `${window.location.href}`);
     },
     getDisplayedFissionFactor() {
       return this.sign.fission_factor / 1000;
@@ -116,6 +111,7 @@ export default {
       // NO MORE Cannot read property 'fission_factor' of null
       fission_factor: 0,
     },
+    isSupported: false,
     toastvisible: false,
   }),
   watch: {
@@ -129,6 +125,18 @@ export default {
       const { data } = await axios.get(url);
       this.post = data.data;
       console.info(data);
+    },
+    async setisSupported() {
+      if (this.scatterAccount !== null) {
+        const shares = await getSharesInfo(this.currentUsername);
+        // const shares = await getSharesInfo('linklinkguan'); // for sign.id 78
+        // console.log('shares :', shares);
+        const share = shares.find((element) => element.id === this.sign.id);
+        if (share !== undefined) {
+          console.log('share :', share);
+          this.isSupported = true;
+        }
+      }
     },
     async support() {
       const amountStr = prompt('请输入打赏金额(EOS)', '');
@@ -146,6 +154,7 @@ export default {
       const referrer = this.getRef();
       console.log('referrer :', referrer);
       await support({ amount, sign_id, referrer });
+      await setisSupported();
     },
     share() {
       const clipboard = new Clipboard('.button-share');
@@ -191,12 +200,19 @@ export default {
     this.sign = signs[0];
     console.log('sign :', this.sign); // fix: ReferenceError: sign is not defined
 
+    // Set post author
     this.post.author = this.sign.author;
 
+    // Set isSupported
+    await this.setisSupported();
+
+    // 
     const { invite } = querystring.parse(window.location.search.slice(1));
     if (invite) {
       localStorage.setItem('invite', invite);
     }
+
+    
   },
 };
 </script>
