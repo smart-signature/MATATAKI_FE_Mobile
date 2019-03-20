@@ -29,30 +29,15 @@ const eosClient = Eos({
 });
 
 const API = {
-  getSignature(author, hash, callback) {
+  async getSignature(author, hash, publicKey) {
+    const hash_piece1 = hash.slice(0, 12);
+    const hash_piece2 = hash.slice(12, 24);
+    const hash_piece3 = hash.slice(24, 36);
+    const hash_piece4 = hash.slice(36, 48);
 
-    const account = this.getAccount();
-
-    eosClient.getAccount(account.name, (error, result) => {
-      // 获取当前权限
-      const permissions = result.permissions.find(x => x.perm_name === account.authority);
-      // 获取当前权限的public key
-      const publicKey = permissions.required_auth.keys[0].key;
-      // 需要签名的数据
-
-      const hash_piece1 = hash.slice(0, 12);
-      const hash_piece2 = hash.slice(12, 24);
-      const hash_piece3 = hash.slice(24, 36);
-      const hash_piece4 = hash.slice(36, 48);
-
-      const sign_data = `${author} ${hash_piece1} ${hash_piece2} ${hash_piece3} ${hash_piece4}`;
-      // 申请签名
-      ScatterJS.scatter.getArbitrarySignature(publicKey, sign_data, 'Smart Signature').then(signature => {
-        callback(null, signature, publicKey, account.name);
-      }).catch(error => {
-        console.log(error);
-      });
-    })
+    const sign_data = `${author} ${hash_piece1} ${hash_piece2} ${hash_piece3} ${hash_piece4}`;
+    // 申请签名
+    return ScatterJS.scatter.getArbitrarySignature(publicKey, sign_data, 'Smart Signature')
   },
   async getBalancesByContract({ tokenContract = 'eosio.token', accountName, symbol }) {
     return eos().getCurrencyBalance(tokenContract, accountName, symbol);
@@ -114,13 +99,7 @@ const API = {
     return ScatterJS.scatter.identity.accounts.find(x => x.blockchain === 'eos');
   },
   getPublicKey() {
-    return ScatterJS.scatter.getPublicKey('eos').then((publicKey) => {
-      console.log(publicKey);
-      return publicKey;
-    }).catch((error) => {
-      // todo(minakokojima): better error message.
-      alert(error);
-    });
+    return ScatterJS.scatter.getPublicKey('eos')
   },
   getArbitrarySignatureAsync({ publicKey, data }) {
     return ScatterJS.scatter.getArbitrarySignature({ publicKey, data }).then((signature) => {
