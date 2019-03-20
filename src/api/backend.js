@@ -57,6 +57,11 @@ function publishArticle({
   }, callback);
 }
 
-const getArticlesList = () => axios.get(`${apiServer}/api/article`);
+const getArticlesList = ({ page = 1 }) => axios.get(
+  `${apiServer}/posts` ,{
+    params: {
+      page
+    }
+});
 
 export { _oldPublishArticle, getArticlesList, publishArticle };
