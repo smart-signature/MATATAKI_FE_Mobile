@@ -35,7 +35,7 @@
         <i-col span="12">
           <za-button class="button-support" v-if="isSupported"
             size='xl' theme="primary"
-            disabled>打赏</za-button>
+            disabled>已打赏</za-button>
           <za-button class="button-support" v-else
             size='xl' theme="primary"
             @click="support">打赏</za-button>
