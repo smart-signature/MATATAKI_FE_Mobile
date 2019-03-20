@@ -74,18 +74,16 @@ export default {
   async created() {
     await getPlayerIncome(this.username);
     await this.refresh();
-    for (let index = 0; index < this.assets.length; index++) {
+    for (let index = 0; index < this.assets.length; index+=1) {
       const element = this.assets[index];
       if (element.type === 'share income') {
-        this.sharereward += parseFloat(element.quantity.replace(" EOS",""));
+        this.sharereward += parseFloat(element.quantity.replace(' EOS', ''));
         // console.log(sharecost);
-      }
-      else if (element.type === 'sign income') {
-        this.writereward += parseFloat(element.quantity.replace(" EOS",""));
+      } else if (element.type === 'sign income') {
+        this.writereward += parseFloat(element.quantity.replace(' EOS', ''));
         // console.log(sharecost);
-      }
-      else if (element.type === 'support expenses') {
-        this.sharecost += parseFloat(element.quantity.replace(" EOS",""));
+      } else if (element.type === 'support expenses') {
+        this.sharecost += parseFloat(element.quantity.replace(' EOS', ''));
         // console.log(sharecost);
       }
     }
@@ -128,16 +126,16 @@ export default {
       console.log('Connecting to EOS fetch data...');
       const actions = await getPlayerBills(this.username);
       // console.log(actions.map(a => a.action_trace));
-      const _actions = actions.filter(a => a.action_trace.act.account === 'signature.bp'
+      const actions2 = actions.filter(a => a.action_trace.act.account === 'signature.bp'
           && a.action_trace.act.name === 'bill'
           && a.action_trace.act.data.type !== 'test income');
       // console.log(_actions);
-      this.assets = _actions.map(a => ({
+      this.assets = actions2.map(a => ({
         quantity: a.action_trace.act.data.quantity,
         type: a.action_trace.act.data.type,
         timestamp: a.action_trace.block_time,
       }));
-      
+
       console.log(this.username, '\'s assets:', this.assets);
     },
     async getPlayerIncome(name) {

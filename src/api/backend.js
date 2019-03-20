@@ -67,7 +67,7 @@ const getArticlesList = ({ page = 1 }) => axios.get(
 
 // 示例代码。。请随便改。。。
 function auth({
-  username, publickey, sign
+  username, publickey, sign,
 }, callback) {
   const url = `${apiServer}/auth`;
   // const url = `http://localhost:7001/auth`;
@@ -75,7 +75,7 @@ function auth({
     uri: url,
     rejectUnauthorized: false,
     json: true,
-    headers: { Accept: '*/*', Authorization: "Basic bXlfYXBwOm15X3NlY3JldA==" },
+    headers: { Accept: '*/*', Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==' },
     dataType: 'json',
     method: 'POST',
     form: {
@@ -86,4 +86,6 @@ function auth({
   }, callback);
 }
 
-export { _oldPublishArticle, getArticlesList, publishArticle, auth };
+export {
+  _oldPublishArticle, getArticlesList, publishArticle, auth,
+};
