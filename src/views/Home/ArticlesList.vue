@@ -15,7 +15,7 @@
 
 <script>
 import axios from 'axios';
-import { getArticlesList } from "@/api/";
+import { getArticlesList } from '@/api/';
 import { ArticleCard } from '@/components/';
 import { mapGetters } from 'vuex';
 
@@ -25,11 +25,10 @@ export default {
     ...mapGetters(['currentUsername']),
     displayAboutScroll() {
       if (this.isTheEndOfTheScroll) {
-        return '🎉 哇，你真勤奋，所有文章已经加载完了～ 🎉'
-      } else {
-        return '😄 勤奋地加载更多精彩内容 😄'
+        return '🎉 哇，你真勤奋，所有文章已经加载完了～ 🎉';
       }
-    }
+      return '😄 勤奋地加载更多精彩内容 😄';
+    },
   },
   components: { ArticleCard },
   created() {
@@ -51,17 +50,16 @@ export default {
       }
       this.busy = true;
       this.page += 1;
-      getArticlesList({page: this.page}).then(({data}) => {
-        console.info(`Page ${this.page} data length: ${data.length}`)
+      getArticlesList({ page: this.page }).then(({ data }) => {
+        console.info(`Page ${this.page} data length: ${data.length}`);
         if (data.length === 0) {
-          this.busy = true
-          this.isTheEndOfTheScroll = true
+          this.busy = true;
+          this.isTheEndOfTheScroll = true;
         } else {
           this.articles = [...this.articles, ...data]; // Merge arrays with destruction
           this.busy = false;
-        } 
+        }
       });
-      
     },
     async refresh() {
       this.refreshing = true;

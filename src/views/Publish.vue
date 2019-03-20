@@ -81,7 +81,7 @@ export default {
             });
           } else {
             publishArticle({
-              author, title, hash, publicKey, signature, currentUsername, fissionFactor
+              author, title, hash, publicKey, signature, currentUsername, fissionFactor,
             }, (error, response, body) => {
               console.info(error);
               console.info(response);

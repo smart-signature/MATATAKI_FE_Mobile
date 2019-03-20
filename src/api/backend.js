@@ -58,10 +58,11 @@ function publishArticle({
 }
 
 const getArticlesList = ({ page = 1 }) => axios.get(
-  `${apiServer}/posts` ,{
+  `${apiServer}/posts`, {
     params: {
-      page
-    }
-});
+      page,
+    },
+  },
+);
 
 export { _oldPublishArticle, getArticlesList, publishArticle };
