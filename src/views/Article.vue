@@ -65,7 +65,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex';
+import { mapActions, mapGetters, mapState, } from 'vuex';
 import { Header } from '@/components/';
 import axios from 'axios';
 import Clipboard from 'clipboard';
@@ -143,6 +143,11 @@ export default {
     },
   },
   methods: {
+    ...mapActions([
+      'connectScatterAsync',
+      'suggestNetworkAsync',
+      'loginScatterAsync',
+    ]),
     async getArticleData() {
       const url = `https://api.smartsignature.io/ipfs/catJSON/${this.hash}`;
       const { data } = await axios.get(url);
@@ -183,6 +188,12 @@ export default {
         return;
       }
       console.log('amount :', amount);
+      try {
+        const suggestNetworkResult = await this.suggestNetworkAsync();
+      } catch (error) {
+      }
+      await this.connectScatterAsync();
+      await this.loginScatterAsync();
       // fetch sign_id
       const url = `https://api.smartsignature.io/post/${this.hash}`;
       const { data } = await axios.get(url);

@@ -3,7 +3,7 @@
     <za-nav-bar>
       <div slot="left"><Icon type="ios-home" :size="24" @click="goHome" /></div>
       <div slot="title" @click="goHome">{{pageinfo.title}}</div>
-      <div slot="right"><Icon type="ios-share-alt" :size="24" @click="share" /></div>
+      <div slot="right"><Icon type="ios-share-alt" :size="24" @click="" /></div>
     </za-nav-bar>
 </div>
 </template>
@@ -17,16 +17,8 @@ export default {
   computed: {
   },
   created() {
-    try { // setup
-      this.suggestNetworkAsync();
-    } catch (error) {
-      console.error('suggestNetwork error');
-    }
     try {
-      this.connectScatterAsync().then(connected => {
-        if(!connected) return console.error('no scatter');
-        this.loginScatterAsync();
-      });
+      this.loginScatterAsync();
     } catch (error) {
       console.error('login faild');
       this.$Modal.error({
