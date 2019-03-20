@@ -107,45 +107,17 @@ function transferEOS({ amount = 0, memo = '' }) {
   });
 }
 
-async function getPlayerIncome(name) {
+async function getSharesInfo(owner) {
   const { rows } = await eos().getTableRows({
     json: true,
     code: SIGNATURE_CONTRACT,
-    scope: name,
-    table: 'players',
-    limit: 1,
+    scope: owner,
+    table: 'shares',
+    limit: 1000,
   });
   return rows;
 }
-
-async function getPlayerBills(owner) {
-  const { actions } = await eos().getActions({
-    json: true,
-    account_name: owner,
-    /* pos: -1, */
-    offset: -100,
-  });
-  return actions;
-}
-
 /*
-async function getSignbyhash({ hash = null }) {
-  if (hash == null) {
-    alert('hash cant be null');
-    return;
-  }
-  const resp = await eosapi.getTableRows({
-    json: true,
-    code: SIGNATURE_CONTRACT,
-    scope: SIGNATURE_CONTRACT,
-    table: 'signs',
-    lower_bound: hash,
-    limit: 1,
-  });
-  console.log(resp.rows);
-  return resp;
-}
-*/
 async function getSharesInfo() {
   const { rows } = await eos().getTableRows({
     json: true,
@@ -155,7 +127,7 @@ async function getSharesInfo() {
     limit: 10000,
   });
   return rows;
-}
+}*/
 
 async function getSignInfo(id) {
   const { rows } = await eos().getTableRows({
@@ -179,7 +151,46 @@ async function getSignsInfo() {
   });
   return rows;
 }
+
+async function getPlayerBills(owner) {
+  const { actions } = await eos().getActions({
+    json: true,
+    account_name: owner,
+    /* pos: -1, */
+    offset: -100,
+  });
+  return actions;
+}
+
+async function getPlayerIncome(name) {
+  const { rows } = await eos().getTableRows({
+    json: true,
+    code: SIGNATURE_CONTRACT,
+    scope: name,
+    table: 'players',
+    limit: 1,
+  });
+  return rows;
+}
+
 /*
+async function getSignbyhash({ hash = null }) {
+  if (hash == null) {
+    alert('hash cant be null');
+    return;
+  }
+  const resp = await eosapi.getTableRows({
+    json: true,
+    code: SIGNATURE_CONTRACT,
+    scope: SIGNATURE_CONTRACT,
+    table: 'signs',
+    lower_bound: hash,
+    limit: 1,
+  });
+  console.log(resp.rows);
+  return resp;
+}
+
 async function getGoods() {
   const { rows } = await eosapi().getTableRows({
     json: true,
@@ -217,6 +228,6 @@ async function getMaxSignId() {
 export {
   publishOnChain,
   support, withdraw,
-  getSignInfo,
+  getSignInfo, getSharesInfo,
   getPlayerIncome, getPlayerBills,
 };
