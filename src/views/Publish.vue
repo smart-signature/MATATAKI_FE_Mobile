@@ -29,8 +29,8 @@ import axios from 'axios';
 import { mapGetters, mapActions, mapState } from 'vuex';
 import { sendPost } from '@/api/ipfs';
 import API from '@/api/scatter.js';
-import { publishArticle, defaultImagesUploader } from '../api/';
 import { mavonEditor } from 'mavon-editor';
+import { publishArticle, defaultImagesUploader } from '../api';
 
 export default {
   name: 'NewPost',
@@ -72,38 +72,38 @@ export default {
         if (code === 200) {
           console.log('Push action to signature.bp...', hash);
           // const { transaction_id } = await publishOnChain({ hash, fissionFactor });
-          const publicKey = this.scatterAccount.publicKey // So easy to get the pubKey
+          const { publicKey } = this.scatterAccount; // So easy to get the pubKey
           const signature = await API.getSignature(author, hash, publicKey);
-            // console.log("签名成功后调", signature, publicKey)
+          // console.log("签名成功后调", signature, publicKey)
           if (!signature) {
-              this.$Notice.error({
-                title: '发送失败',
-              });
-            } else {
-              publishArticle({
-                author, title, hash, publicKey, signature, currentUsername,
-              }, (error, response, body) => {
-                console.info(error);
-                console.info(response);
-                console.info(body);
-                if (body.msg === 'success' && !error) {
-                  this.$Notice.success({
-                    title: '发送成功',
-                    desc: '3秒后跳转到你发表的文章',
-                  });
-                  const jumpToArticle = () => this.$router.push({
-                    name: 'Article',
-                    params: { hash },
-                  });
-                  setTimeout(jumpToArticle, 3 * 1000);
-                } else {
-                  this.$Notice.error({
-                    title: '发送失败',
-                    desc: error,
-                  });
-                }
-              });
-            }
+            this.$Notice.error({
+              title: '发送失败',
+            });
+          } else {
+            publishArticle({
+              author, title, hash, publicKey, signature, currentUsername,
+            }, (error, response, body) => {
+              console.info(error);
+              console.info(response);
+              console.info(body);
+              if (body.msg === 'success' && !error) {
+                this.$Notice.success({
+                  title: '发送成功',
+                  desc: '3秒后跳转到你发表的文章',
+                });
+                const jumpToArticle = () => this.$router.push({
+                  name: 'Article',
+                  params: { hash },
+                });
+                setTimeout(jumpToArticle, 3 * 1000);
+              } else {
+                this.$Notice.error({
+                  title: '发送失败',
+                  desc: error,
+                });
+              }
+            });
+          }
         } else {
           this.$Notice.error({
             title: '发送失败',
@@ -121,8 +121,8 @@ export default {
       // 不要在页面组件写具体实现，谢谢合作 - Frank
       defaultImagesUploader(imgfile)
         .then(({ data }) => {
-            const { url } = data.data;
-            this.$refs.md.$img2Url(pos, url);
+          const { url } = data.data;
+          this.$refs.md.$img2Url(pos, url);
         });
     },
   },

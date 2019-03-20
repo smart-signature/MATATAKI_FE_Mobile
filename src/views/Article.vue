@@ -42,7 +42,7 @@
         </i-col>
         <i-col span="12">
           <za-button class="button-share"
-            size='xl' theme="primary" 
+            size='xl' theme="primary"
             :data-clipboard-text="getClipboard"
             @click="share" ghost="true">分享</za-button>
         </i-col>
@@ -101,8 +101,8 @@ export default {
       return window.location.href;
     },
     getDisplayedFissionFactor() {
-      return this.sign.fission_factor / 1000
-    }
+      return this.sign.fission_factor / 1000;
+    },
   },
   data: () => ({
     post: {
@@ -114,7 +114,7 @@ export default {
     },
     sign: {
       // NO MORE Cannot read property 'fission_factor' of null
-      fission_factor: 0
+      fission_factor: 0,
     },
     toastvisible: false,
   }),
@@ -172,7 +172,7 @@ export default {
     getRef() {
       // no need to save inviter
       // let invite = localStorage.getItem('invite');
-      var invite = querystring.parse(location.search.slice(1)).invite;
+      let { invite } = querystring.parse(location.search.slice(1));
 
       if (!invite) {
         invite = null;
@@ -193,7 +193,7 @@ export default {
 
     this.post.author = this.sign.author;
 
-    let invite = querystring.parse(window.location.search.slice(1)).invite;
+    const { invite } = querystring.parse(window.location.search.slice(1));
     if (invite) {
       localStorage.setItem('invite', invite);
     }
