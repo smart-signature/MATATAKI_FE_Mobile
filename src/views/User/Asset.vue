@@ -74,7 +74,7 @@ export default {
   async created() {
     await getPlayerIncome(this.username);
     await this.refresh();
-    for (let index = 0; index < this.assets.length; index+=1) {
+    for (let index = 0; index < this.assets.length; index += 1) {
       const element = this.assets[index];
       if (element.type === 'share income') {
         this.sharereward += parseFloat(element.quantity.replace(' EOS', ''));
