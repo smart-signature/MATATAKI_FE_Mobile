@@ -57,6 +57,33 @@ function publishArticle({
   }, callback);
 }
 
-const getArticlesList = () => axios.get(`${apiServer}/api/article`);
+const getArticlesList = ({ page = 1 }) => axios.get(
+  `${apiServer}/posts`, {
+    params: {
+      page,
+    },
+  },
+);
 
-export { _oldPublishArticle, getArticlesList, publishArticle };
+// 示例代码。。请随便改。。。
+function auth({
+  username, publickey, sign
+}, callback) {
+  const url = `${apiServer}/auth`;
+  // const url = `http://localhost:7001/auth`;
+  return request({
+    uri: url,
+    rejectUnauthorized: false,
+    json: true,
+    headers: { Accept: '*/*', Authorization: "Basic bXlfYXBwOm15X3NlY3JldA==" },
+    dataType: 'json',
+    method: 'POST',
+    form: {
+      username,
+      publickey,
+      sign,
+    },
+  }, callback);
+}
+
+export { _oldPublishArticle, getArticlesList, publishArticle, auth };

@@ -79,10 +79,10 @@ import querystring from 'query-string';
 const markdownIt = mavonEditor.getMarkdownIt();
 const getValue = (v, key) => {
   if (key == 'delete') {
-    return v.slice(0, -1)
+    return v.slice(0, -1);
   }
-  return `${v}${key}`
-}
+  return `${v}${key}`;
+};
 
 export default {
   name: 'Article',
@@ -109,9 +109,9 @@ export default {
       // alert(currentUsername);
       // alert(scatterAccount.name);
 
-      return 'https://' + (this.isLogined
+      return `https://${this.isLogined
         ? `${window.location.host}/article/${this.hash}?invite=${currentUsername}`
-        : `${window.location.href}`);
+        : `${window.location.href}`}`;
     },
     getDisplayedFissionFactor() {
       return this.sign.fission_factor / 1000;
@@ -134,8 +134,8 @@ export default {
     toastvisible: false,
     visible3: false,
     visible7: false,
-    v3:'',
-    v5:'',
+    v3: '',
+    v5: '',
   }),
   watch: {
     post({ author, title }) {
@@ -155,7 +155,7 @@ export default {
       console.info(data);
     },
     handleClose() {
-      this.visible3 = false
+      this.visible3 = false;
     },
     handleChange(v) {
       this.amount = v;
@@ -165,7 +165,7 @@ export default {
       if (['close', 'ok'].indexOf(key) > -1) {
         return;
       }
-      this.v1 = getValue(this.v1, key)
+      this.v1 = getValue(this.v1, key);
       console.log(this.v1);
     },
     async setisSupported() {
@@ -173,7 +173,7 @@ export default {
         const shares = await getSharesInfo(this.currentUsername);
         // const shares = await getSharesInfo('linklinkguan'); // for sign.id 78
         // console.log('shares :', shares);
-        const share = shares.find((element) => element.id === this.sign.id);
+        const share = shares.find(element => element.id === this.sign.id);
         if (share !== undefined) {
           console.log('share :', share);
           this.isSupported = true;
@@ -254,13 +254,11 @@ export default {
     // Set isSupported
     await this.setisSupported();
 
-    // 
+    //
     const { invite } = querystring.parse(window.location.search.slice(1));
     if (invite) {
       localStorage.setItem('invite', invite);
     }
-
-    
   },
 };
 </script>

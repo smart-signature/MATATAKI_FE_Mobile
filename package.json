@@ -22,6 +22,7 @@
     "scatterjs-core": "^2.7.16",
     "scatterjs-plugin-eosjs": "^1.5.1",
     "vue": "^2.6.6",
+    "vue-infinite-scroll": "^2.0.2",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1",
     "wangeditor": "^3.1.1",

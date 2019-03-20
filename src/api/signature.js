@@ -127,7 +127,7 @@ async function getSharesInfo() {
     limit: 10000,
   });
   return rows;
-}*/
+} */
 
 async function getSignInfo(id) {
   const { rows } = await eos().getTableRows({

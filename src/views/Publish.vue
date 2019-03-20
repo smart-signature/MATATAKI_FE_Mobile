@@ -7,6 +7,7 @@
       <div slot="title">发布文章</div>
       <div slot="right">
         <Button type="text" size="large" @click="sendThePost">确认发布</Button>
+        <Button type="text" size="large" @click="authDemo">Auth Demo</Button>
       </div>
     </za-nav-bar>
     <Form label-position="left" :label-width="100">
@@ -30,7 +31,8 @@ import { mapGetters, mapActions, mapState } from 'vuex';
 import { sendPost } from '@/api/ipfs';
 import API from '@/api/scatter.js';
 import { mavonEditor } from 'mavon-editor';
-import { publishArticle, defaultImagesUploader } from '../api';
+import { publishArticle, defaultImagesUploader, auth } from '../api';
+import request from 'request';
 
 export default {
   name: 'NewPost',
@@ -59,7 +61,44 @@ export default {
       'suggestNetworkAsync',
       'loginScatterAsync',
     ]),
+    // 示例代码。。请随便改。。。
+    async authDemo(){
+      // 1. 取得签名
+      API.authSignature(function(username, publickey, sign){
+        console.log(username, publickey, sign);
+        // 2. post到服务端 获得accessToken并保存
+        auth({ username, publickey, sign}, (error, response, body) => {
+          console.log(body);
+          if(!error){
+            // 3. save accessToken 
+            const accessToken = body;
+            localStorage.setItem("ACCESS_TOKEN", accessToken);
+          }
+        })
+      });
+
+      // 4. 使用accessToken 示例。 请求修改某些和用户数据相关的api时，需要按照oauth2规范，在header里带上 accessToken， 以表示有权调用
+      // const accessToken = localStorage.getItem("ACCESS_TOKEN");
+      // request({
+      //   uri: "some api url that need auth",
+      //   // uri: "http://localhost:7001/follow",
+      //   // uri: "http://localhost:7001/unfollow",
+      //   rejectUnauthorized: false,
+      //   json: true,
+      //   headers: { Accept: '*/*', "x-access-token": accessToken },
+      //   dataType: 'json',
+      //   method: 'POST',
+      //   form: {
+      //     username:"joetothemoon",
+      //     followed:"tengavinwood",
+      //   },
+      // }, function(err,resp, body){
+      //    console.log(body);
+      // });
+
+    },
     async sendThePost() {
+
       const {
         title, markdownData, currentUsername, fissionFactor,
       } = this;
@@ -81,7 +120,7 @@ export default {
             });
           } else {
             publishArticle({
-              author, title, hash, publicKey, signature, currentUsername, fissionFactor
+              author, title, hash, publicKey, signature, currentUsername, fissionFactor,
             }, (error, response, body) => {
               console.info(error);
               console.info(response);
