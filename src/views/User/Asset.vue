@@ -49,7 +49,7 @@
     <div class="assets">
     <!-- <za-tabs v-model="activeNameSwipe" @change="handleClick"> -->
       <!-- <za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label"> -->
-        <za-pull :on-refresh="refresh" :refreshing="refreshing" :loading="true">
+        <za-pull :on-refresh="refresh" :refreshing="refreshing" :loading="true" :invisible="true">
           <div class="content">
             <AssetCard :asset="a" v-for="a in assets" :key="a.timestamp"/>
           </div>
@@ -91,16 +91,16 @@ export default {
   data() {
     return {
       assets: [
-        { // sample
-          quantity: '10.2333 EOS',
-          timestamp: Date.now(),
-          type: 'test income',
-        },
-        { // sample
-          quantity: '100.2333 EOS',
-          timestamp: Date.now() + 1,
-          type: 'test income',
-        },
+        //{ // sample
+        //  quantity: '10.2333 EOS',
+        //  timestamp: Date.now(),
+        //  type: 'test income',
+        //},
+        //{ // sample
+        //  quantity: '100.2333 EOS',
+        //  timestamp: Date.now() + 1,
+        // type: 'test income',
+       // },
       ],
       activeNameSwipe: '全部',
       selectedLabelDefault: '全部',
@@ -135,7 +135,7 @@ export default {
         type: a.action_trace.act.data.type,
         timestamp: a.action_trace.block_time,
       }));
-
+      
       console.log(this.username, '\'s assets:', this.assets);
     },
     async getPlayerIncome(name) {
