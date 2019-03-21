@@ -86,6 +86,66 @@ function auth({
   }, callback);
 }
 
+// Be used in User page.
+function follow({
+  username, followed,
+}, callback) {
+  const accessToken = localStorage.getItem("ACCESS_TOKEN");
+  const url = `${apiServer}/follow`;
+  // const url = `http://localhost:7001/publish`;
+  return request({
+    uri: url,
+    rejectUnauthorized: false,
+    json: true,
+    headers: { Accept: '*/*', "x-access-token": accessToken},
+    dataType: 'json',
+    method: 'POST',
+    form: {
+      username,
+      followed,
+    },
+  }, callback);
+}
+
+// Be used in User page.
+function unfollow({
+  username, followed,
+}, callback) {
+  const accessToken = localStorage.getItem("ACCESS_TOKEN");
+  const url = `${apiServer}/unfollow`;
+  // const url = `http://localhost:7001/publish`;
+  return request({
+    uri: url,
+    rejectUnauthorized: false,
+    json: true,
+    headers: { Accept: '*/*', "x-access-token": accessToken },
+    dataType: 'json',
+    method: 'POST',
+    form: {
+      username,
+      followed,
+    },
+  }, callback);
+}
+
+// Be used in User page.
+function getuser({
+  username,
+}, callback) {
+  const accessToken = localStorage.getItem("ACCESS_TOKEN");
+  const url = `${apiServer}/user/` + username;
+  // const url = `http://localhost:7001/publish`;
+  return request({
+    uri: url,
+    rejectUnauthorized: false,
+    json: true,
+    headers: { Accept: '*/*', "x-access-token": accessToken},
+    dataType: 'json',
+    method: 'GET',
+    form: {},
+  }, callback);
+}
+
 export {
-  _oldPublishArticle, getArticlesList, publishArticle, auth,
+  _oldPublishArticle, getArticlesList, publishArticle, auth, follow, unfollow, getuser
 };
