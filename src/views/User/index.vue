@@ -195,7 +195,7 @@ export default {
       this.followed = body.is_follow;
     });
     const user = this.isMe ? '我' : this.username;
-    document.title = `${user} 的用户页 - SmartSignature`;
+    document.title = `${user}的个人主页 - SmartSignature`;
   },
 };
 </script>
