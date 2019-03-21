@@ -71,6 +71,7 @@ import { Header } from '@/components/';
 import axios from 'axios';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
+import { getArticleData, getSignId } from '../api';
 import { support, getSignInfo, getSharesInfo } from '../api/signature.js';
 import 'mavon-editor/dist/css/index.css';
 // markdownIt.set({ breaks: false });
@@ -78,12 +79,13 @@ import 'mavon-editor/dist/css/index.css';
 import querystring from 'query-string';
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
+/*
 const getValue = (v, key) => {
   if (key === 'delete') {
     return v.slice(0, -1);
   }
   return `${v}${key}`;
-};
+};*/
 
 export default {
   name: 'Article',
@@ -93,7 +95,7 @@ export default {
     mavonEditor,
   },
   computed: {
-    ...mapState(['scatterAccount']),
+    ...mapState(['isScatterConnected', 'scatterAccount']),
     ...mapGetters(['currentUsername']),
     isLogined() {
       return this.scatterAccount !== null;
@@ -117,6 +119,33 @@ export default {
     getDisplayedFissionFactor() {
       return this.sign.fission_factor / 1000;
     },
+  },
+  async created() {
+    document.title = '正在加载文章 - Smart Signature';
+    try {
+      await this.getArticleData();
+    } catch (error) {
+        
+    }
+    this.board = this.getClipboard;
+
+    const url = `https://api.smartsignature.io/post/${this.hash}`;
+    const { data } = await axios.get(url);
+    const signs = await getSignInfo(data.id);
+    this.sign = signs[0];
+    console.log('sign :', this.sign); // fix: ReferenceError: sign is not defined
+
+    // Set post author
+    this.post.author = this.sign.author;
+
+    // Set isSupported
+    await this.setisSupported();
+
+    //
+    const { invite } = querystring.parse(window.location.search.slice(1));
+    if (invite) {
+      localStorage.setItem('invite', invite);
+    }
   },
   data: () => ({
     post: {
@@ -150,10 +179,9 @@ export default {
       'loginScatterAsync',
     ]),
     async getArticleData() {
-      const url = `https://api.smartsignature.io/ipfs/catJSON/${this.hash}`;
-      const { data } = await axios.get(url);
+      const { data } = await getArticleData(this.hash);
+      console.info('post :', data);
       this.post = data.data;
-      console.info(data);
     },
     handleClose() {
       this.visible3 = false;
@@ -162,13 +190,14 @@ export default {
       this.amount = v;
       console.log('amount :', this.amount);
     },
+    /*
     handleChange1(key) {
       if (['close', 'ok'].indexOf(key) > -1) {
         return;
       }
       this.v1 = getValue(this.v1, key);
       console.log(this.v1);
-    },
+    },*/
     async setisSupported() {
       if (this.scatterAccount !== null) {
         const shares = await getSharesInfo(this.currentUsername);
@@ -183,28 +212,36 @@ export default {
     },
     async support() {
       this.visible3 = false;
+      try { // 錢包登录
+        // 開了網頁之後，才開 Scatter ，這時候沒有做 connectScatterAsync 就登录不能
+        // 昨天沒加檢查已連而已 - Roger that
+        if ( ! this.isScatterConnected ) await this.connectScatterAsync();
+        await this.loginScatterAsync();
+      } catch (error) {
+        console.error(error)
+        console.warn('Unable to connect wallets');
+        this.$Modal.error({
+          title: '无法与你的钱包建立链接並登录',
+          content: '请检查钱包是否打开并解锁',
+        });
+        return
+      }
+      // amount
       const amount = parseFloat(this.amount);
       if (isNaN(amount) || amount <= 0) {
         alert('请输入正确金额');
         return;
       }
       console.log('amount :', amount);
-      try {
-        // App.vue 已经试图 connectScatter
-        // 这里再 call connectScatterAsync 可能导致 Scatter Desktop 出 Bug（之前出过）
-        // Login 即可
-        await this.loginScatterAsync();
-      } catch (error) {
-        console.error(error);
-      }
+
       // fetch sign_id
-      const url = `https://api.smartsignature.io/post/${this.hash}`;
-      const { data } = await axios.get(url);
-      const signId = data.id;
-      // todo(minakokojima): use Regex to get referrer from the url. // Done (joe)
+      const { data } = await getSignId(this.hash);
+      console.info(data);
+      const sign_id =  data.id ;
+
       const referrer = this.getRef();
       console.log('referrer :', referrer);
-      await support({ amount, signId, referrer });
+      await support({ amount, sign_id, referrer });
       await this.setisSupported();
     },
     share() {
@@ -239,29 +276,6 @@ export default {
       }
       return invite;
     },
-  },
-  async created() {
-    document.title = '正在加载文章 - Smart Signature';
-
-    this.board = this.getClipboard;
-    await this.getArticleData();
-    const url = `https://api.smartsignature.io/post/${this.hash}`;
-    const { data } = await axios.get(url);
-    const signs = await getSignInfo(data.id);
-    this.sign = signs[0];
-    console.log('sign :', this.sign); // fix: ReferenceError: sign is not defined
-
-    // Set post author
-    this.post.author = this.sign.author;
-
-    // Set isSupported
-    await this.setisSupported();
-
-    //
-    const { invite } = querystring.parse(window.location.search.slice(1));
-    if (invite) {
-      localStorage.setItem('invite', invite);
-    }
   },
 };
 </script>
