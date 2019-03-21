@@ -57,7 +57,7 @@
     <!-- <ArticlesList ref="ArticlesList"/> -->
     <div class="centercard" v-if="isMe">
       <za-cell is-link has-arrow @click='jumpTo({ name: "Asset", params: { username }})'>
-          资产明细
+        资产明细
         <!-- <za-icon type='right' slot='icon'/> -->
       </za-cell>
       <za-cell is-link has-arrow @click='jumpTo({ name: "Original", params: { username }})'>
