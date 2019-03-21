@@ -19,7 +19,7 @@ import { getArticlesList } from '@/api/';
 import { ArticleCard } from '@/components/';
 import { mapGetters } from 'vuex';
 
-const TimeLine = '时间排序';
+const TimeLine = '最新发布';
 
 export default {
   name: 'home',
