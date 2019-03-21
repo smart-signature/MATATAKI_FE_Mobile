@@ -96,6 +96,11 @@ export default {
       //    console.log(body);
       // });
     },
+    sendFailed() {
+      this.$Notice.error({
+            title: '发送失败',
+      });
+    },
     async sendThePost() {
       if (!this.currentUsername) {
         await this.loginScatterAsync()
@@ -119,24 +124,26 @@ export default {
           title, author, content: markdownData, desc: 'whatever',
         });
         const { code, hash } = data;
-        if (code === 200) {
+        if (code !== 200) {
+          this.sendFailed();
+        } else {
           console.log('Push action to signature.bp...', hash);
           // const { transaction_id } = await publishOnChain({ hash, fissionFactor });
-          const { publicKey } = await API.getPublicKey(); // what can i say ?
-          const signature = await API.getSignature(author, hash, publicKey);
-          // console.log("签名成功后调", signature, publicKey)
-          if (!signature) {
-            this.$Notice.error({
-              title: '发送失败',
-            });
+          // const { publicKey } = await API.getPublicKey(); // what can i say ?
+          API.getSignature(author, hash, (err, signature, publicKey, username) => {
+          console.log("签名成功后调", signature, publicKey)
+            if (err) {
+            this.sendFailed();
           } else {
             publishArticle({
               author, title, hash, publicKey, signature, currentUsername, fissionFactor,
             }, (error, response, body) => {
-              console.info(error);
-              console.info(response);
-              console.info(body);
-              if (body.msg === 'success' && !error) {
+              if (body.msg !== 'success' || error) {
+                this.$Notice.error({
+                  title: '发送失败',
+                  desc: error,
+                });
+              } else {
                 this.$Notice.success({
                   title: '发送成功',
                   desc: '3秒后跳转到你发表的文章',
@@ -146,18 +153,11 @@ export default {
                   params: { hash },
                 });
                 setTimeout(jumpToArticle, 3 * 1000);
-              } else {
-                this.$Notice.error({
-                  title: '发送失败',
-                  desc: error,
-                });
               }
             });
           }
-        } else {
-          this.$Notice.error({
-            title: '发送失败',
           });
+          
         }
       } catch (error) {
         console.error(error);
