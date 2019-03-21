@@ -77,15 +77,13 @@ export default {
     for (let index = 0; index < this.assets.length; index++) {
       const element = this.assets[index];
       if (element.type === 'share income') {
-        this.sharereward += parseFloat(element.quantity.replace(" EOS",""));
+        this.sharereward += parseFloat(element.quantity.replace(' EOS', ''));
         // console.log(sharecost);
-      }
-      else if (element.type === 'sign income') {
-        this.writereward += parseFloat(element.quantity.replace(" EOS",""));
+      } else if (element.type === 'sign income') {
+        this.writereward += parseFloat(element.quantity.replace(' EOS', ''));
         // console.log(sharecost);
-      }
-      else if (element.type === 'support expenses') {
-        this.sharecost += parseFloat(element.quantity.replace(" EOS",""));
+      } else if (element.type === 'support expenses') {
+        this.sharecost += parseFloat(element.quantity.replace(' EOS', ''));
         // console.log(sharecost);
       }
     }
@@ -137,7 +135,7 @@ export default {
         type: a.action_trace.act.data.type,
         timestamp: a.action_trace.block_time,
       }));
-      
+
       console.log(this.username, '\'s assets:', this.assets);
     },
     async getPlayerIncome(name) {
