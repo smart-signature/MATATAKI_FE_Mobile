@@ -98,22 +98,22 @@ export default {
     },
     sendFailed() {
       this.$Notice.error({
-            title: '发送失败',
+        title: '发送失败',
       });
     },
     async sendThePost() {
       if (!this.currentUsername) {
-        await this.loginScatterAsync()
+        await this.loginScatterAsync();
       }
       // 标题或内容为空时
       if (this.title === '' || this.markdownData === '') {
         return this.$Modal.warning({
           title: '提示',
-          content: '标题或正文不能为空'
+          content: '标题或正文不能为空',
         });
       }
       // 用户不填写裂变系数则默认为2
-      if (this.fissionFactor === '') this.fissionFactor = 2
+      if (this.fissionFactor === '') this.fissionFactor = 2;
 
       const {
         title, markdownData, currentUsername, fissionFactor,
@@ -131,33 +131,32 @@ export default {
           // const { transaction_id } = await publishOnChain({ hash, fissionFactor });
           // const { publicKey } = await API.getPublicKey(); // what can i say ?
           API.getSignature(author, hash, (err, signature, publicKey, username) => {
-          console.log("签名成功后调", signature, publicKey)
+            console.log('签名成功后调', signature, publicKey);
             if (err) {
-            this.sendFailed();
-          } else {
-            publishArticle({
-              author, title, hash, publicKey, signature, currentUsername, fissionFactor,
-            }, (error, response, body) => {
-              if (body.msg !== 'success' || error) {
-                this.$Notice.error({
-                  title: '发送失败',
-                  desc: error,
-                });
-              } else {
-                this.$Notice.success({
-                  title: '发送成功',
-                  desc: '3秒后跳转到你发表的文章',
-                });
-                const jumpToArticle = () => this.$router.push({
-                  name: 'Article',
-                  params: { hash },
-                });
-                setTimeout(jumpToArticle, 3 * 1000);
-              }
-            });
-          }
+              this.sendFailed();
+            } else {
+              publishArticle({
+                author, title, hash, publicKey, signature, currentUsername, fissionFactor,
+              }, (error, response, body) => {
+                if (body.msg !== 'success' || error) {
+                  this.$Notice.error({
+                    title: '发送失败',
+                    desc: error,
+                  });
+                } else {
+                  this.$Notice.success({
+                    title: '发送成功',
+                    desc: '3秒后跳转到你发表的文章',
+                  });
+                  const jumpToArticle = () => this.$router.push({
+                    name: 'Article',
+                    params: { hash },
+                  });
+                  setTimeout(jumpToArticle, 3 * 1000);
+                }
+              });
+            }
           });
-          
         }
       } catch (error) {
         console.error(error);
@@ -174,7 +173,7 @@ export default {
           const { url } = data.data;
           this.$refs.md.$img2Url(pos, url);
         });
-    }
+    },
   },
   test() {
   // publishOnChain({ hash: 'QmfJsZmbsFcaNEBejP6HcXQEXycVXKfFwbMM3eju4VdsN3' });

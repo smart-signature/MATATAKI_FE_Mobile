@@ -189,12 +189,12 @@ export default {
       }
       console.log('amount :', amount);
       try {
-        // App.vue 已经试图 connectScatter 
+        // App.vue 已经试图 connectScatter
         // 这里再 call connectScatterAsync 可能导致 Scatter Desktop 出 Bug（之前出过）
         // Login 即可
         await this.loginScatterAsync();
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
       // fetch sign_id
       const url = `https://api.smartsignature.io/post/${this.hash}`;
