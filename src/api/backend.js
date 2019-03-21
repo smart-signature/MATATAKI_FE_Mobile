@@ -49,7 +49,7 @@ function publishArticle({
       author,
       fissionFactor,
       hash,
-      publicKey,
+      publickey: publicKey,
       username,
       title,
       sign: signature,

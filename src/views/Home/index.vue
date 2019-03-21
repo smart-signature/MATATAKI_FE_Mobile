@@ -39,7 +39,7 @@
       </div>-->
       <div class='titles'>
         <h1 class='title'>-SmartSignature-</h1>
-        <h2 class='subtitle'>首个EOS去中心化智能签名项目</h2>
+        <h2 class='subtitle'>赞赏好文，分享有收益！</h2>
         <Button @click="$router.push({name: 'About'})" style='margin-top: 17px;'>规则说明</Button>
       </div>
     </div>
