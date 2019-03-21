@@ -97,6 +97,9 @@ export default {
       // });
     },
     async sendThePost() {
+      if (!this.currentUsername) {
+        await this.loginScatterAsync()
+      }
       const {
         title, markdownData, currentUsername, fissionFactor,
       } = this;
