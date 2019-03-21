@@ -16,7 +16,7 @@
         </Button>
         <div v-show='addShow' class='add-menu'>
           <a href='javascript:void(0);'>搬运</a>
-          <a href='javascript:void(0);' @click="$router.push({name: 'Publish'})">新建</a>
+          <a href='javascript:void(0);' @click="$router.push({name: 'Publish'})">创作</a>
         </div>
       </div>
 
@@ -40,7 +40,7 @@
       <div class='titles'>
         <h1 class='title'>-SmartSignature-</h1>
         <h2 class='subtitle'>赞赏好文，分享有收益！</h2>
-        <Button @click="$router.push({name: 'About'})" style='margin-top: 17px;'>规则说明</Button>
+        <Button @click="$router.push({name: 'About'})" style='margin-top: 17px;'>投资攻略</Button>
       </div>
     </div>
     <MyBanner/>
@@ -80,12 +80,12 @@ export default {
         },
         {
           text: '日本語',
-          onClick: () => console.log('action 2'),
+          onClick: () => console.log('action 3'),
         },
         {
           theme: 'error',
           text: '取消',
-          onClick: () => console.log('action 3'),
+          onClick: () => console.log('action -1'),
         },
       ],
       addShow: false, // 显示新增菜单
