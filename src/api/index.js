@@ -6,5 +6,5 @@ import defaultImagesUploader from './imagesUploader';
 
 // This line below is exports
 
-export { getArticlesList, publishArticle } from './backend';
+export { getArticlesList, publishArticle, auth } from './backend';
 export { defaultImagesUploader };

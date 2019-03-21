@@ -7,4 +7,11 @@ module.exports = {
       },
     },
   },
+  pwa: {
+    msTileColor: '#4DBA87',
+    workboxOptions: {
+      skipWaiting: true,
+      clientsClaim: true,
+    },
+  }
 };
