@@ -49,7 +49,7 @@
     <div class="assets">
     <!-- <za-tabs v-model="activeNameSwipe" @change="handleClick"> -->
       <!-- <za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label"> -->
-        <za-pull :on-refresh="refresh" :refreshing="refreshing" :loading="true" :invisible="true">
+        <za-pull :on-refresh="refresh" :refreshing="refreshing" :loading="true">
           <div class="content">
             <AssetCard :asset="a" v-for="a in assets" :key="a.timestamp"/>
           </div>
