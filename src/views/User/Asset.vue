@@ -17,7 +17,6 @@
             title="提现确认" message="确定要提现吗？"
             :ok="handleOk" :cancel="handleCancel"></za-confirm>
       </div>
-      </div>
       <Divider style="margin-top:10px;margin-bottom:10px;"/>
       <Row type="flex" justify="center" class="code-row-bg">
         <Col span="6">
