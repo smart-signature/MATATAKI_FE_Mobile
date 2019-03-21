@@ -19,7 +19,8 @@ import { getArticlesList } from '@/api/';
 import { ArticleCard } from '@/components/';
 import { mapGetters } from 'vuex';
 
-export const TimeLine = '时间排序';
+const TimeLine = '时间排序';
+
 export default {
   name: 'home',
   computed: {
