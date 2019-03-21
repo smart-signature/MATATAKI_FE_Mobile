@@ -14,7 +14,7 @@
         </div>
         <div class="not-login-yet" v-else>
          <Row>
-            <Col span="14"><p class="login-notification">登录即可分享和发布文章！ 看好文，上智能签名！</p></Col>
+            <Col span="14"><p class="login-notification">即刻登录，<br/>开始智能签名之旅</p></Col>
             <Col span="10">
               <Button class="login-btn" ghost type="text"
               @click="loginWithWallet"
