@@ -229,7 +229,7 @@ export default {
       // amount
       const amount = parseFloat(this.amount);
       if (isNaN(amount) || amount <= 0) {
-        alert('请输入正确金额');
+        alert('请输入正确的金额');
         return;
       }
       console.log('amount :', amount);

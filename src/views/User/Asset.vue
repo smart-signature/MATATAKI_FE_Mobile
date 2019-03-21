@@ -4,7 +4,7 @@
       <div slot="left">
         <za-icon theme="primary" type="arrow-left" @click="goBack"></za-icon>
       </div>
-      <div slot="title">{{username}} 的资产明细</div>
+      <div slot="title">{{username}}的资产明细</div>
       <div slot="right"></div>
     </za-nav-bar>
     <div class="topcard">
@@ -14,13 +14,14 @@
           <Button class="withdraw" ghost @click="visible7 = true">提现</Button>
           <za-confirm
             :visible="visible7"
-            title="提现确认" message="你确定吗？"
+            title="提现确认" message="确定要提现吗？"
             :ok="handleOk" :cancel="handleCancel"></za-confirm>
+      </div>
       </div>
       <Divider style="margin-top:10px;margin-bottom:10px;"/>
       <Row type="flex" justify="center" class="code-row-bg">
         <Col span="6">
-          <p class="toptext2">写作收入</p>
+          <p class="toptext2">创作收益</p>
           <p class="toptext3" :style='writereward >= 0 ? { color: "#f50" } : { color: "#87d068" }'>
             {{(writereward > 0 ? '+' : '') + writereward}}
           </p>
@@ -29,7 +30,7 @@
           <Divider type="vertical" style="height:20px;margin-top:16px;" />
         </Col>
         <Col span="6">
-          <p class="toptext2">转发收入</p>
+          <p class="toptext2">赞赏收益</p>
           <p class="toptext3" :style='sharereward >= 0 ? { color: "#f50" } : { color: "#87d068" }'>
             {{(sharereward > 0 ? '+' : '') + sharereward}}
           </p>
@@ -38,7 +39,7 @@
           <Divider type="vertical" style="height:20px;margin-top:16px;" />
         </Col>
         <Col span="6">
-          <p class="toptext2">打赏支出</p>
+          <p class="toptext2">赞赏支出</p>
           <p class="toptext3" :style='sharecost > 0 ? { color: "#f50" } : { color: "#87d068" }'>
             {{sharecost}}
           </p>
@@ -167,7 +168,7 @@ export default {
     },
     async withdraw(name) {
       console.log('Connecting to EOS fetch data...');
-      await withdraw(name).then(() => alert('提現成功'));
+      await withdraw(name).then(() => alert('提现成功!'));
     },
   },
 };
