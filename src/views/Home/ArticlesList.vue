@@ -19,6 +19,8 @@ import { getArticlesList } from '@/api/';
 import { ArticleCard } from '@/components/';
 import { mapGetters } from 'vuex';
 
+const TimeLine = '时间排序';
+
 export default {
   name: 'home',
   computed: {
@@ -74,11 +76,11 @@ export default {
       busy: false,
       page: 1,
       isTheEndOfTheScroll: false,
-      activeNameSwipe: 'TimeLine',
-      selectedLabelDefault: 'TimeLine',
+      activeNameSwipe: TimeLine,
+      selectedLabelDefault: TimeLine,
       tabs: [
         {
-          label: 'TimeLine',
+          label: TimeLine,
         },
       ],
     };
