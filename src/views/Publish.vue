@@ -97,6 +97,9 @@ export default {
       // });
     },
     async sendThePost() {
+      if (!this.currentUsername) {
+        await this.loginScatterAsync()
+      }
       // 标题或内容为空时
       if (this.title === '' || this.markdownData === '') {
         return this.$Modal.warning({
@@ -119,7 +122,7 @@ export default {
         if (code === 200) {
           console.log('Push action to signature.bp...', hash);
           // const { transaction_id } = await publishOnChain({ hash, fissionFactor });
-          const { publicKey } = await API.getPublicKey(); // what can i say ?
+          const { publicKey } = this.scatterAccount; // So easy to get the pubKey
           const signature = await API.getSignature(author, hash, publicKey);
           // console.log("签名成功后调", signature, publicKey)
           if (!signature) {
