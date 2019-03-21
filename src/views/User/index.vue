@@ -12,7 +12,7 @@
            width="50px" src="/img/camera.png" v-if="editing"/>
       <div class="texts">
         <p class="username">{{username}}</p>
-        <p class="userstatu">关注：13 粉丝：20.8w</p>
+        <p class="userstatu">关注：{{follows}} 粉丝：{{fans}}</p>
       </div>
       <div v-if="editing">
         <Button class="rightbutton" size="small" type="success"
@@ -21,14 +21,23 @@
         </Button>
       </div>
       <div v-else>
-        <Button v-if="isMe"
-                class="rightbutton" size="small" type="success" ghost @click="edit">
-          <div>编辑</div>
-        </Button>
-        <Button v-else
-                class="rightbutton" size="small" type="success" ghost @click="follow">
-          <div>关注</div>
-        </Button>
+        <div v-if="isMe">
+          <Button class="rightbutton" size="small" type="success" ghost @click="edit">
+            <div>编辑</div>
+          </Button>
+        </div>
+        <div v-else>
+          <div v-if="!followed">
+            <Button class="rightbutton" size="small" type="success" ghost @click="follow_user">
+              <div>关注</div>
+            </Button>
+          </div>
+          <div v-else>
+            <Button class="rightbutton" size="small" type="success" ghost @click="unfollow_user">
+              <div>取消关注</div>
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
     <div class="topcard" v-if="isMe">
@@ -79,6 +88,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import { getPlayerIncome } from '@/api/signature';
+import { follow, unfollow, getuser } from '../../api';
 import ArticlesList from './ArticlesList.vue';
 import API from '@/api/scatter.js';
 
@@ -92,6 +102,9 @@ export default {
         share_income: 0,
       },
       editing: false,
+      followed: false,
+      follows: 0,
+      fans: 0,
     };
   },
   computed: {
@@ -128,8 +141,40 @@ export default {
       alert('save');
       this.editing = !this.editing;
     },
-    follow() {
-      alert('follow');
+    follow_user() {
+      // alert('follow');
+      const { username, currentUsername } = this;
+      follow({
+        currentUsername, username, 
+      }, (error, response, body) => {
+        if (body.msg === 'success' && !error) {
+          this.$Notice.success({
+            title: '关注成功',
+          });
+          this.followed = true;
+        } else {
+          this.$Notice.error({
+            title: '关注失败',
+          });
+        }
+      });
+    },
+    unfollow_user() {
+      // alert('follow');
+      unfollow({
+        currentUsername, username, 
+      }, (error, response, body) => {
+        if (body.msg === 'success' && !error) {
+          this.$Notice.success({
+            title: '已取消关注',
+          });
+          this.followed = false;
+        } else {
+          this.$Notice.error({
+            title: '取消关注失败',
+          });
+        }
+      });
     },
     ...mapActions(['logoutScatterAsync']),
     // loginWithWallet() {
@@ -138,10 +183,17 @@ export default {
   },
   async created() {
     const playerincome = await getPlayerIncome(this.username);
-    console.info(playerincome);
+    console.log(playerincome);
     this.playerincome = playerincome.length !== 0 ? playerincome[0] : {
       share_income: 0,
     };
+    const playerstatu = getuser({
+      username: this.username
+    }, (error, response, body) => {
+      this.follows = body.follows;
+      this.fans = body.fans;
+      this.followed = body.is_follow;
+    });
     const user = this.isMe ? '我' : this.username;
     document.title = `${user} 的用户页 - SmartSignature`;
   },
@@ -175,6 +227,7 @@ a {
 .userstatu{
   font-size: 14px;
   opacity: 0.4;
+  float:left;
 }
 .texts{
   float: left;
