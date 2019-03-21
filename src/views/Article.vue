@@ -213,13 +213,8 @@ export default {
     async support() {
       this.visible3 = false;
       try { // 錢包登录
-        // App.vue 已经试图 connectScatter 
-        // 这里再 call connectScatterAsync 可能导致 Scatter Desktop 出 Bug（之前出过）
-        // Login 即可
-        //
-        // 不，開啟網頁的時候沒有開 Scatter 是個常態
         // 開了網頁之後，才開 Scatter ，這時候沒有做 connectScatterAsync 就登录不能
-        // 昨天沒加檢查已連而已
+        // 昨天沒加檢查已連而已 - Roger that
         if ( ! this.isScatterConnected ) await this.connectScatterAsync();
         await this.loginScatterAsync();
       } catch (error) {
