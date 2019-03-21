@@ -78,7 +78,7 @@ import querystring from 'query-string';
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
 const getValue = (v, key) => {
-  if (key == 'delete') {
+  if (key === 'delete') {
     return v.slice(0, -1);
   }
   return `${v}${key}`;
@@ -189,19 +189,21 @@ export default {
       }
       console.log('amount :', amount);
       try {
-        const suggestNetworkResult = await this.suggestNetworkAsync();
+        // App.vue 已经试图 connectScatter 
+        // 这里再 call connectScatterAsync 可能导致 Scatter Desktop 出 Bug（之前出过）
+        // Login 即可
+        await this.loginScatterAsync();
       } catch (error) {
+        console.error(error)
       }
-      await this.connectScatterAsync();
-      await this.loginScatterAsync();
       // fetch sign_id
       const url = `https://api.smartsignature.io/post/${this.hash}`;
       const { data } = await axios.get(url);
-      const sign_id = data.id;
+      const signId = data.id;
       // todo(minakokojima): use Regex to get referrer from the url. // Done (joe)
       const referrer = this.getRef();
       console.log('referrer :', referrer);
-      await support({ amount, sign_id, referrer });
+      await support({ amount, signId, referrer });
       await this.setisSupported();
     },
     share() {
@@ -229,7 +231,7 @@ export default {
     getRef() {
       // no need to save inviter
       // let invite = localStorage.getItem('invite');
-      let { invite } = querystring.parse(location.search.slice(1));
+      let { invite } = querystring.parse(window.location.search.slice(1));
 
       if (!invite) {
         invite = null;
