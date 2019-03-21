@@ -57,6 +57,11 @@ function publishArticle({
   }, callback);
 }
 
+const getArticleData = (hash) => axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
+
+// fetch sign_id
+const getSignId = (hash) => axios.get(`${apiServer}/post/${hash}`);
+     
 const getArticlesList = ({ page = 1 }) => axios.get(
   `${apiServer}/posts`, {
     params: {
@@ -147,5 +152,7 @@ function getuser({
 }
 
 export {
-  _oldPublishArticle, getArticlesList, publishArticle, auth, follow, unfollow, getuser
+  _oldPublishArticle, getArticlesList, publishArticle, auth,
+  getArticleData, getSignId,
+  follow, unfollow, getuser,
 };
