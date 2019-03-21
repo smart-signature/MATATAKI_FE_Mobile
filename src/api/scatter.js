@@ -50,18 +50,8 @@ const API = {
       });
     })
   },
-  async getSignature(author, hash, publicKey) {
-    const hash_piece1 = hash.slice(0, 12);
-    const hash_piece2 = hash.slice(12, 24);
-    const hash_piece3 = hash.slice(24, 36);
-    const hash_piece4 = hash.slice(36, 48);
 
-    const sign_data = `${author} ${hash_piece1} ${hash_piece2} ${hash_piece3} ${hash_piece4}`;
-    // 申请签名
-    return ScatterJS.scatter.getArbitrarySignature(publicKey, sign_data, 'Smart Signature')
-  },
-
-  _old_getSignature(author, hash, callback) {
+  getSignature(author, hash, callback) {
 
     const account = this.getAccount();
 
@@ -147,7 +137,13 @@ const API = {
     return ScatterJS.scatter.identity.accounts.find(x => x.blockchain === 'eos');
   },
   getPublicKey() {
-    return ScatterJS.scatter.getPublicKey('eos')
+    return ScatterJS.scatter.getPublicKey('eos').then((publicKey) => {
+      console.log(publicKey);
+      return publicKey;
+    }).catch((error) => {
+      // todo(minakokojima): better error message.
+      alert(error);
+    });
   },
   getArbitrarySignatureAsync({ publicKey, data }) {
     return ScatterJS.scatter.getArbitrarySignature({ publicKey, data }).then((signature) => {

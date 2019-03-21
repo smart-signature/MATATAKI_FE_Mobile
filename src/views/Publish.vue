@@ -122,7 +122,7 @@ export default {
         if (code === 200) {
           console.log('Push action to signature.bp...', hash);
           // const { transaction_id } = await publishOnChain({ hash, fissionFactor });
-          const { publicKey } = this.scatterAccount; // So easy to get the pubKey
+          const { publicKey } = await API.getPublicKey(); // what can i say ?
           const signature = await API.getSignature(author, hash, publicKey);
           // console.log("签名成功后调", signature, publicKey)
           if (!signature) {
