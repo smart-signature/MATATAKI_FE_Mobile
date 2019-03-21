@@ -111,10 +111,10 @@ export default {
       // todo(minakokojima): figure out what is the different between following variables.
       // alert(currentUsername);
       // alert(scatterAccount.name);
-
-      return `https://${this.isLogined
-        ? `${window.location.host}/article/${this.hash}?invite=${currentUsername}`
-        : `${window.location.href}`}`;
+      let share = this.isLogined 
+      ? `https://${window.location.host}/article/${this.hash}?invite=${currentUsername}` 
+      : `${window.location.href}`
+      return `我在智能签名上发现了一篇好文章！${share} 赞赏好文，分享有收益 ！`;
     },
     getDisplayedFissionFactor() {
       return this.sign.fission_factor / 1000;
@@ -251,12 +251,18 @@ export default {
     share() {
       const clipboard = new Clipboard('.button-share');
       clipboard.on('success', (e) => {
-        alert('复制成功');
+        this.$Modal.info({
+          title: '提示',
+          content: '复制成功'
+        });
         console.log(e);
         clipboard.destroy();
       });
       clipboard.on('error', (e) => {
-        alert('该浏览器不支持自动复制');
+        this.$Modal.error({
+          title: '提示',
+          content: '该浏览器不支持自动复制'
+        });
         console.log(e);
         clipboard.destroy();
       });
