@@ -78,7 +78,7 @@ export default {
       selectedLabelDefault: 'TimeLine',
       tabs: [
         {
-          label: 'TimeLine',
+          label: '最新发布',
         },
       ],
     };
