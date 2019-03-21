@@ -32,7 +32,7 @@ import axios from 'axios';
 import { ArticleCard } from '@/components/';
 import { mapGetters } from 'vuex';
 
-export const TimeLine = '时间排序';
+export const TimeLine = '最新发布';
 export default {
   name: 'home',
   computed: {
@@ -51,7 +51,7 @@ export default {
     if (this.listtype == 'others') {
       this.tabs = [
         { label: '文章列表' },
-        { label: '他打赏的' },
+        { label: '他赞赏的' },
       ];
       this.activeNameSwipe = '文章列表';
     } else if (this.listtype == 'original') {
