@@ -20,13 +20,13 @@
     <footer class="footer-article">
       <Divider />
       <Row justify="center">
-          <i-col span="11">{{3500}}</i-col>
+          <i-col span="11">{{totalSupportedAmount}} EOS</i-col>
           <i-col span="2"><Divider type="vertical" /></i-col>
           <i-col span="11">裂变系数：{{getDisplayedFissionFactor}}</i-col>
       </Row>
       <Divider />
       <Row style="white-space:nowrap;">
-        <i-col span="12">
+        <i-col span="11">
           <za-button class="button-support" v-if="isSupported"
             size='xl' theme="primary"
             disabled>已打赏</za-button>
@@ -34,6 +34,7 @@
             size='xl' theme="primary"
             @click="visible3 = true">打赏</za-button>
         </i-col>
+        <i-col span="2"><Divider type="vertical" style="opacity: 0;" /></i-col>
         <za-modal :visible="visible3"
            @close="handleClose" radius="" @maskClick="visible3 = false" :showClose="true"
            style="background:rgba(243,243,243,1);">
@@ -52,7 +53,7 @@
               :visible="visible7" type="number" @keyClick="handleChange1">
             </za-keyboard-picker></Row> -->
         </za-modal>
-        <i-col span="12">
+        <i-col span="11">
           <za-button class="button-share"
             size='xl' theme="primary"
             :data-clipboard-text="getClipboard"
@@ -72,7 +73,7 @@ import axios from 'axios';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
 import { getArticleData, getSignId } from '../api';
-import { support, getSignInfo, getSharesInfo } from '../api/signature.js';
+import { support, getSignInfo, getSharesInfo, getContractActions } from '../api/signature.js';
 import 'mavon-editor/dist/css/index.css';
 // markdownIt.set({ breaks: false });
 
@@ -141,6 +142,12 @@ export default {
     // Set isSupported
     await this.setisSupported();
 
+    try {
+      this.countTotalSupportedAmount(this.sign.id);
+    } catch (error) {
+      
+    }
+    
     //
     const { invite } = querystring.parse(window.location.search.slice(1));
     if (invite) {
@@ -161,7 +168,8 @@ export default {
     },
     amount: 0.0000,
     isSupported: false,
-    toastvisible: false,
+    /*toastvisible: false,*/
+    totalSupportedAmount: 0.0000, 
     visible3: false,
     visible7: false,
     v3: '',
@@ -182,6 +190,26 @@ export default {
       'suggestNetworkAsync',
       'loginScatterAsync',
     ]),
+    async countTotalSupportedAmount(SignId) {
+      const { actions } = await getContractActions();
+      
+      // console.log(actions.map(a => a.action_trace));
+      const actions2 = actions.filter(a => a.action_trace.act.account === 'eosio.token'
+          && a.action_trace.act.name === 'transfer'
+          && a.action_trace.act.data.memo.indexOf('support ' + SignId) !== -1);
+      
+      // console.log(actions2);
+      const actions3 = actions2.map(a => ({
+        quantity: a.action_trace.act.data.quantity.replace(' EOS', ''),
+      }));
+
+      console.log(actions3);
+      for (let index = 0; index < actions3.length; index += 1) {
+        const element = actions3[index].quantity;
+        this.totalSupportedAmount += parseFloat(element);
+      }
+      this.totalSupportedAmount = this.totalSupportedAmount.toFixed(4);
+    },
     async getArticleData() {
       const { data } = await getArticleData(this.hash);
       console.info('post :', data);
@@ -241,12 +269,14 @@ export default {
       // fetch sign_id
       const { data } = await getSignId(this.hash);
       console.info(data);
-      const sign_id =  data.id ;
+      const sign_id = data.id;
 
       const referrer = this.getRef();
       console.log('referrer :', referrer);
       await support({ amount, sign_id, referrer });
       await this.setisSupported();
+      // tricky
+      this.totalSupportedAmount += amount;
     },
     share() {
       const clipboard = new Clipboard('.button-share');

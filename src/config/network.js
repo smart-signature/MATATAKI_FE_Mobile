@@ -1,3 +1,4 @@
+// https://www.eosdocs.io/resources/apiendpoints/
 export const networks = {
   // eos: {
   //   protocol: 'https',
