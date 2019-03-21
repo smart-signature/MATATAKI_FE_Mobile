@@ -44,12 +44,12 @@
       <Row type="flex" justify="center" class="code-row-bg">
           <Col span="11">
             <p class="centervalue">{{mySignIncome}} EOS</p>
-            <p class="centertext">创作收入</p>
+            <p class="centertext">创作收益</p>
           </Col>
           <Col span="1"><Divider type="vertical" style="height:33px;margin-top:10px;" /></Col>
           <Col span="11">
             <p class="centervalue">{{myShareIncome}} EOS</p>
-            <p class="centertext">转发收入</p>
+            <p class="centertext">赞赏收益</p>
           </Col>
       </Row>
     </div>
@@ -57,14 +57,14 @@
     <!-- <ArticlesList ref="ArticlesList"/> -->
     <div class="centercard" v-if="isMe">
       <za-cell is-link has-arrow @click='jumpTo({ name: "Asset", params: { username }})'>
-          资产明细
+        资产明细
         <!-- <za-icon type='right' slot='icon'/> -->
       </za-cell>
       <za-cell is-link has-arrow @click='jumpTo({ name: "Original", params: { username }})'>
-        原创文章
+        我的文章
       </za-cell>
       <za-cell is-link has-arrow @click='jumpTo({ name: "Reward", params: { username }})'>
-        打赏文章
+        赞赏文章
       </za-cell>
     </div>
     <div class="centercard" v-if="isMe">
