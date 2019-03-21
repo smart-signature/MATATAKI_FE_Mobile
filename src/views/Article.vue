@@ -1,12 +1,6 @@
 <template>
   <div class="article">
-    <za-nav-bar>
-      <div slot="left">
-        <Icon type="ios-home" :size="24" @click="goHome" />
-      </div>
-      <div slot="title" @click="goHome">Smart Signature</div>
-      <div slot="right"><Icon type="ios-share-alt" :size="24" @click="share" /></div>
-    </za-nav-bar>
+    <Header :pageinfo="{ title: 'Smart Signature',  }" />
     <div class="tl_page">
       <main class="ta">
         <header class="ta_header">
@@ -71,7 +65,8 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
+import { Header } from '@/components/';
 import axios from 'axios';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
@@ -93,6 +88,7 @@ export default {
   name: 'Article',
   props: ['hash'],
   components: {
+    Header,
     mavonEditor,
   },
   computed: {
@@ -147,6 +143,11 @@ export default {
     },
   },
   methods: {
+    ...mapActions([
+      'connectScatterAsync',
+      'suggestNetworkAsync',
+      'loginScatterAsync',
+    ]),
     async getArticleData() {
       const url = `https://api.smartsignature.io/ipfs/catJSON/${this.hash}`;
       const { data } = await axios.get(url);
@@ -187,7 +188,15 @@ export default {
         return;
       }
       console.log('amount :', amount);
-      // fetch signId
+      try {
+        // App.vue 已经试图 connectScatter 
+        // 这里再 call connectScatterAsync 可能导致 Scatter Desktop 出 Bug（之前出过）
+        // Login 即可
+        await this.loginScatterAsync();
+      } catch (error) {
+        console.error(error)
+      }
+      // fetch sign_id
       const url = `https://api.smartsignature.io/post/${this.hash}`;
       const { data } = await axios.get(url);
       const signId = data.id;

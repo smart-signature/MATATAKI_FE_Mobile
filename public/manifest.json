@@ -1,6 +1,6 @@
 {
-  "name": "smart-signature-future",
-  "short_name": "smart-signature-future",
+  "name": "Smart Signature",
+  "short_name": "SmartSignature",
   "icons": [
     {
       "src": "./img/icons/android-chrome-192x192.png",
