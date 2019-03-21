@@ -31,8 +31,8 @@ import { mapGetters, mapActions, mapState } from 'vuex';
 import { sendPost } from '@/api/ipfs';
 import API from '@/api/scatter.js';
 import { mavonEditor } from 'mavon-editor';
-import { publishArticle, defaultImagesUploader, auth } from '../api';
 import request from 'request';
+import { publishArticle, defaultImagesUploader, auth } from '../api';
 
 export default {
   name: 'NewPost',
@@ -62,19 +62,19 @@ export default {
       'loginScatterAsync',
     ]),
     // 示例代码。。请随便改。。。
-    async authDemo(){
+    async authDemo() {
       // 1. 取得签名
-      API.authSignature(function(username, publickey, sign){
+      API.authSignature((username, publickey, sign) => {
         console.log(username, publickey, sign);
         // 2. post到服务端 获得accessToken并保存
-        auth({ username, publickey, sign}, (error, response, body) => {
+        auth({ username, publickey, sign }, (error, response, body) => {
           console.log(body);
-          if(!error){
-            // 3. save accessToken 
+          if (!error) {
+            // 3. save accessToken
             const accessToken = body;
-            localStorage.setItem("ACCESS_TOKEN", accessToken);
+            localStorage.setItem('ACCESS_TOKEN', accessToken);
           }
-        })
+        });
       });
 
       // 4. 使用accessToken 示例。 请求修改某些和用户数据相关的api时，需要按照oauth2规范，在header里带上 accessToken， 以表示有权调用
@@ -95,10 +95,8 @@ export default {
       // }, function(err,resp, body){
       //    console.log(body);
       // });
-
     },
     async sendThePost() {
-
       const {
         title, markdownData, currentUsername, fissionFactor,
       } = this;

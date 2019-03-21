@@ -2,9 +2,9 @@
 
 import { register } from 'register-service-worker';
 
-const consoleForSW = (str) => console.log("%c%s",
-"color: red; background: yellow; font-size: 16px;",
-`[Service worker] ${str}`);
+const consoleForSW = str => console.log('%c%s',
+  'color: red; background: yellow; font-size: 16px;',
+  `[Service worker] ${str}`);
 
 if (process.env.NODE_ENV === 'production') {
   register(`${process.env.BASE_URL}service-worker.js`, {
@@ -24,7 +24,7 @@ if (process.env.NODE_ENV === 'production') {
       consoleForSW('发现更新，后台正在静默下载中。');
     },
     updated() {
-      consoleForSW('静默更新完毕，请关闭这个标签并在新的标签页打开以使用更新后的版本。')
+      consoleForSW('静默更新完毕，请关闭这个标签并在新的标签页打开以使用更新后的版本。');
     },
     offline() {
       consoleForSW('无网络链接。正在使用离线模式');

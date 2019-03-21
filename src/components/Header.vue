@@ -1,5 +1,5 @@
 <template>
-  <div class="my-Header">      
+  <div class="my-Header">
     <za-nav-bar>
       <div slot="left"><Icon type="ios-home" :size="24" @click="goHome" /></div>
       <div slot="title" @click="goHome">{{pageinfo.title}}</div>
