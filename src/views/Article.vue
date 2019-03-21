@@ -1,6 +1,6 @@
 <template>
   <div class="article">
-    <Header :pageinfo="{ title: 'Smart Signature',  }" />
+    <Header :pageinfo="pageinfo" />
     <div class="tl_page">
       <main class="ta">
         <header class="ta_header">
@@ -166,6 +166,10 @@ export default {
     visible7: false,
     v3: '',
     v5: '',
+    pageinfo: {
+      title: 'Smart Signature', 
+      rightPage: 'home',
+    },
   }),
   watch: {
     post({ author, title }) {
