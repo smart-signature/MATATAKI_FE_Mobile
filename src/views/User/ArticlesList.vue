@@ -32,6 +32,7 @@ import axios from 'axios';
 import { ArticleCard } from '@/components/';
 import { mapGetters } from 'vuex';
 
+export const TimeLine = '时间排序';
 export default {
   name: 'home',
   computed: {
@@ -54,9 +55,9 @@ export default {
       ];
       this.activeNameSwipe = '文章列表';
     } else if (this.listtype == 'original') {
-      this.activeNameSwipe = 'TimeLine';
+      this.activeNameSwipe = TimeLine;
     } else if (this.listtype == 'reward') {
-      this.activeNameSwipe = 'TimeLine';
+      this.activeNameSwipe = TimeLine;
     }
   },
   methods: {
@@ -83,11 +84,11 @@ export default {
     return {
       refreshing: false,
       articles: [],
-      activeNameSwipe: 'TimeLine',
-      selectedLabelDefault: 'TimeLine',
+      activeNameSwipe: TimeLine,
+      selectedLabelDefault: TimeLine,
       tabs: [
         {
-          label: 'TimeLine',
+          label: TimeLine,
         },
       ],
     };
