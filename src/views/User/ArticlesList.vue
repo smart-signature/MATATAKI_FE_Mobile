@@ -4,7 +4,7 @@
       <div class="articles">
         <za-tabs v-model="activeNameSwipe" @change="handleClick">
           <za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label">
-            <za-pull :on-refresh="refresh" :refreshing="refreshing" :loading="true">
+            <za-pull :on-refresh="refresh" :refreshing="refreshing" :loading="loading">
               <div class="content">
                 <ArticleCard :article="a" v-for="a in articles" :key="a.id"/>
               </div>
@@ -16,7 +16,7 @@
     <div v-else>
       <div class="articles">
         <div :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label">
-          <za-pull :on-refresh="refresh" :refreshing="refreshing" :loading="true">
+          <za-pull :on-refresh="refresh" :refreshing="refreshing" :loading="loading">
             <div class="content">
               <ArticleCard :article="a" v-for="a in articles" :key="a.id"/>
             </div>
@@ -76,13 +76,16 @@ export default {
     },
     async refresh() {
       this.refreshing = true;
+      this.loading = true;
       await this.getArticlesList();
       this.refreshing = false;
+      this.loading = false;
     },
   },
   data() {
     return {
       refreshing: false,
+      loading: false,
       articles: [],
       activeNameSwipe: TimeLine,
       selectedLabelDefault: TimeLine,
