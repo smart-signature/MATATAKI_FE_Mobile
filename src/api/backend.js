@@ -117,6 +117,7 @@ function unfollow({
   username, followed,
 }, callback) {
   const accessToken = localStorage.getItem("ACCESS_TOKEN");
+  console.log(accessToken);
   const url = `${apiServer}/unfollow`;
   // const url = `http://localhost:7001/publish`;
   return request({
