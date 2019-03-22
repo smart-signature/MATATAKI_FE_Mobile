@@ -41,6 +41,8 @@ export default {
       this.busy = true;
       const { data } = await getArticlesList({ page });
       this.articles = data;
+      console.log(this.articles);
+      this.articles = this.articles.filter(a => Date.parse(a.create_time) > Date.parse('2019-03-21T00:00:00'));
       this.busy = false;
     },
     handleClick(tab, event) {
@@ -59,6 +61,7 @@ export default {
           this.isTheEndOfTheScroll = true;
         } else {
           this.articles = [...this.articles, ...data]; // Merge arrays with destruction
+          this.articles = this.articles.filter(a => Date.parse(a.create_time) > Date.parse('2019-03-21T00:00:00'));
           this.busy = false;
         }
       });

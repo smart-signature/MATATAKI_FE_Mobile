@@ -20,19 +20,16 @@
     <footer class="footer-article">
       <Divider />
       <Row justify="center">
-          <i-col span="11">{{totalSupportedAmount}} EOS</i-col>
+          <i-col span="11">总共赞赏 {{getDisplayTotalSupportedAmount}} EOS</i-col>
           <i-col span="2"><Divider type="vertical" /></i-col>
           <i-col span="11">裂变系数：{{getDisplayedFissionFactor}}</i-col>
       </Row>
       <Divider />
       <Row style="white-space:nowrap;">
         <i-col span="11">
-          <za-button class="button-support" v-if="isSupported"
+          <za-button class="button-support" 
             size='xl' theme="primary"
-            disabled>已打赏</za-button>
-          <za-button class="button-support" v-else
-            size='xl' theme="primary"
-            @click="visible3 = true">打赏</za-button>
+            @click="visible3 = !isSupported" :disabled="isSupported">{{isSupported ? '已打赏' : '打赏'}}</za-button>
         </i-col>
         <i-col span="2"><Divider type="vertical" style="opacity: 0;" /></i-col>
         <za-modal :visible="visible3"
@@ -122,6 +119,9 @@ export default {
     getDisplayedFissionFactor() {
       return this.sign.fission_factor / 1000;
     },
+    getDisplayTotalSupportedAmount() {
+      return this.totalSupportedAmount.toFixed(4);
+    }
   },
   async created() {
     document.title = '正在加载文章 - Smart Signature';
@@ -143,7 +143,7 @@ export default {
 
     // Set isSupported
     await this.setisSupported();
-
+    
     try {
       this.countTotalSupportedAmount(this.sign.id);
     } catch (error) {
@@ -210,7 +210,6 @@ export default {
         const element = actions3[index].quantity;
         this.totalSupportedAmount += parseFloat(element);
       }
-      this.totalSupportedAmount = this.totalSupportedAmount.toFixed(4);
     },
     async getArticleData() {
       const { data } = await getArticleData(this.hash);
@@ -278,7 +277,7 @@ export default {
       await support({ amount, sign_id, referrer });
       await this.setisSupported();
       // tricky
-      this.totalSupportedAmount += amount;
+      this.totalSupportedAmount += parseFloat(amount);
     },
     share() {
       const clipboard = new Clipboard('.button-share');
