@@ -141,9 +141,9 @@ export default {
       alert('save');
       this.editing = !this.editing;
     },
-    refresh_user(){
+    refresh_user() {
       getuser({
-        username: this.username
+        username: this.username,
       }, (error, response, body) => {
         this.follows = body.follows;
         this.fans = body.fans;
@@ -173,7 +173,7 @@ export default {
       // alert('follow');
       const { username, currentUsername } = this;
       unfollow({
-        followed: username, username: currentUsername, 
+        followed: username, username: currentUsername,
       }, (error, response, body) => {
         if (!error) {
           this.$Notice.success({

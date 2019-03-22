@@ -73,7 +73,9 @@ import axios from 'axios';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
 import { getArticleData, getSignId } from '../api';
-import { support, getSignInfo, getSharesInfo, getContractActions } from '../api/signature.js';
+import {
+  support, getSignInfo, getSharesInfo, getContractActions,
+} from '../api/signature.js';
 import 'mavon-editor/dist/css/index.css';
 // markdownIt.set({ breaks: false });
 
@@ -86,7 +88,7 @@ const getValue = (v, key) => {
     return v.slice(0, -1);
   }
   return `${v}${key}`;
-};*/
+}; */
 
 export default {
   name: 'Article',
@@ -112,9 +114,9 @@ export default {
       // todo(minakokojima): figure out what is the different between following variables.
       // alert(currentUsername);
       // alert(scatterAccount.name);
-      let share = this.isLogined 
-      ? `https://${window.location.host}/article/${this.hash}?invite=${currentUsername}` 
-      : `${window.location.href}`
+      const share = this.isLogined
+        ? `https://${window.location.host}/article/${this.hash}?invite=${currentUsername}`
+        : `${window.location.href}`;
       return `我在智能签名上发现了一篇好文章！${share} 赞赏好文，分享有收益 ！`;
     },
     getDisplayedFissionFactor() {
@@ -126,7 +128,7 @@ export default {
     try {
       await this.getArticleData();
     } catch (error) {
-        
+
     }
     this.board = this.getClipboard;
 
@@ -145,9 +147,9 @@ export default {
     try {
       this.countTotalSupportedAmount(this.sign.id);
     } catch (error) {
-      
+
     }
-    
+
     //
     const { invite } = querystring.parse(window.location.search.slice(1));
     if (invite) {
@@ -168,14 +170,14 @@ export default {
     },
     amount: 0.0000,
     isSupported: false,
-    /*toastvisible: false,*/
-    totalSupportedAmount: 0.0000, 
+    /* toastvisible: false, */
+    totalSupportedAmount: 0.0000,
     visible3: false,
     visible7: false,
     v3: '',
     v5: '',
     pageinfo: {
-      title: 'Smart Signature', 
+      title: 'Smart Signature',
       rightPage: 'home',
     },
   }),
@@ -192,12 +194,12 @@ export default {
     ]),
     async countTotalSupportedAmount(SignId) {
       const { actions } = await getContractActions();
-      
+
       // console.log(actions.map(a => a.action_trace));
       const actions2 = actions.filter(a => a.action_trace.act.account === 'eosio.token'
           && a.action_trace.act.name === 'transfer'
-          && a.action_trace.act.data.memo.indexOf('support ' + SignId) !== -1);
-      
+          && a.action_trace.act.data.memo.indexOf(`support ${SignId}`) !== -1);
+
       // console.log(actions2);
       const actions3 = actions2.map(a => ({
         quantity: a.action_trace.act.data.quantity.replace(' EOS', ''),
@@ -229,7 +231,7 @@ export default {
       }
       this.v1 = getValue(this.v1, key);
       console.log(this.v1);
-    },*/
+    }, */
     async setisSupported() {
       if (this.scatterAccount !== null) {
         const shares = await getSharesInfo(this.currentUsername);
@@ -247,16 +249,16 @@ export default {
       try { // 錢包登录
         // 開了網頁之後，才開 Scatter ，這時候沒有做 connectScatterAsync 就登录不能
         // 昨天沒加檢查已連而已 - Roger that
-        if ( ! this.isScatterConnected ) await this.connectScatterAsync();
+        if (!this.isScatterConnected) await this.connectScatterAsync();
         await this.loginScatterAsync();
       } catch (error) {
-        console.error(error)
+        console.error(error);
         console.warn('Unable to connect wallets');
         this.$Modal.error({
           title: '无法与你的钱包建立链接並登录',
           content: '请检查钱包是否打开并解锁',
         });
-        return
+        return;
       }
       // amount
       const amount = parseFloat(this.amount);
@@ -283,7 +285,7 @@ export default {
       clipboard.on('success', (e) => {
         this.$Modal.info({
           title: '提示',
-          content: '复制成功'
+          content: '复制成功',
         });
         console.log(e);
         clipboard.destroy();
@@ -291,7 +293,7 @@ export default {
       clipboard.on('error', (e) => {
         this.$Modal.error({
           title: '提示',
-          content: '该浏览器不支持自动复制'
+          content: '该浏览器不支持自动复制',
         });
         console.log(e);
         clipboard.destroy();
