@@ -17,8 +17,7 @@ export default {
   props: ['asset'],
   computed: {
     friendlyDate() {
-      // 数据采用了+0时区 中国是+8时区 则减去八小时
-      return moment(this.asset.timestamp).subtract(8, 'hours').fromNow();
+      return moment(this.asset.timestamp).fromNow();
     },
   },
   created() {
