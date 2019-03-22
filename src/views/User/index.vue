@@ -124,6 +124,40 @@ export default {
     },
   },
   methods: {
+    async authDemo() { // 示例代码。。请随便改。。。
+      // 1. 取得签名
+      API.authSignature((username, publickey, sign) => {
+        console.log(username, publickey, sign);
+        // 2. post到服务端 获得accessToken并保存
+        auth({ username, publickey, sign }, (error, response, body) => {
+          console.log(body);
+          if (!error) {
+            // 3. save accessToken
+            const accessToken = body;
+            localStorage.setItem('ACCESS_TOKEN', accessToken);
+          }
+        });
+      });
+
+      // 4. 使用accessToken 示例。 请求修改某些和用户数据相关的api时，需要按照oauth2规范，在header里带上 accessToken， 以表示有权调用
+      // const accessToken = localStorage.getItem("ACCESS_TOKEN");
+      // request({
+      //   uri: "some api url that need auth",
+      //   // uri: "http://localhost:7001/follow",
+      //   // uri: "http://localhost:7001/unfollow",
+      //   rejectUnauthorized: false,
+      //   json: true,
+      //   headers: { Accept: '*/*', "x-access-token": accessToken },
+      //   dataType: 'json',
+      //   method: 'POST',
+      //   form: {
+      //     username:"joetothemoon",
+      //     followed:"tengavinwood",
+      //   },
+      // }, function(err,resp, body){
+      //    console.log(body);
+      // });
+    },
     goBack() {
       this.$router.go(-1);
     },
@@ -202,6 +236,7 @@ export default {
     this.refresh_user();
     const user = this.isMe ? '我' : this.username;
     document.title = `${user}的个人主页 - SmartSignature`;
+    await this.authDemo();
   },
 };
 </script>
