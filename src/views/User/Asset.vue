@@ -72,8 +72,9 @@ export default {
   props: ['username'],
   components: { AssetCard },
   async created() {
-    await getPlayerIncome(this.username);
     await this.refresh();
+    
+    // only do this once 
     for (let index = 0; index < this.assets.length; index += 1) {
       const element = this.assets[index];
       if (element.type === 'share income') {
@@ -124,7 +125,7 @@ export default {
   methods: {
     // ...mapActions(['loginScatterAsync']),
     async getAssetsList() {
-      console.log('Connecting to EOS fetch data...');
+      console.log('Connecting to EOS fetch assets...');
       const actions = await getPlayerBills(this.username);
       // console.log(actions.map(a => a.action_trace));
       const actions2 = actions.filter(a => a.action_trace.act.account === 'signature.bp'
@@ -140,7 +141,7 @@ export default {
       console.log(this.username, '\'s assets:', this.assets);
     },
     async getPlayerIncome(name) {
-      console.log('Connecting to EOS fetch data...');
+      console.log('Connecting to EOS fetch player income...');
       const playerincome = await getPlayerIncome(name);
       if (playerincome === null) {
         this.playerincome = {
@@ -161,7 +162,22 @@ export default {
     async refresh() {
       this.refreshing = true;
       this.loading = true;
-      await this.getAssetsList();
+      /*
+        同时触发独立的异步操作 for noobs
+        
+        // 写法一
+        let [foo, bar] = await Promise.all([getFoo(), getBar()]);
+
+        // 写法二
+        let fooPromise = getFoo();
+        let barPromise = getBar();
+        let foo = await fooPromise;
+        let bar = await barPromise;
+      */
+      let getPlayerIncomePromise = this.getPlayerIncome(this.username);
+      let getAssetsListPromise = this.getAssetsList();
+      await getPlayerIncomePromise;
+      await getAssetsListPromise;
       this.refreshing = false;
       this.loading = false;
     },
