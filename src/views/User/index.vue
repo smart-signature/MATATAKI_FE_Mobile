@@ -8,7 +8,7 @@
     </za-nav-bar>
     <div class="usercard" >
       <img width="50px" class="userpic" src="../../assets/logo.png" />
-      <img style="position:absolute; z-index:1;left:20px;"
+      <img style="position:absolute; z-index:1;left:40px;"
            width="50px" src="/img/camera.png" v-if="editing"/>
       <div class="texts">
         <p class="username">{{username}}</p>
