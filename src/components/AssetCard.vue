@@ -18,7 +18,7 @@ export default {
   computed: {
     friendlyDate() {
       const time = new Date(this.asset.timestamp);
-      return moment(time.getTime() + time.getTimezoneOffset() * 60000).fromNow();// moment(this.asset.timestamp).fromNow();
+      return moment(time.getTime() - time.getTimezoneOffset() * 60000).fromNow();// moment(this.asset.timestamp).fromNow();
     },
   },
   created() {

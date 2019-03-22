@@ -4,9 +4,9 @@
       <div slot="left">
         <za-icon theme="primary" type="arrow-left" @click="goBack"></za-icon>
       </div>
-      <div slot="title" v-if="isMe">{{username}} 的原创文章</div>
+      <div slot="title">{{userTitle}}</div>
     </za-nav-bar>
-    <ArticlesList :listtype="'original'" ref='ArticlesList'/>
+    <ArticlesList :listtype="'original'" :username='username' ref='ArticlesList'/>
   </div>
 </template>
 
@@ -24,6 +24,8 @@ export default {
     return {
       playerincome: null,
       editing: false,
+      user:'',
+      userTitle:'',
     };
   },
   computed: {
@@ -44,8 +46,9 @@ export default {
   async created() {
     const playerincome = await getPlayerIncome(this.username);
     this.playerincome = playerincome[0] || 0;
-    const user = this.isMe ? '我' : this.username;
-    document.title = `${user} 的用户页 - SmartSignature`;
+    this.user = this.isMe ? '我的用户页' : this.username+' 的用户页';
+    this.userTitle = this.isMe ? '我的原创文章' : this.username+' 的原创文章';
+    document.title = `${this.user} - SmartSignature`;
   },
 };
 </script>
