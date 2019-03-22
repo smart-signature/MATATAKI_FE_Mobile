@@ -25,6 +25,7 @@ if (process.env.NODE_ENV === 'production') {
     },
     updated() {
       consoleForSW('静默更新完毕，请关闭这个标签并在新的标签页打开以使用更新后的版本。');
+      window.updateNotify('新更新可用')
     },
     offline() {
       consoleForSW('无网络链接。正在使用离线模式');
