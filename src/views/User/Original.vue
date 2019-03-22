@@ -44,8 +44,8 @@ export default {
   async created() {
     const playerincome = await getPlayerIncome(this.username);
     this.playerincome = playerincome[0] || 0;
-    const user = this.isMe ? '我' : this.username;
-    document.title = `${user}的用户页 - SmartSignature`;
+    const user = this.isMe ? '我的用户页' : this.username+' 的用户页';
+    document.title = `${user} - SmartSignature`;
   },
 };
 </script>
