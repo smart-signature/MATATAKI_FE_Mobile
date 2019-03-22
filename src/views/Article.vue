@@ -27,12 +27,9 @@
       <Divider />
       <Row style="white-space:nowrap;">
         <i-col span="11">
-          <za-button class="button-support" v-if="isSupported"
+          <za-button class="button-support" 
             size='xl' theme="primary"
-            disabled>已打赏</za-button>
-          <za-button class="button-support" v-else
-            size='xl' theme="primary"
-            @click="visible3 = true">打赏</za-button>
+            @click="visible3 = !isSupported" :disabled="isSupported">{{isSupported ? '已打赏' : '打赏'}}</za-button>
         </i-col>
         <i-col span="2"><Divider type="vertical" style="opacity: 0;" /></i-col>
         <za-modal :visible="visible3"
@@ -146,7 +143,7 @@ export default {
 
     // Set isSupported
     await this.setisSupported();
-
+    
     try {
       this.countTotalSupportedAmount(this.sign.id);
     } catch (error) {
