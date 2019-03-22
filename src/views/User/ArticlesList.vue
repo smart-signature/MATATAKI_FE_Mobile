@@ -18,6 +18,9 @@
         <div :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label">
           <za-pull :on-refresh="refresh" :refreshing="refreshing" :loading="loading">
             <div class="content">
+              <div v-if="articles.length == 0" style="padding: 20px">
+                无文章
+              </div>
               <ArticleCard :article="a" v-for="a in articles" :key="a.id"/>
             </div>
           </za-pull>
@@ -43,6 +46,9 @@ export default {
       type: String,
       required: true,
     },
+    username: {
+      type: String
+    }
   },
   components: { ArticleCard },
   created() {
@@ -66,10 +72,18 @@ export default {
       // const articles = 'http://localhost:7001/posts';
       const articles = 'https://api.smartsignature.io/posts'; // new backend api url
       const { data } = await axios.get(articles);
-      if (this.listtype == 'others') {
+      if (this.listtype == 'original') {
+        for(const dataid in data){
+          const onedata = data[dataid];
+          if(onedata.author == this.username){
+            this.articles.push(onedata);
+          }
+        }
         // do something...
+      }else{
+        this.articles = data;
       }
-      this.articles = data;
+      this.loading = false;
     },
     handleClick(tab, event) {
       console.log(tab, event);

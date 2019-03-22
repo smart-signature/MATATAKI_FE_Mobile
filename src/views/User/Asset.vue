@@ -91,16 +91,16 @@ export default {
   data() {
     return {
       assets: [
-        { // sample
-          quantity: '10.2333 EOS',
-          timestamp: Date.now(),
-          type: 'test income',
-        },
-        { // sample
-          quantity: '100.2333 EOS',
-          timestamp: Date.now() + 1,
-          type: 'test income',
-        },
+        // { // sample
+        //  quantity: '10.2333 EOS',
+        //  timestamp: Date.now(),
+        //  type: 'test income',
+        // },
+        // { // sample
+        //  quantity: '100.2333 EOS',
+        //  timestamp: Date.now() + 1,
+        // type: 'test income',
+        // },
       ],
       activeNameSwipe: '全部',
       selectedLabelDefault: '全部',

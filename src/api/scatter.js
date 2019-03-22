@@ -12,7 +12,7 @@ ScatterJS.plugins(new ScatterEOS());
 // api https://get-scatter.com/docs/api-create-transaction
 
 // @trick: use function to lazy eval Scatter eos, in order to avoid no ID problem.
-const eos = () => ScatterJS.scatter.eos(config.network.eos, Eos, { expireInSeconds: 60 });
+const eos = () => ScatterJS.scatter.eos(config.network.eos[0], Eos, { expireInSeconds: 60 });
 const currentEOSAccount = () => ScatterJS.scatter.identity && ScatterJS.scatter.identity.accounts.find(x => x.blockchain === 'eos');
 
 // {
