@@ -94,17 +94,11 @@ export default {
       //    console.log(body);
       // });
     },
-    sendFailed() {
-      this.$Notice.error({
-        title: '发送失败',
-      });
-    },
     async sendThePost() {
       if (!this.currentUsername) {
         await this.loginScatterAsync();
       }
-      // 标题或内容为空时
-      if (this.title === '' || this.markdownData === '') {
+      if (this.title === '' || this.markdownData === '') { // 标题或内容为空时
         return this.$Modal.warning({
           title: '提示',
           content: '标题或正文不能为空',
@@ -117,31 +111,34 @@ export default {
         title, markdownData, currentUsername, fissionFactor,
       } = this;
       const author = currentUsername;
+
+      const sendFailed = () => this.$Notice.error({ title: '发送失败', desc: error, });
+
+      // for everyone
+      // 規則 遇到 await 彈 error 出來，後面又沒.catch 會被最外層的 try catch 接走
+      // 1. sendPost 裡的 axios code != 200 時，算是 error ，會直接被最外層的 try catch 接走
+      // 2. getSignature 傳入的 callback 是接在 getArbitrarySignature.then 裡的，
+      //    error 走 .catch ，所以 line 133 中 err 只會是 null 是個無效代碼
+      // 3. publishArticle 又玩了一次，這次 callback 是給 request 的，
+      ///   request 的 callback 是包含 error 情況的，所以 line 140 是必要的
       try {
         const { data } = await sendPost({
           title, author, content: markdownData, desc: 'whatever',
         });
         const { code, hash } = data;
-        if (code !== 200) {
-          this.sendFailed();
-        } else {
+        if (code !== 200) this.sendFailed();
+        else {
           console.log('Push action to signature.bp...', hash);
-          // const { transaction_id } = await publishOnChain({ hash, fissionFactor });
-          // const { publicKey } = await API.getPublicKey(); // what can i say ?
+          // const { publicKey } = await API.getPublicKey();
           API.getSignature(author, hash, (err, signature, publicKey, username) => {
             console.log('签名成功后调', signature, publicKey);
-            if (err) {
-              this.sendFailed();
-            } else {
+            if (err) this.sendFailed();
+            else {
               publishArticle({
                 author, title, hash, publicKey, signature, currentUsername, fissionFactor,
               }, (error, response, body) => {
-                if (body.msg !== 'success' || error) {
-                  this.$Notice.error({
-                    title: '发送失败',
-                    desc: error,
-                  });
-                } else {
+                if (body.msg !== 'success' || error) sendFailed();
+                else {
                   this.$Notice.success({
                     title: '发送成功',
                     desc: '3秒后跳转到你发表的文章',
@@ -158,9 +155,7 @@ export default {
         }
       } catch (error) {
         console.error(error);
-        this.$Notice.error({
-          title: '发送失败',
-        });
+        sendFailed();
       }
     },
     $imgAdd(pos, imgfile) {
@@ -172,10 +167,6 @@ export default {
           this.$refs.md.$img2Url(pos, url);
         });
     },
-  },
-  test() {
-  // publishOnChain({ hash: 'QmfJsZmbsFcaNEBejP6HcXQEXycVXKfFwbMM3eju4VdsN3' });
-  // transferEOS({amount: 0, memo: '', });
   },
 };
 </script>
