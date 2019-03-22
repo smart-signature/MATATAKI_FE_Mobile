@@ -20,7 +20,7 @@
     <footer class="footer-article">
       <Divider />
       <Row justify="center">
-          <i-col span="11">总共赞赏 {{getDisplayTotalSupportedAmount}} EOS</i-col>
+          <i-col span="11">本文已获得 {{getDisplayTotalSupportedAmount}} 个EOS的赞赏</i-col>
           <i-col span="2"><Divider type="vertical" /></i-col>
           <i-col span="11">裂变系数：{{getDisplayedFissionFactor}}</i-col>
       </Row>
@@ -29,7 +29,7 @@
         <i-col span="11">
           <za-button class="button-support" 
             size='xl' theme="primary"
-            @click="visible3 = !isSupported" :disabled="isSupported">{{isSupported ? '已打赏' : '打赏'}}</za-button>
+            @click="visible3 = !isSupported" :disabled="isSupported">{{isSupported ? '已赞赏' : '赞赏'}}</za-button>
         </i-col>
         <i-col span="2"><Divider type="vertical" style="opacity: 0;" /></i-col>
         <za-modal :visible="visible3"
