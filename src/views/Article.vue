@@ -323,7 +323,6 @@ export default {
 
 
 <style scoped>
-@import url(https://cdn.bootcss.com/github-markdown-css/2.10.0/github-markdown.min.css);
 .ta address a[rel="author"]:empty + time:before,
 .ta address.empty,
 .ta time:empty:before {
