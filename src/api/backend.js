@@ -106,8 +106,8 @@ function follow({
     dataType: 'json',
     method: 'POST',
     form: {
-      username: username,
-      followed: followed,
+      username,
+      followed,
     },
   }, callback);
 }
