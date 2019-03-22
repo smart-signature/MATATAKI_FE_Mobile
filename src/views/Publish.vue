@@ -126,7 +126,6 @@ export default {
           this.sendFailed();
         } else {
           console.log('Push action to signature.bp...', hash);
-          // const { transaction_id } = await publishOnChain({ hash, fissionFactor });
           // const { publicKey } = await API.getPublicKey(); // what can i say ?
           API.getSignature(author, hash, (err, signature, publicKey, username) => {
             console.log('签名成功后调', signature, publicKey);
@@ -174,7 +173,6 @@ export default {
     },
   },
   test() {
-  // publishOnChain({ hash: 'QmfJsZmbsFcaNEBejP6HcXQEXycVXKfFwbMM3eju4VdsN3' });
   // transferEOS({amount: 0, memo: '', });
   },
 };
