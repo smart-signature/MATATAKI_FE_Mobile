@@ -70,7 +70,7 @@ export default {
     async getArticlesList() {
       // const articles = 'https://smartsignature.azurewebsites.net/api/article';
       // const articles = 'http://localhost:7001/posts';
-      const articles = 'https://api.smartsignature.io/posts'; // new backend api url
+      const articles = `https://api.smartsignature.io/posts?author=${this.username}`; // new backend api url
       const { data } = await axios.get(articles);
       if (this.listtype == 'original') {
         for(const dataid in data){
