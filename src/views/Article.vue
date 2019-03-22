@@ -234,7 +234,7 @@ export default {
     async setisSupported() {
       if (this.scatterAccount !== null) {
         const shares = await getSharesInfo(this.currentUsername);
-        // const shares = await getSharesInfo('linklinkguan'); // for sign.id 78
+        // const shares = await getSharesInfo('linklinkguan'); // test for sign.id 78
         // console.log('shares :', shares);
         const share = shares.find(element => element.id === this.sign.id);
         if (share !== undefined) {
@@ -275,9 +275,12 @@ export default {
       const referrer = this.getRef();
       console.log('referrer :', referrer);
       await support({ amount, sign_id, referrer });
-      await this.setisSupported();
-      // tricky
+      
+      // tricky speed up
+      this.isSupported = true;
       this.totalSupportedAmount += parseFloat(amount);
+      
+      await this.setisSupported();
     },
     share() {
       const clipboard = new Clipboard('.button-share');
