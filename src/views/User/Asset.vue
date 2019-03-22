@@ -49,7 +49,7 @@
     <div class="assets">
     <!-- <za-tabs v-model="activeNameSwipe" @change="handleClick"> -->
       <!-- <za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label"> -->
-        <za-pull :on-refresh="refresh" :refreshing="refreshing" :loading="true">
+        <za-pull :on-refresh="refresh" :refreshing="refreshing" :loading="loading">
           <div class="content">
             <AssetCard :asset="a" v-for="a in assets" :key="a.timestamp"/>
           </div>
@@ -113,6 +113,7 @@ export default {
         share_income: 0.0000,
         sign_income: 0.0000,
       },
+      loading: false,
       refreshing: false,
       writereward: 0,
       sharereward: 0,
@@ -159,8 +160,10 @@ export default {
     },
     async refresh() {
       this.refreshing = true;
+      this.loading = true;
       await this.getAssetsList();
       this.refreshing = false;
+      this.loading = false;
     },
     goBack() {
       this.$router.go(-1);
