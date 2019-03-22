@@ -4,7 +4,7 @@
       <h2 class="asset-quantity"
         :style='asset.quantity.replace(" EOS","") > 0 ? { color: "#f50" } : { color: "#87d068" } '>
         {{(asset.quantity.substring(0,1) !== '-' ? '+': '') + asset.quantity}}</h2>
-      <p class="asset-infomation">{{friendlyDate}}</p>
+      <p class="asset-information">{{friendlyDate}}</p>
     </a>
   </div>
 </template>
@@ -17,8 +17,9 @@ export default {
   props: ['asset'],
   computed: {
     friendlyDate() {
+      const isAppleSlave = navigator.platform.includes('iPhone')
       const time = new Date(this.asset.timestamp);
-      return moment(time.getTime() - time.getTimezoneOffset() * 60000).fromNow();// moment(this.asset.timestamp).fromNow();
+      return moment(time.getTime() - time.getTimezoneOffset() * 60000 * (isAppleSlave?0:1)).fromNow();// moment(this.asset.timestamp).fromNow();
     },
   },
   created() {
@@ -38,7 +39,7 @@ h2.asset-quantity {
   color: #478970;
   /* line-height: 25px; */
 }
-.asset-infomation {
+.asset-information {
   color: rgb(105,105,105);
 }
 </style>
