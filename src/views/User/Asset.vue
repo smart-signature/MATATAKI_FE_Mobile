@@ -91,16 +91,16 @@ export default {
   data() {
     return {
       assets: [
-        //{ // sample
+        // { // sample
         //  quantity: '10.2333 EOS',
         //  timestamp: Date.now(),
         //  type: 'test income',
-        //},
-        //{ // sample
+        // },
+        // { // sample
         //  quantity: '100.2333 EOS',
         //  timestamp: Date.now() + 1,
         // type: 'test income',
-       // },
+        // },
       ],
       activeNameSwipe: '全部',
       selectedLabelDefault: '全部',
@@ -135,7 +135,7 @@ export default {
         type: a.action_trace.act.data.type,
         timestamp: a.action_trace.block_time,
       }));
-      
+
       console.log(this.username, '\'s assets:', this.assets);
     },
     async getPlayerIncome(name) {
