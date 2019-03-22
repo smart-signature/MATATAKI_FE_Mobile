@@ -141,13 +141,22 @@ export default {
       alert('save');
       this.editing = !this.editing;
     },
+    refresh_user(){
+      getuser({
+        username: this.username
+      }, (error, response, body) => {
+        this.follows = body.follows;
+        this.fans = body.fans;
+        this.followed = body.is_follow;
+      });
+    },
     follow_user() {
       // alert('follow');
       const { username, currentUsername } = this;
       follow({
-        currentUsername, username, 
+        followed: username, username: currentUsername,
       }, (error, response, body) => {
-        if (body.msg === 'success' && !error) {
+        if (!error) {
           this.$Notice.success({
             title: '关注成功',
           });
@@ -157,14 +166,16 @@ export default {
             title: '关注失败',
           });
         }
+        this.refresh_user();
       });
     },
     unfollow_user() {
       // alert('follow');
+      const { username, currentUsername } = this;
       unfollow({
-        currentUsername, username, 
+        followed: username, username: currentUsername, 
       }, (error, response, body) => {
-        if (body.msg === 'success' && !error) {
+        if (!error) {
           this.$Notice.success({
             title: '已取消关注',
           });
@@ -174,6 +185,7 @@ export default {
             title: '取消关注失败',
           });
         }
+        this.refresh_user();
       });
     },
     ...mapActions(['logoutScatterAsync']),
@@ -187,13 +199,7 @@ export default {
     this.playerincome = playerincome.length !== 0 ? playerincome[0] : {
       share_income: 0,
     };
-    const playerstatu = getuser({
-      username: this.username
-    }, (error, response, body) => {
-      this.follows = body.follows;
-      this.fans = body.fans;
-      this.followed = body.is_follow;
-    });
+    this.refresh_user();
     const user = this.isMe ? '我' : this.username;
     document.title = `${user}的个人主页 - SmartSignature`;
   },
