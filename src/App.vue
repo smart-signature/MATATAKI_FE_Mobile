@@ -15,11 +15,34 @@ export default {
       'suggestNetworkAsync',
       'loginScatterAsync',
     ]),
+    updateNotify(desc) {
+      const btnCommonStyle = {
+        type: 'default',
+        size: 'large',
+        style: 'margin: 0px 5px;',
+      };
+      this.$Message.info({
+        render: h => h('span', [
+          desc,
+          h('Button', {
+            attrs: {
+              // icon: 'ios-refresh',
+              ...btnCommonStyle,
+            },
+            on: {
+              click: () => window.location.reload(),
+            },
+          }, '立即刷新'),
+        ]),
+        duration: 0,
+      });
+    },
   },
   computed: {
     ...mapState(['scatterAccount']),
   },
   async created() {
+    window.updateNotify = this.updateNotify;
     try {
       // Scatter 10.0 need to suggestNetwork, if not, scatter is not working on login
       await this.connectScatterAsync();

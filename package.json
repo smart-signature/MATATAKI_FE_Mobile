@@ -4,8 +4,11 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "add-redirect-netlify": "echo '/*    /index.html   200' >> ./dist/_redirects",
-    "build": "vue-cli-service build && npm run add-redirect-netlify",
+    "build": "vue-cli-service build",
+    "build-for-netlify": "npm run build && npm run fix-netlify-cs-routing",
+    "build-for-surge": "npm run build && npm run fix-surge-cs-routing",
+    "fix-netlify-cs-routing": "echo '/*    /index.html   200' >> ./dist/_redirects",
+    "fix-surge-cs-routing": "mv ./dist/index.html ./dist/200.html",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {

@@ -1,5 +1,5 @@
-import { eos, currentEOSAccount as currentAccount } from './scatter';
 import request from 'request';
+import { eos, currentEOSAccount as currentAccount } from './scatter';
 
 const SIGNATURE_CONTRACT = 'signature.bp';
 
@@ -112,32 +112,30 @@ async function getContractActions() { // 190325 之後才許重構
   const param = {
     json: true,
     account_name: SIGNATURE_CONTRACT,
-    /*pos: -1,*/
+    /* pos: -1, */
     offset: -200,
   };
 
   return await eos().getActions(param);
-  
-  //const body = JSON.stringify(param);
-  //const options = { 
+
+  // const body = JSON.stringify(param);
+  // const options = {
   //  method: 'POST',
   //  url: 'https://geo.eosasia.one/v1/history/get_actions',
   //  headers: { Accept: '*/*', 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8' },
   //  body,
-  //};
-  //const aaa = await request(options, function (error, response, body) {
+  // };
+  // const aaa = await request(options, function (error, response, body) {
   //  if (error) throw new Error(error);
   //
   //  console.log(body);
-  //}).on('response', function(response) {
+  // }).on('response', function(response) {
   //  console.log(response.statusCode); // 200
-    // console.log(response); // 200 JSON.parse(
-    // console.log(response.headers['content-type']) // 'image/png'
-    // return JSON.parse(response.body) ;
-  //});
-  //console.log(JSON.parse(aaa));
-
-  
+  // console.log(response); // 200 JSON.parse(
+  // console.log(response.headers['content-type']) // 'image/png'
+  // return JSON.parse(response.body) ;
+  // });
+  // console.log(JSON.parse(aaa));
 }
 
 async function getSharesInfo(owner) {
