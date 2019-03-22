@@ -7,7 +7,6 @@
       <div slot="title">发布文章</div>
       <div slot="right">
         <Button type="text" size="large" @click="sendThePost">确认发布</Button>
-        <Button type="text" size="large" @click="authDemo">Auth Demo</Button>
       </div>
     </za-nav-bar>
     <Form label-position="left" :label-width="100">
@@ -61,8 +60,7 @@ export default {
       'suggestNetworkAsync',
       'loginScatterAsync',
     ]),
-    // 示例代码。。请随便改。。。
-    async authDemo() {
+    async authDemo() { // 示例代码。。请随便改。。。
       // 1. 取得签名
       API.authSignature((username, publickey, sign) => {
         console.log(username, publickey, sign);
