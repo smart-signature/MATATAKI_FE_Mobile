@@ -81,7 +81,7 @@
     <div class="bottomcard" v-if="isMe">
       <Button class="bottombutton" long @click="logoutScatterAsync">退出登录</Button>
     </div>
-    <ArticlesList :listtype="'others'" ref='ArticlesList' v-if="!isMe"/>
+    <ArticlesList :listtype="'others'" ref='ArticlesList' :username='username' v-if="!isMe"/>
   </div>
 </template>
 

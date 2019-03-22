@@ -6,7 +6,7 @@
         <header class="ta_header">
           <h1 dir="auto">{{post.title}}</h1>
           <address dir="auto">
-            <router-link :to="{ name: 'User', params: { author: post.author }}">
+            <router-link :to="{ name: 'User', params: { author: post.author, username:post.author }}">
               <a> Author: {{post.author}}</a>
             </router-link>
             <br/>
