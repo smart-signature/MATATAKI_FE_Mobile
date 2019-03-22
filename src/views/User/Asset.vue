@@ -49,9 +49,10 @@
     <div class="assets">
     <!-- <za-tabs v-model="activeNameSwipe" @change="handleClick"> -->
       <!-- <za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label"> -->
+        
         <za-pull :on-refresh="refresh" :refreshing="refreshing" :loading="loading">
           <div class="content">
-            <AssetCard :asset="a" v-for="a in assets" :key="a.timestamp"/>
+            <AssetCard :asset="a" v-for="a in sortedAssets" :key="a.timestamp"/>
           </div>
         </za-pull>
       <!-- </za-tab-pane> -->
@@ -121,6 +122,13 @@ export default {
       sharecost: 0,
       visible7: false,
     };
+  },
+  computed:{
+      sortedAssets()
+      {
+          //if need change to asc, swap a & b 
+          return this.assets.sort((a,b)=> {return (new Date(b.timestamp)).getTime() -(new Date(a.timestamp)).getTime()});
+      }
   },
   methods: {
     // ...mapActions(['loginScatterAsync']),

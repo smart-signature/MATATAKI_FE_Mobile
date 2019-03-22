@@ -6,7 +6,7 @@
         <header class="ta_header">
           <h1 dir="auto">{{post.title}}</h1>
           <address dir="auto">
-            <router-link :to="{ name: 'User', params: { author: post.author }}">
+            <router-link :to="{ name: 'User', params: { author: post.author, username:post.author }}">
               <a> Author: {{post.author}}</a>
             </router-link>
             <br/>
@@ -20,7 +20,7 @@
     <footer class="footer-article">
       <Divider />
       <Row justify="center">
-          <i-col span="11">总共赞赏 {{getDisplayTotalSupportedAmount}} EOS</i-col>
+          <i-col span="11">本文收到赞赏 {{getDisplayTotalSupportedAmount}} 个EOS</i-col>
           <i-col span="2"><Divider type="vertical" /></i-col>
           <i-col span="11">裂变系数：{{getDisplayedFissionFactor}}</i-col>
       </Row>
@@ -29,13 +29,13 @@
         <i-col span="11">
           <za-button class="button-support" 
             size='xl' theme="primary"
-            @click="visible3 = !isSupported" :disabled="isSupported">{{isSupported ? '已打赏' : '打赏'}}</za-button>
+            @click="visible3 = !isSupported" :disabled="isSupported">{{isSupported ? '已赞赏' : '赞赏'}}</za-button>
         </i-col>
         <i-col span="2"><Divider type="vertical" style="opacity: 0;" /></i-col>
         <za-modal :visible="visible3"
            @close="handleClose" radius="" @maskClick="visible3 = false" :showClose="true"
            style="background:rgba(243,243,243,1);">
-           <div slot="title" style="textAlign: center;">打赏此文章</div>
+           <div slot="title" style="textAlign: center;">赞赏此文章</div>
             <Row><za-input
               auto-height="" v-model="v3" type="textarea" placeholder="输入推荐语…"></za-input></Row>
             <br/>
@@ -45,7 +45,7 @@
             <br/>
             <Row><za-button class="button-support"
               size='xl' theme="primary"
-              @click="support">打赏</za-button></Row>
+              @click="support">赞赏</za-button></Row>
             <!-- <Row><za-keyboard-picker
               :visible="visible7" type="number" @keyClick="handleChange1">
             </za-keyboard-picker></Row> -->
