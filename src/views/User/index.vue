@@ -126,19 +126,31 @@ export default {
   methods: {
     async authDemo() { // 示例代码。。请随便改。。。
       // 1. 取得签名
-      API.authSignature((username, publickey, sign) => {
-        console.log(username, publickey, sign);
-        // 2. post到服务端 获得accessToken并保存
-        auth({ username, publickey, sign }, (error, response, body) => {
-          console.log(body);
-          if (!error) {
-            // 3. save accessToken
-            const accessToken = body;
-            localStorage.setItem('ACCESS_TOKEN', accessToken);
+      var accesvalid = false;
+      const nowtime = new Date().getTime();
+      if (localStorage.getItem('ACCESS_TOKEN') != null) {
+        const accesstime = localStorage.getItem('ACCESS_TIME');
+        if (accesstime != null){
+          if (nowtime - accesstime < 604800000) {
+            accessvalid = true;
           }
+        }
+      }
+      if(!accessvalid){
+        API.authSignature((username, publickey, sign) => {
+          console.log(username, publickey, sign);
+          // 2. post到服务端 获得accessToken并保存
+          auth({ username, publickey, sign }, (error, response, body) => {
+            console.log(body);
+            if (!error) {
+              // 3. save accessToken
+              const accessToken = body;
+              localStorage.setItem('ACCESS_TOKEN', accessToken);
+              localStorage.setItem('ACCESS_TIME', nowtime);
+            }
+          });
         });
-      });
-
+      };
       // 4. 使用accessToken 示例。 请求修改某些和用户数据相关的api时，需要按照oauth2规范，在header里带上 accessToken， 以表示有权调用
       // const accessToken = localStorage.getItem("ACCESS_TOKEN");
       // request({
