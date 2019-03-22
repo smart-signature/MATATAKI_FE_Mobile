@@ -37,3 +37,8 @@ npm run lint  # Lints and fixes files
 - [Zarm UI](https://zhongantecheng.github.io/zarm-vue/#/documents/quick-start)
 - [Dfuse](https://www.dfuse.io/en)
 - [IPFS telegra.ph clone](https://github.com/alexstep/ipfs-telegra.ph)
+
+
+## 术语统一
+- 打赏（tip）、赞助（sponsor）、支持（support）、投资（invest）：转账给作者的行为。
+- 分享（share）、复制（copy）：生成与我相关联的分享链接，并将链接分享到社交网站的行为。
