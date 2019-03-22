@@ -35,7 +35,7 @@
         <za-modal :visible="visible3"
            @close="handleClose" radius="" @maskClick="visible3 = false" :showClose="true"
            style="background:rgba(243,243,243,1);">
-           <div slot="title" style="textAlign: center;">打赏此文章</div>
+           <div slot="title" style="textAlign: center;">赞赏此文章</div>
             <Row><za-input
               auto-height="" v-model="v3" type="textarea" placeholder="输入推荐语…"></za-input></Row>
             <br/>
@@ -45,7 +45,7 @@
             <br/>
             <Row><za-button class="button-support"
               size='xl' theme="primary"
-              @click="support">打赏</za-button></Row>
+              @click="support">赞赏</za-button></Row>
             <!-- <Row><za-keyboard-picker
               :visible="visible7" type="number" @keyClick="handleChange1">
             </za-keyboard-picker></Row> -->
