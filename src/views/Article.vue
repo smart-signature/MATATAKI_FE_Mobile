@@ -20,7 +20,7 @@
     <footer class="footer-article">
       <Divider />
       <Row justify="center">
-          <i-col span="11">本文已获得 {{getDisplayTotalSupportedAmount}} 个EOS的赞赏</i-col>
+          <i-col span="11">本文收到赞赏 {{getDisplayTotalSupportedAmount}} 个EOS</i-col>
           <i-col span="2"><Divider type="vertical" /></i-col>
           <i-col span="11">裂变系数：{{getDisplayedFissionFactor}}</i-col>
       </Row>
