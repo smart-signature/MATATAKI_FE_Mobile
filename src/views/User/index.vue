@@ -88,7 +88,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import { getPlayerIncome } from '@/api/signature';
-import { follow, unfollow, getuser } from '../../api';
+import { follow, unfollow, getuser ,auth} from '../../api';
 import ArticlesList from './ArticlesList.vue';
 import API from '@/api/scatter.js';
 
@@ -126,7 +126,7 @@ export default {
   methods: {
     async authDemo() { // 示例代码。。请随便改。。。
       // 1. 取得签名
-      var accesvalid = false;
+      let accessvalid = false;
       const nowtime = new Date().getTime();
       if (localStorage.getItem('ACCESS_TOKEN') != null) {
         const accesstime = localStorage.getItem('ACCESS_TIME');
@@ -202,6 +202,7 @@ export default {
       follow({
         followed: username, username: currentUsername,
       }, (error, response, body) => {
+          console.log(response);
         if (!error) {
           this.$Notice.success({
             title: '关注成功',
