@@ -73,22 +73,12 @@ export default {
   props: ['username'],
   components: { AssetCard },
   async created() {
+    const myassets = localStorage.getItem('myAssets');
+    this.assets = (myassets) ? JSON.parse(myassets):{ assets: [] };
+
+    this.refreshTheThree();
     await this.refresh();
-    
-    // only do this once 
-    for (let index = 0; index < this.assets.length; index += 1) {
-      const element = this.assets[index];
-      if (element.type === 'share income') {
-        this.sharereward += parseFloat(element.quantity.replace(' EOS', ''));
-        // console.log(sharecost);
-      } else if (element.type === 'sign income') {
-        this.writereward += parseFloat(element.quantity.replace(' EOS', ''));
-        // console.log(sharecost);
-      } else if (element.type === 'support expenses') {
-        this.sharecost += parseFloat(element.quantity.replace(' EOS', ''));
-        // console.log(sharecost);
-      }
-    }
+    this.refreshTheThree();
   },
   data() {
     return {
@@ -124,11 +114,10 @@ export default {
     };
   },
   computed:{
-      sortedAssets()
-      {
-          //if need change to asc, swap a & b 
-          return this.assets.sort((a,b)=> {return (new Date(b.timestamp)).getTime() -(new Date(a.timestamp)).getTime()});
-      }
+    sortedAssets() {
+      //if need change to asc, swap a & b 
+      return this.assets.sort((a,b)=> {return (new Date(b.timestamp)).getTime() -(new Date(a.timestamp)).getTime()});
+    }
   },
   methods: {
     // ...mapActions(['loginScatterAsync']),
@@ -140,13 +129,11 @@ export default {
           && a.action_trace.act.name === 'bill'
           && a.action_trace.act.data.type !== 'test income');
       // console.log(_actions);
-      this.assets = actions2.map(a => ({
+      return actions2.map(a => ({
         quantity: a.action_trace.act.data.quantity,
         type: a.action_trace.act.data.type,
         timestamp: a.action_trace.block_time,
       }));
-
-      console.log(this.username, '\'s assets:', this.assets);
     },
     async getPlayerIncome(name) {
       console.log('Connecting to EOS fetch player income...');
@@ -185,9 +172,29 @@ export default {
       let getPlayerIncomePromise = this.getPlayerIncome(this.username);
       let getAssetsListPromise = this.getAssetsList();
       await getPlayerIncomePromise;
-      await getAssetsListPromise;
+      this.assets = await getAssetsListPromise;
+      localStorage.setItem('myAssets', JSON.stringify(this.assets));
+      console.log(this.username, '\'s assets:', this.assets);
       this.refreshing = false;
       this.loading = false;
+    },
+    refreshTheThree() {
+      this.sharereward = 0 ;
+      this.writereward = 0 ;
+      this.sharecost = 0 ;
+      for (let index = 0; index < this.assets.length; index += 1) {
+        const element = this.assets[index];
+        if (element.type === 'share income') {
+          this.sharereward += parseFloat(element.quantity.replace(' EOS', ''));
+          // console.log(sharecost);
+        } else if (element.type === 'sign income') {
+          this.writereward += parseFloat(element.quantity.replace(' EOS', ''));
+          // console.log(sharecost);
+        } else if (element.type === 'support expenses') {
+          this.sharecost += parseFloat(element.quantity.replace(' EOS', ''));
+          // console.log(sharecost);
+        }
+      }
     },
     goBack() {
       this.$router.go(-1);
