@@ -56,15 +56,15 @@ function auth({
   username, publickey, sign,
 }, callback) {
   const url = `${apiServer}/auth`;
-    //console.log(username + ", " + typeof(username))
-    //console.log(publickey + ", " + typeof(publickey))
-    //console.log(sign + ", " + typeof(sign))
+  // console.log(username + ", " + typeof(username))
+  // console.log(publickey + ", " + typeof(publickey))
+  // console.log(sign + ", " + typeof(sign))
   // const url = `http://localhost:7001/auth`;
   return request({
     uri: url,
     rejectUnauthorized: false,
     json: true,
-    headers: { Accept: '*/*', Authorization: "Basic bXlfYXBwOm15X3NlY3JldA==" },
+    headers: { Accept: '*/*', Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==' },
     dataType: 'json',
     method: 'POST',
     form: {
@@ -72,7 +72,7 @@ function auth({
       publickey,
       sign,
     },
-  },callback);
+  }, callback);
 }
 
 // Be used in User page.
@@ -80,7 +80,7 @@ function follow({
   username, followed,
 }, callback) {
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
-    console.log(accessToken);
+  console.log(accessToken);
   const url = `${apiServer}/follow`;
   // const url = `http://localhost:7001/publish`;
   return request({

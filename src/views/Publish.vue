@@ -112,7 +112,7 @@ export default {
       } = this;
       const author = currentUsername;
 
-      const sendFailed = () => this.$Notice.error({ title: '发送失败', desc: error, });
+      const sendFailed = () => this.$Notice.error({ title: '发送失败', desc: error });
 
       // for everyone
       // 規則 遇到 await 彈 error 出來，後面又沒.catch 會被最外層的 try catch 接走
@@ -120,7 +120,7 @@ export default {
       // 2. getSignature 傳入的 callback 是接在 getArbitrarySignature.then 裡的，
       //    error 走 .catch ，所以 line 133 中 err 只會是 null 是個無效代碼
       // 3. publishArticle 又玩了一次，這次 callback 是給 request 的，
-      ///   request 的 callback 是包含 error 情況的，所以 line 140 是必要的
+      // /   request 的 callback 是包含 error 情況的，所以 line 140 是必要的
       try {
         const { data } = await sendPost({
           title, author, content: markdownData, desc: 'whatever',

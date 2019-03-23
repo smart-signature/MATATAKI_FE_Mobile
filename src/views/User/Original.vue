@@ -24,8 +24,8 @@ export default {
     return {
       playerincome: null,
       editing: false,
-      user:'',
-      userTitle:'',
+      user: '',
+      userTitle: '',
     };
   },
   computed: {
@@ -46,8 +46,8 @@ export default {
   async created() {
     const playerincome = await getPlayerIncome(this.username);
     this.playerincome = playerincome[0] || 0;
-    this.user = this.isMe ? '我的用户页' : this.username+' 的用户页';
-    this.userTitle = this.isMe ? '我的原创文章' : this.username+' 的原创文章';
+    this.user = this.isMe ? '我的用户页' : `${this.username} 的用户页`;
+    this.userTitle = this.isMe ? '我的原创文章' : `${this.username} 的原创文章`;
     document.title = `${this.user} - SmartSignature`;
   },
 };
