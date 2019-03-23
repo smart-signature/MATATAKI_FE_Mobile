@@ -56,6 +56,9 @@ function auth({
   username, publickey, sign,
 }, callback) {
   const url = `${apiServer}/auth`;
+  // console.log(username + ", " + typeof(username))
+  // console.log(publickey + ", " + typeof(publickey))
+  // console.log(sign + ", " + typeof(sign))
   // const url = `http://localhost:7001/auth`;
   return request({
     uri: url,
@@ -77,6 +80,7 @@ function follow({
   username, followed,
 }, callback) {
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
+  console.log(accessToken);
   const url = `${apiServer}/follow`;
   // const url = `http://localhost:7001/publish`;
   return request({

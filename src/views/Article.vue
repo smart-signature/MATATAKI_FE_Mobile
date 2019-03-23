@@ -27,7 +27,7 @@
       <Divider />
       <Row style="white-space:nowrap;">
         <i-col span="11">
-          <za-button class="button-support" 
+          <za-button class="button-support"
             size='xl' theme="primary"
             @click="visible3 = !isSupported" :disabled="isSupported">{{isSupported ? '已赞赏' : '赞赏'}}</za-button>
         </i-col>
@@ -121,7 +121,7 @@ export default {
     },
     getDisplayTotalSupportedAmount() {
       return this.totalSupportedAmount.toFixed(4);
-    }
+    },
   },
   async created() {
     document.title = '正在加载文章 - Smart Signature';
@@ -143,7 +143,7 @@ export default {
 
     // Set isSupported
     await this.setisSupported();
-    
+
     try {
       this.countTotalSupportedAmount(this.sign.id);
     } catch (error) {
@@ -275,11 +275,11 @@ export default {
       const referrer = this.getRef();
       console.log('referrer :', referrer);
       await support({ amount, sign_id, referrer });
-      
+
       // tricky speed up
       this.isSupported = true;
       this.totalSupportedAmount += parseFloat(amount);
-      
+
       await this.setisSupported();
     },
     share() {

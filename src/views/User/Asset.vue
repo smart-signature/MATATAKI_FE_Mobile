@@ -49,7 +49,7 @@
     <div class="assets">
     <!-- <za-tabs v-model="activeNameSwipe" @change="handleClick"> -->
       <!-- <za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label"> -->
-        
+
         <za-pull :on-refresh="refresh" :refreshing="refreshing" :loading="loading">
           <div class="content">
             <AssetCard :asset="a" v-for="a in sortedAssets" :key="a.timestamp"/>
@@ -74,7 +74,7 @@ export default {
   components: { AssetCard },
   async created() {
     const myassets = localStorage.getItem('myAssets');
-    this.assets = (myassets) ? JSON.parse(myassets):{ assets: [] };
+    this.assets = (myassets) ? JSON.parse(myassets) : { assets: [] };
 
     this.refreshTheThree();
     await this.refresh();
@@ -110,10 +110,12 @@ export default {
       visible7: false,
     };
   },
-  computed:{
+  computed: {
     sortedAssets() {
-      //if need change to asc, swap a & b 
-      return this.assets.sort((a,b)=> {return (new Date(b.timestamp)).getTime() -(new Date(a.timestamp)).getTime()});
+
+      // if need change to asc, swap a & b
+      return this.assets.sort((a, b) => (new Date(b.timestamp)).getTime() - (new Date(a.timestamp)).getTime());
+
     },
   },
   methods: {
@@ -163,7 +165,7 @@ export default {
       this.loading = true;
       /*
         同时触发独立的异步操作 for noobs
-        
+
         // 写法一
         let [foo, bar] = await Promise.all([getFoo(), getBar()]);
 
@@ -173,9 +175,11 @@ export default {
         let foo = await fooPromise;
         let bar = await barPromise;
       */
+
       let getPlayerTotalIncomePromise = this.getPlayerTotalIncome(this.username);
       let getAssetsListPromise = this.getAssetsList();
       this.playerincome = await getPlayerTotalIncomePromise;
+
       this.assets = await getAssetsListPromise;
       localStorage.setItem('myAssets', JSON.stringify(this.assets));
       console.log(this.username, '\'s total income:', this.playerincome);
@@ -184,9 +188,11 @@ export default {
       this.loading = false;
     },
     refreshTheThree() {
-      //this.sharereward = 0 ;
-      //this.writereward = 0 ;
-      this.sharecost = 0 ;
+
+      this.sharereward = 0;
+      this.writereward = 0;
+      this.sharecost = 0;
+
       for (let index = 0; index < this.assets.length; index += 1) {
         const element = this.assets[index];
         //if (element.type === 'share income') {
