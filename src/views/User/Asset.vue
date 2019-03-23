@@ -138,6 +138,13 @@ export default {
     async getPlayerTotalIncome(name) {
       console.log('Connecting to EOS fetch player income...');
       const playerincome = await getPlayerIncome(name);
+      if (playerincome !== null) {
+        this.sharereward = playerincome[0].share_income ;
+        this.writereward = playerincome[0].sign_income ;
+      } else {
+        this.sharereward = 0;
+        this.writereward = 0;
+      }
       return (playerincome !== null)
         ? (playerincome[0].share_income + playerincome[0].sign_income) / 10000
         : 0.0000 ;
@@ -177,18 +184,18 @@ export default {
       this.loading = false;
     },
     refreshTheThree() {
-      this.sharereward = 0 ;
-      this.writereward = 0 ;
+      //this.sharereward = 0 ;
+      //this.writereward = 0 ;
       this.sharecost = 0 ;
       for (let index = 0; index < this.assets.length; index += 1) {
         const element = this.assets[index];
-        if (element.type === 'share income') {
-          this.sharereward += parseFloat(element.quantity.replace(' EOS', ''));
-          // console.log(sharecost);
-        } else if (element.type === 'sign income') {
-          this.writereward += parseFloat(element.quantity.replace(' EOS', ''));
-          // console.log(sharecost);
-        } else if (element.type === 'support expenses') {
+        //if (element.type === 'share income') {
+        //  this.sharereward += parseFloat(element.quantity.replace(' EOS', ''));
+        //  // console.log(sharecost);
+        //} else if (element.type === 'sign income') {
+        //  this.writereward += parseFloat(element.quantity.replace(' EOS', ''));
+        //  // console.log(sharecost);
+        if (element.type === 'support expenses') {
           this.sharecost += parseFloat(element.quantity.replace(' EOS', ''));
           // console.log(sharecost);
         }
