@@ -76,9 +76,8 @@ export default {
     const myassets = localStorage.getItem('myAssets');
     this.assets = (myassets) ? JSON.parse(myassets) : { assets: [] };
 
-    await this.refresh().then(() => {
-      this.sharecost = this.getPlayerTotalCost();
-    });
+    await this.refresh();
+    this.sharecost = this.getPlayerTotalCost();
   },
   data() {
     return {
