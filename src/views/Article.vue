@@ -29,7 +29,7 @@
         <i-col span="11">
           <za-button class="button-support"
             size='xl' theme="primary"
-            @click="visible3 = !isSupported" :disabled="isSupported||isSupported===undefined">{{isSupported===undefined ? "加载中" : (isSupported ? "已赞赏" : "赞赏")}}</za-button>
+            @click="visible3 = !isSupported" :disabled="isSupported===undefined||isSupported">{{isSupported===undefined ? "加载中" : (isSupported ? "已赞赏" : "赞赏")}}</za-button>
         </i-col>
         <i-col span="2"><Divider type="vertical" style="opacity: 0;" /></i-col>
         <za-modal :visible="visible3"
