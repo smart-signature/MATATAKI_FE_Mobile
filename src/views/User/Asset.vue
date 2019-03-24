@@ -78,7 +78,7 @@ export default {
 
     this.refreshTheThree();
     await this.refresh();
-    this.refreshTheThree();
+    //this.refreshTheThree();//??不必要的??
   },
   data() {
     return {
@@ -191,8 +191,8 @@ export default {
     },
     refreshTheThree() {
 
-      //this.sharereward = 0;
-      //this.writereward = 0;
+      this.sharereward = 0;
+      this.writereward = 0;
       this.sharecost = 0;
 
       for (let index = 0; index < this.assets.length; index += 1) {
@@ -205,7 +205,6 @@ export default {
         //  // console.log(sharecost);
         if (element.type === 'support expenses') {
           this.sharecost += parseFloat(element.quantity.replace(' EOS', ''));
-          // console.log(sharecost);
         }
       }
     },

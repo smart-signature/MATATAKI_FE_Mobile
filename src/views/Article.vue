@@ -26,10 +26,10 @@
       </Row>
       <Divider />
       <Row style="white-space:nowrap;">
-        <i-col span="11">
+        <i-col span="11">  
           <za-button class="button-support"
-            size='xl' theme="primary"
-            @click="visible3 = !isSupported" :disabled="isSupported">{{isSupported ? '已赞赏' : '赞赏'}}</za-button>
+            size='xl' theme="primary" 
+            @click="visible3 = !isSupported" :disabled="isSupported||isSupported===undefined">{{isSupported===undefined ? "加载中" : (isSupported ? "已赞赏" : "赞赏")}}</za-button>
         </i-col>
         <i-col span="2"><Divider type="vertical" style="opacity: 0;" /></i-col>
         <za-modal :visible="visible3"
@@ -169,7 +169,7 @@ export default {
       fission_factor: 0,
     },
     amount: 0.0000,
-    isSupported: false,
+    isSupported: undefined,
     /* toastvisible: false, */
     totalSupportedAmount: 0.0000,
     visible3: false,
@@ -240,9 +240,11 @@ export default {
         if (share !== undefined) {
           console.log('share :', share);
           this.isSupported = true;
+        }else{
+          this.isSupported = false;
         }
       }
-    },
+    }, 
     async support() {
       this.visible3 = false;
       try { // 錢包登录
