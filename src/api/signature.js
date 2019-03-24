@@ -17,9 +17,16 @@ async function support({ amount = null, sign_id = null, referrer = null }) {
     return;
   }
 
-  return transferEOS({
-    amount,
-    memo: ((referrer != null) ? `support ${sign_id} ${referrer}` : `support ${sign_id}`),
+  return new Promise((resolve, reject) => {
+    transferEOS({
+      amount,
+      memo: ((referrer != null) ? `support ${sign_id} ${referrer}` : `support ${sign_id}`),
+    }).then(() => {
+      resolve();
+    }).catch((error) => {
+      console.log('error on support:', error);
+      reject(error);
+    });
   });
 }
 
@@ -50,30 +57,33 @@ async function withdraw() {
   });
 }
 function transferEOS({ amount = 0, memo = '' }) {
-  if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
-
-  eos().transaction({
-    actions: [
-      {
-        account: 'eosio.token',
-        name: 'transfer',
-        authorization: [{
-          actor: currentAccount().name,
-          permission: currentAccount().authority,
-        }],
-        data: {
-          from: currentAccount().name,
-          to: SIGNATURE_CONTRACT,
-          quantity: `${(amount).toFixed(4).toString()} EOS`,
-          memo,
+  return new Promise((resolve, reject) => {
+    if (currentAccount() == null) reject(new Error('NOT-LOGINED'));
+    eos().transaction({
+      actions: [
+        {
+          account: 'eosio.token',
+          name: 'transfer',
+          authorization: [{
+            actor: currentAccount().name,
+            permission: currentAccount().authority,
+          }],
+          data: {
+            from: currentAccount().name,
+            to: SIGNATURE_CONTRACT,
+            quantity: `${(amount).toFixed(4).toString()} EOS`,
+            memo,
+          },
         },
-      },
-    ],
-  }).then((result) => {
-    alert('publish success!');
-    console.log(result);
-  }).catch((error) => {
-    alert(`error:${JSON.stringify(error)}`);
+      ],
+    }).then((result) => {
+      // alert('publish success!');
+      console.log(result);
+      resolve();
+    }).catch((error) => {
+      console.log(`error:${JSON.stringify(error)} on transfer eos`);
+      reject(error);
+    });
   });
 }
 // https://eosio.stackexchange.com/questions/1459/how-to-get-all-the-actions-of-one-account
@@ -170,7 +180,7 @@ async function getPlayerIncome(name) {
     table: 'players',
     limit: 1,
   });
-    //console.log("player income:",rows)  //for debug
+    // console.log("player income:",rows)  //for debug
   return rows;
 }
 

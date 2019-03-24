@@ -26,9 +26,9 @@
       </Row>
       <Divider />
       <Row style="white-space:nowrap;">
-        <i-col span="11">  
+        <i-col span="11">
           <za-button class="button-support"
-            size='xl' theme="primary" 
+            size='xl' theme="primary"
             @click="visible3 = !isSupported" :disabled="isSupported||isSupported===undefined">{{isSupported===undefined ? "加载中" : (isSupported ? "已赞赏" : "赞赏")}}</za-button>
         </i-col>
         <i-col span="2"><Divider type="vertical" style="opacity: 0;" /></i-col>
@@ -240,11 +240,11 @@ export default {
         if (share !== undefined) {
           console.log('share :', share);
           this.isSupported = true;
-        }else{
+        } else {
           this.isSupported = false;
         }
       }
-    }, 
+    },
     async support() {
       this.visible3 = false;
       try { // 錢包登录
@@ -276,13 +276,19 @@ export default {
 
       const referrer = this.getRef();
       console.log('referrer :', referrer);
-      await support({ amount, sign_id, referrer });
-
-      // tricky speed up
-      this.isSupported = true;
-      this.totalSupportedAmount += parseFloat(amount);
-
-      await this.setisSupported();
+      this.isSupported = undefined;
+      await support({ amount, sign_id, referrer })
+        .then(() => {
+          this.isSupported = true;
+          alert('赞赏成功！');
+          // tricky speed up
+          this.totalSupportedAmount += parseFloat(amount);
+        })
+        .catch((error) => {
+          console.log(JSON.stringify(error));
+          alert('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额。');
+          this.isSupported = false;
+        });
     },
     share() {
       const clipboard = new Clipboard('.button-share');
