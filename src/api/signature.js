@@ -17,17 +17,10 @@ async function support({ amount = null, sign_id = null, referrer = null }) {
     return;
   }
 
-  return new Promise((resolve, reject) => {
-    transferEOS({
+  return transferEOS({
       amount,
       memo: ((referrer != null) ? `support ${sign_id} ${referrer}` : `support ${sign_id}`),
-    }).then(() => {
-      resolve();
-    }).catch((error) => {
-      console.log('error on support:', error);
-      reject(error);
-    });
-  });
+    })
 }
 
 async function withdraw() {
