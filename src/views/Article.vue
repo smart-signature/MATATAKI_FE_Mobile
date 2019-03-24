@@ -258,18 +258,17 @@ export default {
       const referrer = this.getRef();
       console.log('referrer :', referrer);
       this.isSupported = undefined;
-      await support({ amount, sign_id, referrer })
-        .then(() => {
+      try{ 
+          await support({ amount, sign_id, referrer })
           this.isSupported = true;
           alert('赞赏成功！');
           // tricky speed up
           this.totalSupportedAmount += parseFloat(amount);
-        })
-        .catch((error) => {
+        }catch(error){
           console.log(JSON.stringify(error));
           alert('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额。');
           this.isSupported = false;
-        });
+        };
     },
     share() {
       const clipboard = new Clipboard('.button-share');
