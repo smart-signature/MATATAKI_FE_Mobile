@@ -71,8 +71,8 @@ function transferEOS({ amount = 0, memo = '' }) {
       ],
     }).then((result) => {
       // alert('publish success!');
-      console.log(result);
-      resolve();
+      //console.log(result);
+      resolve(result);
     }).catch((error) => {
       console.log(`error:${JSON.stringify(error)} on transfer eos`);
       reject(error);
