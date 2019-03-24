@@ -170,6 +170,7 @@ async function getPlayerIncome(name) {
     table: 'players',
     limit: 1,
   });
+    //console.log("player income:",rows)  //for debug
   return rows;
 }
 

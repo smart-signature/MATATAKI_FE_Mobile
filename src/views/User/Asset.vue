@@ -139,16 +139,18 @@ export default {
     },
     async getPlayerTotalIncome(name) {
       console.log('Connecting to EOS fetch player income...');
-      const playerincome = await getPlayerIncome(name);
+      const playerincome = await getPlayerIncome(name); //从合约拿到支持收入和转发收入
       if (playerincome !== null) {
-        this.sharereward = playerincome[0].share_income ;
-        this.writereward = playerincome[0].sign_income ;
+        this.sharereward = playerincome[0].share_income/10000 ;
+        this.writereward = playerincome[0].sign_income/10000 ;
+          console.log('share reward',this.sharereward)
+          console.log('write reward',this.writereward)
       } else {
         this.sharereward = 0;
         this.writereward = 0;
       }
       return (playerincome !== null)
-        ? (playerincome[0].share_income + playerincome[0].sign_income) / 10000
+        ? (playerincome[0].share_income + playerincome[0].sign_income) / 10000  //截止2019年3月24日中午12时合约拿过来的东西要除以10000才能正常显示
         : 0.0000 ;
     },
     handleClick(tab, event) {
@@ -179,8 +181,8 @@ export default {
       let getPlayerTotalIncomePromise = this.getPlayerTotalIncome(this.username);
       let getAssetsListPromise = this.getAssetsList();
       this.playerincome = await getPlayerTotalIncomePromise;
-
       this.assets = await getAssetsListPromise;
+        
       localStorage.setItem('myAssets', JSON.stringify(this.assets));
       console.log(this.username, '\'s total income:', this.playerincome);
       console.log(this.username, '\'s assets:', this.assets);
@@ -189,8 +191,8 @@ export default {
     },
     refreshTheThree() {
 
-      this.sharereward = 0;
-      this.writereward = 0;
+      //this.sharereward = 0;
+      //this.writereward = 0;
       this.sharecost = 0;
 
       for (let index = 0; index < this.assets.length; index += 1) {
