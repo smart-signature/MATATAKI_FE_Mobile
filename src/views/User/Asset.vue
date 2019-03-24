@@ -73,11 +73,17 @@ export default {
   props: ['username'],
   components: { AssetCard },
   async created() {
-    const myassets = localStorage.getItem('myAssets');
-    this.assets = (myassets) ? JSON.parse(myassets) : { assets: [] };
+    
 
-    this.refreshTheThree();
-    await this.refresh();
+    
+    //await this.refreshTheThree();
+      
+    await this.refresh().then(()=>{
+        this.sharecost = this.getPlayerTotalCost();
+    });
+    
+      const myassets = localStorage.getItem('myAssets');
+    this.assets = (myassets) ? JSON.parse(myassets) : { assets: [] };
     // this.refreshTheThree();//??不必要的??
   },
   data() {
@@ -125,7 +131,7 @@ export default {
       const actions2 = actions.filter(a => a.action_trace.act.account === 'signature.bp'
           && a.action_trace.act.name === 'bill'
           && a.action_trace.act.data.type !== 'test income');
-      // console.log(_actions);
+      // console.log("actions>??",actions2);
       return actions2.map(a => ({
         quantity: a.action_trace.act.data.quantity,
         type: a.action_trace.act.data.type,
@@ -134,6 +140,16 @@ export default {
     },
     getDisplayAmount(amount) {
       return (amount > 0 ? '+' : '') + parseFloat(amount).toFixed(4);
+    },
+    getPlayerTotalCost(){
+        console.log("assets::",JSON.stringify(this.assets))
+        let temp = this.assets.reduce((acc,asset)=>{
+            if(asset.type === 'support expenses')
+                return parseFloat(asset.quantity.substr(0,asset.quantity.indexOf(' ')))+acc;
+            return acc;
+        },0)
+        console.log("zhichu",temp);
+        return temp;
     },
     async getPlayerTotalIncome(name) {
       console.log('Connecting to EOS fetch player income...');
@@ -176,7 +192,6 @@ export default {
         let foo = await fooPromise;
         let bar = await barPromise;
       */
-
       const getPlayerTotalIncomePromise = this.getPlayerTotalIncome(this.username);
       const getAssetsListPromise = this.getAssetsList();
       this.playerincome = await getPlayerTotalIncomePromise;
@@ -188,7 +203,7 @@ export default {
       this.refreshing = false;
       this.loading = false;
     },
-    refreshTheThree() {
+    async refreshTheThree() {
       this.sharereward = 0;
       this.writereward = 0;
       this.sharecost = 0;

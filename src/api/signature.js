@@ -169,6 +169,7 @@ async function getPlayerBills(owner) {
     /* pos: -1, */
     offset: -100,
   });
+  //console.log("player actions",actions);
   return actions;
 }
 
