@@ -696,4 +696,7 @@ textarea {
   position: relative;
   padding: 21px 0;
 }
+.markdown-body.tac {
+    margin: 20px;
+}
 </style>
