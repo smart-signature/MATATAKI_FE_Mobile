@@ -34,15 +34,7 @@ export default {
   // 這極有可能是這幾天錢包登陸老是有問題的原因
   // 依據 https://github.com/vuejs/vue/issues/7333
   mounted() {
-    try {
-      if (this.isScatterConnected) this.loginScatterAsync();
-    } catch (error) {
-      console.error('login faild');
-      this.$Modal.error({
-        title: '无法与你的钱包建立链接',
-        content: '请检查钱包是否打开并解锁',
-      });
-    }
+    if (this.isScatterConnected) this.loginScatterAsync();
   },
   methods: {
     ...mapActions([
