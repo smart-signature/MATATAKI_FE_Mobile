@@ -76,6 +76,7 @@ import 'mavon-editor/dist/css/index.css';
 import querystring from 'query-string';
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
+const clipboard = new Clipboard('.button-share');
 
 export default {
   name: 'Article',
@@ -90,21 +91,17 @@ export default {
     isLogined() {
       return this.scatterAccount !== null;
     },
-    updateTitle() {
-      return false;
-    },
     compiledMarkdown() {
       return markdownIt.render(this.post.content);
     },
     getClipboard() {
       const { currentUsername } = this;
-      // todo(minakokojima): figure out what is the different between following variables.
-      // alert(currentUsername);
-      // alert(scatterAccount.name);
-      const share = this.isLogined
-        ? `https://${window.location.host}/article/${this.hash}?invite=${currentUsername}`
-        : `${window.location.href}`;
-      return `我在智能签名上发现了一篇好文章！${share} 赞赏好文，分享有收益 ！`;
+      const { protocol, host } = window.location
+      const articleUrl = `${protocol}://${host}/article/${this.hash}`
+      const shareLink = this.isLogined
+        ? `${articleUrl}?invite=${currentUsername}`
+        : articleUrl;
+      return `我在智能签名上发现了一篇好文章！${shareLink} 赞赏好文，分享有收益 ！`;
     },
     getDisplayedFissionFactor() {
       return this.sign.fission_factor / 1000;
@@ -112,15 +109,24 @@ export default {
     getDisplayTotalSupportedAmount() {
       return this.totalSupportedAmount.toFixed(4);
     },
+    getInvite() {
+      // no need to save inviter
+      // we can use computed 
+      let { invite } = this.$route.query
+      if (!invite) {
+        invite = null;
+      }
+      return invite;
+    },
   },
   async created() {
+    this.initClipboard()
     document.title = '正在加载文章 - Smart Signature';
     try {
       await this.getArticleData();
     } catch (error) {
 
     }
-    this.board = this.getClipboard;
 
     const url = `https://api.smartsignature.io/post/${this.hash}`;
     const { data } = await axios.get(url);
@@ -140,19 +146,13 @@ export default {
 
     }
 
-    //
-    const { invite } = querystring.parse(window.location.search.slice(1));
-    if (invite) {
-      localStorage.setItem('invite', invite);
-    }
   },
   data: () => ({
     post: {
       author: 'Loading...',
       title: 'Loading...',
-      content: '**Please wait for connection to IPFS**',
+      content: '**Please wait for the connection to IPFS**',
       desc: '',
-      board: '',
     },
     sign: {
       // NO MORE Cannot read property 'fission_factor' of null
@@ -172,6 +172,7 @@ export default {
   }),
   watch: {
     post({ author, title }) {
+      // 当文章从 IPFS fetched 到， post 会更新，我们要更新网页 title
       document.title = `${title} by ${author} - Smart Signature`;
     },
   },
@@ -181,6 +182,22 @@ export default {
       'suggestNetworkAsync',
       'loginScatterAsync',
     ]),
+    initClipboard() {
+      clipboard.on('success', (e) => {
+        this.$Modal.info({
+          title: '提示',
+          content: '复制成功',
+        });
+        clipboard.destroy();
+      });
+      clipboard.on('error', (e) => {
+        this.$Modal.error({
+          title: '提示',
+          content: '该浏览器不支持自动复制',
+        });
+        clipboard.destroy();
+      });
+    },
     async countTotalSupportedAmount(SignId) {
       const { actions } = await getContractActions();
 
@@ -255,7 +272,7 @@ export default {
       console.info(data);
       const sign_id = data.id;
 
-      const referrer = this.getRef();
+      const referrer = this.getInvite;
       console.log('referrer :', referrer);
       this.isSupported = undefined;
       try{ 
@@ -285,24 +302,6 @@ export default {
         });
         return ;
       }
-      this.board = this.getClipboard;
-      const clipboard = new Clipboard('.button-share');
-      clipboard.on('success', (e) => {
-        this.$Modal.info({
-          title: '提示',
-          content: '复制成功',
-        });
-        console.log(e);
-        clipboard.destroy();
-      });
-      clipboard.on('error', (e) => {
-        this.$Modal.error({
-          title: '提示',
-          content: '该浏览器不支持自动复制',
-        });
-        console.log(e);
-        clipboard.destroy();
-      });
     },
     toastClose(reason, event) {
       console.log(reason, event);
@@ -313,16 +312,7 @@ export default {
     goBack() {
       this.$router.go(-1);
     },
-    getRef() {
-      // no need to save inviter
-      // let invite = localStorage.getItem('invite');
-      let { invite } = querystring.parse(window.location.search.slice(1));
-
-      if (!invite) {
-        invite = null;
-      }
-      return invite;
-    },
+    
   },
 };
 </script>
