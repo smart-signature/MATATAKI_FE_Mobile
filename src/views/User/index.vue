@@ -81,14 +81,16 @@
     <div class="bottomcard" v-if="isMe">
       <Button class="bottombutton" long @click="logoutScatterAsync">退出登录</Button>
     </div>
-    <ArticlesList :listtype="'others'" ref='ArticlesList' v-if="!isMe"/>
+    <ArticlesList :listtype="'others'" ref='ArticlesList' :username='username' v-if="!isMe"/>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import { getPlayerIncome } from '@/api/signature';
-import { follow, unfollow, getuser } from '../../api';
+import {
+  follow, unfollow, getuser, auth,
+} from '../../api';
 import ArticlesList from './ArticlesList.vue';
 import API from '@/api/scatter.js';
 
@@ -126,19 +128,31 @@ export default {
   methods: {
     async authDemo() { // 示例代码。。请随便改。。。
       // 1. 取得签名
-      API.authSignature((username, publickey, sign) => {
-        console.log(username, publickey, sign);
-        // 2. post到服务端 获得accessToken并保存
-        auth({ username, publickey, sign }, (error, response, body) => {
-          console.log(body);
-          if (!error) {
-            // 3. save accessToken
-            const accessToken = body;
-            localStorage.setItem('ACCESS_TOKEN', accessToken);
+      let accessvalid = false;
+      const nowtime = new Date().getTime();
+      if (localStorage.getItem('ACCESS_TOKEN') != null) {
+        const accesstime = localStorage.getItem('ACCESS_TIME');
+        if (accesstime != null) {
+          if (nowtime - accesstime < 604800000) {
+            accessvalid = true;
           }
+        }
+      }
+      if (!accessvalid) {
+        API.authSignature((username, publickey, sign) => {
+          console.log(username, publickey, sign);
+          // 2. post到服务端 获得accessToken并保存
+          auth({ username, publickey, sign }, (error, response, body) => {
+            console.log(body);
+            if (!error) {
+              // 3. save accessToken
+              const accessToken = body;
+              localStorage.setItem('ACCESS_TOKEN', accessToken);
+              localStorage.setItem('ACCESS_TIME', nowtime);
+            }
+          });
         });
-      });
-
+      }
       // 4. 使用accessToken 示例。 请求修改某些和用户数据相关的api时，需要按照oauth2规范，在header里带上 accessToken， 以表示有权调用
       // const accessToken = localStorage.getItem("ACCESS_TOKEN");
       // request({
@@ -190,6 +204,7 @@ export default {
       follow({
         followed: username, username: currentUsername,
       }, (error, response, body) => {
+        console.log(response);
         if (!error) {
           this.$Notice.success({
             title: '关注成功',

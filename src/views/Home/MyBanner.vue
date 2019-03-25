@@ -2,7 +2,7 @@
     <div class="my-banner">
       <div class="my-stat">
         <div class="logined" v-if="isLogined">
-          <img src="/img/20190314205225.jpg" class="round_icon">
+          <img src="../../assets/logo.png" class="round_icon">
           <Button class="my-user-page" ghost type="text"
               @click="toUserPage(currentUsername)">我的主页</Button>
           <p class="username">{{currentUsername}}</p>

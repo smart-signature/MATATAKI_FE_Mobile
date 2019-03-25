@@ -1,36 +1,7 @@
 import axios from 'axios';
 import request from 'request';
 
-// const _OLD_apiServer = 'https://smartsignature.azurewebsites.net';
 const apiServer = 'https://api.smartsignature.io';
-
-// function __OLD__oldPublishArticle({
-//   hash, title, author, transactionId, accountName,
-// }) {
-//   const url = `${apiServer}/api/article`;
-//   return axios.post(url, JSON.stringify({
-//     account: accountName,
-//     articleUrl: `https://sign-dev.dravatar.xyz/article/${hash}`,
-//     title,
-//     author,
-//     transactionId,
-//   }), { headers: { 'Content-Type': 'application/json' } });
-// }
-
-function _oldPublishArticle({
-  author, title, hash, publicKey, signature, username,
-}) {
-  const url = `${apiServer}/publish`;
-  // const url = `http://localhost:7001/publish`;
-  return axios.post(url, JSON.stringify({
-    hash,
-    publicKey,
-    sign: signature,
-    title,
-    author,
-    username,
-  }), { headers: { 'Content-Type': 'application/json' } });
-}
 
 // NOTICE!! publishArticle will be tested and replaced very soon
 function publishArticle({
@@ -55,6 +26,16 @@ function publishArticle({
       sign: signature,
     },
   }, callback);
+  /* old version
+    return axios.post(url, JSON.stringify({
+    hash,
+    publicKey,
+    sign: signature,
+    title,
+    author,
+    username,
+  }), { headers: { 'Content-Type': 'application/json' } });
+  */
 }
 
 const getArticleData = hash => axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
@@ -75,6 +56,9 @@ function auth({
   username, publickey, sign,
 }, callback) {
   const url = `${apiServer}/auth`;
+  // console.log(username + ", " + typeof(username))
+  // console.log(publickey + ", " + typeof(publickey))
+  // console.log(sign + ", " + typeof(sign))
   // const url = `http://localhost:7001/auth`;
   return request({
     uri: url,
@@ -96,6 +80,7 @@ function follow({
   username, followed,
 }, callback) {
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
+  console.log(accessToken);
   const url = `${apiServer}/follow`;
   // const url = `http://localhost:7001/publish`;
   return request({
@@ -153,7 +138,7 @@ function getuser({
 }
 
 export {
-  _oldPublishArticle, getArticlesList, publishArticle, auth,
-  getArticleData, getSignId,
+  publishArticle, auth,
+  getArticleData, getArticlesList, getSignId,
   follow, unfollow, getuser,
 };

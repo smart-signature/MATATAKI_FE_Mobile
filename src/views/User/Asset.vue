@@ -9,7 +9,7 @@
     </za-nav-bar>
     <div class="topcard">
       <div class="toptext1">待提现</div><br/>
-      <div class="topremain">{{(playerincome.share_income + playerincome.sign_income) / 10000}}</div>
+      <div class="topremain">{{playerincome.toFixed(4)}}</div>
       <div style="position:absolute;right:40px;top:90px;">
           <Button class="withdraw" ghost @click="visible7 = true">提现</Button>
           <za-confirm
@@ -22,7 +22,7 @@
         <Col span="6">
           <p class="toptext2">创作收益</p>
           <p class="toptext3" :style='writereward >= 0 ? { color: "#f50" } : { color: "#87d068" }'>
-            {{(writereward > 0 ? '+' : '') + writereward}}
+            {{getDisplayAmount(writereward)}}
           </p>
         </Col>
         <Col span="3" style="text-align:center">
@@ -31,7 +31,7 @@
         <Col span="6">
           <p class="toptext2">赞赏收益</p>
           <p class="toptext3" :style='sharereward >= 0 ? { color: "#f50" } : { color: "#87d068" }'>
-            {{(sharereward > 0 ? '+' : '') + sharereward}}
+            {{getDisplayAmount(sharereward)}}
           </p>
         </Col>
         <Col span="3" style="text-align:center">
@@ -40,7 +40,7 @@
         <Col span="6">
           <p class="toptext2">赞赏支出</p>
           <p class="toptext3" :style='sharecost > 0 ? { color: "#f50" } : { color: "#87d068" }'>
-            {{sharecost}}
+            {{getDisplayAmount(sharecost)}}
           </p>
         </Col>
       </Row>
@@ -49,9 +49,10 @@
     <div class="assets">
     <!-- <za-tabs v-model="activeNameSwipe" @change="handleClick"> -->
       <!-- <za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label"> -->
+
         <za-pull :on-refresh="refresh" :refreshing="refreshing" :loading="loading">
           <div class="content">
-            <AssetCard :asset="a" v-for="a in assets" :key="a.timestamp"/>
+            <AssetCard :asset="a" v-for="a in sortedAssets" :key="a.timestamp"/>
           </div>
         </za-pull>
       <!-- </za-tab-pane> -->
@@ -72,21 +73,11 @@ export default {
   props: ['username'],
   components: { AssetCard },
   async created() {
-    await getPlayerIncome(this.username);
+    const myassets = localStorage.getItem('myAssets');
+    this.assets = (myassets) ? JSON.parse(myassets) : { assets: [] };
+
     await this.refresh();
-    for (let index = 0; index < this.assets.length; index += 1) {
-      const element = this.assets[index];
-      if (element.type === 'share income') {
-        this.sharereward += parseFloat(element.quantity.replace(' EOS', ''));
-        // console.log(sharecost);
-      } else if (element.type === 'sign income') {
-        this.writereward += parseFloat(element.quantity.replace(' EOS', ''));
-        // console.log(sharecost);
-      } else if (element.type === 'support expenses') {
-        this.sharecost += parseFloat(element.quantity.replace(' EOS', ''));
-        // console.log(sharecost);
-      }
-    }
+    this.sharecost = this.getPlayerTotalCost();
   },
   data() {
     return {
@@ -109,10 +100,7 @@ export default {
         { label: '支持收入' },
         { label: '转发收入' },
       ],
-      playerincome: {
-        share_income: 0.0000,
-        sign_income: 0.0000,
-      },
+      playerincome: 0.0000,
       loading: false,
       refreshing: false,
       writereward: 0,
@@ -121,33 +109,56 @@ export default {
       visible7: false,
     };
   },
+  computed: {
+    sortedAssets() {
+      // if need change to asc, swap a & b
+      return this.assets.sort((a, b) => (new Date(b.timestamp)).getTime() - (new Date(a.timestamp)).getTime());
+    },
+  },
   methods: {
     // ...mapActions(['loginScatterAsync']),
     async getAssetsList() {
-      console.log('Connecting to EOS fetch data...');
+      console.log('Connecting to EOS fetch assets...');
       const actions = await getPlayerBills(this.username);
       // console.log(actions.map(a => a.action_trace));
       const actions2 = actions.filter(a => a.action_trace.act.account === 'signature.bp'
           && a.action_trace.act.name === 'bill'
           && a.action_trace.act.data.type !== 'test income');
-      // console.log(_actions);
-      this.assets = actions2.map(a => ({
+      // console.log("actions>??",actions2);
+      return actions2.map(a => ({
         quantity: a.action_trace.act.data.quantity,
         type: a.action_trace.act.data.type,
         timestamp: a.action_trace.block_time,
       }));
-
-      console.log(this.username, '\'s assets:', this.assets);
     },
-    async getPlayerIncome(name) {
-      console.log('Connecting to EOS fetch data...');
-      const playerincome = await getPlayerIncome(name);
-      if (playerincome === null) {
-        this.playerincome = {
-          share_income: 0.0000,
-          sign_income: 0.0000,
-        };
+    getDisplayAmount(amount) {
+      return (amount > 0 ? '+' : '') + parseFloat(amount).toFixed(4);
+    },
+    getPlayerTotalCost() {
+      console.log('assets::', JSON.stringify(this.assets));
+      const temp = this.assets.reduce((acc, asset) => {
+        if (asset.type === 'support expenses') return parseFloat(asset.quantity.substr(0, asset.quantity.indexOf(' '))) + acc;
+        return acc;
+      }, 0);
+      console.log('zhichu', temp);
+      return temp;
+    },
+    async getPlayerTotalIncome(name) {
+      console.log('Connecting to EOS fetch player income...');
+      const playerincome = await getPlayerIncome(name); // 从合约拿到支持收入和转发收入
+      if (playerincome !== null) {
+        this.sharereward = playerincome[0].share_income / 10000;
+        this.writereward = playerincome[0].sign_income / 10000;
+        console.log('share reward', this.sharereward);
+        console.log('write reward', this.writereward);
+      } else {
+        this.sharereward = 0;
+        this.writereward = 0;
       }
+      return (playerincome !== null)
+        ? (playerincome[0].share_income + playerincome[0].sign_income) / 10000
+        : 0.0000;
+      // 截止2019年3月24日中午12时合约拿过来的东西要除以10000才能正常显示
     },
     handleClick(tab, event) {
       console.log(tab, event);
@@ -161,10 +172,47 @@ export default {
     async refresh() {
       this.refreshing = true;
       this.loading = true;
-      await this.getAssetsList();
+      /*
+        同时触发独立的异步操作 for noobs
+
+        // 写法一
+        let [foo, bar] = await Promise.all([getFoo(), getBar()]);
+
+        // 写法二
+        let fooPromise = getFoo();
+        let barPromise = getBar();
+        let foo = await fooPromise;
+        let bar = await barPromise;
+      */
+      const getPlayerTotalIncomePromise = this.getPlayerTotalIncome(this.username);
+      const getAssetsListPromise = this.getAssetsList();
+      this.playerincome = await getPlayerTotalIncomePromise;
+      this.assets = await getAssetsListPromise;
+
+      localStorage.setItem('myAssets', JSON.stringify(this.assets));
+      console.log(this.username, '\'s total income:', this.playerincome);
+      console.log(this.username, '\'s assets:', this.assets);
       this.refreshing = false;
       this.loading = false;
     },
+    // async refreshTheThree() {
+    //  this.sharereward = 0;
+    //  this.writereward = 0;
+    //  this.sharecost = 0;
+
+    //  for (let index = 0; index < this.assets.length; index += 1) {
+    //    const element = this.assets[index];
+    // if (element.type === 'share income') {
+    //  this.sharereward += parseFloat(element.quantity.replace(' EOS', ''));
+    //  // console.log(sharecost);
+    // } else if (element.type === 'sign income') {
+    //  this.writereward += parseFloat(element.quantity.replace(' EOS', ''));
+    //  // console.log(sharecost);
+    //   if (element.type === 'support expenses') {
+    //     this.sharecost += parseFloat(element.quantity.replace(' EOS', ''));
+    //   }
+    // }
+    // },//之后一段时间要是没问题就把这一段全删了
     goBack() {
       this.$router.go(-1);
     },

@@ -3,37 +3,6 @@ import { eos, currentEOSAccount as currentAccount } from './scatter';
 
 const SIGNATURE_CONTRACT = 'signature.bp';
 
-const publishOnChain = async ({ hash = '', fission_factor = 2000 }) => {
-  if (currentAccount() == null) {
-    alert('请先登录');
-    throw new Error('NOT-LOGINED');
-  }
-  return eos().transaction({
-    actions: [
-      {
-        account: SIGNATURE_CONTRACT,
-        name: 'publish',
-        authorization: [{
-          actor: currentAccount().name,
-          permission: currentAccount().authority,
-        }],
-        data: {
-          sign:
-          {
-            author: currentAccount().name,
-            fission_factor,
-            id: 0, /* 一定會被覆蓋 */
-            ipfs_hash: hash,
-            /* 下面兩個需要一個預設值 */
-            public_key: 'EOS5P9HXdVTcAVMph4ZppDKBMkBuT6ihnkLqTUrVFBtGR94cPjykJ',
-            signature: 'SIG_K1_KZU9PyXP8YAePjCfCcmBjGHARkvTVDjKpKvVgS6XL8o2FXTXUdhP3rqrL38dJYgJo2WNBdYubsY9LKTo47RUUE4N3ZHjZQ',
-          },
-        },
-      },
-    ],
-  });
-};
-
 async function support({ amount = null, sign_id = null, referrer = null }) {
   if (currentAccount() == null) {
     alert('请先登录');
@@ -49,9 +18,9 @@ async function support({ amount = null, sign_id = null, referrer = null }) {
   }
 
   return transferEOS({
-    amount,
-    memo: ((referrer != null) ? `support ${sign_id} ${referrer}` : `support ${sign_id}`),
-  });
+      amount,
+      memo: ((referrer != null) ? `support ${sign_id} ${referrer}` : `support ${sign_id}`),
+    })
 }
 
 async function withdraw() {
@@ -81,31 +50,26 @@ async function withdraw() {
   });
 }
 function transferEOS({ amount = 0, memo = '' }) {
-  if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
-
-  eos().transaction({
-    actions: [
-      {
-        account: 'eosio.token',
-        name: 'transfer',
-        authorization: [{
-          actor: currentAccount().name,
-          permission: currentAccount().authority,
-        }],
-        data: {
-          from: currentAccount().name,
-          to: SIGNATURE_CONTRACT,
-          quantity: `${(amount).toFixed(4).toString()} EOS`,
-          memo,
+   //return new Promise((resolve, reject) => {
+   if (currentAccount() == null) throw(new Error('NOT-LOGINED'));
+   return  eos().transaction({
+      actions: [
+        {
+          account: 'eosio.token',
+          name: 'transfer',
+          authorization: [{
+            actor: currentAccount().name,
+            permission: currentAccount().authority,
+          }],
+          data: {
+            from: currentAccount().name,
+            to: SIGNATURE_CONTRACT,
+            quantity: `${(amount).toFixed(4).toString()} EOS`,
+            memo,
+          },
         },
-      },
-    ],
-  }).then((result) => {
-    alert('publish success!');
-    console.log(result);
-  }).catch((error) => {
-    alert(`error:${JSON.stringify(error)}`);
-  });
+      ],
+    })
 }
 // https://eosio.stackexchange.com/questions/1459/how-to-get-all-the-actions-of-one-account
 async function getContractActions() { // 190325 之後才許重構
@@ -190,6 +154,7 @@ async function getPlayerBills(owner) {
     /* pos: -1, */
     offset: -100,
   });
+  // console.log("player actions",actions);
   return actions;
 }
 
@@ -201,6 +166,7 @@ async function getPlayerIncome(name) {
     table: 'players',
     limit: 1,
   });
+    // console.log("player income:",rows)  //for debug
   return rows;
 }
 
@@ -257,7 +223,6 @@ async function getMaxSignId() {
 */
 
 export {
-  publishOnChain,
   support, withdraw,
   getContractActions,
   getSignInfo, getSharesInfo,

@@ -47,8 +47,8 @@ export default {
       required: true,
     },
     username: {
-      type: String
-    }
+      type: String,
+    },
   },
   components: { ArticleCard },
   created() {
@@ -70,17 +70,17 @@ export default {
     async getArticlesList() {
       // const articles = 'https://smartsignature.azurewebsites.net/api/article';
       // const articles = 'http://localhost:7001/posts';
-      const articles = 'https://api.smartsignature.io/posts'; // new backend api url
+      const articles = `https://api.smartsignature.io/posts?author=${this.username}`; // new backend api url
       const { data } = await axios.get(articles);
       if (this.listtype == 'original') {
-        for(const dataid in data){
+        for (const dataid in data) {
           const onedata = data[dataid];
-          if(onedata.author == this.username){
+          if (onedata.author == this.username) {
             this.articles.push(onedata);
           }
         }
         // do something...
-      }else{
+      } else {
         this.articles = data;
       }
       this.loading = false;

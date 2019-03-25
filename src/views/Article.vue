@@ -6,7 +6,7 @@
         <header class="ta_header">
           <h1 dir="auto">{{post.title}}</h1>
           <address dir="auto">
-            <router-link :to="{ name: 'User', params: { author: post.author }}">
+            <router-link :to="{ name: 'User', params: { author: post.author, username:post.author }}">
               <a> Author: {{post.author}}</a>
             </router-link>
             <br/>
@@ -20,22 +20,27 @@
     <footer class="footer-article">
       <Divider />
       <Row justify="center">
-          <i-col span="11">总共赞赏 {{getDisplayTotalSupportedAmount}} EOS</i-col>
+          <i-col span="11" v-if="!isTotalSupportAmountVisible">正在从链上加载本文收到的赞赏</i-col>
+          <i-col span="11" v-else-if="isTotalSupportAmountVisible">本文收到赞赏 {{getDisplayTotalSupportedAmount}} 个EOS</i-col>
           <i-col span="2"><Divider type="vertical" /></i-col>
           <i-col span="11">裂变系数：{{getDisplayedFissionFactor}}</i-col>
       </Row>
       <Divider />
       <Row style="white-space:nowrap;">
         <i-col span="11">
-          <za-button class="button-support" 
+          <za-button v-if="isSupported===0" class="button-support"
+            size='xl' theme="primary" disabled>加载中</za-button>
+          <za-button v-else-if="isSupported===1" class="button-support"
             size='xl' theme="primary"
-            @click="visible3 = !isSupported" :disabled="isSupported">{{isSupported ? '已打赏' : '打赏'}}</za-button>
+            @click="visible3=true" >赞赏</za-button>
+          <za-button v-else-if="isSupported===2" class="button-support"
+            size='xl' theme="primary" disabled>已赞赏</za-button>
         </i-col>
         <i-col span="2"><Divider type="vertical" style="opacity: 0;" /></i-col>
         <za-modal :visible="visible3"
            @close="handleClose" radius="" @maskClick="visible3 = false" :showClose="true"
            style="background:rgba(243,243,243,1);">
-           <div slot="title" style="textAlign: center;">打赏此文章</div>
+           <div slot="title" style="textAlign: center;">赞赏此文章</div>
             <Row><za-input
               auto-height="" v-model="v3" type="textarea" placeholder="输入推荐语…"></za-input></Row>
             <br/>
@@ -45,10 +50,7 @@
             <br/>
             <Row><za-button class="button-support"
               size='xl' theme="primary"
-              @click="support">打赏</za-button></Row>
-            <!-- <Row><za-keyboard-picker
-              :visible="visible7" type="number" @keyClick="handleChange1">
-            </za-keyboard-picker></Row> -->
+              @click="support">赞赏</za-button></Row>
         </za-modal>
         <i-col span="11">
           <za-button class="button-share"
@@ -79,13 +81,6 @@ import 'mavon-editor/dist/css/index.css';
 import querystring from 'query-string';
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
-/*
-const getValue = (v, key) => {
-  if (key === 'delete') {
-    return v.slice(0, -1);
-  }
-  return `${v}${key}`;
-}; */
 
 export default {
   name: 'Article',
@@ -121,7 +116,7 @@ export default {
     },
     getDisplayTotalSupportedAmount() {
       return this.totalSupportedAmount.toFixed(4);
-    }
+    },
   },
   async created() {
     document.title = '正在加载文章 - Smart Signature';
@@ -143,7 +138,7 @@ export default {
 
     // Set isSupported
     await this.setisSupported();
-    
+
     try {
       this.countTotalSupportedAmount(this.sign.id);
     } catch (error) {
@@ -169,11 +164,10 @@ export default {
       fission_factor: 0,
     },
     amount: 0.0000,
-    isSupported: false,
-    /* toastvisible: false, */
+    isSupported: 0, //0=加载中,1=未打赏 2=已打赏
+    isTotalSupportAmountVisible: false,  //正在加载和加载完毕的文本切换
     totalSupportedAmount: 0.0000,
     visible3: false,
-    visible7: false,
     v3: '',
     v5: '',
     pageinfo: {
@@ -210,6 +204,7 @@ export default {
         const element = actions3[index].quantity;
         this.totalSupportedAmount += parseFloat(element);
       }
+        this.isTotalSupportAmountVisible = true;
     },
     async getArticleData() {
       const { data } = await getArticleData(this.hash);
@@ -223,23 +218,17 @@ export default {
       this.amount = v;
       console.log('amount :', this.amount);
     },
-    /*
-    handleChange1(key) {
-      if (['close', 'ok'].indexOf(key) > -1) {
-        return;
-      }
-      this.v1 = getValue(this.v1, key);
-      console.log(this.v1);
-    }, */
     async setisSupported() {
       if (this.scatterAccount !== null) {
         const shares = await getSharesInfo(this.currentUsername);
-        // const shares = await getSharesInfo('linklinkguan'); // for sign.id 78
+        // const shares = await getSharesInfo('linklinkguan'); // test for sign.id 78
         // console.log('shares :', shares);
         const share = shares.find(element => element.id === this.sign.id);
         if (share !== undefined) {
           console.log('share :', share);
-          this.isSupported = true;
+          this.isSupported = 2;
+        } else {
+          this.isSupported = 1;//0=加载中,1=未打赏 2=已打赏
         }
       }
     },
@@ -274,12 +263,35 @@ export default {
 
       const referrer = this.getRef();
       console.log('referrer :', referrer);
-      await support({ amount, sign_id, referrer });
-      await this.setisSupported();
-      // tricky
-      this.totalSupportedAmount += parseFloat(amount);
+      this.isSupported = 0;//0=加载中,1=未打赏 2=已打赏
+      try{ 
+          await support({ amount, sign_id, referrer })
+          this.isSupported = 2;
+          alert('赞赏成功！');
+          // tricky speed up
+          this.totalSupportedAmount += parseFloat(amount);
+        }catch(error){
+          console.log(JSON.stringify(error));
+          alert('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额。');
+          this.isSupported = 1;
+        };
     },
-    share() {
+    async share() {
+      try {
+        if (!this.isScatterConnected) await this.connectScatterAsync();
+        console.info(this.isScatterConnected);
+        // await this.suggestNetworkAsync();
+        if (!this.isScatterConnected) throw 'no' ;
+        await this.loginScatterAsync();
+      } catch (e) {
+        console.warn('Unable to connect wallets');
+        this.$Modal.error({
+          title: '无法与你的钱包建立链接',
+          content: '请检查钱包是否打开并解锁',
+        });
+        return ;
+      }
+      this.board = this.getClipboard;
       const clipboard = new Clipboard('.button-share');
       clipboard.on('success', (e) => {
         this.$Modal.info({
@@ -323,7 +335,6 @@ export default {
 
 
 <style scoped>
-@import url(https://cdn.bootcss.com/github-markdown-css/2.10.0/github-markdown.min.css);
 .ta address a[rel="author"]:empty + time:before,
 .ta address.empty,
 .ta time:empty:before {
@@ -684,5 +695,8 @@ textarea {
 .tl_page {
   position: relative;
   padding: 21px 0;
+}
+.markdown-body.tac {
+    margin: 20px;
 }
 </style>
