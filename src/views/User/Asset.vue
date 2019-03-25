@@ -76,9 +76,8 @@ export default {
     const myassets = localStorage.getItem('myAssets');
     this.assets = (myassets) ? JSON.parse(myassets) : { assets: [] };
 
-    this.refreshTheThree();
     await this.refresh();
-    this.refreshTheThree();
+    this.sharecost = this.getPlayerTotalCost();
   },
   data() {
     return {
@@ -112,10 +111,8 @@ export default {
   },
   computed: {
     sortedAssets() {
-
       // if need change to asc, swap a & b
       return this.assets.sort((a, b) => (new Date(b.timestamp)).getTime() - (new Date(a.timestamp)).getTime());
-
     },
   },
   methods: {
@@ -127,7 +124,7 @@ export default {
       const actions2 = actions.filter(a => a.action_trace.act.account === 'signature.bp'
           && a.action_trace.act.name === 'bill'
           && a.action_trace.act.data.type !== 'test income');
-      // console.log(_actions);
+      // console.log("actions>??",actions2);
       return actions2.map(a => ({
         quantity: a.action_trace.act.data.quantity,
         type: a.action_trace.act.data.type,
@@ -137,19 +134,31 @@ export default {
     getDisplayAmount(amount) {
       return (amount > 0 ? '+' : '') + parseFloat(amount).toFixed(4);
     },
+    getPlayerTotalCost() {
+      console.log('assets::', JSON.stringify(this.assets));
+      const temp = this.assets.reduce((acc, asset) => {
+        if (asset.type === 'support expenses') return parseFloat(asset.quantity.substr(0, asset.quantity.indexOf(' '))) + acc;
+        return acc;
+      }, 0);
+      console.log('zhichu', temp);
+      return temp;
+    },
     async getPlayerTotalIncome(name) {
       console.log('Connecting to EOS fetch player income...');
-      const playerincome = await getPlayerIncome(name);
+      const playerincome = await getPlayerIncome(name); // 从合约拿到支持收入和转发收入
       if (playerincome !== null) {
-        this.sharereward = playerincome[0].share_income ;
-        this.writereward = playerincome[0].sign_income ;
+        this.sharereward = playerincome[0].share_income / 10000;
+        this.writereward = playerincome[0].sign_income / 10000;
+        console.log('share reward', this.sharereward);
+        console.log('write reward', this.writereward);
       } else {
         this.sharereward = 0;
         this.writereward = 0;
       }
       return (playerincome !== null)
         ? (playerincome[0].share_income + playerincome[0].sign_income) / 10000
-        : 0.0000 ;
+        : 0.0000;
+      // 截止2019年3月24日中午12时合约拿过来的东西要除以10000才能正常显示
     },
     handleClick(tab, event) {
       console.log(tab, event);
@@ -175,38 +184,35 @@ export default {
         let foo = await fooPromise;
         let bar = await barPromise;
       */
-
-      let getPlayerTotalIncomePromise = this.getPlayerTotalIncome(this.username);
-      let getAssetsListPromise = this.getAssetsList();
+      const getPlayerTotalIncomePromise = this.getPlayerTotalIncome(this.username);
+      const getAssetsListPromise = this.getAssetsList();
       this.playerincome = await getPlayerTotalIncomePromise;
-
       this.assets = await getAssetsListPromise;
+
       localStorage.setItem('myAssets', JSON.stringify(this.assets));
       console.log(this.username, '\'s total income:', this.playerincome);
       console.log(this.username, '\'s assets:', this.assets);
       this.refreshing = false;
       this.loading = false;
     },
-    refreshTheThree() {
+    // async refreshTheThree() {
+    //  this.sharereward = 0;
+    //  this.writereward = 0;
+    //  this.sharecost = 0;
 
-      this.sharereward = 0;
-      this.writereward = 0;
-      this.sharecost = 0;
-
-      for (let index = 0; index < this.assets.length; index += 1) {
-        const element = this.assets[index];
-        //if (element.type === 'share income') {
-        //  this.sharereward += parseFloat(element.quantity.replace(' EOS', ''));
-        //  // console.log(sharecost);
-        //} else if (element.type === 'sign income') {
-        //  this.writereward += parseFloat(element.quantity.replace(' EOS', ''));
-        //  // console.log(sharecost);
-        if (element.type === 'support expenses') {
-          this.sharecost += parseFloat(element.quantity.replace(' EOS', ''));
-          // console.log(sharecost);
-        }
-      }
-    },
+    //  for (let index = 0; index < this.assets.length; index += 1) {
+    //    const element = this.assets[index];
+    // if (element.type === 'share income') {
+    //  this.sharereward += parseFloat(element.quantity.replace(' EOS', ''));
+    //  // console.log(sharecost);
+    // } else if (element.type === 'sign income') {
+    //  this.writereward += parseFloat(element.quantity.replace(' EOS', ''));
+    //  // console.log(sharecost);
+    //   if (element.type === 'support expenses') {
+    //     this.sharecost += parseFloat(element.quantity.replace(' EOS', ''));
+    //   }
+    // }
+    // },//之后一段时间要是没问题就把这一段全删了
     goBack() {
       this.$router.go(-1);
     },

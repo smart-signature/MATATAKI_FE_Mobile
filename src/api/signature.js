@@ -18,9 +18,9 @@ async function support({ amount = null, sign_id = null, referrer = null }) {
   }
 
   return transferEOS({
-    amount,
-    memo: ((referrer != null) ? `support ${sign_id} ${referrer}` : `support ${sign_id}`),
-  });
+      amount,
+      memo: ((referrer != null) ? `support ${sign_id} ${referrer}` : `support ${sign_id}`),
+    })
 }
 
 async function withdraw() {
@@ -50,31 +50,26 @@ async function withdraw() {
   });
 }
 function transferEOS({ amount = 0, memo = '' }) {
-  if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
-
-  eos().transaction({
-    actions: [
-      {
-        account: 'eosio.token',
-        name: 'transfer',
-        authorization: [{
-          actor: currentAccount().name,
-          permission: currentAccount().authority,
-        }],
-        data: {
-          from: currentAccount().name,
-          to: SIGNATURE_CONTRACT,
-          quantity: `${(amount).toFixed(4).toString()} EOS`,
-          memo,
+   //return new Promise((resolve, reject) => {
+   if (currentAccount() == null) throw(new Error('NOT-LOGINED'));
+   return  eos().transaction({
+      actions: [
+        {
+          account: 'eosio.token',
+          name: 'transfer',
+          authorization: [{
+            actor: currentAccount().name,
+            permission: currentAccount().authority,
+          }],
+          data: {
+            from: currentAccount().name,
+            to: SIGNATURE_CONTRACT,
+            quantity: `${(amount).toFixed(4).toString()} EOS`,
+            memo,
+          },
         },
-      },
-    ],
-  }).then((result) => {
-    alert('publish success!');
-    console.log(result);
-  }).catch((error) => {
-    alert(`error:${JSON.stringify(error)}`);
-  });
+      ],
+    })
 }
 // https://eosio.stackexchange.com/questions/1459/how-to-get-all-the-actions-of-one-account
 async function getContractActions() { // 190325 之後才許重構
@@ -159,6 +154,7 @@ async function getPlayerBills(owner) {
     /* pos: -1, */
     offset: -100,
   });
+  // console.log("player actions",actions);
   return actions;
 }
 
@@ -170,6 +166,7 @@ async function getPlayerIncome(name) {
     table: 'players',
     limit: 1,
   });
+    // console.log("player income:",rows)  //for debug
   return rows;
 }
 
