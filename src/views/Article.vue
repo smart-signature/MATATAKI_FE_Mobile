@@ -27,9 +27,13 @@
       <Divider />
       <Row style="white-space:nowrap;">
         <i-col span="11">
-          <za-button class="button-support"
+          <za-button v-if="isSupported===0" class="button-support"
+            size='xl' theme="primary" disabled>加载中</za-button>
+          <za-button v-else-if="isSupported===1" class="button-support"
             size='xl' theme="primary"
-            @click="visible3 = !isSupported" :disabled="isSupported===undefined||isSupported">{{isSupported===undefined ? "加载中" : (isSupported ? "已赞赏" : "赞赏")}}</za-button>
+            @click="visible3=true" >赞赏</za-button>
+          <za-button v-else-if="isSupported===2" class="button-support"
+            size='xl' theme="primary" disabled>已赞赏</za-button>
         </i-col>
         <i-col span="2"><Divider type="vertical" style="opacity: 0;" /></i-col>
         <za-modal :visible="visible3"
@@ -159,7 +163,7 @@ export default {
       fission_factor: 0,
     },
     amount: 0.0000,
-    isSupported: undefined,
+    isSupported: 0, //0=加载中,1=未打赏 2=已打赏
     /* toastvisible: false, */
     totalSupportedAmount: 0.0000,
     visible3: false,
@@ -220,9 +224,9 @@ export default {
         const share = shares.find(element => element.id === this.sign.id);
         if (share !== undefined) {
           console.log('share :', share);
-          this.isSupported = true;
+          this.isSupported = 2;
         } else {
-          this.isSupported = false;
+          this.isSupported = 1;//0=加载中,1=未打赏 2=已打赏
         }
       }
     },
@@ -257,17 +261,17 @@ export default {
 
       const referrer = this.getRef();
       console.log('referrer :', referrer);
-      this.isSupported = undefined;
+      this.isSupported = 0;//0=加载中,1=未打赏 2=已打赏
       try{ 
           await support({ amount, sign_id, referrer })
-          this.isSupported = true;
+          this.isSupported = 2;
           alert('赞赏成功！');
           // tricky speed up
           this.totalSupportedAmount += parseFloat(amount);
         }catch(error){
           console.log(JSON.stringify(error));
           alert('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额。');
-          this.isSupported = false;
+          this.isSupported = 1;
         };
     },
     share() {
