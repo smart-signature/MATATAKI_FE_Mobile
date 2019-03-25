@@ -116,11 +116,7 @@ export default {
       // 用户不填写裂变系数则默认为2
       if (this.fissionFactor === "") this.fissionFactor = 2;
 
-      // 界面默认为2 传给后端为 2000  暂时写死
-      this.fissionFactor *= 1000;
-
       const { title, markdownData, currentUsername, fissionFactor } = this;
-
       const author = currentUsername;
       try {
         const { data } = await sendPost({
