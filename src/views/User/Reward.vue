@@ -6,7 +6,7 @@
       </div>
       <div slot="title">{{userTitle}}</div>
     </za-nav-bar>
-    <ArticlesList :listtype="'reward'" ref='ArticlesList'/>
+    <ArticlesList :listtype="'reward'" :username='username' ref='ArticlesList'/>
   </div>
 </template>
 

@@ -96,7 +96,7 @@ const API = {
     return ScatterJS.scatter.suggestNetwork(config.network.eos[0]);
   },
   loginScatterAsync() {
-    const requiredFields = { accounts: [config.network.eos] };
+    const requiredFields = { accounts: [config.network.eos[0]] };
     return ScatterJS.scatter.getIdentity(requiredFields);
   },
   logoutScatterAsync() {
