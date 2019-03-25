@@ -17,7 +17,7 @@
           <Input v-model="author" placeholder="写上你的大名..." clearable />
         </FormItem> -->
         <FormItem label="裂变系数">
-          <Input v-model="fissionFactor" placeholder="输入文章分享裂变系数" clearable />
+          <Input v-model="fissionFactor" disabled placeholder="输入文章分享裂变系数" clearable />
         </FormItem>
     </Form>
     <mavon-editor ref=md v-model="markdownData" @imgAdd="$imgAdd" placeholder="左边输入 Markdown 格式的文字开始编辑，右边即时预览" />
@@ -49,7 +49,7 @@ export default {
     title: '',
     author: '',
     markdownData: '',
-    fissionFactor: 2000,
+    fissionFactor: 2,
   }),
   computed: {
     ...mapGetters(['currentUsername']),
@@ -112,6 +112,9 @@ export default {
       }
       // 用户不填写裂变系数则默认为2
       if (this.fissionFactor === '') this.fissionFactor = 2;
+
+      //  裂变系数  界面默认为2 传给后端为 2000 暂时写死
+      this.fissionFactor *= 1000
 
       const {
         title, markdownData, currentUsername, fissionFactor,
