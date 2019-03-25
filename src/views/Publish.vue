@@ -10,38 +10,33 @@
       </div>
     </za-nav-bar>
     <Form label-position="left" :label-width="100">
-      <FormItem label="标题">
-        <Input v-model="title" placeholder="请输入你的文章标题..." size="large" clearable/>
-      </FormItem>
-      <!-- <FormItem label="署名">
+        <FormItem label="标题">
+          <Input v-model="title" placeholder="请输入你的文章标题..." size="large" clearable />
+        </FormItem>
+        <!-- <FormItem label="署名">
           <Input v-model="author" placeholder="写上你的大名..." clearable />
-      </FormItem>-->
-      <FormItem label="裂变系数">
-        <Input v-model="fissionFactor" disabled placeholder="输入文章分享裂变系数" clearable/>
-      </FormItem>
+        </FormItem> -->
+        <FormItem label="裂变系数">
+          <Input v-model="fissionFactor" placeholder="输入文章分享裂变系数" clearable />
+        </FormItem>
     </Form>
-    <mavon-editor
-      ref="md"
-      v-model="markdownData"
-      @imgAdd="$imgAdd"
-      placeholder="左边输入 Markdown 格式的文字开始编辑，右边即时预览"
-    />
+    <mavon-editor ref=md v-model="markdownData" @imgAdd="$imgAdd" placeholder="左边输入 Markdown 格式的文字开始编辑，右边即时预览" />
   </div>
 </template>
 
 <script>
-import axios from "axios";
-import { mapGetters, mapActions, mapState } from "vuex";
-import { sendPost } from "@/api/ipfs";
-import API from "@/api/scatter.js";
-import { mavonEditor } from "mavon-editor";
-import request from "request";
-import { publishArticle, defaultImagesUploader, auth } from "../api";
+import axios from 'axios';
+import { mapGetters, mapActions, mapState } from 'vuex';
+import { sendPost } from '@/api/ipfs';
+import API from '@/api/scatter.js';
+import { mavonEditor } from 'mavon-editor';
+import request from 'request';
+import { publishArticle, defaultImagesUploader, auth } from '../api';
 
 export default {
-  name: "NewPost",
+  name: 'NewPost',
   components: {
-    "mavon-editor": mavonEditor
+    'mavon-editor': mavonEditor,
   },
   async created() {
     if (this.currentUsername) {
@@ -51,19 +46,21 @@ export default {
     await this.loginScatterAsync();
   },
   data: () => ({
-    title: "",
-    author: "",
-    markdownData: "",
-    fissionFactor: 2
+    title: '',
+    author: '',
+    markdownData: '',
+    fissionFactor: 2000,
   }),
   computed: {
-    ...mapGetters(["currentUsername"]),
-    ...mapState(["scatterAccount"])
+    ...mapGetters(['currentUsername']),
+    ...mapState(['scatterAccount']),
   },
   methods: {
-    ...mapActions(["suggestNetworkAsync", "loginScatterAsync"]),
-    async authDemo() {
-      // 示例代码。。请随便改。。。
+    ...mapActions([
+      'suggestNetworkAsync',
+      'loginScatterAsync',
+    ]),
+    async authDemo() { // 示例代码。。请随便改。。。
       // 1. 取得签名
       API.authSignature((username, publickey, sign) => {
         console.log(username, publickey, sign);
@@ -73,7 +70,7 @@ export default {
           if (!error) {
             // 3. save accessToken
             const accessToken = body;
-            localStorage.setItem("ACCESS_TOKEN", accessToken);
+            localStorage.setItem('ACCESS_TOKEN', accessToken);
           }
         });
       });
@@ -99,7 +96,7 @@ export default {
     },
     sendFailed() {
       this.$Notice.error({
-        title: "发送失败"
+        title: '发送失败',
       });
     },
     async sendThePost() {
@@ -107,128 +104,114 @@ export default {
         await this.loginScatterAsync();
       }
       // 标题或内容为空时
-      if (this.title === "" || this.markdownData === "") {
+      if (this.title === '' || this.markdownData === '') {
         return this.$Modal.warning({
-          title: "提示",
-          content: "标题或正文不能为空"
+          title: '提示',
+          content: '标题或正文不能为空',
         });
       }
       // 用户不填写裂变系数则默认为2
-      if (this.fissionFactor === "") this.fissionFactor = 2;
+      if (this.fissionFactor === '') this.fissionFactor = 2;
 
-      const { title, markdownData, currentUsername, fissionFactor } = this;
+      const {
+        title, markdownData, currentUsername, fissionFactor,
+      } = this;
       const author = currentUsername;
       try {
         const { data } = await sendPost({
-          title,
-          author,
-          content: markdownData,
-          desc: "whatever"
+          title, author, content: markdownData, desc: 'whatever',
         });
         const { code, hash } = data;
         if (code !== 200) {
           this.sendFailed();
         } else {
-          console.log("Push action to signature.bp...", hash);
+          console.log('Push action to signature.bp...', hash);
           // const { transaction_id } = await publishOnChain({ hash, fissionFactor });
           // const { publicKey } = await API.getPublicKey(); // what can i say ?
-          API.getSignature(
-            author,
-            hash,
-            (err, signature, publicKey, username) => {
-              console.log("签名成功后调", signature, publicKey);
-              if (err) {
-                this.sendFailed();
-              } else {
-                publishArticle(
-                  {
-                    author,
-                    title,
-                    hash,
-                    publicKey,
-                    signature,
-                    currentUsername,
-                    fissionFactor
-                  },
-                  (error, response, body) => {
-                    if (body.msg !== "success" || error) {
-                      this.$Notice.error({
-                        title: "发送失败",
-                        desc: error
-                      });
-                    } else {
-                      this.$Notice.success({
-                        title: "发送成功",
-                        desc: "3秒后跳转到你发表的文章"
-                      });
-                      const jumpToArticle = () =>
-                        this.$router.push({
-                          name: "Article",
-                          params: { hash }
-                        });
-                      setTimeout(jumpToArticle, 3 * 1000);
-                    }
-                  }
-                );
-              }
+          API.getSignature(author, hash, (err, signature, publicKey, username) => {
+            console.log('签名成功后调', signature, publicKey);
+            if (err) {
+              this.sendFailed();
+            } else {
+              publishArticle({
+                author, title, hash, publicKey, signature, currentUsername, fissionFactor,
+              }, (error, response, body) => {
+                if (body.msg !== 'success' || error) {
+                  this.$Notice.error({
+                    title: '发送失败',
+                    desc: error,
+                  });
+                } else {
+                  this.$Notice.success({
+                    title: '发送成功',
+                    desc: '3秒后跳转到你发表的文章',
+                  });
+                  const jumpToArticle = () => this.$router.push({
+                    name: 'Article',
+                    params: { hash },
+                  });
+                  setTimeout(jumpToArticle, 3 * 1000);
+                }
+              });
             }
-          );
+          });
         }
       } catch (error) {
         console.error(error);
         this.$Notice.error({
-          title: "发送失败"
+          title: '发送失败',
         });
       }
     },
     $imgAdd(pos, imgfile) {
       // 想要更换默认的 uploader， 请在 src/api/imagesUploader.js 修改 currentImagesUploader
       // 不要在页面组件写具体实现，谢谢合作 - Frank
-      defaultImagesUploader(imgfile).then(({ data }) => {
-        const { url } = data.data;
-        this.$refs.md.$img2Url(pos, url);
-      });
-    }
+      defaultImagesUploader(imgfile)
+        .then(({ data }) => {
+          const { url } = data.data;
+          this.$refs.md.$img2Url(pos, url);
+        });
+    },
   },
   test() {
-    // publishOnChain({ hash: 'QmfJsZmbsFcaNEBejP6HcXQEXycVXKfFwbMM3eju4VdsN3' });
-    // transferEOS({amount: 0, memo: '', });
-  }
+  // publishOnChain({ hash: 'QmfJsZmbsFcaNEBejP6HcXQEXycVXKfFwbMM3eju4VdsN3' });
+  // transferEOS({amount: 0, memo: '', });
+  },
 };
 </script>
 
 <style scoped>
-.new-post {
-  max-width: 90%;
-  margin: 0 auto;
-}
+  .new-post {
+    max-width: 90%;
+    margin: 0 auto;
+  }
 
-textarea,
-#editor div {
-  display: inline-block;
-  width: 49%;
-  height: 100%;
-  vertical-align: top;
-  box-sizing: border-box;
-  padding: 0 20px;
-}
+  textarea,
+  #editor div {
+    display: inline-block;
+    width: 49%;
+    height: 100%;
+    vertical-align: top;
+    box-sizing: border-box;
+    padding: 0 20px;
+  }
 
-textarea {
-  border: none;
-  border-right: 1px solid #ccc;
-  resize: none;
-  outline: none;
-  background-color: #f6f6f6;
-  font-size: 14px;
-  font-family: "Monaco", courier, monospace;
-  padding: 20px;
-}
+  textarea {
+    border: none;
+    border-right: 1px solid #ccc;
+    resize: none;
+    outline: none;
+    background-color: #f6f6f6;
+    font-size: 14px;
+    font-family: 'Monaco', courier, monospace;
+    padding: 20px;
+  }
 
-code {
-  color: #f66;
-}
-/* 编辑器层级大于modal 改变编辑器层级 */
-.v-note-wrapper {
-  z-index: 1000;
-}
+  code {
+    color: #f66;
+  }
+  /* 编辑器层级大于modal 改变编辑器层级 */
+  .v-note-wrapper{
+    z-index: 1000;
+  }
 </style>
