@@ -76,9 +76,7 @@ import {
   support, getSignInfo, getSharesInfo, getContractActions,
 } from '../api/signature.js';
 import 'mavon-editor/dist/css/index.css';
-// markdownIt.set({ breaks: false });
 
-import querystring from 'query-string';
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
 const clipboard = new Clipboard('.button-share');
@@ -102,7 +100,7 @@ export default {
     getClipboard() {
       const { currentUsername } = this;
       const { protocol, host } = window.location
-      const articleUrl = `${protocol}://${host}/article/${this.hash}`
+      const articleUrl = `${protocol}//${host}/article/${this.hash}`
       const shareLink = this.isLogined
         ? `${articleUrl}?invite=${currentUsername}`
         : articleUrl;
