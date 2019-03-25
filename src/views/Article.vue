@@ -270,7 +270,22 @@ export default {
           this.isSupported = false;
         };
     },
-    share() {
+    async share() {
+      try {
+        if (!this.isScatterConnected) await this.connectScatterAsync();
+        console.info(this.isScatterConnected);
+        // await this.suggestNetworkAsync();
+        if (!this.isScatterConnected) throw 'no' ;
+        await this.loginScatterAsync();
+      } catch (e) {
+        console.warn('Unable to connect wallets');
+        this.$Modal.error({
+          title: '无法与你的钱包建立链接',
+          content: '请检查钱包是否打开并解锁',
+        });
+        return ;
+      }
+      this.board = this.getClipboard;
       const clipboard = new Clipboard('.button-share');
       clipboard.on('success', (e) => {
         this.$Modal.info({
