@@ -93,7 +93,7 @@ const API = {
     return ScatterJS.scatter.connect(config.appScatterName, { initTimeout: 2000 });
   },
   suggestNetworkAsync() {
-    return ScatterJS.scatter.suggestNetwork(config.network.eos);
+    return ScatterJS.scatter.suggestNetwork(config.network.eos[0]);
   },
   loginScatterAsync() {
     const requiredFields = { accounts: [config.network.eos] };
