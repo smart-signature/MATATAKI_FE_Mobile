@@ -81,6 +81,13 @@ import 'mavon-editor/dist/css/index.css';
 const markdownIt = mavonEditor.getMarkdownIt();
 const clipboard = new Clipboard('.button-share');
 
+const RewardStatus = {
+  //0=加载中,1=未打赏 2=已打赏
+  LOADING: 0,
+  NOT_REWARD_YET: 1,
+  REWARDED: 2,
+}
+
 export default {
   name: 'Article',
   props: ['hash'],
@@ -162,7 +169,7 @@ export default {
       fission_factor: 0,
     },
     amount: 0.0000,
-    isSupported: 0, //0=加载中,1=未打赏 2=已打赏
+    isSupported: RewardStatus.LOADING,
     isTotalSupportAmountVisible: false,  //正在加载和加载完毕的文本切换
     totalSupportedAmount: 0.0000,
     visible3: false,
@@ -178,6 +185,9 @@ export default {
       // 当文章从 IPFS fetched 到， post 会更新，我们要更新网页 title
       document.title = `${title} by ${author} - Smart Signature`;
     },
+    currentUsername() {
+      this.setisSupported()
+    }
   },
   methods: {
     ...mapActions([
@@ -236,14 +246,13 @@ export default {
     async setisSupported() {
       if (this.scatterAccount !== null) {
         const shares = await getSharesInfo(this.currentUsername);
-        // const shares = await getSharesInfo('linklinkguan'); // test for sign.id 78
         // console.log('shares :', shares);
         const share = shares.find(element => element.id === this.sign.id);
         if (share !== undefined) {
           console.log('share :', share);
-          this.isSupported = 2;
+          this.isSupported = RewardStatus.REWARDED;
         } else {
-          this.isSupported = 1;//0=加载中,1=未打赏 2=已打赏
+          this.isSupported = RewardStatus.NOT_REWARD_YET;
         }
       }
     },
@@ -278,17 +287,17 @@ export default {
 
       const referrer = this.getInvite;
       console.log('referrer :', referrer);
-      this.isSupported = 0;//0=加载中,1=未打赏 2=已打赏
+      this.isSupported = RewardStatus.LOADING;
       try{ 
           await support({ amount, sign_id, referrer })
-          this.isSupported = 2;
+          this.isSupported = RewardStatus.REWARDED;
           alert('赞赏成功！');
           // tricky speed up
           this.totalSupportedAmount += parseFloat(amount);
         }catch(error){
           console.log(JSON.stringify(error));
           alert('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额。');
-          this.isSupported = 1;
+          this.isSupported = RewardStatus.NOT_REWARD_YET;
         };
     },
     async share() {
