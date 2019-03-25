@@ -46,9 +46,6 @@
             <Row><za-button class="button-support"
               size='xl' theme="primary"
               @click="support">赞赏</za-button></Row>
-            <!-- <Row><za-keyboard-picker
-              :visible="visible7" type="number" @keyClick="handleChange1">
-            </za-keyboard-picker></Row> -->
         </za-modal>
         <i-col span="11">
           <za-button class="button-share"
@@ -79,13 +76,6 @@ import 'mavon-editor/dist/css/index.css';
 import querystring from 'query-string';
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
-/*
-const getValue = (v, key) => {
-  if (key === 'delete') {
-    return v.slice(0, -1);
-  }
-  return `${v}${key}`;
-}; */
 
 export default {
   name: 'Article',
@@ -173,7 +163,6 @@ export default {
     /* toastvisible: false, */
     totalSupportedAmount: 0.0000,
     visible3: false,
-    visible7: false,
     v3: '',
     v5: '',
     pageinfo: {
@@ -223,14 +212,6 @@ export default {
       this.amount = v;
       console.log('amount :', this.amount);
     },
-    /*
-    handleChange1(key) {
-      if (['close', 'ok'].indexOf(key) > -1) {
-        return;
-      }
-      this.v1 = getValue(this.v1, key);
-      console.log(this.v1);
-    }, */
     async setisSupported() {
       if (this.scatterAccount !== null) {
         const shares = await getSharesInfo(this.currentUsername);
@@ -277,18 +258,17 @@ export default {
       const referrer = this.getRef();
       console.log('referrer :', referrer);
       this.isSupported = undefined;
-      await support({ amount, sign_id, referrer })
-        .then(() => {
+      try{ 
+          await support({ amount, sign_id, referrer })
           this.isSupported = true;
           alert('赞赏成功！');
           // tricky speed up
           this.totalSupportedAmount += parseFloat(amount);
-        })
-        .catch((error) => {
+        }catch(error){
           console.log(JSON.stringify(error));
           alert('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额。');
           this.isSupported = false;
-        });
+        };
     },
     share() {
       const clipboard = new Clipboard('.button-share');

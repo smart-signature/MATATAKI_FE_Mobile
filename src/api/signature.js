@@ -50,9 +50,9 @@ async function withdraw() {
   });
 }
 function transferEOS({ amount = 0, memo = '' }) {
-  return new Promise((resolve, reject) => {
-    if (currentAccount() == null) reject(new Error('NOT-LOGINED'));
-    eos().transaction({
+   //return new Promise((resolve, reject) => {
+   if (currentAccount() == null) throw(new Error('NOT-LOGINED'));
+   return  eos().transaction({
       actions: [
         {
           account: 'eosio.token',
@@ -69,15 +69,7 @@ function transferEOS({ amount = 0, memo = '' }) {
           },
         },
       ],
-    }).then((result) => {
-      // alert('publish success!');
-      console.log(result);
-      resolve();
-    }).catch((error) => {
-      console.log(`error:${JSON.stringify(error)} on transfer eos`);
-      reject(error);
-    });
-  });
+    })
 }
 // https://eosio.stackexchange.com/questions/1459/how-to-get-all-the-actions-of-one-account
 async function getContractActions() { // 190325 之後才許重構
