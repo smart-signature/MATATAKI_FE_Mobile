@@ -20,7 +20,8 @@
     <footer class="footer-article">
       <Divider />
       <Row justify="center">
-          <i-col span="11">本文收到赞赏 {{getDisplayTotalSupportedAmount}} 个EOS</i-col>
+          <i-col span="11" v-if="!isTotalSupportAmountVisible">正在从链上加载本文收到的赞赏</i-col>
+          <i-col span="11" v-else-if="isTotalSupportAmountVisible">本文收到赞赏 {{getDisplayTotalSupportedAmount}} 个EOS</i-col>
           <i-col span="2"><Divider type="vertical" /></i-col>
           <i-col span="11">裂变系数：{{getDisplayedFissionFactor}}</i-col>
       </Row>
@@ -164,7 +165,7 @@ export default {
     },
     amount: 0.0000,
     isSupported: 0, //0=加载中,1=未打赏 2=已打赏
-    /* toastvisible: false, */
+    isTotalSupportAmountVisible: false,  //正在加载和加载完毕的文本切换
     totalSupportedAmount: 0.0000,
     visible3: false,
     v3: '',
@@ -203,6 +204,7 @@ export default {
         const element = actions3[index].quantity;
         this.totalSupportedAmount += parseFloat(element);
       }
+        this.isTotalSupportAmountVisible = true;
     },
     async getArticleData() {
       const { data } = await getArticleData(this.hash);
