@@ -20,16 +20,21 @@
     <footer class="footer-article">
       <Divider />
       <Row justify="center">
-          <i-col span="11">本文收到赞赏 {{getDisplayTotalSupportedAmount}} 个EOS</i-col>
+          <i-col span="11" v-if="!isTotalSupportAmountVisible">正在从链上加载本文收到的赞赏</i-col>
+          <i-col span="11" v-else-if="isTotalSupportAmountVisible">本文收到赞赏 {{getDisplayTotalSupportedAmount}} 个EOS</i-col>
           <i-col span="2"><Divider type="vertical" /></i-col>
           <i-col span="11">裂变系数：{{getDisplayedFissionFactor}}</i-col>
       </Row>
       <Divider />
       <Row style="white-space:nowrap;">
         <i-col span="11">
-          <za-button class="button-support"
+          <za-button v-if="isSupported===0" class="button-support"
+            size='xl' theme="primary" disabled>加载中</za-button>
+          <za-button v-else-if="isSupported===1" class="button-support"
             size='xl' theme="primary"
-            @click="visible3 = !isSupported" :disabled="isSupported||isSupported===undefined">{{isSupported===undefined ? "加载中" : (isSupported ? "已赞赏" : "赞赏")}}</za-button>
+            @click="visible3=true" >赞赏</za-button>
+          <za-button v-else-if="isSupported===2" class="button-support"
+            size='xl' theme="primary" disabled>已赞赏</za-button>
         </i-col>
         <i-col span="2"><Divider type="vertical" style="opacity: 0;" /></i-col>
         <za-modal :visible="visible3"
@@ -159,8 +164,8 @@ export default {
       fission_factor: 0,
     },
     amount: 0.0000,
-    isSupported: undefined,
-    /* toastvisible: false, */
+    isSupported: 0, //0=加载中,1=未打赏 2=已打赏
+    isTotalSupportAmountVisible: false,  //正在加载和加载完毕的文本切换
     totalSupportedAmount: 0.0000,
     visible3: false,
     v3: '',
@@ -199,6 +204,7 @@ export default {
         const element = actions3[index].quantity;
         this.totalSupportedAmount += parseFloat(element);
       }
+        this.isTotalSupportAmountVisible = true;
     },
     async getArticleData() {
       const { data } = await getArticleData(this.hash);
@@ -220,9 +226,9 @@ export default {
         const share = shares.find(element => element.id === this.sign.id);
         if (share !== undefined) {
           console.log('share :', share);
-          this.isSupported = true;
+          this.isSupported = 2;
         } else {
-          this.isSupported = false;
+          this.isSupported = 1;//0=加载中,1=未打赏 2=已打赏
         }
       }
     },
@@ -257,17 +263,17 @@ export default {
 
       const referrer = this.getRef();
       console.log('referrer :', referrer);
-      this.isSupported = undefined;
+      this.isSupported = 0;//0=加载中,1=未打赏 2=已打赏
       try{ 
           await support({ amount, sign_id, referrer })
-          this.isSupported = true;
+          this.isSupported = 2;
           alert('赞赏成功！');
           // tricky speed up
           this.totalSupportedAmount += parseFloat(amount);
         }catch(error){
           console.log(JSON.stringify(error));
           alert('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额。');
-          this.isSupported = false;
+          this.isSupported = 1;
         };
     },
     async share() {
@@ -689,5 +695,8 @@ textarea {
 .tl_page {
   position: relative;
   padding: 21px 0;
+}
+.markdown-body.tac {
+    margin: 20px;
 }
 </style>
