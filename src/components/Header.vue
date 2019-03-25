@@ -1,10 +1,20 @@
 <template>
   <div class="my-Header">
     <za-nav-bar>
-      <div slot="left"><Icon type="ios-home" :size="24" @click="goHome" /></div>
-      <div slot="title" @click="goHome">{{pageinfo.title}}</div>
-      <div slot="right" @click="goPage(pageinfo.rightPage)">
-        <Icon type="ios-share-alt" :size="24" />
+      <div slot="left">
+        <router-link tag="my-Header" :to="{ name: 'home' }">
+          <Icon type="ios-home" :size="24" />
+        </router-link>
+      </div>
+      <div slot="title">
+        <router-link tag="my-Header" :to="{ name: 'home' }">
+          {{pageinfo.title}}
+        </router-link>
+      </div>
+      <div slot="right">
+        <router-link tag="my-Header" :to="{ name: pageinfo.rightPage }">
+          <Icon type="ios-share-alt" :size="24" />
+        </router-link>
       </div>
     </za-nav-bar>
 </div>
@@ -17,10 +27,15 @@ export default {
   name: 'my-Header',
   props: ['pageinfo'],
   computed: {
+    ...mapState(['isScatterConnected']),
   },
-  created() {
+  // 依據 https://blog.csdn.net/m0_37728716/article/details/81289317
+  // 從 crearted 改成 mounted
+  // 這極有可能是這幾天錢包登陸老是有問題的原因
+  // 依據 https://github.com/vuejs/vue/issues/7333
+  mounted() {
     try {
-      this.loginScatterAsync();
+      if (this.isScatterConnected) this.loginScatterAsync();
     } catch (error) {
       console.error('login faild');
       this.$Modal.error({
@@ -35,13 +50,6 @@ export default {
       'suggestNetworkAsync',
       'loginScatterAsync',
     ]),
-    goPage(page) {
-      this.$router.push({ name: page });
-    },
-    goHome() {
-      this.$router.push({ name: 'home' });
-    },
-
   },
 };
 </script>
