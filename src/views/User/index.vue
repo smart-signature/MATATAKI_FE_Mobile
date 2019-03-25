@@ -68,7 +68,7 @@
       </za-cell>
     </div>
     <div class="centercard" v-if="isMe">
-      <za-cell is-link has-arrow @click='() => {}'>
+      <za-cell is-link has-arrow @click='jumpTo({ name: "About" })'>
         规则介绍
       </za-cell>
       <za-cell is-link has-arrow @click='() => {}'>
