@@ -14,7 +14,7 @@
           </address>
         </header>
         <mavon-editor v-show="false" style="display: none;"/>
-        <div class="markdown-body tac" v-html="compiledMarkdown"></div>
+        <div class="markdown-body" v-html="compiledMarkdown"></div>
       </main>
     </div>
     <footer class="footer-article">
@@ -325,30 +325,6 @@ export default {
 
 
 <style scoped>
-.ta address a[rel="author"]:empty + time:before,
-.ta address.empty,
-.ta time:empty:before {
-  display: none;
-}
-.ta .tac blockquote,
-.ta .tac p,
-.ta .tac pre,
-.ta_header {
-  word-wrap: break-word;
-}
-.prompt,
-.tl_blocks {
-  right: 0;
-  position: absolute;
-}
-body,
-html {
-  padding: 0;
-  margin: 0;
-}
-textarea {
-  resize: none;
-}
 .article {
   text-align: left;
   max-width: 732px;
@@ -425,11 +401,10 @@ textarea {
 .ta .ta_header,
 .ta .tac,
 .ta .tac .ql-editor {
-  font-family: CustomSerif, Georgia, Cambria, "Times New Roman", serif;
+  font-family: "Open Sans",sans-serif;
   font-weight: 400;
   font-style: normal;
   font-size: 18px;
-  line-height: 1.58;
   padding: 0;
   margin: 0;
   color: rgba(0, 0, 0, 0.8);
@@ -457,7 +432,6 @@ textarea {
   font-weight: 700;
   font-size: 32px;
   margin: 21px 21px 12px;
-  line-height: 34px;
 }
 .ta h2 {
   font-size: 24px;
@@ -470,7 +444,6 @@ textarea {
 }
 .ta address {
   font-size: 15px;
-  line-height: 18px;
   margin: 12px 21px;
 }
 .ta address time:before {
@@ -486,184 +459,12 @@ textarea {
 .ta address a[href] {
   border-bottom: none;
 }
-.ta .tac p {
-  margin: 0 21px 12px;
-}
-.ta .tac code,
-.ta .tac pre {
-  font-family: Menlo, "Courier New", Courier, monospace;
-  font-size: 16px;
-  background: #f5f8fc;
-}
-.ta .tac code {
-  padding: 1px 3px;
-}
-.ta .tac pre {
-  margin: 14px 0;
-  padding: 7px 21px;
-  white-space: pre-wrap;
-}
-.ta .tac h3,
-.ta .tac h4 {
-  font-family: CustomSansSerif, "Lucida Grande", Arial, sans-serif;
-  font-weight: 700;
-  font-style: normal;
-  font-size: 28px;
-  margin: 18px 21px 9px;
-}
-.ta .tac aside,
-.ta .tac blockquote {
-  font-family: CustomSerif, Georgia, Cambria, "Times New Roman", serif;
-  font-style: italic;
-}
-.ta .tac h4 {
-  font-size: 24px;
-  margin: 18px 21px 7px;
-}
-.ta .tac blockquote {
-  margin: 18px 21px 16px 0;
-  padding-left: 15px;
-  position: relative;
-  border-left: 3px solid #000;
-}
-.ta .tac aside {
-  font-size: 21px;
-  color: rgba(0, 0, 0, 0.6);
-  margin: 18px 21px 16px;
-  padding: 0 18px;
-  text-align: center;
-}
-.ta .tac hr {
-  width: 50%;
-  margin: 30px auto;
-  border: none;
-  font-size: 2px;
-  text-align: right;
-}
-.ta .tac hr:after {
-  content: "";
-  display: block;
-  border-top: 1px solid #c9cdd1;
-  margin: 0 3px;
-  position: relative;
-  top: 1px;
-}
-.ta .tac ol,
-.ta .tac ul {
-  padding: 0;
-  margin: 21px;
-  list-style: none;
-  counter-reset: list;
-}
-.ta .tac ol li,
-.ta .tac ul li {
-  margin-left: 30px;
-  margin-bottom: 14px;
-  padding: 0;
-  position: relative;
-}
-.ta .tac ol li:before,
-.ta .tac ul li:before {
-  position: absolute;
-  display: inline-block;
-  box-sizing: border-box;
-  width: 78px;
-  margin: 0 0 0 -78px;
-  text-align: right;
-}
-.ta .tac ul li:before {
-  padding: 1px 15px 0 0;
-  content: "â€¢";
-}
-.ta .tac ol li:before {
-  font-feature-settings: "liga" on, "lnum" on;
-  -moz-font-feature-settings: "liga" on, "lnum" on;
-  -webkit-font-feature-settings: "liga" on, "lnum" on;
-  padding-right: 12px;
-  counter-increment: list;
-  content: counter(list) ".";
-}
-.ta .tac .iframe_wrap {
-  position: relative;
-}
-.ta .tac .iframe_wrap iframe {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-}
-.ta .tac .figure_wrapper,
-.ta .tac figure {
-  position: relative;
-}
-.ta .tac figure {
-  margin: 0 21px 16px;
-  padding: 0;
-  text-align: center;
-}
-.ta .tac figcaption,
-.ta .tac figcaption .editable_input {
-  font-family: CustomSansSerif, "Lucida Grande", Arial, sans-serif;
-  font-size: 15px;
-  color: #79828b;
-  padding: 12px 21px 0;
-  line-height: 18px;
-  vertical-align: top;
-  text-align: center;
-}
-.ta .tac figcaption .editable_input {
-  width: 100%;
-  border: none;
-  padding: 0;
-  margin: 0;
-}
-.ta .tac .figure_wrapper img,
-.ta .tac .figure_wrapper video {
-  opacity: 1;
-  transition: opacity 0.15s ease;
-  max-height: 690px;
-}
-.ta .tac .figure_wrapper.loading img,
-.ta .tac .figure_wrapper.loading video {
-  opacity: 0.3;
-}
-.ta .tac .figure_wrapper .file_progress {
-  position: absolute;
-  z-index: 1;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 3px;
-  background-color: rgba(255, 255, 255, 0.7);
-  transition: opacity 0.15s ease;
-  visibility: hidden;
-  opacity: 0;
-}
-.ta .tac .figure_wrapper.loading .file_progress {
-  visibility: visible;
-  opacity: 1;
-}
-.ta .tac .figure_wrapper .file_progress_bar {
-  height: 2px;
-  background-color: #333;
-  transition: width 0.1s linear;
-  width: 0;
-}
-.ta .tac input.ql-image[type="file"] {
-  display: none;
-}
-.tac h1,
-.tac address {
-  display: none !important;
-}
 .footer-article {
   font-size: 12px;
-  font-family: PingFangSC-Regular;
+  font-family: PingFangSC-Regular, "Open Sans", sans-serif;
   font-weight: 400;
   color: rgba(0,0,0,1);
   text-align: center;
-  line-height: 10px;
   letter-spacing: 1px;
 }
 
