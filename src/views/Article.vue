@@ -246,6 +246,7 @@ export default {
     async setisSupported() {
       if (this.scatterAccount !== null) {
         const shares = await getSharesInfo(this.currentUsername);
+        // const shares = await getSharesInfo('linklinkguan'); // test for sign.id 78	
         // console.log('shares :', shares);
         const share = shares.find(element => element.id === this.sign.id);
         if (share !== undefined) {
