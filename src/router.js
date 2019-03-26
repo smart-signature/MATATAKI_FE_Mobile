@@ -28,13 +28,6 @@ export default new Router({
       component: () => import(/* webpackChunkName: "article" */ './views/Article.vue'),
     },
     {
-      path: '/article/:hash/:inviter',
-      redirect: to => { 
-        const { hash, inviter } = to.params
-          return { name: 'Article', params: { hash, inviter } }
-      } 
-    },
-    {
       path: '/login',
       name: 'Login',
       component: () => import(/* webpackChunkName: "login" */ './views/Login.vue'),
