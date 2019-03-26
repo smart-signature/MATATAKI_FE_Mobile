@@ -2,18 +2,20 @@
   <div class="my-Header">
     <za-nav-bar>
       <div slot="left">
-        <router-link tag="my-Header" :to="{ name: 'home' }">
-          <Icon type="ios-home" :size="24" />
-        </router-link>
+          <za-icon v-if="pageinfo.left==='back'"
+            theme="primary" type="arrow-left" @click="goBack"/>
+          <router-link v-else :to="{ name: 'home' }">
+            <Icon type="ios-home" :size="24" />
+          </router-link>
       </div>
       <div slot="title">
-        <router-link tag="my-Header" :to="{ name: 'home' }">
+        <!--<router-link tag="my-Header" :to="{ name: 'home' }">-->
           {{pageinfo.title}}
-        </router-link>
+        <!--</router-link>-->
       </div>
       <div slot="right">
-        <router-link tag="my-Header" :to="{ name: pageinfo.rightPage }">
-          <Icon type="ios-share-alt" :size="24" />
+        <router-link :to="{ name: pageinfo.rightPage }">
+          <!--<Icon type="ios-share-alt" :size="24" />-->
         </router-link>
       </div>
     </za-nav-bar>
@@ -42,10 +44,24 @@ export default {
       'suggestNetworkAsync',
       'loginScatterAsync',
     ]),
+    goBack() {
+      this.$router.go(-1);
+    },
   },
 };
 </script>
 
 <style scoped>
-
+a:link {
+  color: black;
+}
+a:visited {
+  color: black;
+}
+a:hover a:active {
+  color: black;
+}
+a:active {
+  color: black;
+}
 </style>
