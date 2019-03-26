@@ -247,7 +247,6 @@ export default {
     const isEmptyArray = arr => Array.isArray(arr) && arr.length !== 0
     const playerincome = await getPlayerIncome(this.username);
     this.playerincome = isEmptyArray(playerincome) ? playerincome[0] : this.playerincome
-    console.log(playerincome);
     this.refresh_user();
     const user = this.isMe ? '我' : this.username;
     document.title = `${user}的个人主页 - SmartSignature`;
