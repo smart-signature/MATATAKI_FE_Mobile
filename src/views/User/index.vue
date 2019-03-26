@@ -93,7 +93,7 @@ import {
 } from '../../api';
 import ArticlesList from './ArticlesList.vue';
 import API from '@/api/scatter.js';
-
+import { isEmptyArray } from "@/common/methods.js";
 export default {
   name: 'User',
   props: ['username'],
@@ -244,7 +244,6 @@ export default {
     // }
   },
   async created() {
-    const isEmptyArray = arr => Array.isArray(arr) && arr.length !== 0
     const playerincome = await getPlayerIncome(this.username);
     this.playerincome = isEmptyArray(playerincome) ? playerincome[0] : this.playerincome
     this.refresh_user();
