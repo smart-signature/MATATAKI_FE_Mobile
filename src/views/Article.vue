@@ -64,8 +64,6 @@
             @click="share" ghost="true">分享</za-button>
         </i-col>
       </Row>
-      <!-- <za-toast :visible.sync="toastvisible"
-      @close="toastClose" :duration="1000">ok</za-toast> -->
     </footer>
   </div>
 </template>
@@ -318,16 +316,12 @@ export default {
         return ;
       }
     },
-    toastClose(reason, event) {
-      console.log(reason, event);
-    },
     goHome() {
       this.$router.push({ name: 'home' });
     },
     goBack() {
       this.$router.go(-1);
     },
-    
   },
 };
 </script>
