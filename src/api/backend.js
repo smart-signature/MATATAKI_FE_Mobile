@@ -137,8 +137,21 @@ function getuser({
   }, callback);
 }
 
+function getSharesbysignid({
+  signid,
+}, callback) {
+  return request.get({
+    uri: `${apiServer}/shares?signid=${signid}`,
+    rejectUnauthorized: false,
+    json: true,
+    headers: { Accept: '*/*' },
+    dataType: 'json',
+  }, callback);
+}
+
 export {
   publishArticle, auth,
   getArticleData, getArticlesList, getSignId,
   follow, unfollow, getuser,
+  getSharesbysignid,
 };
