@@ -316,12 +316,6 @@ export default {
         return ;
       }
     },
-    goHome() {
-      this.$router.push({ name: 'home' });
-    },
-    goBack() {
-      this.$router.go(-1);
-    },
   },
 };
 </script>
