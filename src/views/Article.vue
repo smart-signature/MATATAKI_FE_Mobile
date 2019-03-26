@@ -1,6 +1,7 @@
 <template>
   <div class="article">
-    <Header :pageinfo="{ left:'notback', title: 'Smart Signature', rightPage: 'home', }" />
+    <Header
+      :pageinfo="{ left:'notback', title: 'Smart Signature', rightPage: 'home', needLogin: true, }" />
     <div class="tl_page">
       <main class="ta">
         <header class="ta_header">

@@ -36,7 +36,10 @@ export default {
   // 這極有可能是這幾天錢包登陸老是有問題的原因
   // 依據 https://github.com/vuejs/vue/issues/7333
   mounted() {
-    if (this.isScatterConnected) this.loginScatterAsync();
+    console.log('pageinfo.needLogin :', this.pageinfo.needLogin);
+    if (this.pageinfo.needLogin !== undefined && this.pageinfo.needLogin) {
+      if (this.isScatterConnected) this.loginScatterAsync();
+    }
   },
   methods: {
     ...mapActions([
