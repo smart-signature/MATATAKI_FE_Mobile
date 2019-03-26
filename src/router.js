@@ -33,11 +33,11 @@ export default new Router({
       props: true,
       component: () => import(/* webpackChunkName: "article-comments" */ './views/CommentsList.vue'),
     },
-    {
-      path: '/login',
-      name: 'Login',
-      component: () => import(/* webpackChunkName: "login" */ './views/Login.vue'),
-    },
+    // {
+    //   path: '/login',
+    //   name: 'Login',
+    //   component: () => import(/* webpackChunkName: "login" */ './views/Login.vue'),
+    // },
     {
       path: '/user/:username',
       name: 'User',
