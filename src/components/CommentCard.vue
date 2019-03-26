@@ -1,10 +1,11 @@
 <template>
   <div class="card comment">
     <a>
-      <h2 class="comment-quantity"
-        :style='comment.quantity.replace(" EOS","") > 0 ? { color: "#f50" } : { color: "#87d068" } '>
-        {{(comment.quantity.substring(0,1) !== '-' ? '+': '') + asset.quantity}}</h2>
+      <h2 class="comment-quantity">
+        打赏了 <span :style='comment.quantity.replace(" EOS","") > 0 ? { color: "#f50" } : { color: "#87d068" }'>
+        {{getDisplayeCommentQuantity}}</span></h2>
       <p class="comment-information">{{friendlyDate}}</p>
+      <h2 class="message">{{comment.message}}</h2>
     </a>
   </div>
 </template>
@@ -16,14 +17,17 @@ export default {
   name: 'CommentCard',
   props: ['comment'],
   computed: {
+    getDisplayeCommentQuantity() {
+      return '' + comment.quantity;
+    },    
     friendlyDate() {
       const isAppleSlave = navigator.platform.includes('iPhone');
-      const time = new Date(this.asset.timestamp);
+      const time = new Date(this.comment.timestamp);
       return moment(time.getTime() - time.getTimezoneOffset() * 60000 * (isAppleSlave ? 0 : 1)).fromNow();// moment(this.asset.timestamp).fromNow();
     },
   },
   created() {
-    // console.log(this.asset.quantity);
+    console.log(this.comment.quantity);
   },
 };
 </script>
