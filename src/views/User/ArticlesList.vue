@@ -77,14 +77,8 @@ export default {
         this.articles = data;
         // do something...
       } else if (this.listtype == 'reward'){
-        const articles = `https://api.smartsignature.io/shares`; // new backend api url
-        const { data } = await axios.get(
-          articles, {
-            params: {
-              user: this.username,
-            },
-          },
-        );
+        const articles = `https://api.smartsignature.io/supports?user=${this.username}`; // new backend api url
+        const { data } = await axios.get(articles);
         this.articles = data;
       } else if (this.listtype == 'others'){
         if (this.tabid == 0){
@@ -92,14 +86,8 @@ export default {
           const { data } = await axios.get(articles);
           this.articles = data;
         } else {
-          const articles = `https://api.smartsignature.io/shares`; // new backend api url
-          const { data } = await axios.get(
-            articles, {
-              params: {
-                user: this.username,
-              },
-            },
-          );
+          const articles = `https://api.smartsignature.io/supports?user=${this.username}`; // new backend api url
+          const { data } = await axios.get(articles);
           this.articles = data;
         }
       }
