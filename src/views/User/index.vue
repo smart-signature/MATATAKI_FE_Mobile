@@ -101,7 +101,8 @@ export default {
   data() {
     return {
       playerincome: {
-        share_income: 0,
+        sign_income: 0,
+        share_income: 0
       },
       editing: false,
       followed: false,
@@ -243,11 +244,10 @@ export default {
     // }
   },
   async created() {
+    const isEmptyArray = arr => Array.isArray(arr) && arr.length !== 0
     const playerincome = await getPlayerIncome(this.username);
+    this.playerincome = isEmptyArray(playerincome) ? playerincome[0] : this.playerincome
     console.log(playerincome);
-    this.playerincome = playerincome.length !== 0 ? playerincome[0] : {
-      share_income: 0,
-    };
     this.refresh_user();
     const user = this.isMe ? '我' : this.username;
     document.title = `${user}的个人主页 - SmartSignature`;
