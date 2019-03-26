@@ -47,6 +47,7 @@ export default {
       // Scatter 10.0 need to suggestNetwork, if not, scatter is not working on login
       await this.connectScatterAsync();
       const suggestNetworkResult = await this.suggestNetworkAsync();
+      console.log('Suggest network result: ', suggestNetworkResult);
       // if (!this.scatterAccount) {
       //   await this.loginScatterAsync();
       // }
