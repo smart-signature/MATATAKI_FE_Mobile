@@ -1,12 +1,12 @@
 <template>
   <div class="card comment">
-    <a>
-      <h2 class="comment-quantity">
-        打赏了 <span :style='comment.quantity.replace(" EOS","") > 0 ? { color: "#f50" } : { color: "#87d068" }'>
-        {{getDisplayeCommentQuantity}}</span></h2>
-      <p class="comment-information">{{friendlyDate}}</p>
-      <h2 class="message">{{comment.message}}</h2>
-    </a>
+    <h1 class="comment-title">
+      <span class="comment-author">{{comment.author}}</span>
+      <span> 打赏了 </span>
+      <span class="comment-quantity">{{comment.quantity}}</span>
+    </h1>
+    <h2 class="comment-timestamp">{{friendlyDate}}</h2>
+    <p class="comment-message">{{comment.message}}</p>
   </div>
 </template>
 
@@ -17,9 +17,6 @@ export default {
   name: 'CommentCard',
   props: ['comment'],
   computed: {
-    getDisplayeCommentQuantity() {
-      return '' + comment.quantity;
-    },    
     friendlyDate() {
       const isAppleSlave = navigator.platform.includes('iPhone');
       const time = new Date(this.comment.timestamp);
@@ -27,23 +24,42 @@ export default {
     },
   },
   created() {
-    console.log(this.comment.quantity);
+    // console.log(this.comment);
   },
 };
 </script>
 
 <style scoped>
-a {
-  color: #000;
-  text-decoration: none; /* no underline */
+.comment-title {
+  color: rgba(0,0,0,0.35);
+  height: 20px;
+  font-size: 14px;
+  font-family: PingFangSC-Regular;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 1px;
 }
-h2.comment-quantity {
-  font-size: 18px;
-  font-weight: 600;
-  color: #478970;
-  /* line-height: 25px; */
+.comment-author {
+  color: rgba(0,0,0,0.70);
 }
-.comment-information {
-  color: rgb(105,105,105);
+.comment-quantity {
+  color: rgba(71,137,112,1);
+  font-family: PingFangSC-Medium;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: 1px;
+}
+.comment-timestamp {
+  color: rgba(0,0,0,0.35);
+  font-size: 12px;
+}
+.comment-message {
+  color:rgba(0,0,0,1);
+  height: 60px;
+  font-size: 14px;
+  font-family: PingFangSC-Regular;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 1px;
 }
 </style>
