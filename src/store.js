@@ -54,7 +54,7 @@ export default new Vuex.Store({
         const balances = await Promise.all([
           api.getBalancesByContract({ symbol: 'eos', accountName: name }),
         ]);
-        const eos = balances[0][0];
+        const eos = balances[0][0] || '0 EOS';
         commit('setMyBalance', { symbol: 'eos', balance: eos });
       }
     },
