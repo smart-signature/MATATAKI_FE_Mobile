@@ -14,7 +14,6 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex';
 import { CommentCard, Header } from '@/components/';
 import axios from 'axios';
 import { mavonEditor } from 'mavon-editor';
