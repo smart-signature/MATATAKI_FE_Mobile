@@ -15,28 +15,17 @@
 
 <script>
 import { CommentCard, Header } from '@/components/';
-import axios from 'axios';
-import { mavonEditor } from 'mavon-editor';
-import { getArticleData, getSignId } from '../api';
+import { getArticleData, getSignId, getSharesbysignid } from '../api';
 import {
   getSignInfo, getSharesInfo, getContractActions,
-} from '../api/signature.js';
-import 'mavon-editor/dist/css/index.css';
-
-// MarkdownIt 实例
-const markdownIt = mavonEditor.getMarkdownIt();
+} from '../api/signature';
+// import request from 'request'; // for test
 
 export default {
   name: 'Comments',
   props: ['post', 'sign'],
-  components: {
-    Header,
-    mavonEditor,
-  },
+  components: { CommentCard, Header, },
   computed: {
-    compiledMarkdown() {
-      return markdownIt.render(this.post.content);
-    },
     displayAboutScroll() {
       if (this.isTheEndOfTheScroll) {
         return '🎉 哇，你真勤奋，所有comments已经加载完了～ 🎉';
@@ -45,31 +34,49 @@ export default {
     },
   },
   async created() {
-    document.title = `${this.post.title} by ${this.post.author} - Smart Signature`;
-    console.log(this.post);
-    console.log(this.sign);
-    try {
-      // await this.getArticleData();
-    } catch (error) {
-
-    }
-    /*
-    const url = `https://api.smartsignature.io/post/${this.hash}`;
-    const { data } = await axios.get(url);
-    const signs = await getSignInfo(data.id);
-    this.sign = signs[0];
-    console.log('sign :', this.sign); // fix: ReferenceError: sign is not defined
-    */
+    const { post, sign } = this;
+    document.title = `${post.title} by ${post.author} - Smart Signature`;
+    console.log(post);
+    console.log(sign);
     
-    // Set isSupported
-    // await this.setisSupported();
+    // test code
+    // const apiServer = 'https://api.smartsignature.io';
+    // request.get({
+    //   uri: `${apiServer}/shares`,
+    //   rejectUnauthorized: false,
+    //   json: true,
+    //   headers: { Accept: '*/*' },
+    //   dataType: 'json',
+    // }, (error, response, body) => {
+    //     console.log('all shares : ', body);
+    // });
+    
+    getSharesbysignid({
+      signid: sign.id
+    }, (error, response, body) => {
+      console.log('shares : ', body);
+      /*
+        amount: 2000
+        author: "minakokojima"
+​​        comment: ""
+​​        create_time: "2019-03-26T01:04:21.000Z"
+​​        sign_id: 173
+      */
+      this.comments = body.map(a => ({
+        author: a.author,
+        timestamp: a.create_time,
+        quantity: ( parseFloat(a.amount) / 10000 ) + ' EOS',
+        message: a.comment,
+      }));
+    });
   },
   data: () => ({
     comments: [
         { // sample
-          quantity: '10.2333 EOS',
+          author: '画夜夜的鹿角角',
           timestamp: Date.now(),
-          message: 'test comment',
+          quantity: '10.2333 EOS',
+          message: '这些天遍历了一下各社交app。。回头又感受下一罐。。就四个字：吹爆纯银大大！！真TM是个鬼才。。',
         },
         // { // sample
         //  quantity: '100.2333 EOS',
@@ -77,23 +84,12 @@ export default {
         // type: 'test income',
         // },
     ],
-    amount: 0.0000,
     refreshing: false,
     busy: false,
     page: 1,
     isTheEndOfTheScroll: false,
   }),
-  watch: {
-    currentUsername() {
-      this.setisSupported()
-    }
-  },
   methods: {
-    async getArticleData() {
-      const { data } = await getArticleData(this.hash);
-      console.info('post :', data);
-      this.post = data.data;
-    },
     loadMore() {
       if (this.isTheEndOfTheScroll) return;
       this.busy = true;
