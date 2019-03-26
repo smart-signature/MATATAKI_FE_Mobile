@@ -21,7 +21,11 @@
       <Divider />
       <Row justify="center">
           <i-col span="11" v-if="!isTotalSupportAmountVisible">正在从链上加载本文收到的赞赏</i-col>
-          <i-col span="11" v-else-if="isTotalSupportAmountVisible">本文收到赞赏 {{getDisplayTotalSupportedAmount}} 个EOS</i-col>
+          <i-col span="11" v-else-if="isTotalSupportAmountVisible">
+            <router-link :to="{ name: 'Comments', params: { post, sign }}">
+              本文收到赞赏 {{getDisplayTotalSupportedAmount}} 个EOS
+            </router-link>
+          </i-col>
           <i-col span="2"><Divider type="vertical" /></i-col>
           <i-col span="11">裂变系数：{{getDisplayedFissionFactor}}</i-col>
       </Row>
