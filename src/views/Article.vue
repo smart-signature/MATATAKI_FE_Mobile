@@ -74,7 +74,7 @@ import { Header } from '@/components/';
 import axios from 'axios';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
-import { getArticleData, getSignId } from '../api';
+import { getArticleData, getSignId, getSharesbysignid } from '../api';
 import {
   support, getSignInfo, getSharesInfo, getContractActions,
 } from '../api/signature.js';
@@ -150,15 +150,26 @@ export default {
     // Set post author
     this.post.author = this.sign.author;
 
-    // Set isSupported
-    await this.setisSupported();
+    // old version
+    // const shares = await getSharesInfo(this.currentUsername);
+    // const shares = await getSharesInfo('linklinkguan'); // test for sign.id 78	
 
-    try {
-      this.countTotalSupportedAmount(this.sign.id);
-    } catch (error) {
-
+    const signid = this.sign.id;
+    let shares = localStorage.getItem('sign id : ' + signid + '\'s shares');
+    if (shares) {
+      shares = JSON.parse(shares);
+    } else {
+      await getSharesbysignid({ signid, }, (error, response, body) => {
+        shares = body ;
+        console.log('shares : ', shares);
+        localStorage.setItem('sign id : ' + signid + '\'s shares', JSON.stringify(shares));
+      });
     }
 
+    this.shares = shares; // for 
+    // Setup
+    this.setisSupported(shares);
+    this.countTotalSupportedAmount(shares);
   },
   data: () => ({
     post: {
@@ -171,6 +182,9 @@ export default {
       // NO MORE Cannot read property 'fission_factor' of null
       fission_factor: 0,
     },
+    shares: [
+
+    ],
     amount: 0.0000,
     isSupported: RewardStatus.LOADING,
     isTotalSupportAmountVisible: false,  //正在加载和加载完毕的文本切换
@@ -185,8 +199,8 @@ export default {
       document.title = `${title} by ${author} - Smart Signature`;
     },
     currentUsername() {
-      this.setisSupported()
-    }
+      this.setisSupported(this.shares)
+    },
   },
   methods: {
     ...mapActions([
@@ -210,25 +224,25 @@ export default {
         clipboard.destroy();
       });
     },
-    async countTotalSupportedAmount(SignId) {
+    countTotalSupportedAmount(shares) {
+      /* old version, dont del
       const { actions } = await getContractActions();
-
       // console.log(actions.map(a => a.action_trace));
       const actions2 = actions.filter(a => a.action_trace.act.account === 'eosio.token'
           && a.action_trace.act.name === 'transfer'
-          && a.action_trace.act.data.memo.indexOf(`support ${SignId}`) !== -1);
-
+          && a.action_trace.act.data.memo.indexOf(`support ${signid}`) !== -1);
       // console.log(actions2);
       const actions3 = actions2.map(a => ({
         quantity: a.action_trace.act.data.quantity.replace(' EOS', ''),
       }));
-
       console.log(actions3);
-      for (let index = 0; index < actions3.length; index += 1) {
-        const element = actions3[index].quantity;
-        this.totalSupportedAmount += parseFloat(element);
+      */
+      
+      for (let index = 0; index < shares.length; index += 1) {
+        const element = shares[index].amount;
+        this.totalSupportedAmount += parseFloat(element) / 10000;
       }
-        this.isTotalSupportAmountVisible = true;
+      this.isTotalSupportAmountVisible = true;
     },
     async getArticleData() {
       const { data } = await getArticleData(this.hash);
@@ -242,12 +256,9 @@ export default {
       this.amount = v;
       console.log('amount :', this.amount);
     },
-    async setisSupported() {
-      if (this.scatterAccount !== null) {
-        const shares = await getSharesInfo(this.currentUsername);
-        // const shares = await getSharesInfo('linklinkguan'); // test for sign.id 78	
-        // console.log('shares :', shares);
-        const share = shares.find(element => element.id === this.sign.id);
+    setisSupported(shares) {
+      if (this.scatterAccount !== null && shares !== []) {
+        const share = shares.find(element => element.author === this.currentUsername);
         if (share !== undefined) {
           console.log('share :', share);
           this.isSupported = RewardStatus.REWARDED;
