@@ -5,7 +5,7 @@
     <div class="tl">
       <za-pull :on-refresh="refresh" :refreshing="refreshing">
         <div class="content" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
-          <CommentCard :comment="a" v-for="a in comments" :key="a.id"/>
+          <CommentCard :comment="a" v-for="a in comments" :key="a.timestamp"/>
         </div>
         <p class="loading-stat">{{displayAboutScroll}}</p>
       </za-pull>
