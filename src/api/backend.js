@@ -1,5 +1,6 @@
 import axios from 'axios';
 import request from 'request';
+import { API, } from './scatter';
 
 const apiServer = 'https://api.smartsignature.io';
 
