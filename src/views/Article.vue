@@ -24,7 +24,7 @@
           <i-col span="11" v-if="!isTotalSupportAmountVisible">正在从链上加载本文收到的赞赏</i-col>
           <i-col span="11" v-else-if="isTotalSupportAmountVisible">
             <router-link :to="{ name: 'Comments', params: { post, sign }}">
-              本文收到赞赏 {{getDisplayTotalSupportedAmount}} 个EOS
+              本文收到赞赏 {{computedTotalSupportedAmount}} 个EOS
             </router-link>
           </i-col>
           <i-col span="2"><Divider type="vertical" /></i-col>
@@ -47,7 +47,8 @@
            style="background:rgba(243,243,243,1);">
            <div slot="title" style="textAlign: center;">赞赏此文章</div>
             <Row><za-input
-              auto-height="" v-model="v3" type="textarea" placeholder="输入推荐语…"></za-input></Row>
+              auto-height="" v-model="v3" type="textarea" placeholder="输入推荐语…" @change="handleCommentChange">
+            </za-input></Row>
             <br/>
             <Row><za-input
               v-model="v5" type="price" placeholder="输入打赏 EOS" @change="handleChange">
@@ -74,7 +75,7 @@ import { Header } from '@/components/';
 import axios from 'axios';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
-import { getArticleData, getSignId, getSharesbysignid } from '../api';
+import { getArticleData, getSharesbysignid, sendComment, getAuth } from '../api';
 import {
   support, getSignInfo, getSharesInfo, getContractActions,
 } from '../api/signature.js';
@@ -119,8 +120,29 @@ export default {
     getDisplayedFissionFactor() {
       return this.sign.fission_factor / 1000;
     },
-    getDisplayTotalSupportedAmount() {
-      return this.totalSupportedAmount.toFixed(4);
+    computedTotalSupportedAmount: {
+      // getter
+      get: function () {
+        let totalSupportedAmount = 0.0000 ;
+        for (let index = 0; index < this.shares.length; index += 1) {
+          const element = this.shares[index].amount;
+          totalSupportedAmount += parseFloat(element) / 10000;
+        }
+        this.totalSupportedAmount = totalSupportedAmount;
+        return this.totalSupportedAmount.toFixed(4)
+      },
+      /*// countTotalSupportedAmount, old version, dont del
+        const { actions } = await getContractActions();
+        // console.log(actions.map(a => a.action_trace));
+        const actions2 = actions.filter(a => a.action_trace.act.account === 'eosio.token'
+          && a.action_trace.act.name === 'transfer'
+          && a.action_trace.act.data.memo.indexOf(`support ${signid}`) !== -1);
+        // console.log(actions2);
+        const actions3 = actions2.map(a => ({
+          quantity: a.action_trace.act.data.quantity.replace(' EOS', ''),
+        }));
+        console.log(actions3);
+      */
     },
     getInvite() {
       // no need to save inviter
@@ -132,17 +154,22 @@ export default {
       return invite;
     },
   },
+  /* 
+    created
+    实例已经创建完成之后被调用。在这一步，实例已完成以下的配置：
+    数据观测(data observer)，属性和方法的运算， watch/event 事件回调。
+    然而，挂载阶段还没开始，$el 属性目前不可见。
+  */
   async created() {
-    this.initClipboard()
     document.title = '正在加载文章 - Smart Signature';
+    this.initClipboard();
     try {
       await this.getArticleData();
     } catch (error) {
 
     }
 
-    const url = `https://api.smartsignature.io/post/${this.hash}`;
-    const { data } = await axios.get(url);
+    const { data } = await axios.get(`https://api.smartsignature.io/post/${this.hash}`);
     const signs = await getSignInfo(data.id);
     this.sign = signs[0];
     console.log('sign :', this.sign); // fix: ReferenceError: sign is not defined
@@ -153,23 +180,30 @@ export default {
     // old version
     // const shares = await getSharesInfo(this.currentUsername);
     // const shares = await getSharesInfo('linklinkguan'); // test for sign.id 78	
-
     const signid = this.sign.id;
-    let shares = localStorage.getItem('sign id : ' + signid + '\'s shares');
-    if (shares) {
-      shares = JSON.parse(shares);
-    } else {
-      await getSharesbysignid({ signid, }, (error, response, body) => {
-        shares = body ;
+    const shares = localStorage.getItem('sign id : ' + signid + '\'s shares');
+    const setShares = ({signid,}) => {
+       getSharesbysignid({ signid, }, (error, response, body) => {
+        const shares = body ;
         console.log('shares : ', shares);
         localStorage.setItem('sign id : ' + signid + '\'s shares', JSON.stringify(shares));
+        this.shares = shares; // for watch
       });
     }
 
-    this.shares = shares; // for 
+    // Use cache or do first time downloading
+    if (shares) {
+      this.shares = JSON.parse(shares);
+    } else { // first time need await
+      await setShares({signid})
+    }
+
     // Setup
-    this.setisSupported(shares);
-    this.countTotalSupportedAmount(shares);
+    this.isTotalSupportAmountVisible = true;
+    this.setisSupported();
+
+    // Update to latest data
+    setShares({signid});
   },
   data: () => ({
     post: {
@@ -186,6 +220,7 @@ export default {
 
     ],
     amount: 0.0000,
+    comment: '',
     isSupported: RewardStatus.LOADING,
     isTotalSupportAmountVisible: false,  //正在加载和加载完毕的文本切换
     totalSupportedAmount: 0.0000,
@@ -224,26 +259,6 @@ export default {
         clipboard.destroy();
       });
     },
-    countTotalSupportedAmount(shares) {
-      /* old version, dont del
-      const { actions } = await getContractActions();
-      // console.log(actions.map(a => a.action_trace));
-      const actions2 = actions.filter(a => a.action_trace.act.account === 'eosio.token'
-          && a.action_trace.act.name === 'transfer'
-          && a.action_trace.act.data.memo.indexOf(`support ${signid}`) !== -1);
-      // console.log(actions2);
-      const actions3 = actions2.map(a => ({
-        quantity: a.action_trace.act.data.quantity.replace(' EOS', ''),
-      }));
-      console.log(actions3);
-      */
-      
-      for (let index = 0; index < shares.length; index += 1) {
-        const element = shares[index].amount;
-        this.totalSupportedAmount += parseFloat(element) / 10000;
-      }
-      this.isTotalSupportAmountVisible = true;
-    },
     async getArticleData() {
       const { data } = await getArticleData(this.hash);
       console.info('post :', data);
@@ -252,11 +267,16 @@ export default {
     handleClose() {
       this.visible3 = false;
     },
+    handleCommentChange(v) {
+      this.comment = v;
+      console.log('comment :', this.comment);
+    },
     handleChange(v) {
       this.amount = v;
       console.log('amount :', this.amount);
     },
-    setisSupported(shares) {
+    setisSupported() {
+      const { shares } = this;
       if (this.scatterAccount !== null && shares !== []) {
         const share = shares.find(element => element.author === this.currentUsername);
         if (share !== undefined) {
@@ -283,33 +303,38 @@ export default {
         });
         return;
       }
+
+      await getAuth();
+      
       // amount
+      const {comment, sign} = this ;
       const amount = parseFloat(this.amount);
       if (isNaN(amount) || amount <= 0) {
         alert('请输入正确的金额');
         return;
       }
-      console.log('amount :', amount);
+      console.log('final amount :', amount);
+      console.log('final comment :', comment);
 
-      // fetch sign_id
-      const { data } = await getSignId(this.hash);
-      console.info(data);
-      const sign_id = data.id;
-
+      const sign_id = sign.id;
       const referrer = this.getInvite;
       console.log('referrer :', referrer);
       this.isSupported = RewardStatus.LOADING;
-      try{ 
-          await support({ amount, sign_id, referrer })
+      try { 
+        await support({ amount, sign_id, referrer })
+        await sendComment({ comment, sign_id },
+          (error, response, body) => {
+            if (error) throw new Error(error);
+        }); 
           this.isSupported = RewardStatus.REWARDED;
           alert('赞赏成功！');
           // tricky speed up
           this.totalSupportedAmount += parseFloat(amount);
-        }catch(error){
-          console.log(JSON.stringify(error));
-          alert('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额。');
-          this.isSupported = RewardStatus.NOT_REWARD_YET;
-        };
+      } catch(error) {
+        console.log(JSON.stringify(error));
+        alert('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额。');
+        this.isSupported = RewardStatus.NOT_REWARD_YET;
+      };
     },
     async share() {
       try {

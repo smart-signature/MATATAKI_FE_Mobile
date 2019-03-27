@@ -7,9 +7,9 @@ import defaultImagesUploader from './imagesUploader';
 // This line below is exports
 
 export {
-  getArticlesList, publishArticle, auth,
+  getArticlesList, publishArticle, auth, getAuth,
   getArticleData, getSignId,
   follow, unfollow, getuser,
-  getSharesbysignid,
+  getSharesbysignid, sendComment,
 } from './backend';
 export { defaultImagesUploader };
