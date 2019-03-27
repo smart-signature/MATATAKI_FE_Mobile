@@ -36,7 +36,7 @@ export default new Vuex.Store({
   },
   actions: {
     async connectScatterAsync({ commit, dispatch }) {
-      console.log('Connecting to Scatter desktop...');
+      console.log('Connecting to wallet or Scatter desktop...');
       //try {
         const connected = await api.connectScatterAsync();
       //} catch (error) {
@@ -84,19 +84,20 @@ export default new Vuex.Store({
     // 以上 todo
     // 參考 https://es6.ruanyifeng.com/#docs/async
     async loginScatterAsync({ commit, dispatch }) {
+      console.log('Start log in...');
       commit('setIsScatterLoggingIn', true);
       try {
         const identity = await api.loginScatterAsync();
-        
-        if (!identity) {
+        if (!identity) { // 失敗的話走了 catch ，這條也不會 run
           commit('setScatterAccount', null);
           return;
         }
         const account = identity.accounts.find(({ blockchain }) => blockchain === 'eos');
         commit('setScatterAccount', account);
+        console.log('Login successful.');
         dispatch('getMyBalances');
       } catch (err) {
-        console.error('Failed to login Scatter', err);
+        console.error('Failed to log in Scatter :', err);
         // 應該移出並弄個 errorMeg.js 之類的，然後 import
         // 但是顯然沒空弄啊(茶
         this.$Modal.error({

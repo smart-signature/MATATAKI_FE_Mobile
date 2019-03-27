@@ -328,6 +328,7 @@ export default {
       this.isSupported = RewardStatus.LOADING;
       try { 
         await support({ amount, sign_id, referrer })
+        console.log('Send comment...');
         await sendComment({ comment, sign_id },
           (error, response, body) => {
             if (error) throw new Error(error);
