@@ -12,6 +12,8 @@
             </router-link>
             <br/>
             <span>IPFS Hash: {{hash}}</span>
+            <br/>
+            <span>阅读次数：{{readamount}}</span>
           </address>
         </header>
         <mavon-editor v-show="false" style="display: none;"/>
@@ -75,7 +77,7 @@ import { Header } from '@/components/';
 import axios from 'axios';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
-import { getArticleData, getSharesbysignid, sendComment, getAuth } from '../api';
+import { getArticleData, getSharesbysignid, addReadAmount, sendComment, getAuth  } from '../api';
 import {
   support, getSignInfo, getSharesInfo, getContractActions,
 } from '../api/signature.js';
@@ -174,6 +176,7 @@ export default {
     this.sign = signs[0];
     console.log('sign :', this.sign); // fix: ReferenceError: sign is not defined
 
+    this.readamount = data.read;
     // Set post author
     this.post.author = this.sign.author;
 
@@ -204,6 +207,8 @@ export default {
 
     // Update to latest data
     setShares({signid});
+
+    addReadAmount({articlehash: this.hash});
   },
   data: () => ({
     post: {
@@ -227,6 +232,7 @@ export default {
     visible3: false,
     v3: '',
     v5: '',
+    readamount: 0,
   }),
   watch: {
     post({ author, title }) {
