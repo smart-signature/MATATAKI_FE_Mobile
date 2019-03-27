@@ -10,6 +10,6 @@ export {
   getArticlesList, publishArticle, auth, getAuth,
   getArticleData, getSignId,
   follow, unfollow, getuser,
-  getSharesbysignid, sendComment,
+  getSharesbysignid, sendComment, addReadAmount
 } from './backend';
 export { defaultImagesUploader };

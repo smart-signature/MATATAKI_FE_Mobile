@@ -198,9 +198,26 @@ async function sendComment({
   }, callback);
 }
 
+//be Used in Article Page
+function addReadAmount({
+  articlehash,
+},callback){
+  const accessToken = localStorage.getItem('ACCESS_TOKEN');
+  const url = `${apiServer}/post/show/${articlehash}`;
+  return request({
+    uri: url,
+    rejectUnauthorized: false,
+    json: true,
+    headers: { Accept: '*/*', 'x-access-token': accessToken },
+    dataType: 'json',
+    method: 'POST',
+    form: {},
+  }, callback);
+}
+
 export {
   publishArticle, auth, getAuth,
   getArticleData, getArticlesList, getSignId,
   follow, unfollow, getuser,
-  getSharesbysignid, sendComment,
+  getSharesbysignid, addReadAmount, sendComment,
 };
