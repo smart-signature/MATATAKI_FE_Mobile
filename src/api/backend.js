@@ -137,8 +137,28 @@ function getuser({
   }, callback);
 }
 
+/*
+  amount: 2000
+  author: "minakokojima"
+​​  comment: ""
+  create_time: "2019-03-26T01:04:21.000Z"
+​​   sign_id: 173
+*/
+function getSharesbysignid({
+  signid,
+}, callback) {
+  return request.get({
+    uri: `${apiServer}/shares?signid=${signid}`,
+    rejectUnauthorized: false,
+    json: true,
+    headers: { Accept: '*/*' },
+    dataType: 'json',
+  }, callback);
+}
+
 export {
   publishArticle, auth,
   getArticleData, getArticlesList, getSignId,
   follow, unfollow, getuser,
+  getSharesbysignid,
 };
