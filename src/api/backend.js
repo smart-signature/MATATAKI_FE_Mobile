@@ -144,10 +144,10 @@ function getuser({
   create_time: "2019-03-26T01:04:21.000Z"
 ​​   sign_id: 173
 */
-function getSharesbysignid({
+async function getSharesbysignid({
   signid,
 }, callback) {
-  return request.get({
+  return await request.get({
     uri: `${apiServer}/shares?signid=${signid}`,
     rejectUnauthorized: false,
     json: true,
