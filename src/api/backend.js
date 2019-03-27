@@ -105,7 +105,7 @@ async function getAuth() { // 示例代码。。请随便改。。。
 }
 
 // Be used in User page.
-function follow({
+function Follow({
   username, followed,
 }, callback) {
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
@@ -127,7 +127,7 @@ function follow({
 }
 
 // Be used in User page.
-function unfollow({
+function Unfollow({
   username, followed,
 }, callback) {
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
@@ -218,6 +218,6 @@ function addReadAmount({
 export {
   publishArticle, auth, getAuth,
   getArticleData, getArticlesList, getSignId,
-  follow, unfollow, getuser,
+  Follow, Unfollow, getUser,
   getSharesbysignid, addReadAmount, sendComment,
 };

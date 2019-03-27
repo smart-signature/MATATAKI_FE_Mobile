@@ -89,7 +89,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import { getPlayerIncome } from '@/api/signature';
 import {
-  follow, unfollow, getuser, auth,
+  Follow, Unfollow, getUser, auth,
 } from '../../api';
 import ArticlesList from './ArticlesList.vue';
 import API from '@/api/scatter.js';
@@ -191,7 +191,7 @@ export default {
       this.editing = !this.editing;
     },
     refresh_user() {
-      getuser({
+      getUser({
         username: this.username,
       }, (error, response, body) => {
         this.follows = body.follows;
@@ -202,7 +202,7 @@ export default {
     follow_user() {
       // alert('follow');
       const { username, currentUsername } = this;
-      follow({
+      Follow({
         followed: username, username: currentUsername,
       }, (error, response, body) => {
         console.log(response);
@@ -222,7 +222,7 @@ export default {
     unfollow_user() {
       // alert('follow');
       const { username, currentUsername } = this;
-      unfollow({
+      Unfollow({
         followed: username, username: currentUsername,
       }, (error, response, body) => {
         if (!error) {
