@@ -150,7 +150,7 @@ function Unfollow({
 }
 
 // Be used in User page.
-function getuser({
+function getUser({
   username,
 }, callback) {
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
