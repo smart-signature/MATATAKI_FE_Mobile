@@ -47,7 +47,8 @@
            style="background:rgba(243,243,243,1);">
            <div slot="title" style="textAlign: center;">赞赏此文章</div>
             <Row><za-input
-              auto-height="" v-model="v3" type="textarea" placeholder="输入推荐语…"></za-input></Row>
+              auto-height="" v-model="v3" type="textarea" placeholder="输入推荐语…" @change="handleCommentChange">
+            </za-input></Row>
             <br/>
             <Row><za-input
               v-model="v5" type="price" placeholder="输入打赏 EOS" @change="handleChange">
@@ -74,7 +75,7 @@ import { Header } from '@/components/';
 import axios from 'axios';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
-import { getArticleData, getSignId, getSharesbysignid } from '../api';
+import { getArticleData, getSharesbysignid, sendComment, getAuth } from '../api';
 import {
   support, getSignInfo, getSharesInfo, getContractActions,
 } from '../api/signature.js';
@@ -219,6 +220,7 @@ export default {
 
     ],
     amount: 0.0000,
+    comment: '',
     isSupported: RewardStatus.LOADING,
     isTotalSupportAmountVisible: false,  //正在加载和加载完毕的文本切换
     totalSupportedAmount: 0.0000,
@@ -265,6 +267,10 @@ export default {
     handleClose() {
       this.visible3 = false;
     },
+    handleCommentChange(v) {
+      this.comment = v;
+      console.log('comment :', this.comment);
+    },
     handleChange(v) {
       this.amount = v;
       console.log('amount :', this.amount);
@@ -297,33 +303,38 @@ export default {
         });
         return;
       }
+
+      await getAuth();
+      
       // amount
+      const {comment, sign} = this ;
       const amount = parseFloat(this.amount);
       if (isNaN(amount) || amount <= 0) {
         alert('请输入正确的金额');
         return;
       }
-      console.log('amount :', amount);
+      console.log('final amount :', amount);
+      console.log('final comment :', comment);
 
-      // fetch sign_id
-      const { data } = await getSignId(this.hash);
-      console.info(data);
-      const sign_id = data.id;
-
+      const sign_id = sign.id;
       const referrer = this.getInvite;
       console.log('referrer :', referrer);
       this.isSupported = RewardStatus.LOADING;
-      try{ 
-          await support({ amount, sign_id, referrer })
+      try { 
+        await support({ amount, sign_id, referrer })
+        await sendComment({ comment, sign_id },
+          (error, response, body) => {
+            if (error) throw new Error(error);
+        }); 
           this.isSupported = RewardStatus.REWARDED;
           alert('赞赏成功！');
           // tricky speed up
           this.totalSupportedAmount += parseFloat(amount);
-        }catch(error){
-          console.log(JSON.stringify(error));
-          alert('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额。');
-          this.isSupported = RewardStatus.NOT_REWARD_YET;
-        };
+      } catch(error) {
+        console.log(JSON.stringify(error));
+        alert('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额。');
+        this.isSupported = RewardStatus.NOT_REWARD_YET;
+      };
     },
     async share() {
       try {
