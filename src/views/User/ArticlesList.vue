@@ -70,23 +70,40 @@ export default {
     async getArticlesList() {
       // const articles = 'https://smartsignature.azurewebsites.net/api/article';
       // const articles = 'http://localhost:7001/posts';
-      const articles = `https://api.smartsignature.io/posts?author=${this.username}`; // new backend api url
-      const { data } = await axios.get(articles);
+      
       if (this.listtype == 'original') {
-        for (const dataid in data) {
-          const onedata = data[dataid];
-          if (onedata.author == this.username) {
-            this.articles.push(onedata);
-          }
-        }
-        // do something...
-      } else {
+        const articles = `https://api.smartsignature.io/posts?author=${this.username}`; // new backend api url
+        const { data } = await axios.get(articles);
         this.articles = data;
+        // do something...
+      } else if (this.listtype == 'reward'){
+        const articles = `https://api.smartsignature.io/supports?user=${this.username}`; // new backend api url
+        const { data } = await axios.get(articles);
+        this.articles = data;
+      } else if (this.listtype == 'others'){
+        if (this.tabid == 0){
+          const articles = `https://api.smartsignature.io/posts?author=${this.username}`; // new backend api url
+          const { data } = await axios.get(articles);
+          this.articles = data;
+        } else {
+          const articles = `https://api.smartsignature.io/supports?user=${this.username}`; // new backend api url
+          const { data } = await axios.get(articles);
+          this.articles = data;
+        }
       }
       this.loading = false;
     },
     handleClick(tab, event) {
-      console.log(tab, event);
+      if (this.listtype == 'others'){
+        for (const onetabid in this.tabs){
+          if(this.tabs[onetabid].label == tab.name){
+            this.tabid = onetabid;
+            break;
+          }
+        }
+      }
+      this.articles = [];
+      this.refresh();
     },
     async refresh() {
       this.refreshing = true;
@@ -108,6 +125,7 @@ export default {
           label: TimeLine,
         },
       ],
+      tabid: 0,
     };
   },
 };

@@ -89,11 +89,11 @@
 import { mapGetters, mapActions } from 'vuex';
 import { getPlayerIncome } from '@/api/signature';
 import {
-  follow, unfollow, getuser, auth,
+  Follow, Unfollow, getUser, auth,
 } from '../../api';
 import ArticlesList from './ArticlesList.vue';
 import API from '@/api/scatter.js';
-
+import { isEmptyArray } from "@/common/methods.js";
 export default {
   name: 'User',
   props: ['username'],
@@ -101,7 +101,8 @@ export default {
   data() {
     return {
       playerincome: {
-        share_income: 0,
+        sign_income: 0,
+        share_income: 0
       },
       editing: false,
       followed: false,
@@ -190,7 +191,7 @@ export default {
       this.editing = !this.editing;
     },
     refresh_user() {
-      getuser({
+      getUser({
         username: this.username,
       }, (error, response, body) => {
         this.follows = body.follows;
@@ -201,7 +202,7 @@ export default {
     follow_user() {
       // alert('follow');
       const { username, currentUsername } = this;
-      follow({
+      Follow({
         followed: username, username: currentUsername,
       }, (error, response, body) => {
         console.log(response);
@@ -221,7 +222,7 @@ export default {
     unfollow_user() {
       // alert('follow');
       const { username, currentUsername } = this;
-      unfollow({
+      Unfollow({
         followed: username, username: currentUsername,
       }, (error, response, body) => {
         if (!error) {
@@ -244,10 +245,7 @@ export default {
   },
   async created() {
     const playerincome = await getPlayerIncome(this.username);
-    console.log(playerincome);
-    this.playerincome = playerincome.length !== 0 ? playerincome[0] : {
-      share_income: 0,
-    };
+    this.playerincome = isEmptyArray(playerincome) ? playerincome[0] : this.playerincome
     this.refresh_user();
     const user = this.isMe ? '我' : this.username;
     document.title = `${user}的个人主页 - SmartSignature`;
