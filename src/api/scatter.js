@@ -15,14 +15,6 @@ const currentNetwork = config.network.eos.mainnet[0];
 const eos = () => ScatterJS.scatter.eos(currentNetwork, Eos, { expireInSeconds: 60 });
 const currentEOSAccount = () => ScatterJS.scatter.identity && ScatterJS.scatter.identity.accounts.find(x => x.blockchain === 'eos');
 
-// {
-//     chainId: "aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906",
-//     protocol: "https",
-//     host: 'proxy.eosnode.tools',
-//     port: 443,
-//     httpEndpoint: "https://proxy.eosnode.tools",
-// },
-
 const eosClient = Eos({
   chainId: "aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906",
   httpEndpoint: "https://proxy.eosnode.tools",
