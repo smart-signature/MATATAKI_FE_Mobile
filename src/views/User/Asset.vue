@@ -112,8 +112,7 @@ export default {
     sortedAssets() {
       console.log(this.assets);
       // if need change to asc, swap a & b
-      return this.assets.sort((a, b) 
-             => (new Date(b.timestamp)).getTime() - (new Date(a.timestamp)).getTime());
+      return this.assets.sort((a, b) => (new Date(b.timestamp)).getTime() - (new Date(a.timestamp)).getTime());
     },
   },
   methods: {
