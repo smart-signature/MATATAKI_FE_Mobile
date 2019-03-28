@@ -22,7 +22,7 @@ export default {
       const time = new Date(this.comment.timestamp);
       return moment(time.getTime() - time.getTimezoneOffset()
                     * 60000 * (isAppleSlave ? 0 : 1)).fromNow();
-             // moment(this.asset.timestamp).fromNow();
+      // moment(this.asset.timestamp).fromNow();
     },
   },
   created() {

@@ -94,6 +94,7 @@ import {
 import ArticlesList from './ArticlesList.vue';
 import API from '@/api/scatter';
 import { isEmptyArray } from '@/common/methods';
+
 export default {
   name: 'User',
   props: ['username'],
@@ -102,7 +103,7 @@ export default {
     return {
       playerincome: {
         sign_income: 0,
-        share_income: 0
+        share_income: 0,
       },
       editing: false,
       followed: false,

@@ -39,7 +39,8 @@
         </Col>
         <Col span="6">
           <p class="toptext2">赞赏支出</p>
-          <p class="toptext3" :style='sharecost > 0 ? { color: "#f50" } : (sharecost < 0 ? { color: "#87d068" } : {color: "#a7aab7"})'>
+          <p class="toptext3" :style='sharecost > 0 ? { color: "#f50" } 
+                                      : (sharecost < 0 ? { color: "#87d068" } : {color: "#a7aab7"})'>
             {{getDisplayAmount(sharecost)}}
           </p>
         </Col>
@@ -47,16 +48,16 @@
     </div>
     <div class="detailtext">明细</div>
     <div class="assets">
-    <!-- <za-tabs v-model="activeNameSwipe" @change="handleClick"> -->
-      <!-- <za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label"> -->
+    <!--<za-tabs v-model="activeNameSwipe" @change="handleClick">-->
+      <!--<za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label">-->
 
         <za-pull :on-refresh="refresh" :refreshing="refreshing" :loading="loading">
           <div class="content">
             <AssetCard :asset="a" v-for="a in sortedAssets" :key="a.timestamp"/>
           </div>
         </za-pull>
-      <!-- </za-tab-pane> -->
-    <!-- </za-tabs> -->
+      <!--</za-tab-pane>-->
+    <!--</za-tabs>-->
     </div>
   </div>
 </template>
@@ -66,7 +67,7 @@ import { AssetCard } from '@/components/';
 import {
   getPlayerBills, getPlayerIncome,
   withdraw,
-} from '../../api/signature.js';
+} from '../../api/signature';
 import { isEmptyArray } from '@/common/methods';
 
 export default {
@@ -109,9 +110,10 @@ export default {
   },
   computed: {
     sortedAssets() {
-      console.log(this.assets)
+      console.log(this.assets);
       // if need change to asc, swap a & b
-      return this.assets.sort((a, b) => (new Date(b.timestamp)).getTime() - (new Date(a.timestamp)).getTime());
+      return this.assets.sort((a, b) 
+             => (new Date(b.timestamp)).getTime() - (new Date(a.timestamp)).getTime());
     },
   },
   methods: {

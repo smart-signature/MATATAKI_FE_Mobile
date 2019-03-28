@@ -90,7 +90,7 @@ async function getAuth() { // 示例代码。。请随便改。。。
   }
   if (!accessvalid) {
     await API.authSignature((username, publickey, sign) => {
-      console.log('API.authSignature :',username, publickey, sign);
+      console.log('API.authSignature :', username, publickey, sign);
       // 2. post到服务端 获得accessToken并保存
       auth({ username, publickey, sign }, (error, response, body) => {
         console.log(body);
