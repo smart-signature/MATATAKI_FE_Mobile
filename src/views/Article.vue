@@ -27,7 +27,7 @@
       <Row justify="center">
           <i-col span="11" v-if="!isTotalSupportAmountVisible">正在从链上加载本文收到的赞赏</i-col>
           <i-col span="11" v-else-if="isTotalSupportAmountVisible">
-            <router-link :to="{ name: 'Comments', params: { post, sign }}">
+            <router-link :to="{ name: 'Comments', params: { post, sign, hash }}">
               本文收到赞赏 {{computedTotalSupportedAmount}} 个EOS
             </router-link>
           </i-col>
@@ -84,7 +84,7 @@ import {
   getArticleData, getSharesbysignid, addReadAmount, sendComment, getAuth,
 } from '../api';
 import {
-  support, getSharesInfo, getContractActions,
+  support, getSharesInfo, getContractActions, getSignInfo
 } from '../api/signature.js';
 import 'mavon-editor/dist/css/index.css';
 
