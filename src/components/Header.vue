@@ -35,8 +35,9 @@ export default {
   // 從 crearted 改成 mounted
   // 這極有可能是這幾天錢包登陸老是有問題的原因
   // 依據 https://github.com/vuejs/vue/issues/7333
+  // 已確認此 Header.vue 的 crearted 內容不會被執行
   mounted() {
-    console.log('pageinfo.needLogin :', this.pageinfo.needLogin);
+    console.log('Does this page need to log in?:', this.pageinfo.needLogin);
     if (this.pageinfo.needLogin !== undefined && this.pageinfo.needLogin) {
       if (this.isScatterConnected) this.loginScatterAsync();
     }

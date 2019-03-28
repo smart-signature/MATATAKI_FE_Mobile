@@ -89,8 +89,8 @@ async function getAuth() { // 示例代码。。请随便改。。。
     }
   }
   if (!accessvalid) {
-    API.authSignature((username, publickey, sign) => {
-      console.log(username, publickey, sign);
+    await API.authSignature((username, publickey, sign) => {
+      console.log('API.authSignature :',username, publickey, sign);
       // 2. post到服务端 获得accessToken并保存
       auth({ username, publickey, sign }, (error, response, body) => {
         console.log(body);
@@ -150,7 +150,7 @@ function Unfollow({
 }
 
 // Be used in User page.
-function getuser({
+function getUser({
   username,
 }, callback) {
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
@@ -186,16 +186,15 @@ async function getSharesbysignid({
   }, callback);
 }
 
-async function sendComment({
-  comment, sign_id,
-}, callback) {
+async function sendComment({ comment, sign_id, }, callback) {
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
   return await request.post({
-    uri: `${apiServer}/comment?comment=${comment}&sign_id=${sign_id}`,
+    uri: `${apiServer}/post/comment`,
     rejectUnauthorized: false,
     json: true,
     headers: { Accept: '*/*', 'x-access-token': accessToken },
     dataType: 'json',
+    form: { comment, sign_id, },
   }, callback);
 }
 
