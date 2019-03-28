@@ -81,7 +81,8 @@ import axios from 'axios';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
 import {
-  getArticleData, getSharesbysignid, addReadAmount, sendComment, getAuth,
+  getArticleData, getArticleInfo,
+  getSharesbysignid, addReadAmount, sendComment, getAuth,
 } from '../api';
 import {
   support, getSignInfo,
@@ -167,25 +168,18 @@ export default {
   */
   async created() {
     document.title = '正在加载文章 - Smart Signature';
-    this.initClipboard();
-    try {
-      await this.getArticleData();
-    } catch (error) {
 
-    }
+    this.getArticleData();
 
-    const { data } = await axios.get(`https://api.smartsignature.io/post/${this.hash}`);
+    const { data } = await getArticleInfo(this.hash);
+    console.log('Article info :', data);
+
     const signs = await getSignInfo(data.id);
     this.sign = signs[0];
     console.log('sign :', this.sign); // fix: ReferenceError: sign is not defined
 
     this.readamount = data.read;
-    // Set post author
-    this.post.author = this.sign.author;
 
-    // old version
-    // const shares = await getSharesInfo(this.currentUsername);
-    // const shares = await getSharesInfo('linklinkguan'); // test for sign.id 78
     const signid = this.sign.id;
     const shares = localStorage.getItem(`sign id : ${signid}'s shares`);
     const setShares = ({ signid }) => {
@@ -213,6 +207,8 @@ export default {
     setShares({ signid });
 
     addReadAmount({ articlehash: this.hash });
+    
+    this.initClipboard();
   },
   data: () => ({
     post: {
@@ -243,6 +239,9 @@ export default {
       // 当文章从 IPFS fetched 到， post 会更新，我们要更新网页 title
       document.title = `${title} by ${author} - Smart Signature`;
     },
+    sign({ author }) {
+      this.post.author = author;
+    },
     currentUsername() {
       this.setisSupported(this.shares);
     },
@@ -270,9 +269,9 @@ export default {
       });
     },
     async getArticleData() {
-      const { data } = await getArticleData(this.hash);
-      console.info('post :', data);
+      const { data } = await getArticleData(this.hash);      
       this.post = data.data;
+      console.info('post :', this.post);
     },
     handleClose() {
       this.visible3 = false;
@@ -290,7 +289,7 @@ export default {
       if (this.scatterAccount !== null && shares !== []) {
         const share = shares.find(element => element.author === this.currentUsername);
         if (share !== undefined) {
-          console.log('share :', share);
+          console.log('Current user\'s share :', share);
           this.isSupported = RewardStatus.REWARDED;
         } else {
           this.isSupported = RewardStatus.NOT_REWARD_YET;

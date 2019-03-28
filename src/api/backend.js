@@ -51,7 +51,7 @@ const getArticlesList = ({ page = 1 }) => axios.get(
   sign_id: 173
 */
 const getSharesbysignid = ({ signid }) => axios.get(`${apiServer}/shares?signid=${signid}`);
-const getSignId = hash => axios.get(`${apiServer}/post/${hash}`);
+const getArticleInfo = hash => axios.get(`${apiServer}/post/${hash}`);
 
 
 // 示例代码。。请随便改。。。
@@ -195,7 +195,7 @@ function addReadAmount({
 
 export {
   publishArticle, auth, getAuth,
-  getArticleData, getArticlesList, getSignId,
+  getArticleData, getArticlesList, getArticleInfo,
   Follow, Unfollow, getUser,
   getSharesbysignid, addReadAmount, sendComment,
 };
