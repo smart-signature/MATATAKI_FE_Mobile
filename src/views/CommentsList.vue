@@ -90,23 +90,15 @@ export default {
       this.getSharesbysignid(this.copySign.id);
     },
     getSharesbysignid(signId) {
-      getSharesbysignid({
-        signid: signId,
-      }, (error, response, body) => {
-        console.log('shares : ', body);
-        /*
-        amount: 2000
-        author: "minakokojima"
-        comment: ""
-​​        create_time: "2019-03-26T01:04:21.000Z"
-        sign_id: 173
-      */
-        this.comments = body.map(a => ({
-          author: a.author,
-          timestamp: a.create_time,
-          quantity: `${parseFloat(a.amount) / 10000} EOS`,
-          message: a.comment,
-        }));
+      getSharesbysignid({ signid: signId })
+        .then( response => {
+          console.log('shares : ', response.data);
+          this.comments = response.data.map(a => ({
+            author: a.author,
+            timestamp: a.create_time,
+            quantity: `${parseFloat(a.amount) / 10000} EOS`,
+            message: a.comment,
+          }));
       });
     },
     setDocumentTitle(post) {

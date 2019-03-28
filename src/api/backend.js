@@ -174,17 +174,7 @@ function getUser({
   create_time: "2019-03-26T01:04:21.000Z"
   sign_id: 173
 */
-async function getSharesbysignid({
-  signid,
-}, callback) {
-  return await request.get({
-    uri: `${apiServer}/shares?signid=${signid}`,
-    rejectUnauthorized: false,
-    json: true,
-    headers: { Accept: '*/*' },
-    dataType: 'json',
-  }, callback);
-}
+const getSharesbysignid = ({signid}) => axios.get(`${apiServer}/shares?signid=${signid}`);
 
 async function sendComment({ comment, sign_id }, callback) {
   const accessToken = localStorage.getItem('ACCESS_TOKEN');

@@ -189,13 +189,14 @@ export default {
     // const shares = await getSharesInfo('linklinkguan'); // test for sign.id 78
     const signid = this.sign.id;
     const shares = localStorage.getItem(`sign id : ${signid}'s shares`);
-    const setShares = ({ signid }) => {
-      getSharesbysignid({ signid }, (error, response, body) => {
-        const shares = body;
-        console.log('shares : ', shares);
-        localStorage.setItem(`sign id : ${signid}'s shares`, JSON.stringify(shares));
-        this.shares = shares; // for watch
-      });
+    const setShares =  ({ signid }) => {
+       getSharesbysignid({ signid })
+        .then( (response) => {
+          const shares = response.data;
+          console.log('shares : ', shares);
+          localStorage.setItem(`sign id : ${signid}'s shares`, JSON.stringify(shares));
+          this.shares = shares; // for watch
+        });
     };
 
     // Use cache or do first time downloading
