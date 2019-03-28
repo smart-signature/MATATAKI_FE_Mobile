@@ -48,14 +48,14 @@
     <div class="detailtext">明细</div>
     <div class="assets">
     <!-- <za-tabs v-model="activeNameSwipe" @change="handleClick"> -->
-      <!-- <za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label"> -->
+      <!-- <za-tab-panel :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label"> -->
 
         <za-pull :on-refresh="refresh" :refreshing="refreshing" :loading="loading">
           <div class="content">
             <AssetCard :asset="a" v-for="a in sortedAssets" :key="a.timestamp"/>
           </div>
         </za-pull>
-      <!-- </za-tab-pane> -->
+      <!-- </za-tab-panel> -->
     <!-- </za-tabs> -->
     </div>
   </div>

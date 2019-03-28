@@ -3,13 +3,13 @@
     <div v-if="tabs.length >= 2">
       <div class="articles">
         <za-tabs v-model="activeNameSwipe" @change="handleClick">
-          <za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label">
+          <za-tab-panel :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label">
             <za-pull :on-refresh="refresh" :refreshing="refreshing" :loading="loading">
               <div class="content">
                 <ArticleCard :article="a" v-for="a in articles" :key="a.id"/>
               </div>
             </za-pull>
-          </za-tab-pane>
+          </za-tab-panel>
         </za-tabs>
       </div>
     </div>
@@ -70,14 +70,14 @@ export default {
     async getArticlesList() {
       // const articles = 'https://smartsignature.azurewebsites.net/api/article';
       // const articles = 'http://localhost:7001/posts';
-      
+
       if (this.listtype == 'original') {
         const articles = `https://api.smartsignature.io/posts?author=${this.username}`; // new backend api url
         const { data } = await axios.get(articles);
         this.articles = data;
         // do something...
-      } else if (this.listtype == 'reward'){
-        const articles = `https://api.smartsignature.io/shares`; // new backend api url
+      } else if (this.listtype == 'reward') {
+        const articles = 'https://api.smartsignature.io/shares'; // new backend api url
         const { data } = await axios.get(
           articles, {
             params: {
@@ -86,13 +86,13 @@ export default {
           },
         );
         this.articles = data;
-      } else if (this.listtype == 'others'){
-        if (this.tabid == 0){
+      } else if (this.listtype == 'others') {
+        if (this.tabid == 0) {
           const articles = `https://api.smartsignature.io/posts?author=${this.username}`; // new backend api url
           const { data } = await axios.get(articles);
           this.articles = data;
         } else {
-          const articles = `https://api.smartsignature.io/shares`; // new backend api url
+          const articles = 'https://api.smartsignature.io/shares'; // new backend api url
           const { data } = await axios.get(
             articles, {
               params: {
@@ -106,9 +106,9 @@ export default {
       this.loading = false;
     },
     handleClick(tab, event) {
-      if (this.listtype == 'others'){
-        for (const onetabid in this.tabs){
-          if(this.tabs[onetabid].label == tab.name){
+      if (this.listtype == 'others') {
+        for (const onetabid in this.tabs) {
+          if (this.tabs[onetabid].label == tab.name) {
             this.tabid = onetabid;
             break;
           }

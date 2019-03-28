@@ -164,8 +164,8 @@ export default {
       fission_factor: 0,
     },
     amount: 0.0000,
-    isSupported: 0, //0=加载中,1=未打赏 2=已打赏
-    isTotalSupportAmountVisible: false,  //正在加载和加载完毕的文本切换
+    isSupported: 0, // 0=加载中,1=未打赏 2=已打赏
+    isTotalSupportAmountVisible: false, // 正在加载和加载完毕的文本切换
     totalSupportedAmount: 0.0000,
     visible3: false,
     v3: '',
@@ -204,7 +204,7 @@ export default {
         const element = actions3[index].quantity;
         this.totalSupportedAmount += parseFloat(element);
       }
-        this.isTotalSupportAmountVisible = true;
+      this.isTotalSupportAmountVisible = true;
     },
     async getArticleData() {
       const { data } = await getArticleData(this.hash);
@@ -228,7 +228,7 @@ export default {
           console.log('share :', share);
           this.isSupported = 2;
         } else {
-          this.isSupported = 1;//0=加载中,1=未打赏 2=已打赏
+          this.isSupported = 1;// 0=加载中,1=未打赏 2=已打赏
         }
       }
     },
@@ -263,25 +263,25 @@ export default {
 
       const referrer = this.getRef();
       console.log('referrer :', referrer);
-      this.isSupported = 0;//0=加载中,1=未打赏 2=已打赏
-      try{ 
-          await support({ amount, sign_id, referrer })
-          this.isSupported = 2;
-          alert('赞赏成功！');
-          // tricky speed up
-          this.totalSupportedAmount += parseFloat(amount);
-        }catch(error){
-          console.log(JSON.stringify(error));
-          alert('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额。');
-          this.isSupported = 1;
-        };
+      this.isSupported = 0;// 0=加载中,1=未打赏 2=已打赏
+      try {
+        await support({ amount, sign_id, referrer });
+        this.isSupported = 2;
+        alert('赞赏成功！');
+        // tricky speed up
+        this.totalSupportedAmount += parseFloat(amount);
+      } catch (error) {
+        console.log(JSON.stringify(error));
+        alert('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额。');
+        this.isSupported = 1;
+      }
     },
     async share() {
       try {
         if (!this.isScatterConnected) await this.connectScatterAsync();
         console.info(this.isScatterConnected);
         // await this.suggestNetworkAsync();
-        if (!this.isScatterConnected) throw 'no' ;
+        if (!this.isScatterConnected) throw 'no';
         await this.loginScatterAsync();
       } catch (e) {
         console.warn('Unable to connect wallets');
@@ -289,7 +289,7 @@ export default {
           title: '无法与你的钱包建立链接',
           content: '请检查钱包是否打开并解锁',
         });
-        return ;
+        return;
       }
       this.board = this.getClipboard;
       const clipboard = new Clipboard('.button-share');

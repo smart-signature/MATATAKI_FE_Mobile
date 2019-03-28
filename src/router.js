@@ -29,10 +29,10 @@ export default new Router({
     },
     {
       path: '/article/:hash/:inviter',
-      redirect: to => { 
-        const { hash, inviter } = to.params
-          return { name: 'Article', params: { hash, inviter } }
-      } 
+      redirect: (to) => {
+        const { hash, inviter } = to.params;
+        return { name: 'Article', params: { hash, inviter } };
+      },
     },
     {
       path: '/login',
