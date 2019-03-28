@@ -20,17 +20,16 @@
           <Input value="2" disabled placeholder="输入文章分享裂变系数" clearable />
         </FormItem>
     </Form>
-    <mavon-editor ref=md v-model="markdownData" @imgAdd="$imgAdd" placeholder="左边输入 Markdown 格式的文字开始编辑，右边即时预览" />
+    <mavon-editor ref=md v-model="markdownData" @imgAdd="$imgAdd" 
+      placeholder="左边输入 Markdown 格式的文字开始编辑，右边即时预览"/>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
 import { mapGetters, mapActions, mapState } from 'vuex';
 import { sendPost } from '@/api/ipfs';
-import API from '@/api/scatter.js';
+import API from '@/api/scatter';
 import { mavonEditor } from 'mavon-editor';
-import request from 'request';
 import { publishArticle, defaultImagesUploader, auth } from '../api';
 
 export default {

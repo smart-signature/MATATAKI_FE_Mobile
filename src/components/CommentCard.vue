@@ -20,7 +20,9 @@ export default {
     friendlyDate() {
       const isAppleSlave = navigator.platform.includes('iPhone');
       const time = new Date(this.comment.timestamp);
-      return moment(time.getTime() - time.getTimezoneOffset() * 60000 * (isAppleSlave ? 0 : 1)).fromNow();// moment(this.asset.timestamp).fromNow();
+      return moment(time.getTime() - time.getTimezoneOffset()
+                    * 60000 * (isAppleSlave ? 0 : 1)).fromNow();
+             // moment(this.asset.timestamp).fromNow();
     },
   },
   created() {

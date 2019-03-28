@@ -1,13 +1,15 @@
 <template>
   <div class="article">
     <Header
-      :pageinfo="{ left:'notback', title: 'Smart Signature', rightPage: 'home', needLogin: true, }" />
+      :pageinfo="{ left:'notback', title: 'Smart Signature', rightPage: 'home',
+                   needLogin: true, }"/>
     <div class="tl_page">
       <main class="ta">
         <header class="ta_header">
           <h1 dir="auto">{{post.title}}</h1>
           <address dir="auto">
-            <router-link :to="{ name: 'User', params: { author: post.author, username:post.author }}">
+            <router-link :to="{ name: 'User',
+                                params: { author: post.author, username:post.author }}">
               <a> Author: {{post.author}}</a>
             </router-link>
             <br/>
@@ -49,7 +51,8 @@
            style="background:rgba(243,243,243,1);">
            <div slot="title" style="textAlign: center;">赞赏此文章</div>
             <Row><za-input
-              auto-height="" v-model="v3" type="textarea" placeholder="输入推荐语…" @change="handleCommentChange">
+              auto-height="" v-model="v3" type="textarea"
+              placeholder="输入推荐语…" @change="handleCommentChange">
             </za-input></Row>
             <br/>
             <Row><za-input
@@ -77,9 +80,9 @@ import { Header } from '@/components/';
 import axios from 'axios';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
-import { getArticleData, getSharesbysignid, addReadAmount, sendComment, getAuth  } from '../api';
+import { getArticleData, getSharesbysignid, addReadAmount, sendComment, getAuth } from '../api';
 import {
-  support, getSignInfo, getSharesInfo, getContractActions,
+  support, getSharesInfo, getContractActions,
 } from '../api/signature.js';
 import 'mavon-editor/dist/css/index.css';
 
@@ -87,8 +90,7 @@ import 'mavon-editor/dist/css/index.css';
 const markdownIt = mavonEditor.getMarkdownIt();
 const clipboard = new Clipboard('.button-share');
 
-const RewardStatus = {
-  //0=加载中,1=未打赏 2=已打赏
+const RewardStatus = { // 0=加载中,1=未打赏 2=已打赏
   LOADING: 0,
   NOT_REWARD_YET: 1,
   REWARDED: 2,
@@ -131,7 +133,7 @@ export default {
           totalSupportedAmount += parseFloat(element) / 10000;
         }
         this.totalSupportedAmount = totalSupportedAmount;
-        return this.totalSupportedAmount.toFixed(4)
+        return this.totalSupportedAmount.toFixed(4);
       },
       /*// countTotalSupportedAmount, old version, dont del
         const { actions } = await getContractActions();
@@ -156,7 +158,7 @@ export default {
       return invite;
     },
   },
-  /* 
+  /*
     created
     实例已经创建完成之后被调用。在这一步，实例已完成以下的配置：
     数据观测(data observer)，属性和方法的运算， watch/event 事件回调。

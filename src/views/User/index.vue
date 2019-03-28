@@ -92,8 +92,8 @@ import {
   Follow, Unfollow, getUser, auth,
 } from '../../api';
 import ArticlesList from './ArticlesList.vue';
-import API from '@/api/scatter.js';
-import { isEmptyArray } from "@/common/methods.js";
+import API from '@/api/scatter';
+import { isEmptyArray } from '@/common/methods';
 export default {
   name: 'User',
   props: ['username'],
@@ -245,7 +245,7 @@ export default {
   },
   async created() {
     const playerincome = await getPlayerIncome(this.username);
-    this.playerincome = isEmptyArray(playerincome) ? playerincome[0] : this.playerincome
+    this.playerincome = isEmptyArray(playerincome) ? playerincome[0] : this.playerincome;
     this.refresh_user();
     const user = this.isMe ? '我' : this.username;
     document.title = `${user}的个人主页 - SmartSignature`;

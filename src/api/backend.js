@@ -172,7 +172,7 @@ function getUser({
   author: "minakokojima"
 ​​  comment: ""
   create_time: "2019-03-26T01:04:21.000Z"
-​​   sign_id: 173
+  sign_id: 173
 */
 async function getSharesbysignid({
   signid,
@@ -186,7 +186,7 @@ async function getSharesbysignid({
   }, callback);
 }
 
-async function sendComment({ comment, sign_id, }, callback) {
+async function sendComment({ comment, sign_id }, callback) {
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
   return await request.post({
     uri: `${apiServer}/post/comment`,
@@ -194,14 +194,14 @@ async function sendComment({ comment, sign_id, }, callback) {
     json: true,
     headers: { Accept: '*/*', 'x-access-token': accessToken },
     dataType: 'json',
-    form: { comment, sign_id, },
+    form: { comment, sign_id },
   }, callback);
 }
 
-//be Used in Article Page
+// be Used in Article Page
 function addReadAmount({
   articlehash,
-},callback){
+}, callback) {
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
   const url = `${apiServer}/post/show/${articlehash}`;
   return request({

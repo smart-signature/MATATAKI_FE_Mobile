@@ -67,7 +67,7 @@ import {
   getPlayerBills, getPlayerIncome,
   withdraw,
 } from '../../api/signature.js';
-import { isEmptyArray } from "@/common/methods.js";
+import { isEmptyArray } from '@/common/methods';
 
 export default {
   name: 'Asset',
