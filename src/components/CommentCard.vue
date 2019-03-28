@@ -6,7 +6,7 @@
       <span class="comment-quantity">{{comment.quantity}}</span>
     </h1>
     <h2 class="comment-timestamp">{{friendlyDate}}</h2>
-    <p class="comment-message">{{comment.message}}</p>
+    <p class="comment-message">{{displayMessage}}</p>
   </div>
 </template>
 
@@ -17,6 +17,9 @@ export default {
   name: 'CommentCard',
   props: ['comment'],
   computed: {
+    displayMessage() {
+      return this.comment.message !== '' ? this.comment.message : '用户没有留下评论';
+    },
     friendlyDate() {
       const isAppleSlave = navigator.platform.includes('iPhone');
       const time = new Date(this.comment.timestamp);
