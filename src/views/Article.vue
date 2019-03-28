@@ -84,7 +84,7 @@ import {
   getArticleData, getSharesbysignid, addReadAmount, sendComment, getAuth,
 } from '../api';
 import {
-  support, getSharesInfo, getSignInfo
+  support, getSignInfo,
 } from '../api/signature';
 import 'mavon-editor/dist/css/index.css';
 
@@ -134,8 +134,7 @@ export default {
           const element = this.shares[index].amount;
           totalSupportedAmount += parseFloat(element) / 10000;
         }
-        this.totalSupportedAmount = totalSupportedAmount;
-        return this.totalSupportedAmount.toFixed(4);
+        return totalSupportedAmount.toFixed(4);
       },
       /* // countTotalSupportedAmount, old version, dont del
         const { actions } = await getContractActions();
@@ -190,7 +189,7 @@ export default {
     const signid = this.sign.id;
     const shares = localStorage.getItem(`sign id : ${signid}'s shares`);
     const setShares = ({ signid }) => {
-       getSharesbysignid({ signid })
+      getSharesbysignid({ signid })
         .then( (response) => {
           const shares = response.data;
           console.log('shares : ', shares);
@@ -336,6 +335,7 @@ export default {
         console.log('Send comment...');
         await sendComment({ comment, sign_id },
           (error, response) => {
+            console.log(response);
             if (error) throw new Error(error);
           });
         this.isSupported = RewardStatus.REWARDED;
@@ -353,7 +353,7 @@ export default {
         if (!this.isScatterConnected) await this.connectScatterAsync();
         console.info(this.isScatterConnected);
         // await this.suggestNetworkAsync();
-        if (!this.isScatterConnected) throw 'no';
+        if (!this.isScatterConnected) throw new Error('no');
         await this.loginScatterAsync();
       } catch (e) {
         console.warn('Unable to connect wallets');
