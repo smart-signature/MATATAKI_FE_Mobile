@@ -16,7 +16,8 @@
 <script>
 import axios from 'axios';
 import { CommentCard, Header } from '@/components/';
-import { getArticleData, getSignId, getSharesbysignid } from '../api';
+import { getArticleData, getSharesbysignid } from '../api';
+import { getSignInfo } from '../api/signature';
 
 export default {
   name: 'Comments',
@@ -91,7 +92,7 @@ export default {
     },
     getSharesbysignid(signId) {
       getSharesbysignid({ signid: signId })
-        .then( response => {
+        .then((response) => {
           console.log('shares : ', response.data);
           this.comments = response.data.map(a => ({
             author: a.author,
@@ -99,7 +100,7 @@ export default {
             quantity: `${parseFloat(a.amount) / 10000} EOS`,
             message: a.comment,
           }));
-      });
+        });
     },
     setDocumentTitle(post) {
       document.title = `${post.title} by ${post.author} - Smart Signature`;

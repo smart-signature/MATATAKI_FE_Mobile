@@ -1,6 +1,6 @@
 import axios from 'axios';
 import request from 'request';
-import API from '@/api/scatter.js';
+import API from '@/api/scatter';
 
 const apiServer = 'https://api.smartsignature.io';
 
@@ -39,15 +39,16 @@ function publishArticle({
 
 const getArticleData = hash => axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
 const getArticlesList = ({ page = 1 }) => axios.get(
-  `${apiServer}/posts`, { params: { page, }, });
+  `${apiServer}/posts`, { params: { page } },
+);
 /*
   amount: 2000
   author: "minakokojima"
-​​  comment: ""
+  comment: ""
   create_time: "2019-03-26T01:04:21.000Z"
   sign_id: 173
 */
-const getSharesbysignid = ({signid}) => axios.get(`${apiServer}/shares?signid=${signid}`);
+const getSharesbysignid = ({ signid }) => axios.get(`${apiServer}/shares?signid=${signid}`);
 const getSignId = hash => axios.get(`${apiServer}/post/${hash}`);
 
 
@@ -162,9 +163,9 @@ function getUser({
   }, callback);
 }
 
-async function sendComment({ comment, sign_id }, callback) {
+function sendComment({ comment, sign_id }, callback) {
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
-  return await request.post({
+  return request.post({
     uri: `${apiServer}/post/comment`,
     rejectUnauthorized: false,
     json: true,

@@ -84,8 +84,8 @@ import {
   getArticleData, getSharesbysignid, addReadAmount, sendComment, getAuth,
 } from '../api';
 import {
-  support, getSharesInfo, getContractActions, getSignInfo
-} from '../api/signature.js';
+  support, getSharesInfo, getSignInfo
+} from '../api/signature';
 import 'mavon-editor/dist/css/index.css';
 
 // MarkdownIt 实例
@@ -189,7 +189,7 @@ export default {
     // const shares = await getSharesInfo('linklinkguan'); // test for sign.id 78
     const signid = this.sign.id;
     const shares = localStorage.getItem(`sign id : ${signid}'s shares`);
-    const setShares =  ({ signid }) => {
+    const setShares = ({ signid }) => {
        getSharesbysignid({ signid })
         .then( (response) => {
           const shares = response.data;
@@ -335,7 +335,7 @@ export default {
         await support({ amount, sign_id, referrer });
         console.log('Send comment...');
         await sendComment({ comment, sign_id },
-          (error, response, body) => {
+          (error, response) => {
             if (error) throw new Error(error);
           });
         this.isSupported = RewardStatus.REWARDED;
