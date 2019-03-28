@@ -37,11 +37,10 @@ export default new Vuex.Store({
   actions: {
     async connectScatterAsync({ commit, dispatch }) {
       console.log('Connecting to wallet or Scatter desktop...');
-      //try {
-        const connected = await api.connectScatterAsync();
-      //} catch (error) {
-        
-      //}
+      // try {
+      const connected = await api.connectScatterAsync();
+      // } catch (error) {
+      // }
       console.log('Connect Scatter result: ', connected);
       // 不論有沒有連上都應該設定狀態，要是連上後登陸前把錢包關了(或是錢包當了)
       // 就會造成狀態不合

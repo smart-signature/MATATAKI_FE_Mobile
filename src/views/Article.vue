@@ -1,13 +1,15 @@
 <template>
   <div class="article">
     <Header
-      :pageinfo="{ left:'notback', title: 'Smart Signature', rightPage: 'home', needLogin: true, }" />
+      :pageinfo="{ left:'notback', title: 'Smart Signature', rightPage: 'home',
+                   needLogin: true, }"/>
     <div class="tl_page">
       <main class="ta">
         <header class="ta_header">
           <h1 dir="auto">{{post.title}}</h1>
           <address dir="auto">
-            <router-link :to="{ name: 'User', params: { author: post.author, username:post.author }}">
+            <router-link :to="{ name: 'User',
+                                params: { author: post.author, username:post.author }}">
               <a> Author: {{post.author}}</a>
             </router-link>
             <br/>
@@ -49,7 +51,8 @@
            style="background:rgba(243,243,243,1);">
            <div slot="title" style="textAlign: center;">赞赏此文章</div>
             <Row><za-input
-              auto-height="" v-model="v3" type="textarea" placeholder="输入推荐语…" @change="handleCommentChange">
+              auto-height="" v-model="v3" type="textarea"
+              placeholder="输入推荐语…" @change="handleCommentChange">
             </za-input></Row>
             <br/>
             <Row><za-input
@@ -77,9 +80,11 @@ import { Header } from '@/components/';
 import axios from 'axios';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
-import { getArticleData, getSharesbysignid, addReadAmount, sendComment, getAuth  } from '../api';
 import {
-  support, getSignInfo, getSharesInfo, getContractActions,
+  getArticleData, getSharesbysignid, addReadAmount, sendComment, getAuth,
+} from '../api';
+import {
+  support, getSharesInfo, getContractActions, getSignInfo
 } from '../api/signature.js';
 import 'mavon-editor/dist/css/index.css';
 
@@ -87,12 +92,11 @@ import 'mavon-editor/dist/css/index.css';
 const markdownIt = mavonEditor.getMarkdownIt();
 const clipboard = new Clipboard('.button-share');
 
-const RewardStatus = {
-  //0=加载中,1=未打赏 2=已打赏
+const RewardStatus = { // 0=加载中,1=未打赏 2=已打赏
   LOADING: 0,
   NOT_REWARD_YET: 1,
   REWARDED: 2,
-}
+};
 
 export default {
   name: 'Article',
@@ -112,8 +116,8 @@ export default {
     },
     getClipboard() {
       const { currentUsername } = this;
-      const { protocol, host } = window.location
-      const articleUrl = `${protocol}//${host}/article/${this.hash}`
+      const { protocol, host } = window.location;
+      const articleUrl = `${protocol}//${host}/article/${this.hash}`;
       const shareLink = this.isLogined
         ? `${articleUrl}?invite=${currentUsername}`
         : articleUrl;
@@ -124,16 +128,16 @@ export default {
     },
     computedTotalSupportedAmount: {
       // getter
-      get: function () {
-        let totalSupportedAmount = 0.0000 ;
+      get() {
+        let totalSupportedAmount = 0.0000;
         for (let index = 0; index < this.shares.length; index += 1) {
           const element = this.shares[index].amount;
           totalSupportedAmount += parseFloat(element) / 10000;
         }
         this.totalSupportedAmount = totalSupportedAmount;
-        return this.totalSupportedAmount.toFixed(4)
+        return this.totalSupportedAmount.toFixed(4);
       },
-      /*// countTotalSupportedAmount, old version, dont del
+      /* // countTotalSupportedAmount, old version, dont del
         const { actions } = await getContractActions();
         // console.log(actions.map(a => a.action_trace));
         const actions2 = actions.filter(a => a.action_trace.act.account === 'eosio.token'
@@ -148,15 +152,15 @@ export default {
     },
     getInvite() {
       // no need to save inviter
-      // we can use computed 
-      let { invite } = this.$route.query
+      // we can use computed
+      let { invite } = this.$route.query;
       if (!invite) {
         invite = null;
       }
       return invite;
     },
   },
-  /* 
+  /*
     created
     实例已经创建完成之后被调用。在这一步，实例已完成以下的配置：
     数据观测(data observer)，属性和方法的运算， watch/event 事件回调。
@@ -182,23 +186,23 @@ export default {
 
     // old version
     // const shares = await getSharesInfo(this.currentUsername);
-    // const shares = await getSharesInfo('linklinkguan'); // test for sign.id 78	
+    // const shares = await getSharesInfo('linklinkguan'); // test for sign.id 78
     const signid = this.sign.id;
-    const shares = localStorage.getItem('sign id : ' + signid + '\'s shares');
-    const setShares = ({signid,}) => {
-       getSharesbysignid({ signid, }, (error, response, body) => {
-        const shares = body ;
+    const shares = localStorage.getItem(`sign id : ${signid}'s shares`);
+    const setShares = ({ signid }) => {
+      getSharesbysignid({ signid }, (error, response, body) => {
+        const shares = body;
         console.log('shares : ', shares);
-        localStorage.setItem('sign id : ' + signid + '\'s shares', JSON.stringify(shares));
+        localStorage.setItem(`sign id : ${signid}'s shares`, JSON.stringify(shares));
         this.shares = shares; // for watch
       });
-    }
+    };
 
     // Use cache or do first time downloading
     if (shares) {
       this.shares = JSON.parse(shares);
     } else { // first time need await
-      await setShares({signid})
+      await setShares({ signid });
     }
 
     // Setup
@@ -206,9 +210,9 @@ export default {
     this.setisSupported();
 
     // Update to latest data
-    setShares({signid});
+    setShares({ signid });
 
-    addReadAmount({articlehash: this.hash});
+    addReadAmount({ articlehash: this.hash });
   },
   data: () => ({
     post: {
@@ -227,7 +231,7 @@ export default {
     amount: 0.0000,
     comment: '',
     isSupported: RewardStatus.LOADING,
-    isTotalSupportAmountVisible: false,  //正在加载和加载完毕的文本切换
+    isTotalSupportAmountVisible: false, // 正在加载和加载完毕的文本切换
     totalSupportedAmount: 0.0000,
     visible3: false,
     v3: '',
@@ -240,7 +244,7 @@ export default {
       document.title = `${title} by ${author} - Smart Signature`;
     },
     currentUsername() {
-      this.setisSupported(this.shares)
+      this.setisSupported(this.shares);
     },
   },
   methods: {
@@ -311,9 +315,9 @@ export default {
       }
 
       await getAuth();
-      
+
       // amount
-      const {comment, sign} = this ;
+      const { comment, sign } = this;
       const amount = parseFloat(this.amount);
       if (isNaN(amount) || amount <= 0) {
         alert('请输入正确的金额');
@@ -326,29 +330,29 @@ export default {
       const referrer = this.getInvite;
       console.log('referrer :', referrer);
       this.isSupported = RewardStatus.LOADING;
-      try { 
-        await support({ amount, sign_id, referrer })
+      try {
+        await support({ amount, sign_id, referrer });
         console.log('Send comment...');
         await sendComment({ comment, sign_id },
           (error, response, body) => {
             if (error) throw new Error(error);
-        }); 
-          this.isSupported = RewardStatus.REWARDED;
-          alert('赞赏成功！');
-          // tricky speed up
-          this.totalSupportedAmount += parseFloat(amount);
-      } catch(error) {
+          });
+        this.isSupported = RewardStatus.REWARDED;
+        alert('赞赏成功！');
+        // tricky speed up
+        this.totalSupportedAmount += parseFloat(amount);
+      } catch (error) {
         console.log(JSON.stringify(error));
         alert('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额。');
         this.isSupported = RewardStatus.NOT_REWARD_YET;
-      };
+      }
     },
     async share() {
       try {
         if (!this.isScatterConnected) await this.connectScatterAsync();
         console.info(this.isScatterConnected);
         // await this.suggestNetworkAsync();
-        if (!this.isScatterConnected) throw 'no' ;
+        if (!this.isScatterConnected) throw 'no';
         await this.loginScatterAsync();
       } catch (e) {
         console.warn('Unable to connect wallets');
@@ -356,7 +360,6 @@ export default {
           title: '无法与你的钱包建立链接',
           content: '请检查钱包是否打开并解锁',
         });
-        return ;
       }
     },
   },

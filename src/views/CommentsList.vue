@@ -17,10 +17,6 @@
 import axios from 'axios';
 import { CommentCard, Header } from '@/components/';
 import { getArticleData, getSignId, getSharesbysignid } from '../api';
-import {
-  getSignInfo, getSharesInfo, getContractActions,
-} from '../api/signature';
-// import request from 'request'; // for test
 
 export default {
   name: 'Comments',
@@ -101,9 +97,9 @@ export default {
         /*
         amount: 2000
         author: "minakokojima"
-​​        comment: ""
+        comment: ""
 ​​        create_time: "2019-03-26T01:04:21.000Z"
-​​        sign_id: 173
+        sign_id: 173
       */
         this.comments = body.map(a => ({
           author: a.author,
