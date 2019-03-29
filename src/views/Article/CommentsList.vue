@@ -117,8 +117,7 @@ export default {
     },
   },
   watch: {
-    copyPost({ author, title }) {
-      // setDocumentTitle
+    copyPost({ author, title }) { // for set DocumentTitle
       document.title = `${title} by ${author} - Smart Signature`;
     },
   },
