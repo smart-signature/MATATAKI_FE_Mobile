@@ -1,17 +1,19 @@
 <template>
   <div class="article">
     <Header
-      :pageinfo="{ left:'notback', title: 'Smart Signature', rightPage: 'home', needLogin: true, }" />
+      :pageinfo="{ left:'notback', title: 'Smart Signature', rightPage: 'home',
+                   needLogin: true, }"/>
     <div class="tl_page">
       <main class="ta">
         <header class="ta_header">
           <h1 dir="auto">{{post.title}}</h1>
           <address dir="auto">
-            <router-link :to="{ name: 'User', params: { author: post.author, username:post.author }}">
+            <router-link :to="{ name: 'User',
+                                params: { author: post.author, username:post.author }}">
               <a> Author: {{post.author}}</a>
             </router-link>
             <br/>
-            <span>IPFS Hash: {{hash}}</span>
+            <span class="break_all">IPFS Hash: {{hash}}</span>
             <br/>
             <span>阅读次数：{{readamount}}</span>
           </address>
@@ -22,10 +24,10 @@
     </div>
     <footer class="footer-article">
       <Divider />
-      <Row justify="center">
+      <Row justify="center" style="padding: 0 20px">
           <i-col span="11" v-if="!isTotalSupportAmountVisible">正在从链上加载本文收到的赞赏</i-col>
           <i-col span="11" v-else-if="isTotalSupportAmountVisible">
-            <router-link :to="{ name: 'Comments', params: { post, sign }}">
+            <router-link :to="{ name: 'Comments', params: { post, sign, hash }}">
               本文收到赞赏 {{computedTotalSupportedAmount}} 个EOS
             </router-link>
           </i-col>
@@ -49,7 +51,8 @@
            style="background:rgba(243,243,243,1);">
            <div slot="title" style="textAlign: center;">赞赏此文章</div>
             <Row><za-input
-              auto-height="" v-model="v3" type="textarea" placeholder="输入推荐语…" @change="handleCommentChange">
+              auto-height="" v-model="v3" type="textarea"
+              placeholder="输入推荐语…" @change="handleCommentChange">
             </za-input></Row>
             <br/>
             <Row><za-input
@@ -78,19 +81,19 @@ import axios from 'axios';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
 import {
-  getArticleData, getSharesbysignid, addReadAmount, sendComment, getAuth,
+  getArticleData, getArticleInfo,
+  getSharesbysignid, addReadAmount, sendComment, getAuth,
 } from '../api';
 import {
-  support, getSignInfo, getSharesInfo, getContractActions,
-} from '../api/signature.js';
+  support, getSignInfo,
+} from '../api/signature';
 import 'mavon-editor/dist/css/index.css';
 
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
 const clipboard = new Clipboard('.button-share');
 
-const RewardStatus = {
-  // 0=加载中,1=未打赏 2=已打赏
+const RewardStatus = { // 0=加载中,1=未打赏 2=已打赏
   LOADING: 0,
   NOT_REWARD_YET: 1,
   REWARDED: 2,
@@ -132,8 +135,7 @@ export default {
           const element = this.shares[index].amount;
           totalSupportedAmount += parseFloat(element) / 10000;
         }
-        this.totalSupportedAmount = totalSupportedAmount;
-        return this.totalSupportedAmount.toFixed(4);
+        return totalSupportedAmount.toFixed(4);
       },
       /* // countTotalSupportedAmount, old version, dont del
         const { actions } = await getContractActions();
@@ -166,34 +168,28 @@ export default {
   */
   async created() {
     document.title = '正在加载文章 - Smart Signature';
-    this.initClipboard();
-    try {
-      await this.getArticleData();
-    } catch (error) {
 
-    }
+    this.getArticleData();
 
-    const { data } = await axios.get(`https://api.smartsignature.io/post/${this.hash}`);
+    const { data } = await getArticleInfo(this.hash);
+    console.log('Article info :', data);
+
     const signs = await getSignInfo(data.id);
     this.sign = signs[0];
     console.log('sign :', this.sign); // fix: ReferenceError: sign is not defined
 
     this.readamount = data.read;
-    // Set post author
-    this.post.author = this.sign.author;
 
-    // old version
-    // const shares = await getSharesInfo(this.currentUsername);
-    // const shares = await getSharesInfo('linklinkguan'); // test for sign.id 78
     const signid = this.sign.id;
     const shares = localStorage.getItem(`sign id : ${signid}'s shares`);
     const setShares = ({ signid }) => {
-      getSharesbysignid({ signid }, (error, response, body) => {
-        const shares = body;
-        console.log('shares : ', shares);
-        localStorage.setItem(`sign id : ${signid}'s shares`, JSON.stringify(shares));
-        this.shares = shares; // for watch
-      });
+      getSharesbysignid({ signid })
+        .then((response) => {
+          const shares = response.data;
+          console.log('shares : ', shares);
+          localStorage.setItem(`sign id : ${signid}'s shares`, JSON.stringify(shares));
+          this.shares = shares; // for watch
+        });
     };
 
     // Use cache or do first time downloading
@@ -211,6 +207,8 @@ export default {
     setShares({ signid });
 
     addReadAmount({ articlehash: this.hash });
+
+    this.initClipboard();
   },
   data: () => ({
     post: {
@@ -241,6 +239,9 @@ export default {
       // 当文章从 IPFS fetched 到， post 会更新，我们要更新网页 title
       document.title = `${title} by ${author} - Smart Signature`;
     },
+    sign({ author }) {
+      this.post.author = author;
+    },
     currentUsername() {
       this.setisSupported(this.shares);
     },
@@ -269,8 +270,8 @@ export default {
     },
     async getArticleData() {
       const { data } = await getArticleData(this.hash);
-      console.info('post :', data);
       this.post = data.data;
+      console.info('post :', this.post);
     },
     handleClose() {
       this.visible3 = false;
@@ -288,7 +289,7 @@ export default {
       if (this.scatterAccount !== null && shares !== []) {
         const share = shares.find(element => element.author === this.currentUsername);
         if (share !== undefined) {
-          console.log('share :', share);
+          console.log('Current user\'s share :', share);
           this.isSupported = RewardStatus.REWARDED;
         } else {
           this.isSupported = RewardStatus.NOT_REWARD_YET;
@@ -317,7 +318,7 @@ export default {
       // amount
       const { comment, sign } = this;
       const amount = parseFloat(this.amount);
-      if (isNaN(amount) || amount <= 0) {
+      if (Number.isNaN(amount) || amount <= 0) {
         alert('请输入正确的金额');
         return;
       }
@@ -332,7 +333,8 @@ export default {
         await support({ amount, sign_id, referrer });
         console.log('Send comment...');
         await sendComment({ comment, sign_id },
-          (error, response, body) => {
+          (error, response) => {
+            console.log(response);
             if (error) throw new Error(error);
           });
         this.isSupported = RewardStatus.REWARDED;
@@ -350,7 +352,7 @@ export default {
         if (!this.isScatterConnected) await this.connectScatterAsync();
         console.info(this.isScatterConnected);
         // await this.suggestNetworkAsync();
-        if (!this.isScatterConnected) throw 'no';
+        if (!this.isScatterConnected) throw new Error('no');
         await this.loginScatterAsync();
       } catch (e) {
         console.warn('Unable to connect wallets');
@@ -366,6 +368,17 @@ export default {
 
 
 <style scoped>
+.break_all {
+  word-break: break-all;
+}
+.markdown-body {
+  padding: 20px;
+  font-family: -apple-system,SF UI Text,Arial,PingFang SC,Hiragino Sans GB,Microsoft YaHei,WenQuanYi Micro Hei,sans-serif;
+  color: #2f2f2f;
+}
+.footer-article {
+  margin-bottom: 20px;
+}
 .article {
   text-align: left;
   max-width: 732px;
@@ -531,7 +544,4 @@ export default {
 .markdown-body.tac {
     margin: 20px;
 }
-  .markdown-body {
-    padding: 20px;
-  }
 </style>
