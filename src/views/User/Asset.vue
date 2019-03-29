@@ -21,8 +21,8 @@
       <Row type="flex" justify="center" class="code-row-bg">
         <Col span="6">
           <p class="toptext2">创作历史收益</p>
-          <p class="toptext3" 
-            :style='getDisplayWritereward > 0 ? { color: "#f50" } 
+          <p class="toptext3"
+            :style='getDisplayWritereward > 0 ? { color: "#f50" }
                     : (getDisplayWritereward < 0 ? { color: "#87d068" } : {color: "#a7aab7"})'>
             {{getDisplayWritereward}}
           </p>
@@ -32,8 +32,8 @@
         </Col>
         <Col span="6">
           <p class="toptext2">赞赏历史收益</p>
-          <p class="toptext3" 
-             :style='getDisplaySharereward > 0 ? { color: "#f50" } 
+          <p class="toptext3"
+             :style='getDisplaySharereward > 0 ? { color: "#f50" }
                      : (getDisplaySharereward < 0 ? { color: "#87d068" } : {color: "#a7aab7"})'>
             {{getDisplaySharereward}}
           </p>
@@ -44,7 +44,7 @@
         <Col span="6">
           <p class="toptext2">赞赏历史支出</p>
           <p class="toptext3"
-            :style='getDisplaySharecost > 0 ? { color: "#f50" } 
+            :style='getDisplaySharecost > 0 ? { color: "#f50" }
                     : (getDisplaySharecost < 0 ? { color: "#87d068" } : {color: "#a7aab7"})'>
             {{getDisplaySharecost}}
           </p>
@@ -117,13 +117,13 @@ export default {
       return this.assets.sort((a, b) => (new Date(b.timestamp)).getTime() - (new Date(a.timestamp)).getTime());
     },
     getDisplaySharecost() {
-      return this.computeAmount({elements: this.assets, type: 'support expenses'});
+      return this.computeAmount({ elements: this.assets, type: 'support expenses' });
     },
-    getDisplaySharereward(){
-      return this.computeAmount({elements: this.assets, type: 'share income'});
+    getDisplaySharereward() {
+      return this.computeAmount({ elements: this.assets, type: 'share income' });
     },
     getDisplayWritereward() {
-      return this.computeAmount({elements: this.assets, type: 'sign income'});
+      return this.computeAmount({ elements: this.assets, type: 'sign income' });
     },
   },
   methods: {
@@ -135,7 +135,7 @@ export default {
       const actions2 = actions.filter(a => a.action_trace.act.account === 'signature.bp'
           && a.action_trace.act.name === 'bill'
           && a.action_trace.act.data.type !== 'test income' /* 過濾 test income */
-          && a.action_trace.act.data.quantity !== '0.0000 EOS' /* 過濾 0 的收入支出 */
+          && a.action_trace.act.data.quantity !== '0.0000 EOS', /* 過濾 0 的收入支出 */
       );
       // console.log("actions>??",actions2);
       return actions2.map(a => ({
@@ -148,8 +148,7 @@ export default {
       let amount = 0;
       for (let index = 0; index < elements.length; index += 1) {
         const element = elements[index];
-        if (element.type === type) 
-          amount += parseFloat(element.quantity.replace(' EOS', ''));
+        if (element.type === type) { amount += parseFloat(element.quantity.replace(' EOS', '')); }
       }
       return (amount > 0 ? '+' : '') + parseFloat(amount).toFixed(4);
     },
@@ -162,7 +161,7 @@ export default {
       }, 0);
       console.log('zhichu', temp); // 寫這啥，看不懂
       return temp;
-    },*/
+    }, */
     async getPlayerTotalIncome(name) {
       console.log('Connecting to EOS fetch player income...');
       const playerincome = await getPlayerIncome(name); // 从合约拿到支持收入和转发收入

@@ -25,7 +25,7 @@ export default {
     assetColor() {
       const asset = this.asset.quantity.replace(' EOS', '');
       return asset > 0 ? '#f50' : (asset < 0 ? '#87d068' : '#a7aab7');
-    }
+    },
   },
   created() {
     // console.log(this.asset.quantity);

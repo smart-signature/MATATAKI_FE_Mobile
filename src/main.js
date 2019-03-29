@@ -10,7 +10,7 @@ import store from './store';
 import './registerServiceWorker';
 
 // Vue plugins
-import './plugins/iview.js'
+import './plugins/iview.js';
 
 [
   infiniteScroll,

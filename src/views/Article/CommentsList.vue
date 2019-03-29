@@ -29,7 +29,7 @@ export default {
       // if need change to asc, swap a & b
       return this.comments.sort(
         (a, b) => (new Date(b.timestamp)).getTime()
-                  - (new Date(a.timestamp)).getTime()
+                  - (new Date(a.timestamp)).getTime(),
       );
     },
     displayAboutScroll() {
