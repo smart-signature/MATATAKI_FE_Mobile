@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import {
   Actionsheet, Alert, Button, Cell, Pull,
-  TabPanel, Tabs, NavBar, Icon, Confirm, Input,
+  TabPane, Tabs, NavBar, Icon, Confirm, Input,
   Modal, KeyboardPicker,
 } from 'zarm-vue';
 

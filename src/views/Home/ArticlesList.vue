@@ -1,14 +1,14 @@
 <template>
   <div class="articles">
     <za-tabs v-model="activeNameSwipe" @change="handleClick">
-      <za-tab-panel :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label">
+      <za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label">
         <za-pull :on-refresh="refresh" :refreshing="refreshing">
           <div class="content" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
             <ArticleCard :article="a" v-for="a in articles" :key="a.id"/>
           </div>
           <p class="loading-stat">{{displayAboutScroll}}</p>
         </za-pull>
-      </za-tab-panel>
+      </za-tab-pane>
     </za-tabs>
   </div>
 </template>
