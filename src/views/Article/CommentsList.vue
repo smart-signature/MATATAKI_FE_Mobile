@@ -16,8 +16,8 @@
 <script>
 import axios from 'axios';
 import { CommentCard, Header } from '@/components/';
-import { getArticleData, getSharesbysignid } from '../api';
-import { getSignInfo } from '../api/signature';
+import { getArticleData, getSharesbysignid } from '@/api/';
+import { getSignInfo } from '@/api/signature';
 
 export default {
   name: 'Comments',
