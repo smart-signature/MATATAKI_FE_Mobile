@@ -21,8 +21,12 @@
       <Row type="flex" justify="center" class="code-row-bg">
         <Col span="6">
           <p class="toptext2">创作历史收益</p>
-          <p class="toptext3" :style='getDisplayWritereward > 0 ? { color: "#f50" } 
-                                      : (getDisplayWritereward < 0 ? { color: "#87d068" } : {color: "#a7aab7"})'>
+          <p class="toptext3" 
+            :style='getDisplayWritereward > 0 
+                    ? { color: "#f50" } 
+                    : (
+                      getDisplayWritereward < 0 ? { color: "#87d068" } : {color: "#a7aab7"}
+                    )'>
             {{getDisplayWritereward}}
           </p>
         </Col>
@@ -31,8 +35,9 @@
         </Col>
         <Col span="6">
           <p class="toptext2">赞赏历史收益</p>
-          <p class="toptext3" :style='getDisplaySharereward > 0 ? { color: "#f50" } 
-                                      : (getDisplaySharereward < 0 ? { color: "#87d068" } : {color: "#a7aab7"})'>
+          <p class="toptext3" 
+             :style='getDisplaySharereward > 0 ? { color: "#f50" } 
+                     : (getDisplaySharereward < 0 ? { color: "#87d068" } : {color: "#a7aab7"})'>
             {{getDisplaySharereward}}
           </p>
         </Col>
@@ -41,8 +46,9 @@
         </Col>
         <Col span="6">
           <p class="toptext2">赞赏历史支出</p>
-          <p class="toptext3" :style='getDisplaySharecost > 0 ? { color: "#f50" } 
-                                      : (getDisplaySharecost < 0 ? { color: "#87d068" } : {color: "#a7aab7"})'>
+          <p class="toptext3"
+            :style='getDisplaySharecost > 0 ? { color: "#f50" } 
+                    : (getDisplaySharecost < 0 ? { color: "#87d068" } : {color: "#a7aab7"})'>
             {{getDisplaySharecost}}
           </p>
         </Col>

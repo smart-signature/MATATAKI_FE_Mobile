@@ -5,7 +5,7 @@
     <div class="tl">
       <za-pull :on-refresh="refresh" :refreshing="refreshing">
         <div class="content" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
-          <CommentCard :comment="a" v-for="a in comments" :key="a.timestamp"/>
+          <CommentCard :comment="a" v-for="a in sortedComments" :key="a.timestamp"/>
         </div>
         <p class="loading-stat">{{displayAboutScroll}}</p>
       </za-pull>
@@ -24,6 +24,14 @@ export default {
   props: ['post', 'sign', 'hash'],
   components: { CommentCard, Header },
   computed: {
+    sortedComments() {
+      // console.log(this.assets);
+      // if need change to asc, swap a & b
+      return this.comments.sort(
+        (a, b) => (new Date(b.timestamp)).getTime()
+                  - (new Date(a.timestamp)).getTime()
+      );
+    },
     displayAboutScroll() {
       if (this.isTheEndOfTheScroll) {
         return '🎉 哇，你真勤奋，所有comments已经加载完了～ 🎉';
