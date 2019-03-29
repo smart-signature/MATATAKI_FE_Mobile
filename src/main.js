@@ -1,7 +1,6 @@
 import Vue from 'vue';
 
 import clipboard from 'clipboard';
-import iView from 'iview';
 import moment from 'moment';
 import infiniteScroll from 'vue-infinite-scroll';
 import App from './App.vue';
@@ -10,12 +9,11 @@ import router from './router';
 import store from './store';
 import './registerServiceWorker';
 
-
-// CSS Style
-import 'iview/dist/styles/iview.css';
+// Vue plugins
+import './plugins/iview.js'
 
 [
-  iView, infiniteScroll,
+  infiniteScroll,
 ].map(c => Vue.use(c));
 
 Vue.config.productionTip = false;
