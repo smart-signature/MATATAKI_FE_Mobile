@@ -97,12 +97,6 @@ export default new Vuex.Store({
         dispatch('getMyBalances');
       } catch (err) {
         console.error('Failed to log in Scatter :', err);
-        // 應該移出並弄個 errorMeg.js 之類的，然後 import
-        // 但是顯然沒空弄啊(茶
-        this.$Modal.error({
-          title: '无法与你的钱包建立链接',
-          content: '请检查钱包是否打开并解锁',
-        });
       }
       commit('setIsScatterLoggingIn', false);
     },
