@@ -1,7 +1,9 @@
 <template>
   <div class="card comment">
     <h1 class="comment-title">
-      <span class="comment-author">{{comment.author}}</span>
+      <router-link :to="{ name: 'User', params: { username: comment.author }}">
+        <span class="comment-author">{{comment.author}}</span>
+      </router-link>
       <span> 赞赏了 </span>
       <span class="comment-quantity">{{comment.quantity}}</span>
     </h1>
