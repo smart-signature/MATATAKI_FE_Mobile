@@ -81,12 +81,10 @@ import axios from 'axios';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
 import {
-  getArticleData, getArticleInfo,
-  getSharesbysignid, addReadAmount, sendComment, getAuth,
-} from '../api';
-import {
-  support, getSignInfo,
-} from '../api/signature';
+  getArticleData, getArticleInfo, getAuth,
+  getSharesbysignid, addReadAmount, sendComment,
+} from '@/api';
+import { getSignInfo, support, } from '@/api/signature';
 import 'mavon-editor/dist/css/index.css';
 
 // MarkdownIt 实例
@@ -224,9 +222,7 @@ export default {
       // NO MORE Cannot read property 'fission_factor' of null
       fission_factor: 0,
     },
-    shares: [
-
-    ],
+    shares: [ ],
     amount: 0.0000,
     comment: '',
     isSupported: RewardStatus.LOADING,

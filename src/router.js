@@ -25,13 +25,13 @@ export default new Router({
       path: '/article/:hash',
       name: 'Article',
       props: true,
-      component: () => import(/* webpackChunkName: "article" */ './views/Article.vue'),
+      component: () => import(/* webpackChunkName: "article" */ './views/Article/index.vue'),
     },
     {
       path: '/article/:hash/comments',
       name: 'Comments',
       props: true,
-      component: () => import(/* webpackChunkName: "article-comments" */ './views/CommentsList.vue'),
+      component: () => import(/* webpackChunkName: "article-comments" */ './views/Article/CommentsList.vue'),
     },
     // {
     //   path: '/login',
