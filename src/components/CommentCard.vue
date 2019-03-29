@@ -4,7 +4,7 @@
       <router-link :to="{ name: 'User', params: { username: comment.author }}">
         <span class="comment-author">{{comment.author}}</span>
       </router-link>
-      <span> 打赏了 </span>
+      <span> 赞赏了 </span>
       <span class="comment-quantity">{{comment.quantity}}</span>
     </h1>
     <h2 class="comment-timestamp">{{friendlyDate}}</h2>
