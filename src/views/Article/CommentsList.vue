@@ -1,11 +1,11 @@
 <template>
   <div class="comments">
     <Header
-      :pageinfo="{ left:'back', title: '打赏队列', rightPage: 'home', needLogin: false, }" />
+      :pageinfo="{ left:'back', title: '赞赏队列', rightPage: 'home', needLogin: false, }" />
     <div class="tl">
       <za-pull :on-refresh="refresh" :refreshing="refreshing">
         <div class="content" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
-          <CommentCard :comment="a" v-for="a in comments" :key="a.timestamp"/>
+          <CommentCard :comment="a" v-for="a in sortedComments" :key="a.timestamp"/>
         </div>
         <p class="loading-stat">{{displayAboutScroll}}</p>
       </za-pull>
@@ -16,14 +16,22 @@
 <script>
 import axios from 'axios';
 import { CommentCard, Header } from '@/components/';
-import { getArticleData, getSharesbysignid } from '../api';
-import { getSignInfo } from '../api/signature';
+import { getArticleData, getSharesbysignid } from '@/api/';
+import { getSignInfo } from '@/api/signature';
 
 export default {
   name: 'Comments',
   props: ['post', 'sign', 'hash'],
   components: { CommentCard, Header },
   computed: {
+    sortedComments() {
+      // console.log(this.assets);
+      // if need change to asc, swap a & b
+      return this.comments.sort(
+        (a, b) => (new Date(b.timestamp)).getTime()
+                  - (new Date(a.timestamp)).getTime()
+      );
+    },
     displayAboutScroll() {
       if (this.isTheEndOfTheScroll) {
         return '🎉 哇，你真勤奋，所有comments已经加载完了～ 🎉';
@@ -31,27 +39,14 @@ export default {
       return '😄 勤奋地加载更多精彩内容 😄';
     },
   },
-  async created() {
+  created() {
     const { copyPost, copySign, hash } = this;
     if (copyPost === undefined || copySign === undefined) {
-      this.getArticleData(hash);
-      this.getSign(hash);
+      this.setArticleData(hash);
+      this.setSign(hash);
     } else {
-      this.setDocumentTitle(this.copyPost);
       this.getSharesbysignid(this.copySign.id);
     }
-
-    // test code
-    // const apiServer = 'https://api.smartsignature.io';
-    // request.get({
-    //   uri: `${apiServer}/shares`,
-    //   rejectUnauthorized: false,
-    //   json: true,
-    //   headers: { Accept: '*/*' },
-    //   dataType: 'json',
-    // }, (error, response, body) => {
-    //     console.log('all shares : ', body);
-    // });
   },
   data() {
     return {
@@ -62,11 +57,6 @@ export default {
         //   quantity: '10.2333 EOS',
         //   message: '这些天遍历了一下各社交app。。回头又感受下一罐。。就四个字：吹爆纯银大大！！真TM是个鬼才。。',
         // },
-      // { // sample
-      //  quantity: '100.2333 EOS',
-      //  timestamp: Date.now() + 1,
-      // type: 'test income',
-      // },
       ],
       refreshing: false,
       busy: false,
@@ -77,21 +67,20 @@ export default {
     };
   },
   methods: {
-    async getArticleData(hash) {
+    async setArticleData(hash) {
       const { data } = await getArticleData(hash);
-      console.info('post :', data);
       this.copyPost = data.data;
-      this.setDocumentTitle(this.copyPost);
+      console.info('post :', this.copyPost);
     },
-    async getSign(hash) {
+    async setSign(hash) {
       const { data } = await axios.get(`https://api.smartsignature.io/post/${hash}`);
       const signs = await getSignInfo(data.id);
       this.copySign = signs[0];
       console.log('sign :', this.copySign); // fix: ReferenceError: sign is not defined
-      this.getSharesbysignid(this.copySign.id);
+      await this.getSharesbysignid(this.copySign.id);
     },
-    getSharesbysignid(signId) {
-      getSharesbysignid({ signid: signId })
+    async getSharesbysignid(signId) {
+      await getSharesbysignid({ signid: signId })
         .then((response) => {
           console.log('shares : ', response.data);
           this.comments = response.data.map(a => ({
@@ -101,9 +90,6 @@ export default {
             message: a.comment,
           }));
         });
-    },
-    setDocumentTitle(post) {
-      document.title = `${post.title} by ${post.author} - Smart Signature`;
     },
     loadMore() {
       if (this.isTheEndOfTheScroll) return;
@@ -128,6 +114,12 @@ export default {
       this.refreshing = true;
       // await this.getArticlesList();
       this.refreshing = false;
+    },
+  },
+  watch: {
+    copyPost({ author, title }) {
+      // setDocumentTitle
+      document.title = `${title} by ${author} - Smart Signature`;
     },
   },
 };

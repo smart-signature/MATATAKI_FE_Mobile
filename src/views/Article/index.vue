@@ -9,7 +9,7 @@
           <h1 dir="auto">{{post.title}}</h1>
           <address dir="auto">
             <router-link :to="{ name: 'User',
-                                params: { author: post.author, username:post.author }}">
+                                params: { username:post.author }}">
               <a> Author: {{post.author}}</a>
             </router-link>
             <br/>
@@ -81,17 +81,14 @@ import axios from 'axios';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
 import {
-  getArticleData, getArticleInfo,
-  getSharesbysignid, addReadAmount, sendComment, getAuth,
-} from '../api';
-import {
-  support, getSignInfo,
-} from '../api/signature';
+  getArticleData, getArticleInfo, getAuth,
+  getSharesbysignid, addReadAmount, sendComment,
+} from '@/api';
+import { getSignInfo, support, } from '@/api/signature';
 import 'mavon-editor/dist/css/index.css';
 
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
-const clipboard = new Clipboard('.button-share');
 
 const RewardStatus = { // 0=加载中,1=未打赏 2=已打赏
   LOADING: 0,
@@ -210,6 +207,10 @@ export default {
 
     this.initClipboard();
   },
+  beforeDestroy() {
+    // 组件销毁之前 销毁clipboard
+    this.clipboard.destroy();
+  },
   data: () => ({
     post: {
       author: 'Loading...',
@@ -221,9 +222,7 @@ export default {
       // NO MORE Cannot read property 'fission_factor' of null
       fission_factor: 0,
     },
-    shares: [
-
-    ],
+    shares: [ ],
     amount: 0.0000,
     comment: '',
     isSupported: RewardStatus.LOADING,
@@ -233,6 +232,7 @@ export default {
     v3: '',
     v5: '',
     readamount: 0,
+    clipboard: null,
   }),
   watch: {
     post({ author, title }) {
@@ -253,19 +253,19 @@ export default {
       'loginScatterAsync',
     ]),
     initClipboard() {
-      clipboard.on('success', (e) => {
+      this.clipboard = new Clipboard('.button-share');
+      this.clipboard.on('success', (e) => {
         this.$Modal.info({
           title: '提示',
           content: '复制成功',
         });
-        clipboard.destroy();
+        e.clearSelection();
       });
-      clipboard.on('error', (e) => {
+      this.clipboard.on('error', () => {
         this.$Modal.error({
           title: '提示',
           content: '该浏览器不支持自动复制',
         });
-        clipboard.destroy();
       });
     },
     async getArticleData() {
