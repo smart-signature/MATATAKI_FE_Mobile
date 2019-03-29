@@ -8,20 +8,12 @@ import PriceFormatter from './priceFormatter';
 ScatterJS.plugins(new ScatterEOS());
 
 // const account = 'signature.bp';
-
+const currentNetwork = config.network.eos.mainnet[0];
 // api https://get-scatter.com/docs/api-create-transaction
 
 // @trick: use function to lazy eval Scatter eos, in order to avoid no ID problem.
-const eos = () => ScatterJS.scatter.eos(config.network.eos[0], Eos, { expireInSeconds: 60 });
+const eos = () => ScatterJS.scatter.eos(currentNetwork, Eos, { expireInSeconds: 60 });
 const currentEOSAccount = () => ScatterJS.scatter.identity && ScatterJS.scatter.identity.accounts.find(x => x.blockchain === 'eos');
-
-// {
-//     chainId: "aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906",
-//     protocol: "https",
-//     host: 'proxy.eosnode.tools',
-//     port: 443,
-//     httpEndpoint: "https://proxy.eosnode.tools",
-// },
 
 const eosClient = Eos({
   chainId: "aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906",
@@ -93,10 +85,10 @@ const API = {
     return ScatterJS.scatter.connect(config.appScatterName, { initTimeout: 2000 });
   },
   suggestNetworkAsync() {
-    return ScatterJS.scatter.suggestNetwork(config.network.eos[0]);
+    return ScatterJS.scatter.suggestNetwork(currentNetwork);
   },
   loginScatterAsync() {
-    const requiredFields = { accounts: [config.network.eos[0]] };
+    const requiredFields = { accounts: [currentNetwork] };
     return ScatterJS.scatter.getIdentity(requiredFields);
   },
   logoutScatterAsync() {

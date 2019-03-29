@@ -14,12 +14,11 @@
   "dependencies": {
     "axios": "^0.18.0",
     "clipboard": "^2.0.4",
-    "eosjs": "^16.0.9",
+    "eosjs": "16.0.9",
     "iview": "^3.3.0",
     "mavon-editor": "^2.7.0",
     "moment": "^2.24.0",
     "qs": "^6.6.0",
-    "query-string": "^6.4.0",
     "register-service-worker": "^1.5.2",
     "request": "^2.88.0",
     "scatterjs-core": "^2.7.16",
@@ -29,13 +28,13 @@
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1",
     "wangeditor": "^3.1.1",
-    "zarm-vue": "^2.0.0-alpha.8"
+    "zarm-vue": "2.0.0-alpha.8"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.0.1",
     "@vue/cli-plugin-eslint": "^3.0.1",
     "@vue/cli-plugin-pwa": "^3.0.1",
-    "@vue/cli-service": "^3.0.1",
+    "@vue/cli-service": "^3.5.3",
     "@vue/eslint-config-airbnb": "^4.0.0",
     "babel-eslint": "^10.0.1",
     "babel-plugin-component": "^1.1.1",
