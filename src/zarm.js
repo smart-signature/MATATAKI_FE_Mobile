@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import {
   Actionsheet, Alert, Button, Cell, Pull,
-  TabPanel, Tabs, NavBar, Icon, Confirm, Input,
+  TabPane, Tabs, NavBar, Icon, Confirm, Input,
   Modal, KeyboardPicker,
 } from 'zarm-vue';
 
@@ -12,7 +12,7 @@ import {
 // We can do this:
 [
   Actionsheet, Alert, Button, Cell, Pull,
-  TabPanel, Tabs, NavBar, Icon, Confirm,
+  TabPane, Tabs, NavBar, Icon, Confirm,
   Input,
   Modal, KeyboardPicker,
 ].map(component => Vue.use(component));
