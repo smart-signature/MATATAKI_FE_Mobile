@@ -1,6 +1,7 @@
 <template>
   <div class="article">
-    <Header :pageinfo="pageinfo" />
+    <Header
+      :pageinfo="{ left:'notback', title: 'Smart Signature', rightPage: 'home', needLogin: true, }" />
     <div class="tl_page">
       <main class="ta">
         <header class="ta_header">
@@ -11,17 +12,23 @@
             </router-link>
             <br/>
             <span>IPFS Hash: {{hash}}</span>
+            <br/>
+            <span>阅读次数：{{readamount}}</span>
           </address>
         </header>
         <mavon-editor v-show="false" style="display: none;"/>
-        <div class="markdown-body tac" v-html="compiledMarkdown"></div>
+        <div class="markdown-body" v-html="compiledMarkdown"></div>
       </main>
     </div>
     <footer class="footer-article">
       <Divider />
       <Row justify="center">
           <i-col span="11" v-if="!isTotalSupportAmountVisible">正在从链上加载本文收到的赞赏</i-col>
-          <i-col span="11" v-else-if="isTotalSupportAmountVisible">本文收到赞赏 {{getDisplayTotalSupportedAmount}} 个EOS</i-col>
+          <i-col span="11" v-else-if="isTotalSupportAmountVisible">
+            <router-link :to="{ name: 'Comments', params: { post, sign }}">
+              本文收到赞赏 {{computedTotalSupportedAmount}} 个EOS
+            </router-link>
+          </i-col>
           <i-col span="2"><Divider type="vertical" /></i-col>
           <i-col span="11">裂变系数：{{getDisplayedFissionFactor}}</i-col>
       </Row>
@@ -42,7 +49,8 @@
            style="background:rgba(243,243,243,1);">
            <div slot="title" style="textAlign: center;">赞赏此文章</div>
             <Row><za-input
-              auto-height="" v-model="v3" type="textarea" placeholder="输入推荐语…"></za-input></Row>
+              auto-height="" v-model="v3" type="textarea" placeholder="输入推荐语…" @change="handleCommentChange">
+            </za-input></Row>
             <br/>
             <Row><za-input
               v-model="v5" type="price" placeholder="输入打赏 EOS" @change="handleChange">
@@ -59,8 +67,6 @@
             @click="share" ghost="true">分享</za-button>
         </i-col>
       </Row>
-      <!-- <za-toast :visible.sync="toastvisible"
-      @close="toastClose" :duration="1000">ok</za-toast> -->
     </footer>
   </div>
 </template>
@@ -71,16 +77,24 @@ import { Header } from '@/components/';
 import axios from 'axios';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
-import { getArticleData, getSignId } from '../api';
+import {
+  getArticleData, getSharesbysignid, addReadAmount, sendComment, getAuth,
+} from '../api';
 import {
   support, getSignInfo, getSharesInfo, getContractActions,
 } from '../api/signature.js';
 import 'mavon-editor/dist/css/index.css';
-// markdownIt.set({ breaks: false });
 
-import querystring from 'query-string';
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
+const clipboard = new Clipboard('.button-share');
+
+const RewardStatus = {
+  // 0=加载中,1=未打赏 2=已打赏
+  LOADING: 0,
+  NOT_REWARD_YET: 1,
+  REWARDED: 2,
+};
 
 export default {
   name: 'Article',
@@ -95,89 +109,140 @@ export default {
     isLogined() {
       return this.scatterAccount !== null;
     },
-    updateTitle() {
-      return false;
-    },
     compiledMarkdown() {
       return markdownIt.render(this.post.content);
     },
     getClipboard() {
       const { currentUsername } = this;
-      // todo(minakokojima): figure out what is the different between following variables.
-      // alert(currentUsername);
-      // alert(scatterAccount.name);
-      const share = this.isLogined
-        ? `https://${window.location.host}/article/${this.hash}?invite=${currentUsername}`
-        : `${window.location.href}`;
-      return `我在智能签名上发现了一篇好文章！${share} 赞赏好文，分享有收益 ！`;
+      const { protocol, host } = window.location;
+      const articleUrl = `${protocol}//${host}/article/${this.hash}`;
+      const shareLink = this.isLogined
+        ? `${articleUrl}?invite=${currentUsername}`
+        : articleUrl;
+      return `我在智能签名上发现了一篇好文章！${shareLink} 赞赏好文，分享有收益 ！`;
     },
     getDisplayedFissionFactor() {
       return this.sign.fission_factor / 1000;
     },
-    getDisplayTotalSupportedAmount() {
-      return this.totalSupportedAmount.toFixed(4);
+    computedTotalSupportedAmount: {
+      // getter
+      get() {
+        let totalSupportedAmount = 0.0000;
+        for (let index = 0; index < this.shares.length; index += 1) {
+          const element = this.shares[index].amount;
+          totalSupportedAmount += parseFloat(element) / 10000;
+        }
+        this.totalSupportedAmount = totalSupportedAmount;
+        return this.totalSupportedAmount.toFixed(4);
+      },
+      /* // countTotalSupportedAmount, old version, dont del
+        const { actions } = await getContractActions();
+        // console.log(actions.map(a => a.action_trace));
+        const actions2 = actions.filter(a => a.action_trace.act.account === 'eosio.token'
+          && a.action_trace.act.name === 'transfer'
+          && a.action_trace.act.data.memo.indexOf(`support ${signid}`) !== -1);
+        // console.log(actions2);
+        const actions3 = actions2.map(a => ({
+          quantity: a.action_trace.act.data.quantity.replace(' EOS', ''),
+        }));
+        console.log(actions3);
+      */
+    },
+    getInvite() {
+      // no need to save inviter
+      // we can use computed
+      let { invite } = this.$route.query;
+      if (!invite) {
+        invite = null;
+      }
+      return invite;
     },
   },
+  /*
+    created
+    实例已经创建完成之后被调用。在这一步，实例已完成以下的配置：
+    数据观测(data observer)，属性和方法的运算， watch/event 事件回调。
+    然而，挂载阶段还没开始，$el 属性目前不可见。
+  */
   async created() {
     document.title = '正在加载文章 - Smart Signature';
+    this.initClipboard();
     try {
       await this.getArticleData();
     } catch (error) {
 
     }
-    this.board = this.getClipboard;
 
-    const url = `https://api.smartsignature.io/post/${this.hash}`;
-    const { data } = await axios.get(url);
+    const { data } = await axios.get(`https://api.smartsignature.io/post/${this.hash}`);
     const signs = await getSignInfo(data.id);
     this.sign = signs[0];
     console.log('sign :', this.sign); // fix: ReferenceError: sign is not defined
 
+    this.readamount = data.read;
     // Set post author
     this.post.author = this.sign.author;
 
-    // Set isSupported
-    await this.setisSupported();
+    // old version
+    // const shares = await getSharesInfo(this.currentUsername);
+    // const shares = await getSharesInfo('linklinkguan'); // test for sign.id 78
+    const signid = this.sign.id;
+    const shares = localStorage.getItem(`sign id : ${signid}'s shares`);
+    const setShares = ({ signid }) => {
+      getSharesbysignid({ signid }, (error, response, body) => {
+        const shares = body;
+        console.log('shares : ', shares);
+        localStorage.setItem(`sign id : ${signid}'s shares`, JSON.stringify(shares));
+        this.shares = shares; // for watch
+      });
+    };
 
-    try {
-      this.countTotalSupportedAmount(this.sign.id);
-    } catch (error) {
-
+    // Use cache or do first time downloading
+    if (shares) {
+      this.shares = JSON.parse(shares);
+    } else { // first time need await
+      await setShares({ signid });
     }
 
-    //
-    const { invite } = querystring.parse(window.location.search.slice(1));
-    if (invite) {
-      localStorage.setItem('invite', invite);
-    }
+    // Setup
+    this.isTotalSupportAmountVisible = true;
+    this.setisSupported();
+
+    // Update to latest data
+    setShares({ signid });
+
+    addReadAmount({ articlehash: this.hash });
   },
   data: () => ({
     post: {
       author: 'Loading...',
       title: 'Loading...',
-      content: '**Please wait for connection to IPFS**',
+      content: '**Please wait for the connection to IPFS**',
       desc: '',
-      board: '',
     },
     sign: {
       // NO MORE Cannot read property 'fission_factor' of null
       fission_factor: 0,
     },
+    shares: [
+
+    ],
     amount: 0.0000,
-    isSupported: 0, // 0=加载中,1=未打赏 2=已打赏
+    comment: '',
+    isSupported: RewardStatus.LOADING,
     isTotalSupportAmountVisible: false, // 正在加载和加载完毕的文本切换
     totalSupportedAmount: 0.0000,
     visible3: false,
     v3: '',
     v5: '',
-    pageinfo: {
-      title: 'Smart Signature',
-      rightPage: 'home',
-    },
+    readamount: 0,
   }),
   watch: {
     post({ author, title }) {
+      // 当文章从 IPFS fetched 到， post 会更新，我们要更新网页 title
       document.title = `${title} by ${author} - Smart Signature`;
+    },
+    currentUsername() {
+      this.setisSupported(this.shares);
     },
   },
   methods: {
@@ -186,25 +251,21 @@ export default {
       'suggestNetworkAsync',
       'loginScatterAsync',
     ]),
-    async countTotalSupportedAmount(SignId) {
-      const { actions } = await getContractActions();
-
-      // console.log(actions.map(a => a.action_trace));
-      const actions2 = actions.filter(a => a.action_trace.act.account === 'eosio.token'
-          && a.action_trace.act.name === 'transfer'
-          && a.action_trace.act.data.memo.indexOf(`support ${SignId}`) !== -1);
-
-      // console.log(actions2);
-      const actions3 = actions2.map(a => ({
-        quantity: a.action_trace.act.data.quantity.replace(' EOS', ''),
-      }));
-
-      console.log(actions3);
-      for (let index = 0; index < actions3.length; index += 1) {
-        const element = actions3[index].quantity;
-        this.totalSupportedAmount += parseFloat(element);
-      }
-      this.isTotalSupportAmountVisible = true;
+    initClipboard() {
+      clipboard.on('success', (e) => {
+        this.$Modal.info({
+          title: '提示',
+          content: '复制成功',
+        });
+        clipboard.destroy();
+      });
+      clipboard.on('error', (e) => {
+        this.$Modal.error({
+          title: '提示',
+          content: '该浏览器不支持自动复制',
+        });
+        clipboard.destroy();
+      });
     },
     async getArticleData() {
       const { data } = await getArticleData(this.hash);
@@ -214,21 +275,23 @@ export default {
     handleClose() {
       this.visible3 = false;
     },
+    handleCommentChange(v) {
+      this.comment = v;
+      console.log('comment :', this.comment);
+    },
     handleChange(v) {
       this.amount = v;
       console.log('amount :', this.amount);
     },
-    async setisSupported() {
-      if (this.scatterAccount !== null) {
-        const shares = await getSharesInfo(this.currentUsername);
-        // const shares = await getSharesInfo('linklinkguan'); // test for sign.id 78
-        // console.log('shares :', shares);
-        const share = shares.find(element => element.id === this.sign.id);
+    setisSupported() {
+      const { shares } = this;
+      if (this.scatterAccount !== null && shares !== []) {
+        const share = shares.find(element => element.author === this.currentUsername);
         if (share !== undefined) {
           console.log('share :', share);
-          this.isSupported = 2;
+          this.isSupported = RewardStatus.REWARDED;
         } else {
-          this.isSupported = 1;// 0=加载中,1=未打赏 2=已打赏
+          this.isSupported = RewardStatus.NOT_REWARD_YET;
         }
       }
     },
@@ -248,32 +311,38 @@ export default {
         });
         return;
       }
+
+      await getAuth();
+
       // amount
+      const { comment, sign } = this;
       const amount = parseFloat(this.amount);
       if (isNaN(amount) || amount <= 0) {
         alert('请输入正确的金额');
         return;
       }
-      console.log('amount :', amount);
+      console.log('final amount :', amount);
+      console.log('final comment :', comment);
 
-      // fetch sign_id
-      const { data } = await getSignId(this.hash);
-      console.info(data);
-      const sign_id = data.id;
-
-      const referrer = this.getRef();
+      const sign_id = sign.id;
+      const referrer = this.getInvite;
       console.log('referrer :', referrer);
-      this.isSupported = 0;// 0=加载中,1=未打赏 2=已打赏
+      this.isSupported = RewardStatus.LOADING;
       try {
         await support({ amount, sign_id, referrer });
-        this.isSupported = 2;
+        console.log('Send comment...');
+        await sendComment({ comment, sign_id },
+          (error, response, body) => {
+            if (error) throw new Error(error);
+          });
+        this.isSupported = RewardStatus.REWARDED;
         alert('赞赏成功！');
         // tricky speed up
         this.totalSupportedAmount += parseFloat(amount);
       } catch (error) {
         console.log(JSON.stringify(error));
         alert('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额。');
-        this.isSupported = 1;
+        this.isSupported = RewardStatus.NOT_REWARD_YET;
       }
     },
     async share() {
@@ -289,45 +358,7 @@ export default {
           title: '无法与你的钱包建立链接',
           content: '请检查钱包是否打开并解锁',
         });
-        return;
       }
-      this.board = this.getClipboard;
-      const clipboard = new Clipboard('.button-share');
-      clipboard.on('success', (e) => {
-        this.$Modal.info({
-          title: '提示',
-          content: '复制成功',
-        });
-        console.log(e);
-        clipboard.destroy();
-      });
-      clipboard.on('error', (e) => {
-        this.$Modal.error({
-          title: '提示',
-          content: '该浏览器不支持自动复制',
-        });
-        console.log(e);
-        clipboard.destroy();
-      });
-    },
-    toastClose(reason, event) {
-      console.log(reason, event);
-    },
-    goHome() {
-      this.$router.push({ name: 'home' });
-    },
-    goBack() {
-      this.$router.go(-1);
-    },
-    getRef() {
-      // no need to save inviter
-      // let invite = localStorage.getItem('invite');
-      let { invite } = querystring.parse(window.location.search.slice(1));
-
-      if (!invite) {
-        invite = null;
-      }
-      return invite;
     },
   },
 };
@@ -335,30 +366,6 @@ export default {
 
 
 <style scoped>
-.ta address a[rel="author"]:empty + time:before,
-.ta address.empty,
-.ta time:empty:before {
-  display: none;
-}
-.ta .tac blockquote,
-.ta .tac p,
-.ta .tac pre,
-.ta_header {
-  word-wrap: break-word;
-}
-.prompt,
-.tl_blocks {
-  right: 0;
-  position: absolute;
-}
-body,
-html {
-  padding: 0;
-  margin: 0;
-}
-textarea {
-  resize: none;
-}
 .article {
   text-align: left;
   max-width: 732px;
@@ -435,11 +442,10 @@ textarea {
 .ta .ta_header,
 .ta .tac,
 .ta .tac .ql-editor {
-  font-family: CustomSerif, Georgia, Cambria, "Times New Roman", serif;
+  font-family: "Open Sans",sans-serif;
   font-weight: 400;
   font-style: normal;
   font-size: 18px;
-  line-height: 1.58;
   padding: 0;
   margin: 0;
   color: rgba(0, 0, 0, 0.8);
@@ -467,7 +473,6 @@ textarea {
   font-weight: 700;
   font-size: 32px;
   margin: 21px 21px 12px;
-  line-height: 34px;
 }
 .ta h2 {
   font-size: 24px;
@@ -480,7 +485,6 @@ textarea {
 }
 .ta address {
   font-size: 15px;
-  line-height: 18px;
   margin: 12px 21px;
 }
 .ta address time:before {
@@ -496,184 +500,12 @@ textarea {
 .ta address a[href] {
   border-bottom: none;
 }
-.ta .tac p {
-  margin: 0 21px 12px;
-}
-.ta .tac code,
-.ta .tac pre {
-  font-family: Menlo, "Courier New", Courier, monospace;
-  font-size: 16px;
-  background: #f5f8fc;
-}
-.ta .tac code {
-  padding: 1px 3px;
-}
-.ta .tac pre {
-  margin: 14px 0;
-  padding: 7px 21px;
-  white-space: pre-wrap;
-}
-.ta .tac h3,
-.ta .tac h4 {
-  font-family: CustomSansSerif, "Lucida Grande", Arial, sans-serif;
-  font-weight: 700;
-  font-style: normal;
-  font-size: 28px;
-  margin: 18px 21px 9px;
-}
-.ta .tac aside,
-.ta .tac blockquote {
-  font-family: CustomSerif, Georgia, Cambria, "Times New Roman", serif;
-  font-style: italic;
-}
-.ta .tac h4 {
-  font-size: 24px;
-  margin: 18px 21px 7px;
-}
-.ta .tac blockquote {
-  margin: 18px 21px 16px 0;
-  padding-left: 15px;
-  position: relative;
-  border-left: 3px solid #000;
-}
-.ta .tac aside {
-  font-size: 21px;
-  color: rgba(0, 0, 0, 0.6);
-  margin: 18px 21px 16px;
-  padding: 0 18px;
-  text-align: center;
-}
-.ta .tac hr {
-  width: 50%;
-  margin: 30px auto;
-  border: none;
-  font-size: 2px;
-  text-align: right;
-}
-.ta .tac hr:after {
-  content: "";
-  display: block;
-  border-top: 1px solid #c9cdd1;
-  margin: 0 3px;
-  position: relative;
-  top: 1px;
-}
-.ta .tac ol,
-.ta .tac ul {
-  padding: 0;
-  margin: 21px;
-  list-style: none;
-  counter-reset: list;
-}
-.ta .tac ol li,
-.ta .tac ul li {
-  margin-left: 30px;
-  margin-bottom: 14px;
-  padding: 0;
-  position: relative;
-}
-.ta .tac ol li:before,
-.ta .tac ul li:before {
-  position: absolute;
-  display: inline-block;
-  box-sizing: border-box;
-  width: 78px;
-  margin: 0 0 0 -78px;
-  text-align: right;
-}
-.ta .tac ul li:before {
-  padding: 1px 15px 0 0;
-  content: "â€¢";
-}
-.ta .tac ol li:before {
-  font-feature-settings: "liga" on, "lnum" on;
-  -moz-font-feature-settings: "liga" on, "lnum" on;
-  -webkit-font-feature-settings: "liga" on, "lnum" on;
-  padding-right: 12px;
-  counter-increment: list;
-  content: counter(list) ".";
-}
-.ta .tac .iframe_wrap {
-  position: relative;
-}
-.ta .tac .iframe_wrap iframe {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-}
-.ta .tac .figure_wrapper,
-.ta .tac figure {
-  position: relative;
-}
-.ta .tac figure {
-  margin: 0 21px 16px;
-  padding: 0;
-  text-align: center;
-}
-.ta .tac figcaption,
-.ta .tac figcaption .editable_input {
-  font-family: CustomSansSerif, "Lucida Grande", Arial, sans-serif;
-  font-size: 15px;
-  color: #79828b;
-  padding: 12px 21px 0;
-  line-height: 18px;
-  vertical-align: top;
-  text-align: center;
-}
-.ta .tac figcaption .editable_input {
-  width: 100%;
-  border: none;
-  padding: 0;
-  margin: 0;
-}
-.ta .tac .figure_wrapper img,
-.ta .tac .figure_wrapper video {
-  opacity: 1;
-  transition: opacity 0.15s ease;
-  max-height: 690px;
-}
-.ta .tac .figure_wrapper.loading img,
-.ta .tac .figure_wrapper.loading video {
-  opacity: 0.3;
-}
-.ta .tac .figure_wrapper .file_progress {
-  position: absolute;
-  z-index: 1;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 3px;
-  background-color: rgba(255, 255, 255, 0.7);
-  transition: opacity 0.15s ease;
-  visibility: hidden;
-  opacity: 0;
-}
-.ta .tac .figure_wrapper.loading .file_progress {
-  visibility: visible;
-  opacity: 1;
-}
-.ta .tac .figure_wrapper .file_progress_bar {
-  height: 2px;
-  background-color: #333;
-  transition: width 0.1s linear;
-  width: 0;
-}
-.ta .tac input.ql-image[type="file"] {
-  display: none;
-}
-.tac h1,
-.tac address {
-  display: none !important;
-}
 .footer-article {
   font-size: 12px;
-  font-family: PingFangSC-Regular;
+  font-family: PingFangSC-Regular, "Open Sans", sans-serif;
   font-weight: 400;
   color: rgba(0,0,0,1);
   text-align: center;
-  line-height: 10px;
   letter-spacing: 1px;
 }
 
@@ -699,4 +531,7 @@ textarea {
 .markdown-body.tac {
     margin: 20px;
 }
+  .markdown-body {
+    padding: 20px;
+  }
 </style>

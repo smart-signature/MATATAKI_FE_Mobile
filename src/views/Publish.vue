@@ -20,7 +20,7 @@
           <Input value="2" disabled placeholder="输入文章分享裂变系数" clearable />
         </FormItem>
     </Form>
-    <mavon-editor ref=md v-model="markdownData" @imgAdd="$imgAdd" placeholder="左边输入 Markdown 格式的文字开始编辑，右边即时预览" />
+    <mavon-editor :subfield="false" :toolbars="toolbar" ref=md v-model="markdownData" @imgAdd="$imgAdd" placeholder="左边输入 Markdown 格式的文字开始编辑，右边即时预览" />
   </div>
 </template>
 
@@ -50,6 +50,13 @@ export default {
     author: '',
     markdownData: '',
     fissionFactor: 2000,
+    toolbar: {
+      bold: true, // 粗体
+      italic: true, // 斜体
+      header: true, // 标题
+      undo: true, // 上一步
+      redo: true, // 下一步
+    }
   }),
   computed: {
     ...mapGetters(['currentUsername']),

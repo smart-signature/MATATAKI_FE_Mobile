@@ -11,17 +11,17 @@
       <div class="toptext1">待提现</div><br/>
       <div class="topremain">{{playerincome.toFixed(4)}}</div>
       <div style="position:absolute;right:40px;top:90px;">
-          <Button class="withdraw" ghost @click="visible7 = true">提现</Button>
+          <Button class="withdraw" ghost @click="visible = true">提现</Button>
           <za-confirm
-            :visible="visible7"
+            :visible="visible"
             title="提现确认" message="确定要提现吗？"
-            :ok="handleOk" :cancel="handleCancel"></za-confirm>
+            :ok="handleOk" :cancel="() => { visible = false }"></za-confirm>
       </div>
       <Divider style="margin-top:10px;margin-bottom:10px;"/>
       <Row type="flex" justify="center" class="code-row-bg">
         <Col span="6">
           <p class="toptext2">创作收益</p>
-          <p class="toptext3" :style='writereward >= 0 ? { color: "#f50" } : { color: "#87d068" }'>
+          <p class="toptext3" :style='writereward > 0 ? { color: "#f50" } : (writereward < 0 ? { color: "#87d068" } : {color: "#a7aab7"})'>
             {{getDisplayAmount(writereward)}}
           </p>
         </Col>
@@ -30,7 +30,7 @@
         </Col>
         <Col span="6">
           <p class="toptext2">赞赏收益</p>
-          <p class="toptext3" :style='sharereward >= 0 ? { color: "#f50" } : { color: "#87d068" }'>
+          <p class="toptext3" :style='sharereward > 0 ? { color: "#f50" } : (sharereward < 0 ? { color: "#87d068" } : {color: "#a7aab7"})'>
             {{getDisplayAmount(sharereward)}}
           </p>
         </Col>
@@ -39,7 +39,7 @@
         </Col>
         <Col span="6">
           <p class="toptext2">赞赏支出</p>
-          <p class="toptext3" :style='sharecost > 0 ? { color: "#f50" } : { color: "#87d068" }'>
+          <p class="toptext3" :style='sharecost > 0 ? { color: "#f50" } : (sharecost < 0 ? { color: "#87d068" } : {color: "#a7aab7"})'>
             {{getDisplayAmount(sharecost)}}
           </p>
         </Col>
@@ -67,15 +67,13 @@ import {
   getPlayerBills, getPlayerIncome,
   withdraw,
 } from '../../api/signature.js';
+import { isEmptyArray } from "@/common/methods.js";
 
 export default {
   name: 'Asset',
   props: ['username'],
   components: { AssetCard },
   async created() {
-    const myassets = localStorage.getItem('myAssets');
-    this.assets = (myassets) ? JSON.parse(myassets) : { assets: [] };
-
     await this.refresh();
     this.sharecost = this.getPlayerTotalCost();
   },
@@ -106,11 +104,12 @@ export default {
       writereward: 0,
       sharereward: 0,
       sharecost: 0,
-      visible7: false,
+      visible: false,
     };
   },
   computed: {
     sortedAssets() {
+      console.log(this.assets)
       // if need change to asc, swap a & b
       return this.assets.sort((a, b) => (new Date(b.timestamp)).getTime() - (new Date(a.timestamp)).getTime());
     },
@@ -146,7 +145,7 @@ export default {
     async getPlayerTotalIncome(name) {
       console.log('Connecting to EOS fetch player income...');
       const playerincome = await getPlayerIncome(name); // 从合约拿到支持收入和转发收入
-      if (playerincome !== null) {
+      if (isEmptyArray(playerincome)) {
         this.sharereward = playerincome[0].share_income / 10000;
         this.writereward = playerincome[0].sign_income / 10000;
         console.log('share reward', this.sharereward);
@@ -155,16 +154,13 @@ export default {
         this.sharereward = 0;
         this.writereward = 0;
       }
-      return (playerincome !== null)
+      return isEmptyArray(playerincome)
         ? (playerincome[0].share_income + playerincome[0].sign_income) / 10000
         : 0.0000;
       // 截止2019年3月24日中午12时合约拿过来的东西要除以10000才能正常显示
     },
     handleClick(tab, event) {
       console.log(tab, event);
-    },
-    handleCancel() {
-      this.visible7 = false;
     },
     handleOk() {
       this.withdraw(this.username);
@@ -189,7 +185,6 @@ export default {
       this.playerincome = await getPlayerTotalIncomePromise;
       this.assets = await getAssetsListPromise;
 
-      localStorage.setItem('myAssets', JSON.stringify(this.assets));
       console.log(this.username, '\'s total income:', this.playerincome);
       console.log(this.username, '\'s assets:', this.assets);
       this.refreshing = false;
