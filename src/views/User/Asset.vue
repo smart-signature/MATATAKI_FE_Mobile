@@ -22,11 +22,8 @@
         <Col span="6">
           <p class="toptext2">创作历史收益</p>
           <p class="toptext3" 
-            :style='getDisplayWritereward > 0 
-                    ? { color: "#f50" } 
-                    : (
-                      getDisplayWritereward < 0 ? { color: "#87d068" } : {color: "#a7aab7"}
-                    )'>
+            :style='getDisplayWritereward > 0 ? { color: "#f50" } 
+                    : (getDisplayWritereward < 0 ? { color: "#87d068" } : {color: "#a7aab7"})'>
             {{getDisplayWritereward}}
           </p>
         </Col>
