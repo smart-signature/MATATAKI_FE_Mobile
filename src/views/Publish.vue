@@ -54,7 +54,7 @@ export default {
   }),
   computed: {
     ...mapGetters(['currentUsername']),
-    ...mapState(['scatterAccount']),
+    ...mapState(['isScatterConnected', 'scatterAccount']),
   },
   methods: {
     ...mapActions([
@@ -96,14 +96,26 @@ export default {
       // });
     },
     async sendThePost() {
-      if (!this.currentUsername) {
-        await this.loginScatterAsync();
+      if (!this.isScatterConnected) {
+        try {
+          await this.connectScatterAsync();
+        } catch (error) {
+          this.$Message.error('钱包需打开并解锁');
+          return;
+        }
+      }
+      if (this.currentUsername === null) {
+        try {
+          await this.loginScatterAsync();
+        } catch (error) {
+          this.$Message.error('登录失败，钱包需打开并解锁');
+          return ;
+        }
       }
       if (this.title === '' || this.markdownData === '') { // 标题或内容为空时
-        return this.$Modal.warning({
-          title: '提示',
-          content: '标题或正文不能为空',
-        });
+        this.$Message.error('标题或正文不能为空');
+        // async 函数返回一个 Promise 对象。
+        return ;
       }
       // 用户不填写裂变系数则默认为2
       if (this.fissionFactor === '') this.fissionFactor = 2;
