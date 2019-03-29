@@ -81,11 +81,12 @@ import axios from 'axios';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
 import {
-  getArticleData, getSharesbysignid, addReadAmount, sendComment, getAuth,
+  getArticleData, getArticleInfo,
+  getSharesbysignid, addReadAmount, sendComment, getAuth,
 } from '../api';
 import {
-  support, getSharesInfo, getContractActions, getSignInfo
-} from '../api/signature.js';
+  support, getSignInfo,
+} from '../api/signature';
 import 'mavon-editor/dist/css/index.css';
 
 // MarkdownIt 实例
@@ -134,8 +135,7 @@ export default {
           const element = this.shares[index].amount;
           totalSupportedAmount += parseFloat(element) / 10000;
         }
-        this.totalSupportedAmount = totalSupportedAmount;
-        return this.totalSupportedAmount.toFixed(4);
+        return totalSupportedAmount.toFixed(4);
       },
       /* // countTotalSupportedAmount, old version, dont del
         const { actions } = await getContractActions();
@@ -168,34 +168,28 @@ export default {
   */
   async created() {
     document.title = '正在加载文章 - Smart Signature';
-    this.initClipboard();
-    try {
-      await this.getArticleData();
-    } catch (error) {
 
-    }
+    this.getArticleData();
 
-    const { data } = await axios.get(`https://api.smartsignature.io/post/${this.hash}`);
+    const { data } = await getArticleInfo(this.hash);
+    console.log('Article info :', data);
+
     const signs = await getSignInfo(data.id);
     this.sign = signs[0];
     console.log('sign :', this.sign); // fix: ReferenceError: sign is not defined
 
     this.readamount = data.read;
-    // Set post author
-    this.post.author = this.sign.author;
 
-    // old version
-    // const shares = await getSharesInfo(this.currentUsername);
-    // const shares = await getSharesInfo('linklinkguan'); // test for sign.id 78
     const signid = this.sign.id;
     const shares = localStorage.getItem(`sign id : ${signid}'s shares`);
     const setShares = ({ signid }) => {
-      getSharesbysignid({ signid }, (error, response, body) => {
-        const shares = body;
-        console.log('shares : ', shares);
-        localStorage.setItem(`sign id : ${signid}'s shares`, JSON.stringify(shares));
-        this.shares = shares; // for watch
-      });
+      getSharesbysignid({ signid })
+        .then( (response) => {
+          const shares = response.data;
+          console.log('shares : ', shares);
+          localStorage.setItem(`sign id : ${signid}'s shares`, JSON.stringify(shares));
+          this.shares = shares; // for watch
+        });
     };
 
     // Use cache or do first time downloading
@@ -213,6 +207,8 @@ export default {
     setShares({ signid });
 
     addReadAmount({ articlehash: this.hash });
+    
+    this.initClipboard();
   },
   data: () => ({
     post: {
@@ -243,6 +239,9 @@ export default {
       // 当文章从 IPFS fetched 到， post 会更新，我们要更新网页 title
       document.title = `${title} by ${author} - Smart Signature`;
     },
+    sign({ author }) {
+      this.post.author = author;
+    },
     currentUsername() {
       this.setisSupported(this.shares);
     },
@@ -270,9 +269,9 @@ export default {
       });
     },
     async getArticleData() {
-      const { data } = await getArticleData(this.hash);
-      console.info('post :', data);
+      const { data } = await getArticleData(this.hash);      
       this.post = data.data;
+      console.info('post :', this.post);
     },
     handleClose() {
       this.visible3 = false;
@@ -290,7 +289,7 @@ export default {
       if (this.scatterAccount !== null && shares !== []) {
         const share = shares.find(element => element.author === this.currentUsername);
         if (share !== undefined) {
-          console.log('share :', share);
+          console.log('Current user\'s share :', share);
           this.isSupported = RewardStatus.REWARDED;
         } else {
           this.isSupported = RewardStatus.NOT_REWARD_YET;
@@ -334,7 +333,8 @@ export default {
         await support({ amount, sign_id, referrer });
         console.log('Send comment...');
         await sendComment({ comment, sign_id },
-          (error, response, body) => {
+          (error, response) => {
+            console.log(response);
             if (error) throw new Error(error);
           });
         this.isSupported = RewardStatus.REWARDED;
@@ -352,7 +352,7 @@ export default {
         if (!this.isScatterConnected) await this.connectScatterAsync();
         console.info(this.isScatterConnected);
         // await this.suggestNetworkAsync();
-        if (!this.isScatterConnected) throw 'no';
+        if (!this.isScatterConnected) throw new Error('no');
         await this.loginScatterAsync();
       } catch (e) {
         console.warn('Unable to connect wallets');

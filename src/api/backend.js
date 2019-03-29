@@ -1,6 +1,8 @@
 import axios from 'axios';
 import request from 'request';
-import API from '@/api/scatter.js';
+import API from '@/api/scatter';
+
+// https://github.com/axios/axios
 
 const apiServer = 'https://api.smartsignature.io';
 
@@ -8,15 +10,13 @@ const apiServer = 'https://api.smartsignature.io';
 function publishArticle({
   author, title, hash, publicKey, signature, username, fissionFactor,
 }, callback) {
-  const url = `${apiServer}/publish`;
   // const url = `http://localhost:7001/publish`;
-  return request({
-    uri: url,
+  return request.post({
+    uri: `${apiServer}/publish`,
     rejectUnauthorized: false,
     json: true,
     headers: { Accept: '*/*' },
     dataType: 'json',
-    method: 'POST',
     form: {
       author,
       fissionFactor,
@@ -40,17 +40,19 @@ function publishArticle({
 }
 
 const getArticleData = hash => axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
-
-// fetch sign_id
-const getSignId = hash => axios.get(`${apiServer}/post/${hash}`);
-
 const getArticlesList = ({ page = 1 }) => axios.get(
-  `${apiServer}/posts`, {
-    params: {
-      page,
-    },
-  },
+  `${apiServer}/posts`, { params: { page } },
 );
+/*
+  amount: 2000
+  author: "minakokojima"
+  comment: ""
+  create_time: "2019-03-26T01:04:21.000Z"
+  sign_id: 173
+*/
+const getSharesbysignid = ({ signid }) => axios.get(`${apiServer}/shares?signid=${signid}`);
+const getArticleInfo = hash => axios.get(`${apiServer}/post/${hash}`);
+
 
 // 示例代码。。请随便改。。。
 function auth({
@@ -61,13 +63,12 @@ function auth({
   // console.log(publickey + ", " + typeof(publickey))
   // console.log(sign + ", " + typeof(sign))
   // const url = `http://localhost:7001/auth`;
-  return request({
+  return request.post({
     uri: url,
     rejectUnauthorized: false,
     json: true,
     headers: { Accept: '*/*', Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==' },
     dataType: 'json',
-    method: 'POST',
     form: {
       username,
       publickey,
@@ -113,13 +114,12 @@ function Follow({
   console.log(accessToken);
   const url = `${apiServer}/follow`;
   // const url = `http://localhost:7001/publish`;
-  return request({
+  return request.post({
     uri: url,
     rejectUnauthorized: false,
     json: true,
     headers: { Accept: '*/*', 'x-access-token': accessToken },
     dataType: 'json',
-    method: 'POST',
     form: {
       username,
       followed,
@@ -135,13 +135,12 @@ function Unfollow({
   console.log(accessToken);
   const url = `${apiServer}/unfollow`;
   // const url = `http://localhost:7001/publish`;
-  return request({
+  return request.post({
     uri: url,
     rejectUnauthorized: false,
     json: true,
     headers: { Accept: '*/*', 'x-access-token': accessToken },
     dataType: 'json',
-    method: 'POST',
     form: {
       username,
       followed,
@@ -156,39 +155,19 @@ function getUser({
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
   const url = `${apiServer}/user/${username}`;
   // const url = `http://localhost:7001/publish`;
-  return request({
+  return request.get({
     uri: url,
     rejectUnauthorized: false,
     json: true,
     headers: { Accept: '*/*', 'x-access-token': accessToken },
     dataType: 'json',
-    method: 'GET',
     form: {},
   }, callback);
 }
 
-/*
-  amount: 2000
-  author: "minakokojima"
-​​  comment: ""
-  create_time: "2019-03-26T01:04:21.000Z"
-  sign_id: 173
-*/
-async function getSharesbysignid({
-  signid,
-}, callback) {
-  return await request.get({
-    uri: `${apiServer}/shares?signid=${signid}`,
-    rejectUnauthorized: false,
-    json: true,
-    headers: { Accept: '*/*' },
-    dataType: 'json',
-  }, callback);
-}
-
-async function sendComment({ comment, sign_id }, callback) {
+function sendComment({ comment, sign_id }, callback) {
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
-  return await request.post({
+  return request.post({
     uri: `${apiServer}/post/comment`,
     rejectUnauthorized: false,
     json: true,
@@ -204,20 +183,19 @@ function addReadAmount({
 }, callback) {
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
   const url = `${apiServer}/post/show/${articlehash}`;
-  return request({
+  return request.post({
     uri: url,
     rejectUnauthorized: false,
     json: true,
     headers: { Accept: '*/*', 'x-access-token': accessToken },
     dataType: 'json',
-    method: 'POST',
     form: {},
   }, callback);
 }
 
 export {
   publishArticle, auth, getAuth,
-  getArticleData, getArticlesList, getSignId,
+  getArticleData, getArticlesList, getArticleInfo,
   Follow, Unfollow, getUser,
   getSharesbysignid, addReadAmount, sendComment,
 };

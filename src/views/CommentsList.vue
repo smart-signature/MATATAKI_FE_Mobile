@@ -16,7 +16,8 @@
 <script>
 import axios from 'axios';
 import { CommentCard, Header } from '@/components/';
-import { getArticleData, getSignId, getSharesbysignid } from '../api';
+import { getArticleData, getSharesbysignid } from '../api';
+import { getSignInfo } from '../api/signature';
 
 export default {
   name: 'Comments',
@@ -90,24 +91,16 @@ export default {
       this.getSharesbysignid(this.copySign.id);
     },
     getSharesbysignid(signId) {
-      getSharesbysignid({
-        signid: signId,
-      }, (error, response, body) => {
-        console.log('shares : ', body);
-        /*
-        amount: 2000
-        author: "minakokojima"
-        comment: ""
-​​        create_time: "2019-03-26T01:04:21.000Z"
-        sign_id: 173
-      */
-        this.comments = body.map(a => ({
-          author: a.author,
-          timestamp: a.create_time,
-          quantity: `${parseFloat(a.amount) / 10000} EOS`,
-          message: a.comment,
-        }));
-      });
+      getSharesbysignid({ signid: signId })
+        .then((response) => {
+          console.log('shares : ', response.data);
+          this.comments = response.data.map(a => ({
+            author: a.author,
+            timestamp: a.create_time,
+            quantity: `${parseFloat(a.amount) / 10000} EOS`,
+            message: a.comment,
+          }));
+        });
     },
     setDocumentTitle(post) {
       document.title = `${post.title} by ${post.author} - Smart Signature`;
@@ -124,7 +117,9 @@ export default {
           this.isTheEndOfTheScroll = true;
         } else {
           this.articles = [...this.articles, ...data]; // Merge arrays with destruction
-          this.articles = this.articles.filter(a => Date.parse(a.create_time) > Date.parse('2019-03-25T06:00:00'));
+          this.articles = this.articles.filter(
+            a => Date.parse(a.create_time) > Date.parse('2019-03-25T06:00:00')
+          );
           this.busy = false;
         }
       }); */
