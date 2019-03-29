@@ -147,7 +147,7 @@ export default {
         timestamp: a.action_trace.block_time,
       }));
     },
-    computeAmount( {elements, type} ) {
+    computeAmount({ elements, type }) {
       let amount = 0;
       for (let index = 0; index < elements.length; index += 1) {
         const element = elements[index];
