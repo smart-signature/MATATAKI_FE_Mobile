@@ -9,7 +9,8 @@
         <Button type="text" size="large" @click="sendThePost">确认发布</Button>
       </div>
     </za-nav-bar>
-    <Form label-position="left" :label-width="100">
+    <div class="edit-content">
+      <Form label-position="left" :label-width="100">
         <FormItem label="标题">
           <Input v-model="title" placeholder="请输入你的文章标题..." size="large" clearable />
         </FormItem>
@@ -19,9 +20,10 @@
         <FormItem label="裂变系数">
           <Input value="2" disabled placeholder="输入文章分享裂变系数" clearable />
         </FormItem>
-    </Form>
-    <mavon-editor ref=md v-model="markdownData" @imgAdd="$imgAdd"
-      placeholder="左边输入 Markdown 格式的文字开始编辑，右边即时预览"/>
+      </Form>
+      <mavon-editor ref=md v-model="markdownData" @imgAdd="$imgAdd" :boxShadow="false"
+                    placeholder="左边输入 Markdown 格式的文字开始编辑，右边即时预览"/>
+    </div>
   </div>
 </template>
 
@@ -171,9 +173,8 @@ export default {
 </script>
 
 <style scoped>
-  .new-post {
-    max-width: 90%;
-    margin: 0 auto;
+  .edit-content {
+    margin: 10px;
   }
 
   textarea,

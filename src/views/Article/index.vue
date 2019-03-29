@@ -13,7 +13,7 @@
               <a> Author: {{post.author}}</a>
             </router-link>
             <br/>
-            <span>IPFS Hash: {{hash}}</span>
+            <span class="break_all">IPFS Hash: {{hash}}</span>
             <br/>
             <span>阅读次数：{{readamount}}</span>
           </address>
@@ -24,7 +24,7 @@
     </div>
     <footer class="footer-article">
       <Divider />
-      <Row justify="center">
+      <Row justify="center" style="padding: 0 20px">
           <i-col span="11" v-if="!isTotalSupportAmountVisible">正在从链上加载本文收到的赞赏</i-col>
           <i-col span="11" v-else-if="isTotalSupportAmountVisible">
             <router-link :to="{ name: 'Comments', params: { post, sign, hash }}">
@@ -181,7 +181,7 @@ export default {
     const shares = localStorage.getItem(`sign id : ${signid}'s shares`);
     const setShares = ({ signid }) => {
       getSharesbysignid({ signid })
-        .then( (response) => {
+        .then((response) => {
           const shares = response.data;
           console.log('shares : ', shares);
           localStorage.setItem(`sign id : ${signid}'s shares`, JSON.stringify(shares));
@@ -204,7 +204,7 @@ export default {
     setShares({ signid });
 
     addReadAmount({ articlehash: this.hash });
-    
+
     this.initClipboard();
   },
   beforeDestroy() {
@@ -269,7 +269,7 @@ export default {
       });
     },
     async getArticleData() {
-      const { data } = await getArticleData(this.hash);      
+      const { data } = await getArticleData(this.hash);
       this.post = data.data;
       console.info('post :', this.post);
     },
@@ -368,6 +368,17 @@ export default {
 
 
 <style scoped>
+.break_all {
+  word-break: break-all;
+}
+.markdown-body {
+  padding: 20px;
+  font-family: -apple-system,SF UI Text,Arial,PingFang SC,Hiragino Sans GB,Microsoft YaHei,WenQuanYi Micro Hei,sans-serif;
+  color: #2f2f2f;
+}
+.footer-article {
+  margin-bottom: 20px;
+}
 .article {
   text-align: left;
   max-width: 732px;
