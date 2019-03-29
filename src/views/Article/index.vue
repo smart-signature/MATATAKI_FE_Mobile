@@ -165,7 +165,7 @@ export default {
   */
   async created() {
     document.title = '正在加载文章 - Smart Signature';
-
+    this.initClipboard(); // 分享按钮功能需要放在前面 保证功能的正常执行
     this.getArticleData();
 
     const { data } = await getArticleInfo(this.hash);
@@ -204,8 +204,6 @@ export default {
     setShares({ signid });
 
     addReadAmount({ articlehash: this.hash });
-
-    this.initClipboard();
   },
   beforeDestroy() {
     // 组件销毁之前 销毁clipboard
