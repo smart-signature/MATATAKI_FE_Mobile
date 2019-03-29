@@ -39,6 +39,7 @@ export default new Vuex.Store({
       console.log('Connecting to wallet or Scatter desktop...');
       // try {
       const connected = await api.connectScatterAsync();
+      // 沒連上就彈到上層去了，下面都不會 run
       // } catch (error) {
       // }
       console.log('Connect Scatter result: ', connected);
@@ -95,7 +96,7 @@ export default new Vuex.Store({
         commit('setScatterAccount', account);
         console.log('Login successful.');
         dispatch('getMyBalances');
-      } catch (err) {
+      } catch (err) { // 這裡又是一個不會 run zzz
         console.error('Failed to log in Scatter :', err);
       }
       commit('setIsScatterLoggingIn', false);
