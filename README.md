@@ -1,11 +1,13 @@
 # Smart Signature Front End
 Sign it if you mean it. Let's Buidl! 🏄
 
-Live Demo is 👉 [ 🙋 HERE! 🙋‍♂️](https://sign-dev.dravatar.xyz/) 👈 网站实时预览在此
+- Live Demo: 🙋👉 [Production](https://smartsignature.io/) | [Stage](https://sign-dev.dravatar.xyz/)
 
-[Backend Repo](https://github.com/smart-signature/smart-signature-backend) | [Contract](https://github.com/smart-signature/smart-signature-EOS-contract) | [Documentation](https://shimo.im/docs/UOYT3DqklCYBbzny) | [Whitepaper(Draft)](https://hackmd.io/Q3KNkxjgSwKRJ5cfBL2I4g)
+- Other Resources: [Backend Repo](https://github.com/smart-signature/smart-signature-backend) | [Contract](https://github.com/smart-signature/smart-signature-EOS-contract) | [Documentation](https://shimo.im/docs/UOYT3DqklCYBbzny) | [Whitepaper(Draft)](https://hackmd.io/Q3KNkxjgSwKRJ5cfBL2I4g)
 
 Newcomes are encouraged to checkout our [good first issue](https://github.com/smart-signature/smart-signature-future/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) first. In order to be involved, you must to create your own branch and send pull request to the test branch. Always verify don't trust. 
+
+新人请从 [good first issue](https://github.com/smart-signature/smart-signature-future/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) 开始。为了能够合并，你需要创建自己的分支并将 pull pequest 发送到 test 分支。[上焉者雖善，無徵。無徵，不信。](https://zh.wikisource.org/zh/%E7%A6%AE%E8%A8%98/%E4%B8%AD%E5%BA%B8)。
 
 ## 为什么前端在线预览没有更新？
 
