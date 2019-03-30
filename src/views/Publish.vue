@@ -34,6 +34,8 @@ import API from '@/api/scatter';
 import { mavonEditor } from 'mavon-editor';
 import { publishArticle, defaultImagesUploader, auth } from '../api';
 
+import 'mavon-editor/dist/css/index.css'; // editor css
+
 export default {
   name: 'NewPost',
   components: {
