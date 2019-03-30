@@ -36,7 +36,6 @@ export default {
   components: { ArticleCard },
   created() {
     this.getArticlesList();
-      console.log(apiServer);
   },
   methods: {
     async getArticlesList(page) {
