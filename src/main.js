@@ -10,6 +10,7 @@ import store from './store';
 import './registerServiceWorker';
 
 // Vue plugins
+// eslint-disable-next-line import/extensions
 import './plugins/iview.js';
 
 [

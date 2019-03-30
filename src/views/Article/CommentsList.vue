@@ -27,10 +27,8 @@ export default {
     sortedComments() {
       // console.log(this.assets);
       // if need change to asc, swap a & b
-      return this.comments.sort(
-        (a, b) => (new Date(b.timestamp)).getTime()
-                  - (new Date(a.timestamp)).getTime(),
-      );
+      return this.comments.slice(0) // 使用slice创建数组副本 消除副作用
+        .sort((a, b) => (new Date(b.timestamp)).getTime() - (new Date(a.timestamp)).getTime());
     },
     displayAboutScroll() {
       if (this.isTheEndOfTheScroll) {
@@ -75,6 +73,7 @@ export default {
     async setSign(hash) {
       const { data } = await axios.get(`https://api.smartsignature.io/post/${hash}`);
       const signs = await getSignInfo(data.id);
+      // eslint-disable-next-line prefer-destructuring
       this.copySign = signs[0];
       console.log('sign :', this.copySign); // fix: ReferenceError: sign is not defined
       await this.getSharesbysignid(this.copySign.id);

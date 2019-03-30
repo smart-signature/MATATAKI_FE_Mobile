@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+// import axios from 'axios'; // axios 未使用
 import { getArticlesList } from '@/api/';
 import { ArticleCard } from '@/components/';
 import { mapGetters } from 'vuex';

@@ -205,7 +205,8 @@ export default {
       const { username, currentUsername } = this;
       Follow({
         followed: username, username: currentUsername,
-      }, (error, response, body) => {
+      // eslint-disable-next-line no-unused-vars
+      }, (error, response, body) => { // body 未使用
         console.log(response);
         if (!error) {
           this.$Notice.success({
@@ -225,7 +226,8 @@ export default {
       const { username, currentUsername } = this;
       Unfollow({
         followed: username, username: currentUsername,
-      }, (error, response, body) => {
+      // eslint-disable-next-line no-unused-vars
+      }, (error, response, body) => { // response body 未使用
         if (!error) {
           this.$Notice.success({
             title: '已取消关注',

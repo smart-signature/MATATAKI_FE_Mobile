@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 <template>
   <div class="article">
     <Header
@@ -77,7 +78,7 @@
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { Header } from '@/components/';
-import axios from 'axios';
+// import axios from 'axios'; // axios 未使用
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
 import {
@@ -172,6 +173,7 @@ export default {
     console.log('Article info :', data);
 
     const signs = await getSignInfo(data.id);
+    // eslint-disable-next-line prefer-destructuring
     this.sign = signs[0];
     console.log('sign :', this.sign); // fix: ReferenceError: sign is not defined
 
@@ -179,9 +181,11 @@ export default {
 
     const signid = this.sign.id;
     const shares = localStorage.getItem(`sign id : ${signid}'s shares`);
+    // eslint-disable-next-line no-shadow
     const setShares = ({ signid }) => {
       getSharesbysignid({ signid })
         .then((response) => {
+          // eslint-disable-next-line no-shadow
           const shares = response.data;
           console.log('shares : ', shares);
           localStorage.setItem(`sign id : ${signid}'s shares`, JSON.stringify(shares));
@@ -323,6 +327,7 @@ export default {
       console.log('final amount :', amount);
       console.log('final comment :', comment);
 
+      // eslint-disable-next-line camelcase
       const sign_id = sign.id;
       const referrer = this.getInvite;
       console.log('referrer :', referrer);
@@ -371,7 +376,9 @@ export default {
 }
 .markdown-body {
   padding: 20px;
-  font-family: -apple-system,SF UI Text,Arial,PingFang SC,Hiragino Sans GB,Microsoft YaHei,WenQuanYi Micro Hei,sans-serif;
+  font-family: -apple-system,SF UI Text,Arial,
+              PingFang SC,Hiragino Sans GB,
+              Microsoft YaHei,WenQuanYi Micro Hei,sans-serif;
   color: #2f2f2f;
 }
 .footer-article {

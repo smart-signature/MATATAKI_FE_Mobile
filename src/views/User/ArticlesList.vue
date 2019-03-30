@@ -93,7 +93,8 @@ export default {
       }
       this.loading = false;
     },
-    handleClick(tab, event) {
+    // eslint-disable-next-line no-unused-vars
+    handleClick(tab, event) { // event 未使用
       if (this.listtype === 'others') {
         // eslint-disable-next-line no-plusplus
         for (let index = 0; index < this.tabs.length; index++) { // eslint 不允许一元运算符++ --

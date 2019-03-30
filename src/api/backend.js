@@ -165,6 +165,7 @@ function getUser({
   }, callback);
 }
 
+// eslint-disable-next-line camelcase
 function sendComment({ comment, sign_id }, callback) {
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
   return request.post({
