@@ -33,6 +33,7 @@
 <script>
 import axios from 'axios';
 import { ArticleCard } from '@/components/';
+import { apiServer } from '@/api/backend'; //请这样写
 import { mapGetters } from 'vuex';
 
 export const TimeLine = '最新发布';
@@ -70,23 +71,22 @@ export default {
     async getArticlesList() {
       // const articles = 'https://smartsignature.azurewebsites.net/api/article';
       // const articles = 'http://localhost:7001/posts';
-
       if (this.listtype === 'original') {
-        const articles = `https://api.smartsignature.io/posts?author=${this.username}`; // new backend api url
+        const articles = `${apiServer}/posts?author=${this.username}`; // new backend api url
         const { data } = await axios.get(articles);
         this.articles = data;
         // do something...
       } else if (this.listtype === 'reward') {
-        const articles = `https://api.smartsignature.io/supports?user=${this.username}`; // new backend api url
+        const articles = `${apiServer}/supports?user=${this.username}`; // new backend api url
         const { data } = await axios.get(articles);
         this.articles = data;
       } else if (this.listtype === 'others') {
         if (this.tabid === 0) {
-          const articles = `https://api.smartsignature.io/posts?author=${this.username}`; // new backend api url
+          const articles = `${apiServer}/posts?author=${this.username}`; // new backend api url
           const { data } = await axios.get(articles);
           this.articles = data;
         } else {
-          const articles = `https://api.smartsignature.io/supports?user=${this.username}`; // new backend api url
+          const articles = `${apiServer}/supports?user=${this.username}`; // new backend api url
           const { data } = await axios.get(articles);
           this.articles = data;
         }
