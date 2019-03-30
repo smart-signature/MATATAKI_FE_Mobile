@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 <template>
   <div class="article">
     <Header
@@ -171,6 +172,7 @@ export default {
     console.log('Article info :', data);
 
     const signs = await getSignInfo(data.id);
+    // eslint-disable-next-line prefer-destructuring
     this.sign = signs[0];
     console.log('sign :', this.sign); // fix: ReferenceError: sign is not defined
 
@@ -178,9 +180,11 @@ export default {
 
     const signid = this.sign.id;
     const shares = localStorage.getItem(`sign id : ${signid}'s shares`);
+    // eslint-disable-next-line no-shadow
     const setShares = ({ signid }) => {
       getSharesbysignid({ signid })
         .then((response) => {
+          // eslint-disable-next-line no-shadow
           const shares = response.data;
           console.log('shares : ', shares);
           localStorage.setItem(`sign id : ${signid}'s shares`, JSON.stringify(shares));
@@ -316,13 +320,12 @@ export default {
       const { comment, sign } = this;
       const amount = parseFloat(this.amount);
       if (Number.isNaN(amount) || amount <= 0) {
-        alert('请输入正确的金额');
+        this.$Message.warning('请输入正确的金额');
         return;
       }
       console.log('final amount :', amount);
       console.log('final comment :', comment);
-
-      // eslint-disable-next-line
+      // eslint-disable-next-line camelcase
       const sign_id = sign.id;
       const referrer = this.getInvite;
       console.log('referrer :', referrer);
@@ -336,12 +339,12 @@ export default {
             if (error) throw new Error(error);
           });
         this.isSupported = RewardStatus.REWARDED;
-        alert('赞赏成功！');
+        this.$Message.success('赞赏成功！');
         // tricky speed up
         this.totalSupportedAmount += parseFloat(amount);
       } catch (error) {
         console.log(JSON.stringify(error));
-        alert('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额。');
+        this.$Message.error('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额。');
         this.isSupported = RewardStatus.NOT_REWARD_YET;
       }
     },
@@ -371,8 +374,9 @@ export default {
 }
 .markdown-body {
   padding: 20px;
-  font-family: -apple-system,SF UI Text,Arial,PingFang SC,
-    Hiragino Sans GB,Microsoft YaHei,WenQuanYi Micro Hei,sans-serif;
+  font-family: -apple-system,SF UI Text,Arial,
+              PingFang SC,Hiragino Sans GB,
+              Microsoft YaHei,WenQuanYi Micro Hei,sans-serif;
   color: #2f2f2f;
 }
 .footer-article {

@@ -23,7 +23,8 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from 'vuex';
+// eslint-disable-next-line no-unused-vars
+import { mapState, mapActions, mapGetters } from 'vuex'; // mapGetters 未使用
 
 export default {
   name: 'my-Header',
@@ -55,10 +56,11 @@ export default {
       if (pageinfo.needLogin !== undefined && pageinfo.needLogin) {
         if (newState) {
           this.loginScatterAsync()
-            .then((id) => {
+            // eslint-disable-next-line no-unused-vars
+            .then((id) => { // id 未使用
               this.$Message.success('自动登录成功');
             })
-            .catch((e) => {
+            .catch(() => {
               console.log('Unable to log in wallet');
               this.$Message.error('自动登录失败，钱包需打开并解锁');
             });

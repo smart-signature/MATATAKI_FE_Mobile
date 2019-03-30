@@ -1,4 +1,7 @@
-import request from 'request';
+/* eslint-disable consistent-return */
+/* eslint-disable camelcase */
+/* eslint-disable no-alert */
+// import request from 'request';  // 未使用
 import { eos, currentEOSAccount as currentAccount } from './scatter';
 
 const SIGNATURE_CONTRACT = 'signature.bp';
@@ -17,6 +20,7 @@ async function support({ amount = null, sign_id = null, referrer = null }) {
     return;
   }
 
+  // eslint-disable-next-line no-use-before-define
   return transferEOS({
     amount,
     memo: ((referrer != null) ? `support ${sign_id} ${referrer}` : `support ${sign_id}`),
@@ -33,6 +37,7 @@ async function withdraw() {
 
   if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
 
+  // eslint-disable-next-line consistent-return
   return eos().transaction({
     actions: [
       {
@@ -80,11 +85,15 @@ async function getContractActions() { // 190325 之後才許重構
     offset: -200,
   };
 
+  // eslint-disable-next-line no-return-await
   return await eos().getActions(param);
 
   // const options = {
   //  url: 'https://geo.eosasia.one/v1/history/get_actions',
-  //  headers: { Accept: '*/*', 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+  //  headers: {
+  //    Accept: '*/*',
+  //    'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
+  //   },
   //  body: JSON.stringify(param),
   // };
   // const aaa = await axios.post(options)
@@ -131,7 +140,9 @@ async function getSignInfo(id) {
   return rows;
 }
 
-async function getSignsInfo() {
+// eslint-disable-next-line no-unused-vars
+async function getSignsInfo() { // 未调用
+  // eslint-disable-next-line no-undef
   const { rows } = await eosapi.getTableRows({
     json: true,
     code: SIGNATURE_CONTRACT,

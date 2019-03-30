@@ -114,9 +114,8 @@ export default {
     sortedAssets() {
       // console.log(this.assets);
       // if need change to asc, swap a & b
-      this.assets.sort((a, b) => (
-        new Date(b.timestamp)).getTime() - (new Date(a.timestamp)).getTime());
-      return this.assets;
+      return this.assets.slice(0) // 使用slice创建数组副本 消除副作用
+        .sort((a, b) => (new Date(b.timestamp)).getTime() - (new Date(a.timestamp)).getTime());
     },
     getDisplaySharecost() {
       return this.computeAmount({ elements: this.assets, type: 'support expenses' });
@@ -137,8 +136,7 @@ export default {
       const actions2 = actions.filter(a => a.action_trace.act.account === 'signature.bp'
           && a.action_trace.act.name === 'bill'
           && a.action_trace.act.data.type !== 'test income' /* 過濾 test income */
-          && a.action_trace.act.data.quantity !== '0.0000 EOS', /* 過濾 0 的收入支出 */
-      );
+          && a.action_trace.act.data.quantity !== '0.0000 EOS'); /* 過濾 0 的收入支出 */
       // console.log("actions>??",actions2);
       return actions2.map(a => ({
         quantity: a.action_trace.act.data.quantity,
@@ -154,16 +152,17 @@ export default {
       }
       return (amount > 0 ? '+' : '') + parseFloat(amount).toFixed(4);
     },
-    /*
-    getPlayerTotalCost() { // 過一段時間不用就刪了 :P
-      console.log('assets::', JSON.stringify(this.assets));
-      const temp = this.assets.reduce((acc, asset) => {
-        if (asset.type === 'support expenses') return parseFloat(asset.quantity.substr(0, asset.quantity.indexOf(' '))) + acc;
-        return acc;
-      }, 0);
-      console.log('zhichu', temp); // 寫這啥，看不懂
-      return temp;
-    }, */
+    // getPlayerTotalCost() { // 過一段時間不用就刪了 :P
+    //   console.log('assets::', JSON.stringify(this.assets));
+    //   const temp = this.assets.reduce((acc, asset) => {
+    //     if (asset.type === 'support expenses') {
+    //       return parseFloat(asset.quantity.substr(0, asset.quantity.indexOf(' '))) + acc;
+    //     }
+    //     return acc;
+    //   }, 0);
+    //   console.log('zhichu', temp); // 寫這啥，看不懂
+    //   return temp;
+    // },
     async getPlayerTotalIncome(name) {
       console.log('Connecting to EOS fetch player income...');
       const playerincome = await getPlayerIncome(name); // 从合约拿到支持收入和转发收入
@@ -216,7 +215,13 @@ export default {
     },
     async withdraw(name) {
       console.log('Connecting to EOS fetch data...');
-      await withdraw(name).then(() => alert('提现成功!'));
+      await withdraw(name)
+        .then(() => this.$Message.success('提现成功!'))
+        .catch((err) => {
+          console.log(err);
+          this.$Message.error('提现失败!');
+        });
+      this.visible = false; // 成功和失败都关闭弹窗
     },
   },
 };

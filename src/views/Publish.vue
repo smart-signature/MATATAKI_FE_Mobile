@@ -127,7 +127,7 @@ export default {
       } = this;
       const author = currentUsername;
 
-      const sendFailed = () => this.$Notice.error({ title: '发送失败', desc: error });
+      const sendFailed = err => this.$Notice.error({ title: '发送失败', desc: err });
 
       // for everyone
       // 規則 遇到 await 彈 error 出來，後面又沒.catch 會被最外層的 try catch 接走
@@ -141,13 +141,14 @@ export default {
           title, author, content: markdownData, desc: 'whatever',
         });
         const { code, hash } = data;
-        if (code !== 200) this.sendFailed();
+        if (code !== 200) this.sendFailed('失败');
         else {
           console.log('Push action to signature.bp...', hash);
           // const { publicKey } = await API.getPublicKey();
-          API.getSignature(author, hash, (err, signature, publicKey, username) => {
+          // eslint-disable-next-line no-unused-vars
+          API.getSignature(author, hash, (err, signature, publicKey, username) => { // username未使用
             console.log('签名成功后调', signature, publicKey);
-            if (err) this.sendFailed();
+            if (err) this.sendFailed(err);
             else {
               publishArticle({
                 author, title, hash, publicKey, signature, currentUsername, fissionFactor,

@@ -46,7 +46,8 @@ export default {
     try {
       // Scatter 10.0 need to suggestNetwork, if not, scatter is not working on login
       await this.connectScatterAsync()
-        .then(v => (
+        // eslint-disable-next-line no-unused-vars
+        .then(v => ( // v 未使用
         // https://get-scatter.com/docs/api-suggest-network
           this.suggestNetworkAsync()
             .then(added => (console.log('Suggest network result: ', added)))
