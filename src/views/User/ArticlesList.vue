@@ -33,7 +33,7 @@
 <script>
 import axios from 'axios';
 import { ArticleCard } from '@/components/';
-import { apiServer } from '@/api/backend'; //请这样写
+import { apiServer } from '@/api/backend';
 import { mapGetters } from 'vuex';
 
 export const TimeLine = '最新发布';

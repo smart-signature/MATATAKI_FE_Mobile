@@ -77,7 +77,6 @@
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { Header } from '@/components/';
-import axios from 'axios';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
 import {
@@ -323,6 +322,7 @@ export default {
       console.log('final amount :', amount);
       console.log('final comment :', comment);
 
+      // eslint-disable-next-line
       const sign_id = sign.id;
       const referrer = this.getInvite;
       console.log('referrer :', referrer);
@@ -371,7 +371,8 @@ export default {
 }
 .markdown-body {
   padding: 20px;
-  font-family: -apple-system,SF UI Text,Arial,PingFang SC,Hiragino Sans GB,Microsoft YaHei,WenQuanYi Micro Hei,sans-serif;
+  font-family: -apple-system,SF UI Text,Arial,PingFang SC,
+    Hiragino Sans GB,Microsoft YaHei,WenQuanYi Micro Hei,sans-serif;
   color: #2f2f2f;
 }
 .footer-article {
