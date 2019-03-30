@@ -54,7 +54,7 @@ export default {
   created() {
     // alert("this is " + this.listtype + " list")
     this.getArticlesList();
-    if (this.listtype == 'others') {
+    if (this.listtype === 'others') {
       this.tabs = [
         { label: '文章列表' },
         { label: '他赞赏的' },
@@ -95,9 +95,10 @@ export default {
     },
     handleClick(tab, event) {
       if (this.listtype === 'others') {
-        for (const onetabid in this.tabs) {
-          if (this.tabs[onetabid].label === tab.name) {
-            this.tabid = onetabid;
+        // eslint-disable-next-line no-plusplus
+        for (let index = 0; index < this.tabs.length; index++) { // eslint 不允许一元运算符++ --
+          if (this.tabs[index].label === tab.name) {
+            this.tabid = index;
             break;
           }
         }
