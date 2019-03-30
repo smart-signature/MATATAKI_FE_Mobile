@@ -15,20 +15,47 @@ export default {
       'suggestNetworkAsync',
       'loginScatterAsync',
     ]),
+    updateNotify(desc) {
+      const btnCommonStyle = {
+        type: 'default',
+        size: 'large',
+        style: 'margin: 0px 5px;',
+      };
+      this.$Message.info({
+        render: h => h('span', [
+          desc,
+          h('Button', {
+            attrs: {
+              // icon: 'ios-refresh',
+              ...btnCommonStyle,
+            },
+            on: {
+              click: () => window.location.reload(),
+            },
+          }, '立即刷新'),
+        ]),
+        duration: 0,
+      });
+    },
   },
   computed: {
     ...mapState(['scatterAccount']),
   },
-  async created() {
+  async created() { // https://juejin.im/post/5bfa4bb951882558ae3c171e
+    window.updateNotify = this.updateNotify;
     try {
-      await this.connectScatterAsync();
       // Scatter 10.0 need to suggestNetwork, if not, scatter is not working on login
-      const suggestNetworkResult = await this.suggestNetworkAsync();
-      // if (!this.scatterAccount) {
-      //   await this.loginScatterAsync();
-      // }
+      await this.connectScatterAsync()
+        // eslint-disable-next-line no-unused-vars
+        .then(v => ( // v 未使用
+        // https://get-scatter.com/docs/api-suggest-network
+          this.suggestNetworkAsync()
+            .then(added => (console.log('Suggest network result: ', added)))
+        ));
+      // if (!this.scatterAccount) await this.loginScatterAsync();
     } catch (e) {
       console.warn('Unable to connect wallets');
+      this.$Message.error('钱包连接失败，钱包需打开并解锁');
     }
   },
 };
@@ -46,7 +73,7 @@ body {
 }
 .card {
   margin: 10px;
-  text-align: center;
+  text-align: left;
   /* max-width: 335px; */
   background: rgba(255, 255, 255, 1);
   box-shadow: 0px 2px 5px 3px rgba(233, 233, 233, 0.5);

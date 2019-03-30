@@ -1,12 +1,12 @@
 import axios from 'axios';
 import qs from 'qs';
+import { apiServer } from './backend.js';
 
-const server = 'https://ipfs.libra.bet';
 
 function sendPost({
   title, author, desc, content,
 }) {
-  const url = `${server}/addJSON`;
+  const url = `${apiServer}/ipfs/addJSON`;
 
   const stringifyData = qs.stringify({
     'data[title]': title,
@@ -22,4 +22,5 @@ function sendPost({
   });
 }
 
+// eslint-disable-next-line import/prefer-default-export
 export { sendPost };

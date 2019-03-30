@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Home from './views/Home';
+import Home from './views/Home/index.vue';
 
 Vue.use(Router);
 
@@ -25,24 +25,42 @@ export default new Router({
       path: '/article/:hash',
       name: 'Article',
       props: true,
-      component: () => import(/* webpackChunkName: "article" */ './views/Article.vue'),
+      component: () => import(/* webpackChunkName: "article" */ './views/Article/index.vue'),
     },
     {
-      path: '/login',
-      name: 'Login',
-      component: () => import(/* webpackChunkName: "login" */ './views/Login.vue'),
+      path: '/article/:hash/comments',
+      name: 'Comments',
+      props: true,
+      component: () => import(/* webpackChunkName: "article-comments" */ './views/Article/CommentsList.vue'),
     },
+    // {
+    //   path: '/login',
+    //   name: 'Login',
+    //   component: () => import(/* webpackChunkName: "login" */ './views/Login.vue'),
+    // },
     {
       path: '/user/:username',
       name: 'User',
       props: true,
-      component: () => import(/* webpackChunkName: "user" */ './views/User.vue'),
+      component: () => import(/* webpackChunkName: "user" */ './views/User/index.vue'),
     },
     {
       path: '/user/:username/asset',
       name: 'Asset',
       props: true,
-      component: () => import(/* webpackChunkName: "asset" */ './views/Asset.vue'),
+      component: () => import(/* webpackChunkName: "user-asset" */ './views/User/Asset.vue'),
+    },
+    {
+      path: '/user/:username/original',
+      name: 'Original',
+      props: true,
+      component: () => import(/* webpackChunkName: "user-original" */ './views/User/Original.vue'),
+    },
+    {
+      path: '/user/:username/reward',
+      name: 'Reward',
+      props: true,
+      component: () => import(/* webpackChunkName: "user-reward" */ './views/User/Reward.vue'),
     },
     {
       path: '/publish',

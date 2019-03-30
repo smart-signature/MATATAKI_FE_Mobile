@@ -17,7 +17,8 @@ export default {
   },
   methods: {
     getContent() {
-      alert(this.editorContent);
+      // eslint-disable-next-line no-alert
+      alert(this.editorContent); // 暂时没替换这个alert 因为未使用 并且频闭掉eslint
     },
   },
   mounted() {

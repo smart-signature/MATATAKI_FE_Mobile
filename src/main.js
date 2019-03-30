@@ -1,19 +1,20 @@
 import Vue from 'vue';
+
+import clipboard from 'clipboard';
 import moment from 'moment';
+import infiniteScroll from 'vue-infinite-scroll';
 import App from './App.vue';
 import './zarm';
 import router from './router';
 import store from './store';
-import iView from 'iview';
 import './registerServiceWorker';
-import clipboard from 'clipboard';
 
-// CSS Style
-import 'mavon-editor/dist/css/index.css';
-import 'iview/dist/styles/iview.css';
+// Vue plugins
+// eslint-disable-next-line import/extensions
+import './plugins/iview.js';
 
 [
-  iView,
+  infiniteScroll,
 ].map(c => Vue.use(c));
 
 Vue.config.productionTip = false;

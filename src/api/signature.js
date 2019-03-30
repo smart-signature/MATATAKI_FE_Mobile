@@ -1,42 +1,47 @@
+/* eslint-disable consistent-return */
+/* eslint-disable camelcase */
+/* eslint-disable no-alert */
+// import request from 'request';  // 未使用
 import { eos, currentEOSAccount as currentAccount } from './scatter';
 
-const publishOnChain = async ({hash = '',}) => {
-  if (currentAccount() == null) { 
-    alert('请先登录'); 
-    throw new Error('NOT-LOGINED'); }
-  return eos().transaction({
-    actions: [
-      {
-        account: 'signature.bp',
-        name: 'publish',
-        authorization: [{
-          actor: currentAccount().name,
-          permission: currentAccount().authority,
-        }],
-        data: {
-          'sign':
-          {
-            author: currentAccount().name,
-            fission_factor: 2000,
-            id: 0, /* 一定會被覆蓋 */
-            ipfs_hash: hash,
-            /* 下面兩個需要一個預設值 */
-            public_key: 'EOS5P9HXdVTcAVMph4ZppDKBMkBuT6ihnkLqTUrVFBtGR94cPjykJ',
-            signature: 'SIG_K1_KZU9PyXP8YAePjCfCcmBjGHARkvTVDjKpKvVgS6XL8o2FXTXUdhP3rqrL38dJYgJo2WNBdYubsY9LKTo47RUUE4N3ZHjZQ'
-          }
-        },
-      },
-    ],
-  });
-};
+const SIGNATURE_CONTRACT = 'signature.bp';
 
-const claim = (callback) => {
+async function support({ amount = null, sign_id = null, referrer = null }) {
+  if (currentAccount() == null) {
+    alert('请先登录');
+    return;
+  }
+  if (amount == null) {
+    alert('amount cant be 0');
+    return;
+  }
+  if (sign_id == null) {
+    alert('sign_id can\'t be null');
+    return;
+  }
+
+  // eslint-disable-next-line no-use-before-define
+  return transferEOS({
+    amount,
+    memo: ((referrer != null) ? `support ${sign_id} ${referrer}` : `support ${sign_id}`),
+  });
+}
+
+async function withdraw() {
+  if (currentAccount() == null) {
+    alert('请先登录');
+    return;
+  }
+
+  // const contract = await eos().contract(SIGNATURE_CONTRACT);
+
   if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
 
+  // eslint-disable-next-line consistent-return
   return eos().transaction({
     actions: [
       {
-        account: 'signature.bp',
+        account: SIGNATURE_CONTRACT,
         name: 'claim',
         authorization: [{
           actor: currentAccount().name,
@@ -48,12 +53,11 @@ const claim = (callback) => {
       },
     ],
   });
-};
-
+}
 function transferEOS({ amount = 0, memo = '' }) {
-  if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
-
-  eos().transaction({
+  // return new Promise((resolve, reject) => {
+  if (currentAccount() == null) throw (new Error('NOT-LOGINED'));
+  return eos().transaction({
     actions: [
       {
         account: 'eosio.token',
@@ -64,46 +68,125 @@ function transferEOS({ amount = 0, memo = '' }) {
         }],
         data: {
           from: currentAccount().name,
-          to: 'signature.bp',
+          to: SIGNATURE_CONTRACT,
           quantity: `${(amount).toFixed(4).toString()} EOS`,
           memo,
         },
       },
     ],
-  }).then((result) => {
-    alert('publish success!');
-  }).catch((error) => {
-    alert(`error:${JSON.stringify(error)}`);
   });
 }
+// https://eosio.stackexchange.com/questions/1459/how-to-get-all-the-actions-of-one-account
+async function getContractActions() { // 190325 之後才許重構
+  const param = {
+    json: true,
+    account_name: SIGNATURE_CONTRACT,
+    /* pos: -1, */
+    offset: -200,
+  };
 
-function support({amount = null, sign_id = null, share_id = null,}) {
-  if (amount == null) {
-    alert('amount cant be 0');
-    return ;
-  }
-  if (sign_id == null) {
-    alert('sign_id cant be null');
-    return ;
-  }
-  const upstream_share_id = share_id;
-  transferEOS({
-    amount,
-    memo: ( (upstream_share_id != null) ? `share ${sign_id} ${upstream_share_id}` : `share ${sign_id}` ),
-  });
+  // eslint-disable-next-line no-return-await
+  return await eos().getActions(param);
+
+  // const options = {
+  //  url: 'https://geo.eosasia.one/v1/history/get_actions',
+  //  headers: {
+  //    Accept: '*/*',
+  //    'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
+  //   },
+  //  body: JSON.stringify(param),
+  // };
+  // const aaa = await axios.post(options)
+  //  .then('response', (response) => {
+  //    console.log(response.statusCode); // 200
+  //  }) {
+  //
+  // return JSON.parse(response.data) ;
+  // });
+  // console.log(JSON.parse(aaa));
 }
 
+async function getSharesInfo(owner) {
+  const { rows } = await eos().getTableRows({
+    json: true,
+    code: SIGNATURE_CONTRACT,
+    scope: owner,
+    table: 'shares',
+    limit: 1000,
+  });
+  return rows;
+}
+/*
+async function getSharesInfo() {
+  const { rows } = await eos().getTableRows({
+    json: true,
+    code: SIGNATURE_CONTRACT,
+    scope: SIGNATURE_CONTRACT,
+    table: 'shares',
+    limit: 10000,
+  });
+  return rows;
+} */
+
+async function getSignInfo(id) {
+  const { rows } = await eos().getTableRows({
+    json: true,
+    code: SIGNATURE_CONTRACT,
+    scope: SIGNATURE_CONTRACT,
+    table: 'signs',
+    lower_bound: id,
+    limit: 1,
+  });
+  return rows;
+}
+
+// eslint-disable-next-line no-unused-vars
+async function getSignsInfo() { // 未调用
+  // eslint-disable-next-line no-undef
+  const { rows } = await eosapi.getTableRows({
+    json: true,
+    code: SIGNATURE_CONTRACT,
+    scope: SIGNATURE_CONTRACT,
+    table: 'signs',
+    limit: 10000,
+  });
+  return rows;
+}
+
+async function getPlayerBills(owner) {
+  const { actions } = await eos().getActions({
+    json: true,
+    account_name: owner,
+    /* pos: -1, */
+    offset: -100,
+  });
+  // console.log("player actions",actions);
+  return actions;
+}
+
+async function getPlayerIncome(name) {
+  const { rows } = await eos().getTableRows({
+    json: true,
+    code: SIGNATURE_CONTRACT,
+    scope: name,
+    table: 'players',
+    limit: 1,
+  });
+    // console.log("player income:",rows)  //for debug
+  return rows;
+}
+
+/*
 async function getSignbyhash({ hash = null }) {
   if (hash == null) {
     alert('hash cant be null');
     return;
   }
-  const resp = await eos().get_table_rows({
+  const resp = await eosapi.getTableRows({
     json: true,
-    code: 'signature.bp',
-    scope: 'signature.bp',
+    code: SIGNATURE_CONTRACT,
+    scope: SIGNATURE_CONTRACT,
     table: 'signs',
-    table_key: 'hash',
     lower_bound: hash,
     limit: 1,
   });
@@ -111,45 +194,12 @@ async function getSignbyhash({ hash = null }) {
   return resp;
 }
 
-async function getSharesInfo() {
-  const { rows } = await eos().getTableRows({
-    json: true,
-    code: 'signature.bp',
-    scope: 'signature.bp',
-    table: 'shares',
-    limit: 10000,
-  });
-  return rows;
-}
-
-async function getSignsInfo() {
-  const { rows } = await eos().getTableRows({
-    json: true,
-    code: 'signature.bp',
-    scope: 'signature.bp',
-    table: 'signs',
-    limit: 10000,
-  });
-  return rows;
-}
-
 async function getGoods() {
-  const { rows } = await eos().getTableRows({
+  const { rows } = await eosapi().getTableRows({
     json: true,
-    code: 'signature.bp',
-    scope: 'signature.bp',
+    code: SIGNATURE_CONTRACT,
+    scope: SIGNATURE_CONTRACT,
     table: 'goods',
-    limit: 10000,
-  });
-  return rows;
-}
-
-async function getPlayerIncome(name) {
-  const { rows } = await eos().getTableRows({
-    json: true,
-    code: 'signature.bp',
-    scope: name,
-    table: 'players',
     limit: 10000,
   });
   return rows;
@@ -176,5 +226,11 @@ async function getMaxSignId() {
   }
   return maxId;
 }
+*/
 
-export { publishOnChain, claim, transferEOS, support, getSignbyhash };
+export {
+  support, withdraw,
+  getContractActions,
+  getSignInfo, getSharesInfo,
+  getPlayerIncome, getPlayerBills,
+};
