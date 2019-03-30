@@ -77,7 +77,6 @@
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { Header } from '@/components/';
-import axios from 'axios';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
 import {
@@ -323,6 +322,7 @@ export default {
       console.log('final amount :', amount);
       console.log('final comment :', comment);
 
+      // eslint-disable-next-line
       const sign_id = sign.id;
       const referrer = this.getInvite;
       console.log('referrer :', referrer);
