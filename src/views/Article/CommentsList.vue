@@ -17,7 +17,7 @@
 import axios from 'axios';
 import { CommentCard, Header } from '@/components/';
 import { getArticleData, getSharesbysignid } from '@/api/';
-import { apiServer } from '@/api/backend'; //请这样写
+import { apiServer } from '@/api/backend';
 import { getSignInfo } from '@/api/signature';
 
 export default {
@@ -35,7 +35,7 @@ export default {
     },
     displayAboutScroll() {
       if (this.isTheEndOfTheScroll) {
-        return '🎉 哇，你真勤奋，所有comments已经加载完了～ 🎉';
+        return '🎉 哇，你真勤奋，所有 comments 已经加载完了～ 🎉';
       }
       return '😄 勤奋地加载更多精彩内容 😄';
     },

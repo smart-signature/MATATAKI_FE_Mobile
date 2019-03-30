@@ -53,15 +53,16 @@ export default {
     isScatterConnected(newState) {
       const { pageinfo } = this;
       if (pageinfo.needLogin !== undefined && pageinfo.needLogin) {
-        if (newState)
+        if (newState) {
           this.loginScatterAsync()
-          .then( id => {
-            this.$Message.success('自动登录成功');
-          })
-          .catch( e => {
-            console.log('Unable to log in wallet');
-            this.$Message.error('自动登录失败，钱包需打开并解锁');
-          });
+            .then((id) => {
+              this.$Message.success('自动登录成功');
+            })
+            .catch((e) => {
+              console.log('Unable to log in wallet');
+              this.$Message.error('自动登录失败，钱包需打开并解锁');
+            });
+        }
       }
     },
   },
