@@ -34,6 +34,8 @@ import API from '@/api/scatter';
 import { mavonEditor } from 'mavon-editor';
 import { publishArticle, defaultImagesUploader, auth } from '../api';
 
+import 'mavon-editor/dist/css/index.css'; // editor css
+
 export default {
   name: 'NewPost',
   components: {
@@ -109,13 +111,13 @@ export default {
           await this.loginScatterAsync();
         } catch (error) {
           this.$Message.error('登录失败，钱包需打开并解锁');
-          return ;
+          return;
         }
       }
       if (this.title === '' || this.markdownData === '') { // 标题或内容为空时
         this.$Message.error('标题或正文不能为空');
         // async 函数返回一个 Promise 对象。
-        return ;
+        return;
       }
       // 用户不填写裂变系数则默认为2
       if (this.fissionFactor === '') this.fissionFactor = 2;
