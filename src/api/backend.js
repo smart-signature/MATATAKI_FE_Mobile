@@ -4,7 +4,7 @@ import API from '@/api/scatter';
 
 // https://github.com/axios/axios
 
-const apiServer = 'https://api.smartsignature.io';
+export const apiServer = 'https://apitest.smartsignature.io'; //以后都在这里改
 
 // NOTICE!! publishArticle will be tested and replaced very soon
 function publishArticle({

@@ -18,6 +18,7 @@ import axios from 'axios';
 import { getArticlesList } from '@/api/';
 import { ArticleCard } from '@/components/';
 import { mapGetters } from 'vuex';
+import { apiServer } from '@/api/backend';
 
 const TimeLine = '最新发布';
 
@@ -35,6 +36,7 @@ export default {
   components: { ArticleCard },
   created() {
     this.getArticlesList();
+      console.log(apiServer);
   },
   methods: {
     async getArticlesList(page) {
