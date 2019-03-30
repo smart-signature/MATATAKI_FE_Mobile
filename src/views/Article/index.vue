@@ -317,7 +317,7 @@ export default {
       const { comment, sign } = this;
       const amount = parseFloat(this.amount);
       if (Number.isNaN(amount) || amount <= 0) {
-        alert('请输入正确的金额');
+        this.$Message.warning('请输入正确的金额');
         return;
       }
       console.log('final amount :', amount);
@@ -336,12 +336,12 @@ export default {
             if (error) throw new Error(error);
           });
         this.isSupported = RewardStatus.REWARDED;
-        alert('赞赏成功！');
+        this.$Message.success('赞赏成功！');
         // tricky speed up
         this.totalSupportedAmount += parseFloat(amount);
       } catch (error) {
         console.log(JSON.stringify(error));
-        alert('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额。');
+        this.$Message.error('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额。');
         this.isSupported = RewardStatus.NOT_REWARD_YET;
       }
     },

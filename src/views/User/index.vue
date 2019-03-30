@@ -188,7 +188,7 @@ export default {
       this.editing = !this.editing;
     },
     save() {
-      alert('save');
+      this.$Message.success('保存');
       this.editing = !this.editing;
     },
     refresh_user() {
