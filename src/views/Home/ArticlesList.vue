@@ -17,7 +17,6 @@
 import { getArticlesList } from '@/api/';
 import { ArticleCard } from '@/components/';
 import { mapGetters } from 'vuex';
-import { apiServer } from '@/api/backend';
 
 const TimeLine = '最新发布';
 
