@@ -1,6 +1,6 @@
 import axios from 'axios';
 import qs from 'qs';
-import { apiServer } from './backend.js';
+import { apiServer } from '@/api/backend';
 
 
 function sendPost({
