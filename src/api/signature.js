@@ -91,7 +91,7 @@ async function getContractActions() { // 190325 之後才許重構
   //  .then('response', (response) => {
   //    console.log(response.statusCode); // 200
   //  }) {
-  // 
+  //
   // return JSON.parse(response.data) ;
   // });
   // console.log(JSON.parse(aaa));
