@@ -17,6 +17,7 @@
 import axios from 'axios';
 import { CommentCard, Header } from '@/components/';
 import { getArticleData, getSharesbysignid } from '@/api/';
+import { apiServer } from '@/api/backend'; //请这样写
 import { getSignInfo } from '@/api/signature';
 
 export default {
@@ -71,7 +72,7 @@ export default {
       console.info('post :', this.copyPost);
     },
     async setSign(hash) {
-      const { data } = await axios.get(`https://api.smartsignature.io/post/${hash}`);
+      const { data } = await axios.get(`${apiServer}/post/${hash}`);
       const signs = await getSignInfo(data.id);
       // eslint-disable-next-line prefer-destructuring
       this.copySign = signs[0];

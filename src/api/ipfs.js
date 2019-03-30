@@ -1,12 +1,12 @@
 import axios from 'axios';
 import qs from 'qs';
+import { apiServer } from './backend.js';
 
-const server = 'https://api.smartsignature.io/ipfs/';
 
 function sendPost({
   title, author, desc, content,
 }) {
-  const url = `${server}/addJSON`;
+  const url = `${apiServer}/ipfs/addJSON`;
 
   const stringifyData = qs.stringify({
     'data[title]': title,
