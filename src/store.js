@@ -67,7 +67,7 @@ export default new Vuex.Store({
       }
     },
     async suggestNetworkAsync() {
-      return api.suggestNetworkAsync();
+      await api.suggestNetworkAsync();
     },
     // 這不該是 async
     // 理由:只有一個 await api.loginScatterAsync() ，

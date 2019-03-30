@@ -38,9 +38,6 @@ export default {
   // 已確認此 Header.vue 的 crearted 內容不會被執行
   mounted() {
     console.log('Does this page need to log in?:', this.pageinfo.needLogin);
-    if (this.pageinfo.needLogin !== undefined && this.pageinfo.needLogin) {
-      if (this.isScatterConnected) this.loginScatterAsync();
-    }
   },
   methods: {
     ...mapActions([
@@ -50,6 +47,22 @@ export default {
     ]),
     goBack() {
       this.$router.go(-1);
+    },
+  },
+  watch: {
+    isScatterConnected(newState) {
+      const { pageinfo } = this;
+      if (pageinfo.needLogin !== undefined && pageinfo.needLogin) {
+        if (newState)
+          this.loginScatterAsync()
+          .then( id => {
+            this.$Message.success('自动登录成功');
+          })
+          .catch( e => {
+            console.log('Unable to log in wallet');
+            this.$Message.error('自动登录失败，钱包需打开并解锁');
+          });
+      }
     },
   },
 };
