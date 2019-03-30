@@ -371,7 +371,8 @@ export default {
 }
 .markdown-body {
   padding: 20px;
-  font-family: -apple-system,SF UI Text,Arial,PingFang SC,Hiragino Sans GB,Microsoft YaHei,WenQuanYi Micro Hei,sans-serif;
+  font-family: -apple-system,SF UI Text,Arial,PingFang SC,
+    Hiragino Sans GB,Microsoft YaHei,WenQuanYi Micro Hei,sans-serif;
   color: #2f2f2f;
 }
 .footer-article {
