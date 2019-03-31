@@ -6,6 +6,8 @@ import API from '@/api/scatter';
 
 export const apiServer = 'https://apitest.smartsignature.io'; // 以后都在这里改
 
+const AccessMethod = { POST: 0, GET: 1 };
+
 // NOTICE!! publishArticle will be tested and replaced very soon
 function publishArticle({
   author, title, hash, publicKey, signature, username, fissionFactor,
@@ -54,7 +56,9 @@ const getSharesbysignid = ({ signid }) => axios.get(`${apiServer}/shares?signid=
 const getArticleInfo = hash => axios.get(`${apiServer}/post/${hash}`);
 
 
-// 示例代码。。请随便改。。。
+// /<summary>
+// /根据用户名，公钥，客户端签名请求access_token
+// /</summary>
 function auth({
   username, publickey, sign,
 }, callback) {
@@ -76,36 +80,46 @@ function auth({
     },
   }, callback);
 }
-
-async function getAuth() { // 示例代码。。请随便改。。。
-  // 1. 取得签名
-  let accessvalid = false;
-  const nowtime = new Date().getTime();
-  if (localStorage.getItem('ACCESS_TOKEN') != null) {
-    const accesstime = localStorage.getItem('ACCESS_TIME');
-    if (accesstime != null) {
-      if (nowtime - accesstime < 604800000) {
-        accessvalid = true;
+// /<summary>
+// /装载access_token
+// /</summary>
+async function getAuth() {
+  // 1.取得签名
+  await API.authSignature((username, publickey, sign) => {
+    console.log('API.authSignature :', username, publickey, sign);
+    // 2. 将取得的签名和用户名和公钥post到服务端 获得accessToken并保存
+    auth({ username, publickey, sign }, (error, response, body) => {
+      console.log(body);
+      if (!error) {
+        // 3. save accessToken
+        const accessToken = body;
+        localStorage.setItem('ACCESS_TOKEN', accessToken);
       }
-    }
-  }
-  if (!accessvalid) {
-    await API.authSignature((username, publickey, sign) => {
-      console.log('API.authSignature :', username, publickey, sign);
-      // 2. post到服务端 获得accessToken并保存
-      auth({ username, publickey, sign }, (error, response, body) => {
-        console.log(body);
-        if (!error) {
-          // 3. save accessToken
-          const accessToken = body;
-          localStorage.setItem('ACCESS_TOKEN', accessToken);
-          localStorage.setItem('ACCESS_TIME', nowtime);
-        }
-      });
     });
-  }
+  });
 }
-
+// /<summary>
+// /后端访问入口，当遇到401的时候直接重新拿token
+// /</summary>
+async function accessBackend(data, callback = () => {}, method = AccessMethod.POST) {
+  let reqFunc = null;
+  switch (method) {
+    case AccessMethod.POST:
+      reqFunc = request.post;
+      break;
+    case AccessMethod.GET:
+      reqFunc = request.get;
+      break;
+  }
+  reqFunc(data, async (err, response, body) => {
+    if (response.statusCode == 401) {
+      localStorage.removeItem('ACCESS_TOKEN');
+      await getAuth();
+      return reqFunc(data, callback);
+    }
+    return callback(err, response, body);
+  });
+}
 // Be used in User page.
 function Follow({
   username, followed,
@@ -114,7 +128,7 @@ function Follow({
   console.log(accessToken);
   const url = `${apiServer}/follow`;
   // const url = `http://localhost:7001/publish`;
-  return request.post({
+  return accessBackend({
     uri: url,
     rejectUnauthorized: false,
     json: true,
@@ -124,7 +138,7 @@ function Follow({
       username,
       followed,
     },
-  }, callback);
+  }, callback, AccessMethod.POST);
 }
 
 // Be used in User page.
@@ -135,7 +149,7 @@ function Unfollow({
   console.log(accessToken);
   const url = `${apiServer}/unfollow`;
   // const url = `http://localhost:7001/publish`;
-  return request.post({
+  return accessBackend({
     uri: url,
     rejectUnauthorized: false,
     json: true,
@@ -145,7 +159,7 @@ function Unfollow({
       username,
       followed,
     },
-  }, callback);
+  }, callback, AccessMethod.POST);
 }
 
 // Be used in User page.
@@ -155,27 +169,27 @@ function getUser({
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
   const url = `${apiServer}/user/${username}`;
   // const url = `http://localhost:7001/publish`;
-  return request.get({
+  return accessBackend({
     uri: url,
     rejectUnauthorized: false,
     json: true,
     headers: { Accept: '*/*', 'x-access-token': accessToken },
     dataType: 'json',
     form: {},
-  }, callback);
+  }, callback, AccessMethod.GET);
 }
 
 // eslint-disable-next-line camelcase
 function sendComment({ comment, sign_id }, callback) {
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
-  return request.post({
+  return accessBackend({
     uri: `${apiServer}/post/comment`,
     rejectUnauthorized: false,
     json: true,
     headers: { Accept: '*/*', 'x-access-token': accessToken },
     dataType: 'json',
     form: { comment, sign_id },
-  }, callback);
+  }, callback, AccessMethod.POST);
 }
 
 // be Used in Article Page
@@ -184,14 +198,14 @@ function addReadAmount({
 }, callback) {
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
   const url = `${apiServer}/post/show/${articlehash}`;
-  return request.post({
+  return accessBackend({
     uri: url,
     rejectUnauthorized: false,
     json: true,
     headers: { Accept: '*/*', 'x-access-token': accessToken },
     dataType: 'json',
     form: {},
-  }, callback);
+  }, callback, AccessMethod.POST);
 }
 
 export {
