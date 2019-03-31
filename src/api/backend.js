@@ -110,9 +110,11 @@ async function accessBackend(data, callback = () => {}, method = AccessMethod.PO
     case AccessMethod.GET:
       reqFunc = request.get;
       break;
+    default:
+      break;
   }
   reqFunc(data, async (err, response, body) => {
-    if (response.statusCode == 401) {
+    if (response.statusCode === 401) {
       localStorage.removeItem('ACCESS_TOKEN');
       await getAuth();
       return reqFunc(data, callback);
