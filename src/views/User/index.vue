@@ -155,24 +155,6 @@ export default {
           });
         });
       }
-      // 4. 使用accessToken 示例。 请求修改某些和用户数据相关的api时，需要按照oauth2规范，在header里带上 accessToken， 以表示有权调用
-      // const accessToken = localStorage.getItem("ACCESS_TOKEN");
-      // request({
-      //   uri: "some api url that need auth",
-      //   // uri: "http://localhost:7001/follow",
-      //   // uri: "http://localhost:7001/unfollow",
-      //   rejectUnauthorized: false,
-      //   json: true,
-      //   headers: { Accept: '*/*', "x-access-token": accessToken },
-      //   dataType: 'json',
-      //   method: 'POST',
-      //   form: {
-      //     username:"joetothemoon",
-      //     followed:"tengavinwood",
-      //   },
-      // }, function(err,resp, body){
-      //    console.log(body);
-      // });
     },
     goBack() {
       this.$router.go(-1);

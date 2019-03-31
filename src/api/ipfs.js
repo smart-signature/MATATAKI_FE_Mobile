@@ -6,17 +6,13 @@ import { apiServer } from '@/api/backend';
 function sendPost({
   title, author, desc, content,
 }) {
-  const url = `${apiServer}/ipfs/addJSON`;
-
   const stringifyData = qs.stringify({
     'data[title]': title,
     'data[author]': author,
     'data[desc]': desc,
     'data[content]': content,
   });
-  return axios({
-    method: 'post',
-    url,
+  return axios.post(`${apiServer}/ipfs/addJSON`, {
     data: stringifyData,
     config: { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
   });
