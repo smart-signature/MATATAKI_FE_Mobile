@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "serve": "vue-cli-service serve --mode development ",
+    "build-dev": "vue-cli-service build --mode development",
+    "build-prod": "vue-cli-service build --mode production",
     "lint": "vue-cli-service lint",
     "build-for-netlify": "npm run build && npm run fix-netlify-cs-routing",
     "build-for-surge": "npm run build && npm run fix-surge-cs-routing",
