@@ -1,12 +1,8 @@
 <template>
   <div class="assetpage">
-    <za-nav-bar>
-      <div slot="left">
-        <za-icon theme="primary" type="arrow-left" @click="goBack"></za-icon>
-      </div>
-      <div slot="title">{{username}}的资产明细</div>
-      <div slot="right"></div>
-    </za-nav-bar>
+    <Header
+      :pageinfo="{ left: 'back', title: `${username}的资产明细`, rightPage: 'home',
+                   needLogin: false, }"/>
     <div class="topcard">
       <div class="toptext1">待提现</div><br/>
       <div class="topremain">{{playerincome.toFixed(4)}}</div>
@@ -68,7 +64,7 @@
 </template>
 
 <script>
-import { AssetCard } from '@/components/';
+import { AssetCard, Header } from '@/components/';
 import {
   getPlayerBills, getPlayerIncome,
   withdraw,
@@ -78,7 +74,7 @@ import { isEmptyArray } from '@/common/methods';
 export default {
   name: 'Asset',
   props: ['username'],
-  components: { AssetCard },
+  components: { AssetCard, Header },
   async created() {
     await this.refresh();
     // this.sharecost = this.getPlayerTotalCost();
