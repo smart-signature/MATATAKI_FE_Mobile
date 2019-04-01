@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 <template>
   <div class="article">
-    <Header
+    <BaseHeader
       :pageinfo="{ left:'notback', title: 'Smart Signature', rightPage: 'home',
                    needLogin: true, }"/>
     <div class="tl_page">
@@ -77,7 +77,6 @@
 
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex';
-import { Header } from '@/components/';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
 import {
@@ -99,10 +98,7 @@ const RewardStatus = { // 0=加载中,1=未打赏 2=已打赏
 export default {
   name: 'Article',
   props: ['hash'],
-  components: {
-    Header,
-    mavonEditor,
-  },
+  components: { mavonEditor, },
   computed: {
     ...mapState(['isScatterConnected', 'scatterAccount']),
     ...mapGetters(['currentUsername']),

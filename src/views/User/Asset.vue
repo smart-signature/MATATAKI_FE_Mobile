@@ -1,6 +1,6 @@
 <template>
   <div class="assetpage">
-    <Header
+    <BaseHeader
       :pageinfo="{ left: 'back', title: `${username}的资产明细`, rightPage: 'home',
                    needLogin: false, }"/>
     <div class="topcard">
@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import { AssetCard, Header } from '@/components/';
+import { AssetCard } from '@/components/';
 import {
   getPlayerBills, getPlayerIncome,
   withdraw,
@@ -74,7 +74,7 @@ import { isEmptyArray } from '@/common/methods';
 export default {
   name: 'Asset',
   props: ['username'],
-  components: { AssetCard, Header },
+  components: { AssetCard },
   async created() {
     await this.refresh();
     // this.sharecost = this.getPlayerTotalCost();
