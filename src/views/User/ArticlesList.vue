@@ -33,6 +33,7 @@
 <script>
 import axios from 'axios';
 import { ArticleCard } from '@/components/';
+import { apiServer } from '@/api/backend';
 import { mapGetters } from 'vuex';
 
 export const TimeLine = '最新发布';
@@ -54,15 +55,15 @@ export default {
   created() {
     // alert("this is " + this.listtype + " list")
     this.getArticlesList();
-    if (this.listtype == 'others') {
+    if (this.listtype === 'others') {
       this.tabs = [
         { label: '文章列表' },
         { label: '他赞赏的' },
       ];
       this.activeNameSwipe = '文章列表';
-    } else if (this.listtype == 'original') {
+    } else if (this.listtype === 'original') {
       this.activeNameSwipe = TimeLine;
-    } else if (this.listtype == 'reward') {
+    } else if (this.listtype === 'reward') {
       this.activeNameSwipe = TimeLine;
     }
   },
@@ -70,34 +71,35 @@ export default {
     async getArticlesList() {
       // const articles = 'https://smartsignature.azurewebsites.net/api/article';
       // const articles = 'http://localhost:7001/posts';
-      
-      if (this.listtype == 'original') {
-        const articles = `https://api.smartsignature.io/posts?author=${this.username}`; // new backend api url
+      if (this.listtype === 'original') {
+        const articles = `${apiServer}/posts?author=${this.username}`; // new backend api url
         const { data } = await axios.get(articles);
         this.articles = data;
         // do something...
-      } else if (this.listtype == 'reward'){
-        const articles = `https://api.smartsignature.io/supports?user=${this.username}`; // new backend api url
+      } else if (this.listtype === 'reward') {
+        const articles = `${apiServer}/supports?user=${this.username}`; // new backend api url
         const { data } = await axios.get(articles);
         this.articles = data;
-      } else if (this.listtype == 'others'){
-        if (this.tabid == 0){
-          const articles = `https://api.smartsignature.io/posts?author=${this.username}`; // new backend api url
+      } else if (this.listtype === 'others') {
+        if (this.tabid === 0) {
+          const articles = `${apiServer}/posts?author=${this.username}`; // new backend api url
           const { data } = await axios.get(articles);
           this.articles = data;
         } else {
-          const articles = `https://api.smartsignature.io/supports?user=${this.username}`; // new backend api url
+          const articles = `${apiServer}/supports?user=${this.username}`; // new backend api url
           const { data } = await axios.get(articles);
           this.articles = data;
         }
       }
       this.loading = false;
     },
-    handleClick(tab, event) {
-      if (this.listtype == 'others'){
-        for (const onetabid in this.tabs){
-          if(this.tabs[onetabid].label == tab.name){
-            this.tabid = onetabid;
+    // eslint-disable-next-line no-unused-vars
+    handleClick(tab, event) { // event 未使用
+      if (this.listtype === 'others') {
+        // eslint-disable-next-line no-plusplus
+        for (let index = 0; index < this.tabs.length; index++) { // eslint 不允许一元运算符++ --
+          if (this.tabs[index].label === tab.name) {
+            this.tabid = index;
             break;
           }
         }

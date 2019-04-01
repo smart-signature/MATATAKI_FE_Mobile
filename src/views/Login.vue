@@ -14,7 +14,9 @@
         <br>
         {{currentUsername}}
       </p>
-      <za-button block theme="warning" @click="logoutScatterAsync()">退出当前账户 {{currentUsername}}</za-button>
+      <za-button block theme="warning" @click="logoutScatterAsync()">
+        退出当前账户 {{currentUsername}}
+      </za-button>
       <za-button block theme="primary" @click="$router.go(-1)">返回上一页</za-button>
     </div>
     <div class="login-methods card" v-else>
@@ -49,7 +51,8 @@ export default {
       try {
         // await this.connectScatterAsync();
         // Scatter 10.0 need to suggestNetwork, if not, scatter is not working on login
-        const suggestNetworkResult = await this.suggestNetworkAsync();
+        // eslint-disable-next-line no-unused-vars
+        const suggestNetworkResult = await this.suggestNetworkAsync(); // suggestNetworkResult 未使用
         await this.loginScatterAsync();
       } catch (e) {
         // console.warn('Unable to connect wallets');

@@ -1,12 +1,14 @@
 <template>
   <div class="card comment">
     <h1 class="comment-title">
-      <span class="comment-author">{{comment.author}}</span>
-      <span> 打赏了 </span>
+      <router-link :to="{ name: 'User', params: { username: comment.author }}">
+        <span class="comment-author">{{comment.author}}</span>
+      </router-link>
+      <span> 赞赏了 </span>
       <span class="comment-quantity">{{comment.quantity}}</span>
     </h1>
     <h2 class="comment-timestamp">{{friendlyDate}}</h2>
-    <p class="comment-message">{{comment.message}}</p>
+    <p class="comment-message">{{displayMessage}}</p>
   </div>
 </template>
 
@@ -17,10 +19,15 @@ export default {
   name: 'CommentCard',
   props: ['comment'],
   computed: {
+    displayMessage() {
+      return this.comment.message !== '' ? this.comment.message : '用户没有留下评论';
+    },
     friendlyDate() {
       const isAppleSlave = navigator.platform.includes('iPhone');
       const time = new Date(this.comment.timestamp);
-      return moment(time.getTime() - time.getTimezoneOffset() * 60000 * (isAppleSlave ? 0 : 1)).fromNow();// moment(this.asset.timestamp).fromNow();
+      return moment(time.getTime() - time.getTimezoneOffset()
+                    * 60000 * (isAppleSlave ? 0 : 1)).fromNow();
+      // moment(this.asset.timestamp).fromNow();
     },
   },
   created() {

@@ -2,7 +2,7 @@
   <div class="card asset">
     <a>
       <h2 class="asset-quantity"
-        :style='asset.quantity.replace(" EOS","") > 0 ? { color: "#f50" } : (asset.quantity.replace(" EOS","") < 0 ? { color: "#87d068" } : { color: "#a7aab7" }) '>
+        :style='{ color: `${assetColor}` }'>
         {{(asset.quantity.substring(0,1) !== '-' ? '+': '') + asset.quantity}}</h2>
       <p class="asset-information">{{friendlyDate}}</p>
     </a>
@@ -19,7 +19,14 @@ export default {
     friendlyDate() {
       const isAppleSlave = navigator.platform.includes('iPhone');
       const time = new Date(this.asset.timestamp);
-      return moment(time.getTime() - time.getTimezoneOffset() * 60000 * (isAppleSlave ? 0 : 1)).fromNow();// moment(this.asset.timestamp).fromNow();
+      return moment(time.getTime() - time.getTimezoneOffset() * 60000 * (isAppleSlave ? 0 : 1))
+        .fromNow();
+      // moment(this.asset.timestamp).fromNow();
+    },
+    assetColor() {
+      const asset = this.asset.quantity.replace(' EOS', '');
+      // eslint-disable-next-line no-nested-ternary
+      return asset > 0 ? '#f50' : (asset < 0 ? '#87d068' : '#a7aab7');
     },
   },
   created() {

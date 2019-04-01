@@ -37,11 +37,11 @@ export default new Vuex.Store({
   actions: {
     async connectScatterAsync({ commit, dispatch }) {
       console.log('Connecting to wallet or Scatter desktop...');
-      //try {
-        const connected = await api.connectScatterAsync();
-      //} catch (error) {
-        
-      //}
+      // try {
+      const connected = await api.connectScatterAsync();
+      // 沒連上就彈到上層去了，下面都不會 run
+      // } catch (error) {
+      // }
       console.log('Connect Scatter result: ', connected);
       // 不論有沒有連上都應該設定狀態，要是連上後登陸前把錢包關了(或是錢包當了)
       // 就會造成狀態不合
@@ -67,7 +67,7 @@ export default new Vuex.Store({
       }
     },
     async suggestNetworkAsync() {
-      return api.suggestNetworkAsync();
+      await api.suggestNetworkAsync();
     },
     // 這不該是 async
     // 理由:只有一個 await api.loginScatterAsync() ，
@@ -96,14 +96,8 @@ export default new Vuex.Store({
         commit('setScatterAccount', account);
         console.log('Login successful.');
         dispatch('getMyBalances');
-      } catch (err) {
+      } catch (err) { // 這裡又是一個不會 run zzz
         console.error('Failed to log in Scatter :', err);
-        // 應該移出並弄個 errorMeg.js 之類的，然後 import
-        // 但是顯然沒空弄啊(茶
-        this.$Modal.error({
-          title: '无法与你的钱包建立链接',
-          content: '请检查钱包是否打开并解锁',
-        });
       }
       commit('setIsScatterLoggingIn', false);
     },
