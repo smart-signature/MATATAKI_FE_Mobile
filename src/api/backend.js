@@ -9,6 +9,7 @@ export const apiServer = 'https://apitest.smartsignature.io'; // 以后都在这
 const AccessMethod = { POST: 0, GET: 1 };
 
 // NOTICE!! publishArticle will be tested and replaced very soon
+// ↑ 12 days ago
 function publishArticle({
   author, title, hash, publicKey, signature, username, fissionFactor,
 }, callback) {
@@ -29,17 +30,31 @@ function publishArticle({
       sign: signature,
     },
   }, callback);
-  /* old version
-    return axios.post(url, JSON.stringify({
-    hash,
-    publicKey,
-    sign: signature,
-    title,
-    author,
-    username,
-  }), { headers: { 'Content-Type': 'application/json' } });
-  */
 }
+
+// 開發測試中
+// eslint-disable-next-line no-unused-vars
+const newPublishArticle = ({
+  author, title, hash, publicKey, signature, username, fissionFactor,
+}) => axios.post(
+  `${apiServer}/publish`,
+  {
+    author,
+    fissionFactor,
+    hash,
+    publickey: publicKey,
+    username,
+    title,
+    sign: signature,
+  },
+  { // 還是 request 的參數
+    // 傳多餘或是名字錯誤的項進去不會發生任何事(除非是少項有檢查)，js神奇的地方
+    // dataType 不知道哪來的參數，只有 jQuery ajax() 才有 datatype lol
+    strictSSL: false, // request 內部會翻成 rejectUnauthorized: false,
+    json: true,
+    headers: { Accept: '*/*' },
+  },
+);
 
 const getArticleData = hash => axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
 const getArticlesList = ({ page = 1 }) => axios.get(
