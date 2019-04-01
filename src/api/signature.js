@@ -1,4 +1,6 @@
-import request from 'request';
+/* eslint-disable consistent-return */
+/* eslint-disable camelcase */
+/* eslint-disable no-alert */
 import { eos, currentEOSAccount as currentAccount } from './scatter';
 
 const SIGNATURE_CONTRACT = 'signature.bp';
@@ -17,10 +19,11 @@ async function support({ amount = null, sign_id = null, referrer = null }) {
     return;
   }
 
+  // eslint-disable-next-line no-use-before-define
   return transferEOS({
-      amount,
-      memo: ((referrer != null) ? `support ${sign_id} ${referrer}` : `support ${sign_id}`),
-    })
+    amount,
+    memo: ((referrer != null) ? `support ${sign_id} ${referrer}` : `support ${sign_id}`),
+  });
 }
 
 async function withdraw() {
@@ -33,6 +36,7 @@ async function withdraw() {
 
   if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
 
+  // eslint-disable-next-line consistent-return
   return eos().transaction({
     actions: [
       {
@@ -50,26 +54,26 @@ async function withdraw() {
   });
 }
 function transferEOS({ amount = 0, memo = '' }) {
-   //return new Promise((resolve, reject) => {
-   if (currentAccount() == null) throw(new Error('NOT-LOGINED'));
-   return  eos().transaction({
-      actions: [
-        {
-          account: 'eosio.token',
-          name: 'transfer',
-          authorization: [{
-            actor: currentAccount().name,
-            permission: currentAccount().authority,
-          }],
-          data: {
-            from: currentAccount().name,
-            to: SIGNATURE_CONTRACT,
-            quantity: `${(amount).toFixed(4).toString()} EOS`,
-            memo,
-          },
+  // return new Promise((resolve, reject) => {
+  if (currentAccount() == null) throw (new Error('NOT-LOGINED'));
+  return eos().transaction({
+    actions: [
+      {
+        account: 'eosio.token',
+        name: 'transfer',
+        authorization: [{
+          actor: currentAccount().name,
+          permission: currentAccount().authority,
+        }],
+        data: {
+          from: currentAccount().name,
+          to: SIGNATURE_CONTRACT,
+          quantity: `${(amount).toFixed(4).toString()} EOS`,
+          memo,
         },
-      ],
-    })
+      },
+    ],
+  });
 }
 // https://eosio.stackexchange.com/questions/1459/how-to-get-all-the-actions-of-one-account
 async function getContractActions() { // 190325 之後才許重構
@@ -80,24 +84,23 @@ async function getContractActions() { // 190325 之後才許重構
     offset: -200,
   };
 
+  // eslint-disable-next-line no-return-await
   return await eos().getActions(param);
 
-  // const body = JSON.stringify(param);
   // const options = {
-  //  method: 'POST',
   //  url: 'https://geo.eosasia.one/v1/history/get_actions',
-  //  headers: { Accept: '*/*', 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8' },
-  //  body,
+  //  headers: {
+  //    Accept: '*/*',
+  //    'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
+  //   },
+  //  body: JSON.stringify(param),
   // };
-  // const aaa = await request(options, function (error, response, body) {
-  //  if (error) throw new Error(error);
+  // const aaa = await axios.post(options)
+  //  .then('response', (response) => {
+  //    console.log(response.statusCode); // 200
+  //  }) {
   //
-  //  console.log(body);
-  // }).on('response', function(response) {
-  //  console.log(response.statusCode); // 200
-  // console.log(response); // 200 JSON.parse(
-  // console.log(response.headers['content-type']) // 'image/png'
-  // return JSON.parse(response.body) ;
+  // return JSON.parse(response.data) ;
   // });
   // console.log(JSON.parse(aaa));
 }
@@ -136,7 +139,9 @@ async function getSignInfo(id) {
   return rows;
 }
 
-async function getSignsInfo() {
+// eslint-disable-next-line no-unused-vars
+async function getSignsInfo() { // 未调用
+  // eslint-disable-next-line no-undef
   const { rows } = await eosapi.getTableRows({
     json: true,
     code: SIGNATURE_CONTRACT,

@@ -92,8 +92,9 @@ import {
   Follow, Unfollow, getUser, auth,
 } from '../../api';
 import ArticlesList from './ArticlesList.vue';
-import API from '@/api/scatter.js';
-import { isEmptyArray } from "@/common/methods.js";
+import API from '@/api/scatter';
+import { isEmptyArray } from '@/common/methods';
+
 export default {
   name: 'User',
   props: ['username'],
@@ -102,7 +103,7 @@ export default {
     return {
       playerincome: {
         sign_income: 0,
-        share_income: 0
+        share_income: 0,
       },
       editing: false,
       followed: false,
@@ -154,24 +155,6 @@ export default {
           });
         });
       }
-      // 4. 使用accessToken 示例。 请求修改某些和用户数据相关的api时，需要按照oauth2规范，在header里带上 accessToken， 以表示有权调用
-      // const accessToken = localStorage.getItem("ACCESS_TOKEN");
-      // request({
-      //   uri: "some api url that need auth",
-      //   // uri: "http://localhost:7001/follow",
-      //   // uri: "http://localhost:7001/unfollow",
-      //   rejectUnauthorized: false,
-      //   json: true,
-      //   headers: { Accept: '*/*', "x-access-token": accessToken },
-      //   dataType: 'json',
-      //   method: 'POST',
-      //   form: {
-      //     username:"joetothemoon",
-      //     followed:"tengavinwood",
-      //   },
-      // }, function(err,resp, body){
-      //    console.log(body);
-      // });
     },
     goBack() {
       this.$router.go(-1);
@@ -187,7 +170,7 @@ export default {
       this.editing = !this.editing;
     },
     save() {
-      alert('save');
+      this.$Message.success('保存');
       this.editing = !this.editing;
     },
     refresh_user() {
@@ -204,7 +187,8 @@ export default {
       const { username, currentUsername } = this;
       Follow({
         followed: username, username: currentUsername,
-      }, (error, response, body) => {
+      // eslint-disable-next-line no-unused-vars
+      }, (error, response, body) => { // body 未使用
         console.log(response);
         if (!error) {
           this.$Notice.success({
@@ -224,7 +208,8 @@ export default {
       const { username, currentUsername } = this;
       Unfollow({
         followed: username, username: currentUsername,
-      }, (error, response, body) => {
+      // eslint-disable-next-line no-unused-vars
+      }, (error, response, body) => { // response body 未使用
         if (!error) {
           this.$Notice.success({
             title: '已取消关注',
@@ -245,7 +230,7 @@ export default {
   },
   async created() {
     const playerincome = await getPlayerIncome(this.username);
-    this.playerincome = isEmptyArray(playerincome) ? playerincome[0] : this.playerincome
+    this.playerincome = isEmptyArray(playerincome) ? playerincome[0] : this.playerincome;
     this.refresh_user();
     const user = this.isMe ? '我' : this.username;
     document.title = `${user}的个人主页 - SmartSignature`;

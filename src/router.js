@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Home from './views/Home';
+import Home from './views/Home/index.vue';
 
 Vue.use(Router);
 
@@ -25,13 +25,13 @@ export default new Router({
       path: '/article/:hash',
       name: 'Article',
       props: true,
-      component: () => import(/* webpackChunkName: "article" */ './views/Article.vue'),
+      component: () => import(/* webpackChunkName: "article" */ './views/Article/index.vue'),
     },
     {
       path: '/article/:hash/comments',
       name: 'Comments',
       props: true,
-      component: () => import(/* webpackChunkName: "article-comments" */ './views/CommentsList.vue'),
+      component: () => import(/* webpackChunkName: "article-comments" */ './views/Article/CommentsList.vue'),
     },
     // {
     //   path: '/login',

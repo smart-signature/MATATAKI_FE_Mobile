@@ -9,7 +9,8 @@
         <Button type="text" size="large" @click="sendThePost">确认发布</Button>
       </div>
     </za-nav-bar>
-    <Form label-position="left" :label-width="100">
+    <div class="edit-content">
+      <Form label-position="left" :label-width="100">
         <FormItem label="标题">
           <Input v-model="title" placeholder="请输入你的文章标题..." size="large" clearable />
         </FormItem>
@@ -19,19 +20,21 @@
         <FormItem label="裂变系数">
           <Input value="2" disabled placeholder="输入文章分享裂变系数" clearable />
         </FormItem>
-    </Form>
-    <mavon-editor ref=md v-model="markdownData" @imgAdd="$imgAdd" placeholder="左边输入 Markdown 格式的文字开始编辑，右边即时预览" />
+      </Form>
+      <mavon-editor ref=md v-model="markdownData" @imgAdd="$imgAdd" :boxShadow="false"
+                    placeholder="左边输入 Markdown 格式的文字开始编辑，右边即时预览"/>
+    </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
 import { mapGetters, mapActions, mapState } from 'vuex';
 import { sendPost } from '@/api/ipfs';
-import API from '@/api/scatter.js';
+import API from '@/api/scatter';
 import { mavonEditor } from 'mavon-editor';
-import request from 'request';
 import { publishArticle, defaultImagesUploader, auth } from '../api';
+
+import 'mavon-editor/dist/css/index.css'; // editor css
 
 export default {
   name: 'NewPost',
@@ -53,7 +56,7 @@ export default {
   }),
   computed: {
     ...mapGetters(['currentUsername']),
-    ...mapState(['scatterAccount']),
+    ...mapState(['isScatterConnected', 'scatterAccount']),
   },
   methods: {
     ...mapActions([
@@ -95,14 +98,26 @@ export default {
       // });
     },
     async sendThePost() {
-      if (!this.currentUsername) {
-        await this.loginScatterAsync();
+      if (!this.isScatterConnected) {
+        try {
+          await this.connectScatterAsync();
+        } catch (error) {
+          this.$Message.error('钱包需打开并解锁');
+          return;
+        }
+      }
+      if (this.currentUsername === null) {
+        try {
+          await this.loginScatterAsync();
+        } catch (error) {
+          this.$Message.error('登录失败，钱包需打开并解锁');
+          return;
+        }
       }
       if (this.title === '' || this.markdownData === '') { // 标题或内容为空时
-        return this.$Modal.warning({
-          title: '提示',
-          content: '标题或正文不能为空',
-        });
+        this.$Message.error('标题或正文不能为空');
+        // async 函数返回一个 Promise 对象。
+        return;
       }
       // 用户不填写裂变系数则默认为2
       if (this.fissionFactor === '') this.fissionFactor = 2;
@@ -111,51 +126,40 @@ export default {
         title, markdownData, currentUsername, fissionFactor,
       } = this;
       const author = currentUsername;
+      const content = markdownData;
 
-      const sendFailed = () => this.$Notice.error({ title: '发送失败', desc: error });
+      const success = (hash) => {
+        this.$Notice.success({
+          title: '发送成功',
+          desc: '3秒后跳转到你发表的文章',
+        });
+        const jumpToArticle = () => this.$router.push({
+          name: 'Article', params: { hash },
+        });
+        setTimeout(jumpToArticle, 3 * 1000);
+      };
+      const failed = error => this.$Notice.error({ title: '发送失败', desc: error });
 
-      // for everyone
-      // 規則 遇到 await 彈 error 出來，後面又沒.catch 會被最外層的 try catch 接走
-      // 1. sendPost 裡的 axios code != 200 時，算是 error ，會直接被最外層的 try catch 接走
-      // 2. getSignature 傳入的 callback 是接在 getArbitrarySignature.then 裡的，
-      //    error 走 .catch ，所以 line 133 中 err 只會是 null 是個無效代碼
-      // 3. publishArticle 又玩了一次，這次 callback 是給 request 的，
-      // /   request 的 callback 是包含 error 情況的，所以 line 140 是必要的
       try {
         const { data } = await sendPost({
-          title, author, content: markdownData, desc: 'whatever',
+          title, author, content, desc: 'whatever',
         });
         const { code, hash } = data;
-        if (code !== 200) this.sendFailed();
-        else {
-          console.log('Push action to signature.bp...', hash);
-          // const { publicKey } = await API.getPublicKey();
-          API.getSignature(author, hash, (err, signature, publicKey, username) => {
-            console.log('签名成功后调', signature, publicKey);
-            if (err) this.sendFailed();
-            else {
-              publishArticle({
-                author, title, hash, publicKey, signature, currentUsername, fissionFactor,
-              }, (error, response, body) => {
-                if (body.msg !== 'success' || error) sendFailed();
-                else {
-                  this.$Notice.success({
-                    title: '发送成功',
-                    desc: '3秒后跳转到你发表的文章',
-                  });
-                  const jumpToArticle = () => this.$router.push({
-                    name: 'Article',
-                    params: { hash },
-                  });
-                  setTimeout(jumpToArticle, 3 * 1000);
-                }
-              });
-            }
+        if (code !== 200) failed('1st step : send post to ipfs failed');
+        // eslint-disable-next-line no-unused-vars
+        API.getSignature(author, hash, (err, signature, publicKey, username) => { // username未使用
+          console.log('签名成功后调', signature, publicKey);
+          if (err) failed('2nd step failed');
+          publishArticle({
+            author, title, hash, publicKey, signature, username: currentUsername, fissionFactor,
+          }, (error, response, body) => {
+            if (body.msg !== 'success' || error) failed(error);
+            else success(hash);
           });
-        }
+        });
       } catch (error) {
         console.error(error);
-        sendFailed();
+        failed(error);
       }
     },
     $imgAdd(pos, imgfile) {
@@ -172,9 +176,8 @@ export default {
 </script>
 
 <style scoped>
-  .new-post {
-    max-width: 90%;
-    margin: 0 auto;
+  .edit-content {
+    margin: 10px;
   }
 
   textarea,
