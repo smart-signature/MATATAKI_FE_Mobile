@@ -125,6 +125,8 @@ async function accessBackend(data, callback = () => {}, method = AccessMethod.PO
     case AccessMethod.GET:
       reqFunc = request.get;
       break;
+    default:
+      break;
   }
   reqFunc(data, async (err, response, body) => {
     if (response.statusCode === 401) {
