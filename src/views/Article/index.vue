@@ -314,17 +314,19 @@ export default {
         return;
       }
 
-      await getAuth();
-
       // amount
       const { comment, sign } = this;
       const amount = parseFloat(this.amount);
-      if (Number.isNaN(amount) || amount <= 0) {
-        this.$Message.warning('请输入正确的金额');
+      if (Number.isNaN(amount) || amount < 100 ) { // amount / 10000
+        this.$Message.warning('请输入正确的金额 最小赞赏金额为 0.01 EOS');
         return;
       }
+
       console.log('final amount :', amount);
-      console.log('final comment :', comment);
+      console.log('final comment :', comment);      
+      
+      await getAuth();
+
       // eslint-disable-next-line camelcase
       const sign_id = sign.id;
       const referrer = this.getInvite;
