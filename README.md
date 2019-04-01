@@ -27,7 +27,8 @@ Newcomes are encouraged to checkout our [good first issue](https://github.com/sm
 ```
 npm install # install all dependencies for development
 npm run serve # Compiles and hot-reloads for development
-npm run build # Compiles and minifies for production
+npm run build-dev # Compiles for development
+npm run build-prod # Compiles and minifies for production
 npm run lint  # Lints and fixes files
 ```
 
