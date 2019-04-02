@@ -56,6 +56,7 @@ const newPublishArticle = ({
 );
 
 const getArticleData = hash => axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
+const getArticleInfo = hash => axios.get(`${apiServer}/post/${hash}`);
 const getArticlesList = ({ page = 1 }) => axios.get(
   `${apiServer}/posts`, { params: { page } },
 );
@@ -67,8 +68,6 @@ const getArticlesList = ({ page = 1 }) => axios.get(
   sign_id: 173
 */
 const getSharesbysignid = (signid, page) => axios.get(`${apiServer}/shares?signid=${signid}&page=${page}`);
-const getArticleInfo = hash => axios.get(`${apiServer}/post/${hash}`);
-
 
 // /<summary>
 // /根据用户名，公钥，客户端签名请求access_token
