@@ -3,8 +3,7 @@
 /* eslint-disable no-alert */
 import { eos, currentEOSAccount as currentAccount } from './scatter';
 
-const CONTRACT_ACCOUNT = process.env.SIGNATURE_CONTRACT;
-
+const CONTRACT_ACCOUNT = process.env.VUE_APP_SIGNATURE_CONTRACT;
 async function support({ amount = null, sign_id = null, referrer = null }) {
   if (currentAccount() == null) {
     alert('请先登录');
