@@ -98,10 +98,10 @@ function auth({
 // /</summary>
 async function getAuth() {
   // 1.取得签名
-  await API.authSignature().then((username, publickey, sign) => {
-    console.log('API.authSignature :', username, publickey, sign);
+  await API.authSignature(({username, publickey, signature}) => {
+    console.log('API.authSignature :', username, publickey, signature);
     // 2. 将取得的签名和用户名和公钥post到服务端 获得accessToken并保存
-    auth({ username, publickey, sign }, (error, response, body) => {
+    auth({ username, publickey, sign: signature }, (error, response, body) => {
       console.log(body);
       if (!error) {
         // 3. save accessToken
