@@ -128,7 +128,6 @@ export default {
     },
   },
   methods: {
-    // ...mapActions(['loginScatterAsync']),
     async getAssetsList() {
       console.log('Connecting to EOS fetch assets...');
       const actions = await getPlayerBills(this.username);

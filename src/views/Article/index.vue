@@ -104,7 +104,7 @@ export default {
     mavonEditor,
   },
   computed: {
-    ...mapState(['isScatterConnected', 'scatterAccount']),
+    ...mapState(['isScatterConnected', 'scatterAccount', 'isScatterLoggingIn']),
     ...mapGetters(['currentUsername']),
     isLogined() {
       return this.scatterAccount !== null;
@@ -299,21 +299,13 @@ export default {
     },
     async support() {
       this.visible3 = false;
-      try { // 錢包登录
-        // 開了網頁之後，才開 Scatter ，這時候沒有做 connectScatterAsync 就登录不能
-        // 昨天沒加檢查已連而已 - Roger that
-        if (!this.isScatterConnected) await this.connectScatterAsync();
-        await this.loginScatterAsync();
+      try {
+        await this.LoginCheck();
       } catch (error) {
-        console.error(error);
-        console.warn('Unable to connect wallets');
-        this.$Modal.error({
-          title: '无法与你的钱包建立链接並登录',
-          content: '请检查钱包是否打开并解锁',
-        });
+        // console.log(error);
+        this.$Message.error('本功能需登录钱包');
         return;
       }
-
       // amount
       const { comment, sign } = this;
       const amount = parseFloat(this.amount);
@@ -350,19 +342,38 @@ export default {
         this.isSupported = RewardStatus.NOT_REWARD_YET;
       }
     },
-    async share() {
+    async share() { // 只是為了 await
       try {
-        if (!this.isScatterConnected) await this.connectScatterAsync();
-        console.info(this.isScatterConnected);
-        // await this.suggestNetworkAsync();
-        if (!this.isScatterConnected) throw new Error('no');
-        await this.loginScatterAsync();
-      } catch (e) {
-        console.warn('Unable to connect wallets');
-        this.$Modal.error({
-          title: '无法与你的钱包建立链接',
+        await this.LoginCheck();
+      } catch (error) {
+        // console.log(error);
+        this.$Message.error('失败');
+      }
+    },
+    async LoginCheck() { // https://juejin.im/post/5a2df151f265da4304068fc1
+      const { isScatterConnected, isScatterLoggingIn } = this;
+      try { // 錢包登录
+      // 開了網頁之後，才開 Scatter ，這時候沒有做 connectScatterAsync 就登录不能
+      // 昨天沒加檢查已連而已 - Roger that
+        if (!isScatterConnected) {
+          await this.connectScatterAsync();
+          if (isScatterConnected && !isScatterLoggingIn) {
+            await this.loginScatterAsync()
+            .then(id => {
+                if(!id) throw console.error('no identity');
+                this.$Message.success('自动登录成功');
+            });
+          }
+        }
+      } catch (error) {
+        const errMeg = 'Unable to log in to wallet';
+        console.warn(errMeg); // 一句滿意的英文 log
+        console.warn('Reason :', error); // 一份可愛的理由
+        this.$Modal.error({ // 親切的用戶提示
+          title: '无法与你的钱包建立链接並登录',
           content: '请检查钱包是否打开并解锁',
         });
+        throw errMeg; // 歡喜的 throw
       }
     },
   },

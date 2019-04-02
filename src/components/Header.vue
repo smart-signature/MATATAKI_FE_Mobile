@@ -52,11 +52,12 @@ export default {
   },
   watch: {
     isScatterConnected(newState) {
-      const { pageinfo } = this;
+      const { pageinfo, currentUsername, isScatterLoggingIn } = this;
       if (pageinfo.needLogin !== undefined && pageinfo.needLogin) {
-        if (newState && !isScatterLoggingIn && currentUsername === null ) {
+        if (newState && !isScatterLoggingIn) {
+          console.log('auto log in');
           this.loginScatterAsync()
-            .then((id) => { // id 未使用
+            .then((id) => {
               this.$Message.success('自动登录成功');
             })
             .catch(() => {
