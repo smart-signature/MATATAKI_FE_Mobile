@@ -116,7 +116,7 @@ async function getAuth() {
 // /<summary>
 // /后端访问入口，当遇到401的时候直接重新拿token
 // /</summary>
-async function accessBackend(data, callback = () => {}, method = AccessMethod.POST) {
+async function accessBackend(options, callback = () => {}, method = AccessMethod.POST) {
   let reqFunc = null;
   switch (method) {
     case AccessMethod.POST:
@@ -128,11 +128,11 @@ async function accessBackend(data, callback = () => {}, method = AccessMethod.PO
     default:
       break;
   }
-  reqFunc(data, async (err, response, body) => {
+  reqFunc(options, async (err, response, body) => {
     if (response.statusCode === 401) {
       localStorage.removeItem('ACCESS_TOKEN');
       await getAuth();
-      return reqFunc(data, callback);
+      return reqFunc(options, callback);
     }
     return callback(err, response, body);
   });
