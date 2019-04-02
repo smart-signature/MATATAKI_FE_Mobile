@@ -1,5 +1,5 @@
 <template>
-  <div class="my-Header">
+  <div class="BaseHeader">
     <za-nav-bar>
       <div slot="left">
           <za-icon v-if="pageinfo.left==='back'"
@@ -27,7 +27,7 @@
 import { mapState, mapActions, mapGetters } from 'vuex'; // mapGetters 未使用
 
 export default {
-  name: 'my-Header',
+  name: 'BaseHeader',
   props: ['pageinfo'],
   computed: {
     ...mapState(['isScatterConnected']),
