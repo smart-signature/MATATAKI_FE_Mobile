@@ -98,7 +98,7 @@ function auth({
 // /</summary>
 async function getAuth() {
   // 1.取得签名
-  await API.authSignature((username, publickey, sign) => {
+  await API.authSignature().then((username, publickey, sign) => {
     console.log('API.authSignature :', username, publickey, sign);
     // 2. 将取得的签名和用户名和公钥post到服务端 获得accessToken并保存
     auth({ username, publickey, sign }, (error, response, body) => {
@@ -111,6 +111,23 @@ async function getAuth() {
     });
   });
 }
+// 4. 使用accessToken 示例。 请求修改某些和用户数据相关的api时，需要按照oauth2规范，在header里带上 accessToken， 以表示有权调用
+// const accessToken = localStorage.getItem("ACCESS_TOKEN");
+// request({
+//   uri: "some api url that need auth",
+//   rejectUnauthorized: false,
+//   json: true,
+//   headers: { Accept: '*/*', "x-access-token": accessToken },
+//   dataType: 'json',
+//   method: 'POST',
+//   form: {
+//     username:"joetothemoon",
+//     followed:"tengavinwood",
+//   },
+// }, function(err,resp, body){
+//    console.log(body);
+// });
+
 // /<summary>
 // /后端访问入口，当遇到401的时候直接重新拿token
 // /</summary>
