@@ -329,7 +329,8 @@ export default {
         console.log('Send comment...');
         await sendComment({ comment, sign_id },
           (error, response) => {
-            console.log(response);
+            console.log(response.statusCode);
+            if (response.statusCode !== 200) throw new Error(error);
             if (error) throw new Error(error);
           });
         this.isSupported = RewardStatus.REWARDED;
