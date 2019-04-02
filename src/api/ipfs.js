@@ -12,7 +12,13 @@ function sendPost({
     'data[desc]': desc,
     'data[content]': content,
   });
-  return axios.post(`${apiServer}/ipfs/addJSON`, {
+  // return axios.post(`${apiServer}/ipfs/addJSON`, {
+  //   data: stringifyData,
+  //   config: { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
+  // });
+  return axios({
+    method: 'post',
+    url: `${apiServer}/ipfs/addJSON`,
     data: stringifyData,
     config: { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
   });
