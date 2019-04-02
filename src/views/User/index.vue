@@ -142,7 +142,7 @@ export default {
         }
       }
       if (!accessvalid) {
-        API.authSignature((username, publickey, sign) => {
+        API.authSignature().then((username, publickey, sign) => {
           console.log(username, publickey, sign);
           // 2. post到服务端 获得accessToken并保存
           auth({ username, publickey, sign }, (error, response, body) => {

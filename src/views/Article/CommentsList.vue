@@ -14,11 +14,8 @@
 </template>
 
 <script>
-import axios from 'axios';
 import { CommentCard } from '@/components/';
-import { getArticleData, getSharesbysignid } from '@/api/';
-import { apiServer } from '@/api/backend';
-// import { getSignInfo } from '@/api/signature';
+import { getArticleData, getArticleInfo, getSharesbysignid } from '@/api/';
 
 export default {
   name: 'Comments',
@@ -70,13 +67,9 @@ export default {
       console.info('post :', this.copyPost);
     },
     async setSign(hash) {
-      const { data } = await axios.get(`${apiServer}/post/${hash}`);
-      // const signs = await getSignInfo(data.id);
-      // eslint-disable-next-line prefer-destructuring
-      // this.copySign = signs[0];
+      const { data } = await getArticleInfo(hash);
       this.copySignId = data.id;
-      // this.copySign.id = data.id;
-      // console.log('sign :', this.copySign); // fix: ReferenceError: sign is not defined
+
       await this.getArticlesList(this.copySignId, this.page);
       this.page += 1;
     },
