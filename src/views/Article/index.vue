@@ -167,14 +167,14 @@ export default {
     const { data } = await getArticleInfo(this.hash);
     console.log('Article info :', data);
 
-    const signs = await getSignInfo(data.id);
+    // const signs = await getSignInfo(data.id);
     // eslint-disable-next-line prefer-destructuring
-    this.sign = signs[0];
-    console.log('sign :', this.sign); // fix: ReferenceError: sign is not defined
+    // this.sign = signs[0];
+    // console.log('sign :', this.sign); // fix: ReferenceError: sign is not defined
 
     this.readamount = data.read;
-
-    const signid = this.sign.id;
+    this.sign.fission_factor = data.fission_factor ;
+    const signid = data.id;
     const shares = localStorage.getItem(`sign id : ${signid}'s shares`);
     // eslint-disable-next-line no-shadow
     const setShares = ({ signid }) => {
