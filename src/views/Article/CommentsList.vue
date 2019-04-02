@@ -1,6 +1,6 @@
 <template>
   <div class="comments">
-    <Header
+    <BaseHeader
       :pageinfo="{ left:'back', title: '赞赏队列', rightPage: 'home', needLogin: false, }" />
     <div class="tl">
       <za-pull :on-refresh="refresh" :refreshing="refreshing">
@@ -15,7 +15,7 @@
 
 <script>
 import axios from 'axios';
-import { CommentCard, Header } from '@/components/';
+import { CommentCard } from '@/components/';
 import { getArticleData, getSharesbysignid } from '@/api/';
 import { apiServer } from '@/api/backend';
 import { getSignInfo } from '@/api/signature';
@@ -23,7 +23,7 @@ import { getSignInfo } from '@/api/signature';
 export default {
   name: 'Comments',
   props: ['post', 'sign', 'hash'],
-  components: { CommentCard, Header },
+  components: { CommentCard },
   computed: {
     sortedComments() {
       // console.log(this.assets);

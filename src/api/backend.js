@@ -4,7 +4,6 @@ import API from '@/api/scatter';
 
 // https://github.com/axios/axios
 
-// export const apiServer = 'https://apitest.smartsignature.io'; // 以后都在这里改
 export const apiServer = process.env.VUE_APP_API;
 const AccessMethod = { POST: 0, GET: 1 };
 

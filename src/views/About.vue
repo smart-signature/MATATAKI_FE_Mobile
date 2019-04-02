@@ -15,14 +15,10 @@
 </template>
 
 <script>
-import { Header } from '@/components/';
 import items from '../assets/QuestionAndAnswer.json';
 
 export default {
   name: 'About',
-  components: {
-    Header,
-  },
   data: () => ({
     items,
   }),
