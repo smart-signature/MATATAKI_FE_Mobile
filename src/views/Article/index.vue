@@ -28,7 +28,7 @@
       <Row justify="center" style="padding: 0 20px">
           <i-col span="11" v-if="!isTotalSupportAmountVisible">正在从链上加载本文收到的赞赏</i-col>
           <i-col span="11" v-else-if="isTotalSupportAmountVisible">
-            <router-link :to="{ name: 'Comments', params: { post, sign, hash }}">
+            <router-link :to="{ name: 'Comments', params: { signId: sign.id, hash }}">
               本文收到赞赏 {{computedTotalSupportedAmount}} 个EOS
             </router-link>
           </i-col>
@@ -83,7 +83,8 @@ import {
   getArticleData, getArticleInfo, getAuth,
   getSharesbysignid, addReadAmount, sendComment,
 } from '@/api';
-import { getSignInfo, support } from '@/api/signature';
+// import { getSignInfo } from '@/api/signature';  // 调用 getSignInfo 注释了
+import { support } from '@/api/signature';
 import 'mavon-editor/dist/css/index.css';
 
 // MarkdownIt 实例
@@ -98,7 +99,7 @@ const RewardStatus = { // 0=加载中,1=未打赏 2=已打赏
 export default {
   name: 'Article',
   props: ['hash'],
-  components: { mavonEditor, },
+  components: { mavonEditor },
   computed: {
     ...mapState(['isScatterConnected', 'scatterAccount', 'isScatterLoggingIn']),
     ...mapGetters(['currentUsername']),
@@ -173,12 +174,13 @@ export default {
     // console.log('sign :', this.sign); // fix: ReferenceError: sign is not defined
 
     this.readamount = data.read;
-    this.sign.fission_factor = data.fission_factor ;
+    this.sign.fission_factor = data.fission_factor;
+    this.sign.id = data.id;
     const signid = data.id;
     const shares = localStorage.getItem(`sign id : ${signid}'s shares`);
     // eslint-disable-next-line no-shadow
     const setShares = ({ signid }) => {
-      getSharesbysignid({ signid })
+      getSharesbysignid(signid, 1)
         .then((response) => {
           // eslint-disable-next-line no-shadow
           const shares = response.data;
@@ -356,10 +358,10 @@ export default {
           await this.connectScatterAsync();
           if (isScatterConnected && !isScatterLoggingIn) {
             await this.loginScatterAsync()
-            .then(id => {
-                if(!id) throw console.error('no identity');
+              .then((id) => {
+                if (!id) throw console.error('no identity');
                 this.$Message.success('自动登录成功');
-            });
+              });
           }
         }
       } catch (error) {

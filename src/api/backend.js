@@ -66,7 +66,7 @@ const getArticlesList = ({ page = 1 }) => axios.get(
   create_time: "2019-03-26T01:04:21.000Z"
   sign_id: 173
 */
-const getSharesbysignid = ({ signid }) => axios.get(`${apiServer}/shares?signid=${signid}`);
+const getSharesbysignid = (signid, page) => axios.get(`${apiServer}/shares?signid=${signid}&page=${page}`);
 const getArticleInfo = hash => axios.get(`${apiServer}/post/${hash}`);
 
 
