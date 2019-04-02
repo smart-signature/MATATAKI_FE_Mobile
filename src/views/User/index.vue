@@ -128,6 +128,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['logoutScatterAsync']),
     async authDemo() { // 示例代码。。请随便改。。。
       // 1. 取得签名
       let accessvalid = false;
@@ -223,10 +224,6 @@ export default {
         this.refresh_user();
       });
     },
-    ...mapActions(['logoutScatterAsync']),
-    // loginWithWallet() {
-    //   this.loginScatterAsync();
-    // }
   },
   async created() {
     const playerincome = await getPlayerIncome(this.username);

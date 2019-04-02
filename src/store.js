@@ -53,7 +53,8 @@ export default new Vuex.Store({
           commit('setScatterAccount', currentEOSAccount());
           dispatch('getMyBalances');
         }
-      }
+      } else throw 'failed to connect wallet';
+      return connected ;
     },
     async getMyBalances({ commit, state }) {
       const { name } = state.scatterAccount;
@@ -86,20 +87,23 @@ export default new Vuex.Store({
     async loginScatterAsync({ commit, dispatch }) {
       console.log('Start log in...');
       commit('setIsScatterLoggingIn', true);
-      try {
-        const identity = await api.loginScatterAsync();
-        if (!identity) { // 失敗的話走了 catch ，這條也不會 run
-          commit('setScatterAccount', null);
-          return;
+      return new Promise(async (resolve, reject) => {
+        try {
+          const identity = await api.loginScatterAsync();
+          if (!identity) { // 失敗若是走了 catch ，這條也不會 run
+            commit('setScatterAccount', null);
+            reject(false);
+          }
+          const account = identity.accounts.find(({ blockchain }) => blockchain === 'eos');
+          commit('setScatterAccount', account);
+          console.log('Login successful.');
+          dispatch('getMyBalances');
+        } catch (err) {
+          console.error('Failed to log in Scatter :', err);
         }
-        const account = identity.accounts.find(({ blockchain }) => blockchain === 'eos');
-        commit('setScatterAccount', account);
-        console.log('Login successful.');
-        dispatch('getMyBalances');
-      } catch (err) { // 這裡又是一個不會 run zzz
-        console.error('Failed to log in Scatter :', err);
-      }
-      commit('setIsScatterLoggingIn', false);
+        commit('setIsScatterLoggingIn', false);
+        resolve(this.scatterAccount ? account : false);
+      });
     },
     async logoutScatterAsync({ commit }) {
       try {

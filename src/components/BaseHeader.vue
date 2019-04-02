@@ -30,7 +30,7 @@ export default {
   name: 'BaseHeader',
   props: ['pageinfo'],
   computed: {
-    ...mapState(['isScatterConnected']),
+    ...mapState(['currentUsername', 'isScatterConnected', 'isScatterLoggingIn']),
   },
   // 依據 https://blog.csdn.net/m0_37728716/article/details/81289317
   // 從 crearted 改成 mounted
@@ -52,12 +52,12 @@ export default {
   },
   watch: {
     isScatterConnected(newState) {
-      const { pageinfo } = this;
+      const { pageinfo, currentUsername, isScatterLoggingIn } = this;
       if (pageinfo.needLogin !== undefined && pageinfo.needLogin) {
-        if (newState) {
+        if (newState && !isScatterLoggingIn) {
+          console.log('auto log in');
           this.loginScatterAsync()
-            // eslint-disable-next-line no-unused-vars
-            .then((id) => { // id 未使用
+            .then((id) => {
               this.$Message.success('自动登录成功');
             })
             .catch(() => {
