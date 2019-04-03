@@ -33,7 +33,9 @@ const API = {
       // 申请签名
       ScatterJS.scatter.getArbitrarySignature(publicKey, sign_data, 'Auth')
       .then(signature => {
-        callback(account.name, publicKey, signature);
+        callback({username: account.name, publicKey, signature});
+      }).catch(error => {
+        console.log(error);
       });
     })
   },

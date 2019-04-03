@@ -300,8 +300,6 @@ export default {
       console.log('final amount :', amount);
       console.log('final comment :', comment);
 
-      await getAuth();
-
       const signId = article.id;
       const referrer = this.getInvite;
       console.log('referrer :', referrer);
