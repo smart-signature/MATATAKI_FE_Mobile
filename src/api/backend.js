@@ -115,7 +115,7 @@ const getSharesbysignid = (signid, page) => axios.get(`${apiServer}/shares?signi
 // /根据用户名，公钥，客户端签名请求access_token
 // /</summary>
 function auth({
-  username, publickey, sign,
+  username, publicKey, sign,
 }, callback) {
   const url = `${apiServer}/auth`;
   // console.log(username + ", " + typeof(username))
@@ -130,7 +130,7 @@ function auth({
     dataType: 'json',
     form: {
       username,
-      publickey,
+      publickey: publicKey,
       sign,
     },
   }, callback);
@@ -138,12 +138,11 @@ function auth({
 // /<summary>
 // /装载access_token
 // /</summary>
-async function getAuth() {
-  // 1.取得签名
-  await API.authSignature(({username, publickey, signature}) => {
-    console.log('API.authSignature :', username, publickey, signature);
+const getAuth = () => {
+  API.authSignature(({username, publicKey, signature}) => {
+    console.log('API.authSignature :', username, publicKey, signature);
     // 2. 将取得的签名和用户名和公钥post到服务端 获得accessToken并保存
-    auth({ username, publickey, sign: signature }, (error, response, body) => {
+    auth({ username, publicKey, sign: signature }, (error, response, body) => {
       console.log(body);
       if (!error) {
         // 3. save accessToken

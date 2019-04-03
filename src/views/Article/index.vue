@@ -2,7 +2,7 @@
 <template>
   <div class="article">
     <BaseHeader
-      :pageinfo="{ left:'notback', title: 'Smart Signature', rightPage: 'home',
+      :pageinfo="{ left:'notback', title: 'Smart Signature v0.1.272', rightPage: 'home',
                    needLogin: true, }"/>
     <div class="tl_page">
       <main class="ta">
@@ -299,8 +299,6 @@ export default {
 
       console.log('final amount :', amount);
       console.log('final comment :', comment);
-
-      await getAuth();
 
       const signId = article.id;
       const referrer = this.getInvite;
