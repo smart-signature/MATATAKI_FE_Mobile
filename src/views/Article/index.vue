@@ -121,17 +121,10 @@ export default {
     getDisplayedFissionFactor() {
       return this.article.fission_factor / 1000;
     },
-    computedTotalSupportedAmount: {
-      // getter
-      get() {
-        let totalSupportedAmount = 0.0000;
-        for (let index = 0; index < this.shares.length; index += 1) {
-          const element = this.shares[index].amount;
-          totalSupportedAmount += parseFloat(element) / 10000;
-        }
-        return totalSupportedAmount.toFixed(4);
-      },
-      /* // countTotalSupportedAmount, old version, dont del
+    computedTotalSupportedAmount() {
+      // 如果为 0 个EOS 显示为 0 比 0.0000 适合
+      return this.totalSupportedAmount ? (this.totalSupportedAmount / 10000).toFixed(4) : 0;
+    /* // countTotalSupportedAmount, old version, dont del
         const { actions } = await getContractActions();
         // console.log(actions.map(a => a.action_trace));
         const actions2 = actions.filter(a => a.action_trace.act.account === 'eosio.token'
@@ -167,7 +160,7 @@ export default {
     const { data } = await getArticleInfo(this.hash);
     this.article = data;
     console.log('Article info :', this.article);
-
+    this.totalSupportedAmount = data.value;
     this.readamount = data.read;
 
     const signid = data.id;
