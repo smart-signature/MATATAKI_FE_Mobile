@@ -11,8 +11,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import ArticlesRanking from './ArticlesRanking';
-import { getArticlesList } from '@/api/';
-import { OrderBy, getArticles } from '@/api/backend';
+import { OrderBy } from '@/api/backend';
 
 export default {
   name: 'home',

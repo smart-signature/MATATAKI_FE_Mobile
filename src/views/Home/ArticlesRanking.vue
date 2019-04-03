@@ -11,7 +11,6 @@
 import { OrderBy, getArticles } from '@/api/backend';
 import { ArticleCard } from '@/components/';
 import { mapGetters } from 'vuex';
-import { Promise } from 'q';
 
 export default {
   name: 'ArticlesRanking',
