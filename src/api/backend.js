@@ -58,9 +58,51 @@ const newPublishArticle = ({
 
 const getArticleData = hash => axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
 const getArticleInfo = hash => axios.get(`${apiServer}/post/${hash}`);
+
+/**
+ * 获取按照发表时间文章排行榜 https://github.com/smart-signature/smart-signature-backend/blob/master/doc.md#获取文章列表
+ * @param {number} page： 第 {page} 页
+ */
 const getArticlesList = ({ page = 1 }) => axios.get(
   `${apiServer}/posts`, { params: { page } },
 );
+
+/**
+ * 获取打赏金额文章排行榜 https://github.com/smart-signature/smart-signature-backend/blob/master/doc.md#获取打赏金额排行榜
+ * @param {number} page： 第 {page} 页
+ */
+const getArticlesBySupportAmountRanking = ({ page = 1 }) => axios.get(
+  `${apiServer}/getSupportAmountRanking`, { params: { page } },
+);
+
+
+/**
+ * 获取打赏次数文章排行榜 https://github.com/smart-signature/smart-signature-backend/blob/master/doc.md#获取打赏次数排行榜
+ * @param {number} page： 第 {page} 页
+ */
+const getArticlesBySupportTimesRanking = ({ page = 1 }) => axios.get(
+  `${apiServer}/getSupportTimesRanking`, { params: { page } },
+);
+
+export const OrderBy = {
+  TimeLine: '最新发布',
+  SupportAmount: '最多赞赏金额',
+  RecentSupport: '最新赞赏',
+  SupportTimes: '最多打赏次数',
+};
+
+const getArticles = ({ page = 1, orderBy = OrderBy.TimeLine }) => {
+  switch (orderBy) {
+    case OrderBy.SupportAmount:
+      return getArticlesBySupportAmountRanking({ page });
+    case OrderBy.SupportTimes:
+      return getArticlesBySupportTimesRanking({ page });
+    default:
+      return getArticlesList({ page }); // orderBy 不符合以上 0case 就默认就给你按照时间排序了
+  }
+};
+
+
 /*
   amount: 2000
   author: "minakokojima"
@@ -106,8 +148,8 @@ async function getAuth(options, callback, reqFunc, cb) {
     let tokenPayload = currentToken.substring(currentToken.indexOf('.') + 1);
     tokenPayload = tokenPayload.substring(0, tokenPayload.indexOf('.'));
     decodedData = JSON.parse(Base64.decode(tokenPayload));
-    // 拆包token抓出时间并判断这个时间和系统时间的差异
   }
+  // 1. 拆包token抓出时间并判断这个时间和系统时间的差异
   if (decodedData === null || (decodedData.exp < new Date().getTime())) {
     API.authSignature(({ username, publicKey, signature }) => {
       console.log('API.authSignature :', username, publicKey, signature);
@@ -257,4 +299,5 @@ export {
   getArticleData, getArticlesList, getArticleInfo,
   Follow, Unfollow, getUser,
   getSharesbysignid, addReadAmount, sendComment,
+  getArticles, getArticlesBySupportAmountRanking, getArticlesBySupportTimesRanking,
 };
