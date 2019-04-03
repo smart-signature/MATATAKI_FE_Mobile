@@ -9,7 +9,7 @@
            <p class="asset-information">{{friendlyDate}}</p>
          </i-col>
          <i-col span="8" >
-           <ArticleCard :article="asset.article" />
+           <!--<ArticleCard :article="asset.article" />-->
          </i-col>
       </Row>
     </a>

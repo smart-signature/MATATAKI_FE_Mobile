@@ -1,6 +1,7 @@
 import axios from 'axios';
 import request from 'request';
 import API from '@/api/scatter';
+import { Base64 } from 'js-base64';
 
 // https://github.com/axios/axios
 
@@ -138,19 +139,33 @@ function auth({
 // /<summary>
 // /装载access_token
 // /</summary>
-const getAuth = () => {
-  API.authSignature(({ username, publicKey, signature }) => {
-    console.log('API.authSignature :', username, publicKey, signature);
-    // 2. 将取得的签名和用户名和公钥post到服务端 获得accessToken并保存
-    auth({ username, publicKey, sign: signature }, (error, response, body) => {
-      console.log(body);
-      if (!error) {
-        // 3. save accessToken
-        const accessToken = body;
-        localStorage.setItem('ACCESS_TOKEN', accessToken);
-      }
-    });
-  });
+const getAuth = async () => {
+    const currentToken = localStorage.getItem('ACCESS_TOKEN');
+    let decodedData = { exp: new Date().getTime() +10000 };
+    console.log("aass",API.authSignature)
+    if (currentToken != null) console.log("dadada")
+    if (currentToken != null) {
+      console.log("1234");
+      let tokenPayload = currentToken.substring(currentToken.indexOf('.') + 1);
+      tokenPayload = tokenPayload.substring(0, tokenPayload.indexOf('.'));
+      decodedData = JSON.parse(Base64.decode(tokenPayload));
+    }
+    // 1. 拆包token抓出时间并判断这个时间和系统时间的差异   
+    if (decodedData.exp < new Date().getTime() || currentToken === null) {
+      await API.authSignature(async({ username, publicKey, signature }) => {
+      console.log('API.authSignature :', username, publicKey, signature);
+      // 2. 将取得的签名和用户名和公钥post到服务端 获得accessToken并保存
+      await auth({ username, publicKey, sign: signature }, (error, response, body) => {
+        console.log(body);
+        if (!error) {
+          // 3. save accessToken
+          const accessToken = body;
+          localStorage.setItem('ACCESS_TOKEN', accessToken);
+          return;
+        }
+      });
+     });
+    } else return;
 };
 // 4. 使用accessToken 示例。 请求修改某些和用户数据相关的api时，需要按照oauth2规范，在header里带上 accessToken， 以表示有权调用
 // const accessToken = localStorage.getItem("ACCESS_TOKEN");
@@ -184,14 +199,8 @@ async function accessBackend(options, callback = () => {}, method = AccessMethod
     default:
       break;
   }
-  reqFunc(options, async (err, response, body) => {
-    if (response.statusCode === 401) {
-      localStorage.removeItem('ACCESS_TOKEN');
-      await getAuth();
-      return reqFunc(options, callback);
-    }
-    return callback(err, response, body);
-  });
+  await getAuth();
+  return reqFunc(options, callback);
 }
 // Be used in User page.
 function Follow({

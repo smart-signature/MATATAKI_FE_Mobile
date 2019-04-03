@@ -70,7 +70,7 @@ export default {
             })
             .catch(() => {
               console.log('Unable to log in wallet');
-              this.$Message.error('自动登录失败，钱包需打开并解锁');
+              this.$Message.error('自动登录失败，钱包需打开并解锁...');
             });
         }
       }

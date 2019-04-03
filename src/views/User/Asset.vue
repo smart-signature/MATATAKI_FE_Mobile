@@ -66,6 +66,7 @@
 import { AssetCard } from '@/components/';
 import { getArticleInfo } from '@/api';
 import {
+  CONTRACT_ACCOUNT,
   getPlayerBills, getPlayerIncome,
   getSignInfo,
   withdraw,
@@ -129,7 +130,7 @@ export default {
       console.log('Connecting to EOS fetch assets...');
       const actions = (await getPlayerBills(this.username)).map(a => a.action_trace);
       // console.log(actions.map(a => a.action_trace));
-      const actions2 = actions.filter(a => a.act.account === 'signature.bp'
+      const actions2 = actions.filter(a => a.act.account === CONTRACT_ACCOUNT
           && a.act.name === 'bill'
           && a.act.data.type !== 'test income' /* 過濾 test income */
           && a.act.data.quantity !== '0.0000 EOS'); /* 過濾 0 的收入支出 */
