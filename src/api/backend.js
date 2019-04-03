@@ -58,51 +58,9 @@ const newPublishArticle = ({
 
 const getArticleData = hash => axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
 const getArticleInfo = hash => axios.get(`${apiServer}/post/${hash}`);
-
-/**
- * 获取按照发表时间文章排行榜 https://github.com/smart-signature/smart-signature-backend/blob/master/doc.md#获取文章列表
- * @param {number} page： 第 {page} 页
- */
 const getArticlesList = ({ page = 1 }) => axios.get(
   `${apiServer}/posts`, { params: { page } },
 );
-
-/**
- * 获取打赏金额文章排行榜 https://github.com/smart-signature/smart-signature-backend/blob/master/doc.md#获取打赏金额排行榜
- * @param {number} page： 第 {page} 页
- */
-const getArticlesBySupportAmountRanking = ({ page = 1 }) => axios.get(
-  `${apiServer}/getSupportAmountRanking`, { params: { page } },
-);
-
-
-/**
- * 获取打赏次数文章排行榜 https://github.com/smart-signature/smart-signature-backend/blob/master/doc.md#获取打赏次数排行榜
- * @param {number} page： 第 {page} 页
- */
-const getArticlesBySupportTimesRanking = ({ page = 1 }) => axios.get(
-  `${apiServer}/getSupportTimesRanking`, { params: { page } },
-);
-
-export const OrderBy = {
-  TimeLine: '最新发布',
-  SupportAmount: '最多赞赏金额',
-  RecentSupport: '最新赞赏',
-  SupportTimes: '最多打赏次数',
-};
-
-const getArticles = ({ page = 1, orderBy = OrderBy.TimeLine }) => {
-  switch (orderBy) {
-    case OrderBy.SupportAmount:
-      return getArticlesBySupportAmountRanking({ page });
-    case OrderBy.SupportTimes:
-      return getArticlesBySupportTimesRanking({ page });
-    default:
-      return getArticlesList({ page }); // orderBy 不符合以上 0case 就默认就给你按照时间排序了
-  }
-};
-
-
 /*
   amount: 2000
   author: "minakokojima"
@@ -139,8 +97,6 @@ function auth({
 // /<summary>
 // /装载access_token
 // /</summary>
-
-/*
 async function getAuth(options, callback, reqFunc, cb) {
   const currentToken = localStorage.getItem('ACCESS_TOKEN');
   let decodedData = null;
@@ -150,8 +106,8 @@ async function getAuth(options, callback, reqFunc, cb) {
     let tokenPayload = currentToken.substring(currentToken.indexOf('.') + 1);
     tokenPayload = tokenPayload.substring(0, tokenPayload.indexOf('.'));
     decodedData = JSON.parse(Base64.decode(tokenPayload));
+    // 拆包token抓出时间并判断这个时间和系统时间的差异
   }
-  // 1. 拆包token抓出时间并判断这个时间和系统时间的差异
   if (decodedData === null || (decodedData.exp < new Date().getTime())) {
     API.authSignature(({ username, publicKey, signature }) => {
       console.log('API.authSignature :', username, publicKey, signature);
@@ -166,25 +122,10 @@ async function getAuth(options, callback, reqFunc, cb) {
         }
       });
     });
+  }else{
+    cb(options, callback, reqFunc);
   }
 }
-*/
-
-const getAuth = () => {
-  API.authSignature(({username, publicKey, signature}) => {
-    console.log('API.authSignature :', username, publicKey, signature);
-    // 2. 将取得的签名和用户名和公钥post到服务端 获得accessToken并保存
-    auth({ username, publicKey, sign: signature }, (error, response, body) => {
-      console.log(body);
-      if (!error) {
-        // 3. save accessToken
-        const accessToken = body;
-        localStorage.setItem('ACCESS_TOKEN', accessToken);
-      }
-    });
-  });
-}
-
 // 4. 使用accessToken 示例。 请求修改某些和用户数据相关的api时，需要按照oauth2规范，在header里带上 accessToken， 以表示有权调用
 // const accessToken = localStorage.getItem("ACCESS_TOKEN");
 // request({
@@ -217,15 +158,12 @@ async function accessBackend(options, callback = () => {}, method = AccessMethod
     default:
       break;
   }
-  console.log('accessBackend: ', options);
-
-  reqFunc(options, async (err, response, body) => {
-    if (response.statusCode === 401) {
-      localStorage.removeItem('ACCESS_TOKEN');
-      await getAuth();
-      return reqFunc(options, callback);
-    }
-    return callback(err, response, body);
+  console.log('lalala', options);
+  getAuth(options, callback, reqFunc, (options, callback, reqFunc) => { // 爱的魔力转圈圈，回调回调到你不分黑夜白天
+    // 在这里套了7层callback，callback里面的async语法是无效的，所以一层一层套出来
+    options.headers['x-access-token'] = localStorage.getItem('ACCESS_TOKEN');
+    console.log('alalal', options);
+    reqFunc(options, callback);
   });
 }
 // Be used in User page.
@@ -233,7 +171,7 @@ function Follow({
   username, followed,
 }, callback) {
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
-  console.log('accessToken: ', accessToken);
+  console.log(accessToken);
   const url = `${apiServer}/follow`;
   // const url = `http://localhost:7001/publish`;
   return accessBackend({
@@ -321,5 +259,4 @@ export {
   getArticleData, getArticlesList, getArticleInfo,
   Follow, Unfollow, getUser,
   getSharesbysignid, addReadAmount, sendComment,
-  getArticles, getArticlesBySupportAmountRanking, getArticlesBySupportTimesRanking,
 };
