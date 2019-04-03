@@ -186,6 +186,12 @@ export default {
     follow_user() {
       // alert('follow');
       const { username, currentUsername } = this;
+      if(!currentUsername || !username){
+        this.$Notice.error({
+          title: '账号信息无效，关注失败',
+        });
+        return;
+      }
       Follow({
         followed: username, username: currentUsername,
       // eslint-disable-next-line no-unused-vars
@@ -207,6 +213,12 @@ export default {
     unfollow_user() {
       // alert('follow');
       const { username, currentUsername } = this;
+      if(!currentUsername || !username){
+        this.$Notice.error({
+          title: '账号信息无效，取消关注失败',
+        });
+        return;
+      }
       Unfollow({
         followed: username, username: currentUsername,
       // eslint-disable-next-line no-unused-vars
