@@ -160,23 +160,6 @@ async function getPlayerIncome(name) {
 }
 
 /*
-async function getSignbyhash({ hash = null }) {
-  if (hash == null) {
-    alert('hash cant be null');
-    return;
-  }
-  const resp = await eosapi.getTableRows({
-    json: true,
-    code: CONTRACT_ACCOUNT,
-    scope: CONTRACT_ACCOUNT,
-    table: 'signs',
-    lower_bound: hash,
-    limit: 1,
-  });
-  console.log(resp.rows);
-  return resp;
-}
-
 async function getGoods() {
   const { rows } = await eosapi().getTableRows({
     json: true,
