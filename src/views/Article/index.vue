@@ -39,7 +39,7 @@
       <Row style="white-space:nowrap;">
         <i-col span="11">
           <za-button v-if="isSupported===-1" class="button-support"
-            size='xl' theme="primary" 
+            size='xl' theme="primary"
             @click="share">赞赏</za-button>
           <za-button v-if="isSupported===0" class="button-support"
             size='xl' theme="primary" disabled>加载中</za-button>
@@ -84,7 +84,6 @@ import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
 import {
   getArticleData, getArticleInfo, getSharesbysignid,
-  getAuth,
   addReadAmount, sendComment,
 } from '@/api';
 import { support } from '@/api/signature';
@@ -281,9 +280,9 @@ export default {
         } else {
           this.isSupported = RewardStatus.NOT_REWARD_YET;
         }
-      }
-      else
+      } else {
         this.isSupported = RewardStatus.NOT_LOGGINED;
+      }
     },
     async support() {
       this.visible3 = false;
@@ -346,7 +345,7 @@ export default {
       try { // 錢包登录
       // 開了網頁之後，才開 Scatter ，這時候沒有做 connectScatterAsync 就登录不能
       // 昨天沒加檢查已連而已 - Roger that
-      console.log("scatter status",isScatterConnected)
+        console.log('scatter status', isScatterConnected);
         if (!isScatterConnected) {
           await this.connectScatterAsync();
         }
