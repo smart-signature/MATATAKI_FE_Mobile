@@ -105,7 +105,7 @@ async function getContractActions() { // 190325 之後才許重構
   // console.log(JSON.parse(aaa));
 }
 
-async function getSharesInfo(owner) {
+const getSharesInfo = async (owner) => {
   const { rows } = await eos().getTableRows({
     json: true,
     code: CONTRACT_ACCOUNT,
@@ -115,17 +115,6 @@ async function getSharesInfo(owner) {
   });
   return rows;
 }
-/*
-async function getSharesInfo() {
-  const { rows } = await eos().getTableRows({
-    json: true,
-    code: CONTRACT_ACCOUNT,
-    scope: CONTRACT_ACCOUNT,
-    table: 'shares',
-    limit: 10000,
-  });
-  return rows;
-} */
 
 async function getSignInfo(id) {
   const { rows } = await eos().getTableRows({
