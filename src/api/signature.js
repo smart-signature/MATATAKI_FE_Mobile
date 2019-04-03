@@ -73,16 +73,14 @@ function transferEOS({ amount = 0, memo = '' }) {
   });
 }
 // https://eosio.stackexchange.com/questions/1459/how-to-get-all-the-actions-of-one-account
-async function getContractActions() { // 190325 之後才許重構
+const getContractActions = async () => {
   const param = {
     json: true,
     account_name: CONTRACT_ACCOUNT,
     /* pos: -1, */
     offset: -200,
   };
-
-  // eslint-disable-next-line no-return-await
-  return await eos().getActions(param);
+  return eos().getActions(param);
 
   // const options = {
   //  url: 'https://geo.eosasia.one/v1/history/get_actions',
@@ -100,7 +98,7 @@ async function getContractActions() { // 190325 之後才許重構
   // return JSON.parse(response.data) ;
   // });
   // console.log(JSON.parse(aaa));
-}
+};
 
 const getSharesInfo = async (owner) => {
   const { rows } = await eos().getTableRows({
