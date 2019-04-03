@@ -97,34 +97,33 @@ function auth({
 // /<summary>
 // /装载access_token
 // /</summary>
-const getAuth = async () => {
-    const currentToken = localStorage.getItem('ACCESS_TOKEN');
-    let decodedData = { exp: new Date().getTime() +10000 };
-    console.log("aass",API.authSignature)
-    if (currentToken != null) console.log("dadada")
-    if (currentToken != null) {
-        console.log("1234")
-      let tokenPayload = currentToken.substring(currentToken.indexOf('.') + 1);
-      tokenPayload = tokenPayload.substring(0, tokenPayload.indexOf('.'));
-      decodedData = JSON.parse(Base64.decode(tokenPayload));
-      // 拆包token抓出时间并判断这个时间和系统时间的差异 
-    }
-    if (decodedData.exp < new Date().getTime() || currentToken === null) {
-      await API.authSignature(async({ username, publicKey, signature }) => {
+async function getAuth(options, callback, reqFunc, cb) {
+  const currentToken = localStorage.getItem('ACCESS_TOKEN');
+  let decodedData = null;
+  console.log('aass', API.authSignature);
+  if (currentToken != null) {
+    console.log('1234');
+    let tokenPayload = currentToken.substring(currentToken.indexOf('.') + 1);
+    tokenPayload = tokenPayload.substring(0, tokenPayload.indexOf('.'));
+    decodedData = JSON.parse(Base64.decode(tokenPayload));
+    // 拆包token抓出时间并判断这个时间和系统时间的差异
+  }
+  if (decodedData === null || (decodedData.exp < new Date().getTime())) {
+    API.authSignature(({ username, publicKey, signature }) => {
       console.log('API.authSignature :', username, publicKey, signature);
       // 2. 将取得的签名和用户名和公钥post到服务端 获得accessToken并保存
-      await auth({ username, publicKey, sign: signature }, (error, response, body) => {
+      auth({ username, publicKey, sign: signature }, (error, response, body) => {
         console.log(body);
         if (!error) {
           // 3. save accessToken
           const accessToken = body;
           localStorage.setItem('ACCESS_TOKEN', accessToken);
-          return;
+          cb(options, callback, reqFunc);
         }
       });
-     });
-    } else return;
-};
+    });
+  }
+}
 // 4. 使用accessToken 示例。 请求修改某些和用户数据相关的api时，需要按照oauth2规范，在header里带上 accessToken， 以表示有权调用
 // const accessToken = localStorage.getItem("ACCESS_TOKEN");
 // request({
@@ -157,8 +156,13 @@ async function accessBackend(options, callback = () => {}, method = AccessMethod
     default:
       break;
   }
-  await getAuth();
-  return reqFunc(options, callback);
+  console.log('lalala', options);
+  getAuth(options, callback, reqFunc, (options, callback, reqFunc) => { // 爱的魔力转圈圈，回调回调到你不分黑夜白天
+    // 在这里套了7层callback，callback里面的async语法是无效的，所以一层一层套出来
+    options.headers['x-access-token'] = localStorage.getItem('ACCESS_TOKEN');
+    console.log('alalal', options);
+    reqFunc(options, callback);
+  });
 }
 // Be used in User page.
 function Follow({
