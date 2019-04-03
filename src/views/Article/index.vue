@@ -3,29 +3,56 @@
   <div class="article">
     <BaseHeader
       :pageinfo="{ left:'notback', title: 'Smart Signature', rightPage: 'home',
-                   needLogin: true, }"/>
-    <div class="tl_page">
-      <main class="ta">
-        <header class="ta_header">
-          <h1 dir="auto">{{post.title}}</h1>
-          <address dir="auto">
-            <router-link :to="{ name: 'User',
-                                params: { username: article.author }}">
-              <a> Author: {{article.author}}</a>
-            </router-link>
-            <br/>
-            <span class="break_all">IPFS Hash: {{hash}}</span>
-            <br/>
-            <span>阅读次数：{{readamount}}</span>
-          </address>
-        </header>
-        <mavon-editor v-show="false" style="display: none;"/>
-        <div class="markdown-body" v-html="compiledMarkdown"></div>
-      </main>
-    </div>
-    <footer class="footer-article">
-      <Divider />
-      <Row justify="center" style="padding: 0 20px">
+      needLogin: true, }"/>
+    <header class="ta_header">
+      <h1 dir="auto">{{post.title}}</h1>
+      <p>
+      <Avatar
+        icon="ios-person" class="avatar-size" size="small" />
+      <router-link
+        class="author"
+        :to="{ name: 'User', params: { username:post.author }}">
+        Author: {{post.author}}
+      </router-link>
+      {{articleCreateTime}} | {{article.read || 0}}阅读</p>
+      <p class="break_all">IPFS Hash: {{hash}}</p>
+    </header>
+    <mavon-editor v-show="false" style="display: none;"/>
+    <div class="markdown-body" v-html="compiledMarkdown"></div>
+    <div class="commentslist-title">赞赏队列 ({{article.ups || 0}})</div>
+    <comments-list :signId="article.id" :hash="hash" />
+    <footer class="footer">
+      <div class="footer-block">
+        <div class="amount">
+          <div>
+            <img class="amount-img" src="@/assets/img/amount.png" />
+            {{computedTotalSupportedAmount}}
+          </div>
+          <div>赞赏总额</div>
+        </div>
+        <div class="fission">
+          <div>
+            <img class="amount-img" src="@/assets/img/fission.png" />
+            {{getDisplayedFissionFactor}}
+          </div>
+          <div>裂变系数</div>
+        </div>
+      </div>
+      <div class="footer-block">
+          <button v-if="isSupported===0" class="button-support"
+             disabled>加载中</button>
+          <button v-else-if="isSupported===1" class="button-support"
+            @click="visible3=true" >赞赏</button>
+          <button v-else-if="isSupported===2" class="button-support"
+             disabled>已赞赏</button>
+          <button class="button-share"
+            :data-clipboard-text="getClipboard"
+            @click="share">分享</button>
+      </div>
+    </footer>
+    <!-- <footer class="footer-article"> -->
+      <!-- <Divider /> -->
+      <!-- <Row justify="center" style="padding: 0 20px">
           <i-col span="11" v-if="!isTotalSupportAmountVisible">正在从链上加载本文收到的赞赏</i-col>
           <i-col span="11" v-else-if="isTotalSupportAmountVisible">
             <router-link :to="{ name: 'Comments', params: { signId: article.id, hash }}">
@@ -34,10 +61,10 @@
           </i-col>
           <i-col span="2"><Divider type="vertical" /></i-col>
           <i-col span="11">裂变系数：{{getDisplayedFissionFactor}}</i-col>
-      </Row>
-      <Divider />
-      <Row style="white-space:nowrap;">
-        <i-col span="11">
+      </Row> -->
+      <!-- <Divider /> -->
+      <!-- <Row style="white-space:nowrap;"> -->
+        <!-- <i-col span="11">
           <za-button v-if="isSupported===0" class="button-support"
             size='xl' theme="primary" disabled>加载中</za-button>
           <za-button v-else-if="isSupported===1" class="button-support"
@@ -45,8 +72,8 @@
             @click="visible3=true" >赞赏</za-button>
           <za-button v-else-if="isSupported===2" class="button-support"
             size='xl' theme="primary" disabled>已赞赏</za-button>
-        </i-col>
-        <i-col span="2"><Divider type="vertical" style="opacity: 0;" /></i-col>
+        </i-col> -->
+        <!-- <i-col span="2"><Divider type="vertical" style="opacity: 0;" /></i-col> -->
         <za-modal :visible="visible3"
            @close="handleClose" radius="" @maskClick="visible3 = false" :showClose="true"
            style="background:rgba(243,243,243,1);">
@@ -64,14 +91,14 @@
               size='xl' theme="primary"
               @click="support">赞赏</za-button></Row>
         </za-modal>
-        <i-col span="11">
+        <!-- <i-col span="11">
           <za-button class="button-share"
             size='xl' theme="primary"
             :data-clipboard-text="getClipboard"
             @click="share" ghost="true">分享</za-button>
-        </i-col>
-      </Row>
-    </footer>
+        </i-col> -->
+      <!-- </Row> -->
+    <!-- </footer> -->
   </div>
 </template>
 
@@ -86,6 +113,8 @@ import {
 } from '@/api';
 import { support } from '@/api/signature';
 import 'mavon-editor/dist/css/index.css';
+import moment from 'moment';
+import CommentsList from './CommentsList.vue';
 
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
@@ -99,7 +128,7 @@ const RewardStatus = { // 0=加载中,1=未打赏 2=已打赏
 export default {
   name: 'Article',
   props: ['hash'],
-  components: { mavonEditor },
+  components: { mavonEditor, CommentsList },
   computed: {
     ...mapGetters(['currentUsername']),
     ...mapState(['isScatterConnected', 'isScatterLoggingIn', 'scatterAccount']),
@@ -161,7 +190,7 @@ export default {
     this.article = data;
     console.log('Article info :', this.article);
     this.totalSupportedAmount = data.value;
-    this.readamount = data.read;
+    this.articleCreateTime = moment(data.create_time).format('MMMDo');
 
     const signid = data.id;
     const shares = localStorage.getItem(`sign id : ${signid}'s shares`);
@@ -217,8 +246,8 @@ export default {
     visible3: false,
     v3: '',
     v5: '',
-    readamount: 0,
     clipboard: null,
+    articleCreateTime: ' 月 日',
   }),
   watch: {
     post({ author, title }) {
@@ -370,19 +399,13 @@ export default {
 .break_all {
   word-break: break-all;
 }
-.markdown-body {
-  padding: 20px;
-  font-family: -apple-system,SF UI Text,Arial,
-              PingFang SC,Hiragino Sans GB,
-              Microsoft YaHei,WenQuanYi Micro Hei,sans-serif;
-  color: #2f2f2f;
-}
+
 .footer-article {
   margin-bottom: 20px;
 }
 .article {
   text-align: left;
-  max-width: 732px;
+  max-width: 750px;
   margin: 0 auto;
 }
 .ta .tac .iframe_wrap,
@@ -391,10 +414,6 @@ export default {
 .ta .tac video {
   max-width: 100%;
   vertical-align: top;
-}
-.tl_page {
-  position: relative;
-  padding: 21px 0;
 }
 .tl_message {
   font-family: CustomSansSerif, "Lucida Grande", Arial, sans-serif;
@@ -453,7 +472,6 @@ export default {
   left: 50%;
   z-index: -1;
 }
-.ta .ta_header,
 .ta .tac,
 .ta .tac .ql-editor {
   font-family: "Open Sans",sans-serif;
@@ -464,7 +482,6 @@ export default {
   margin: 0;
   color: rgba(0, 0, 0, 0.8);
 }
-.ta address,
 .ta h1,
 .ta h2 {
   font-family: CustomSansSerif, "Lucida Grande", Arial, sans-serif;
@@ -488,31 +505,18 @@ export default {
   font-size: 32px;
   margin: 21px 21px 12px;
 }
+
 .ta h2 {
   font-size: 24px;
   margin: -6px 21px 12px;
   color: rgba(0, 0, 0, 0.44);
 }
-.ta address,
-.ta address a {
-  color: #79828b;
-}
-.ta address {
-  font-size: 15px;
-  margin: 12px 21px;
-}
-.ta address time:before {
-  content: "â€¢";
-  padding: 0 7px;
-}
+
 .ta a[href] {
   color: inherit;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0.44);
   text-decoration: none;
   border-bottom: 0.1em solid rgba(0, 0, 0, 0.7);
-}
-.ta address a[href] {
-  border-bottom: none;
 }
 .footer-article {
   font-size: 12px;
@@ -538,11 +542,9 @@ export default {
   background-color: #fff;
   cursor: pointer;
 }
-.tl_page {
-  position: relative;
-  padding: 21px 0;
-}
+
 .markdown-body.tac {
     margin: 20px;
 }
 </style>
+<style src="./index.css" scoped></style>

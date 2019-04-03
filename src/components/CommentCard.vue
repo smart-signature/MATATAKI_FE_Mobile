@@ -1,5 +1,5 @@
 <template>
-  <div class="card comment">
+  <div class="comment">
     <h1 class="comment-title">
       <router-link :to="{ name: 'User', params: { username: comment.author }}">
         <span class="comment-author">{{comment.author}}</span>
@@ -37,6 +37,15 @@ export default {
 </script>
 
 <style scoped>
+.comment {
+    margin: 8px 20px;
+    text-align: left;
+    /* max-width: 335px; */
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+    padding: 18px;
+}
 .comment-title {
   color: rgba(0,0,0,0.35);
   height: 20px;
@@ -62,7 +71,7 @@ export default {
 }
 .comment-message {
   color:rgba(0,0,0,1);
-  height: 60px;
+  /* height: 60px; */
   font-size: 14px;
   font-family: PingFangSC-Regular;
   font-weight: 400;

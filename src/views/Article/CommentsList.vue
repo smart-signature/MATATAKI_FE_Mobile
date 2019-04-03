@@ -1,7 +1,7 @@
 <template>
   <div class="comments">
-    <BaseHeader
-      :pageinfo="{ left:'back', title: '赞赏队列', rightPage: 'home', needLogin: false, }" />
+    <!-- <BaseHeader
+      :pageinfo="{ left:'back', title: '赞赏队列', rightPage: 'home', needLogin: false, }" /> -->
     <div class="tl">
       <za-pull :on-refresh="refresh" :refreshing="refreshing">
         <div class="content" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
@@ -134,4 +134,10 @@ export default {
 
 
 <style scoped>
+.comments {
+  margin-bottom: 60px;
+}
+.loading-stat {
+  text-align: center;
+}
 </style>
