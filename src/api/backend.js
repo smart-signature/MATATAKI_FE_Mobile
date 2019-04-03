@@ -139,6 +139,8 @@ function auth({
 // /<summary>
 // /装载access_token
 // /</summary>
+
+/*
 async function getAuth(options, callback, reqFunc, cb) {
   const currentToken = localStorage.getItem('ACCESS_TOKEN');
   let decodedData = null;
@@ -166,6 +168,23 @@ async function getAuth(options, callback, reqFunc, cb) {
     });
   }
 }
+*/
+
+const getAuth = () => {
+  API.authSignature(({username, publicKey, signature}) => {
+    console.log('API.authSignature :', username, publicKey, signature);
+    // 2. 将取得的签名和用户名和公钥post到服务端 获得accessToken并保存
+    auth({ username, publicKey, sign: signature }, (error, response, body) => {
+      console.log(body);
+      if (!error) {
+        // 3. save accessToken
+        const accessToken = body;
+        localStorage.setItem('ACCESS_TOKEN', accessToken);
+      }
+    });
+  });
+}
+
 // 4. 使用accessToken 示例。 请求修改某些和用户数据相关的api时，需要按照oauth2规范，在header里带上 accessToken， 以表示有权调用
 // const accessToken = localStorage.getItem("ACCESS_TOKEN");
 // request({
@@ -198,12 +217,15 @@ async function accessBackend(options, callback = () => {}, method = AccessMethod
     default:
       break;
   }
-  console.log('lalala', options);
-  getAuth(options, callback, reqFunc, (options, callback, reqFunc) => { // 爱的魔力转圈圈，回调回调到你不分黑夜白天
-    // 在这里套了7层callback，callback里面的async语法是无效的，所以一层一层套出来
-    options.headers['x-access-token'] = localStorage.getItem('ACCESS_TOKEN');
-    console.log('alalal', options);
-    reqFunc(options, callback);
+  console.log('accessBackend: ', options);
+
+  reqFunc(options, async (err, response, body) => {
+    if (response.statusCode === 401) {
+      localStorage.removeItem('ACCESS_TOKEN');
+      await getAuth();
+      return reqFunc(options, callback);
+    }
+    return callback(err, response, body);
   });
 }
 // Be used in User page.
@@ -211,7 +233,7 @@ function Follow({
   username, followed,
 }, callback) {
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
-  console.log(accessToken);
+  console.log('accessToken: ', accessToken);
   const url = `${apiServer}/follow`;
   // const url = `http://localhost:7001/publish`;
   return accessBackend({
