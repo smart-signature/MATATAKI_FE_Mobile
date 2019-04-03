@@ -1,8 +1,8 @@
 /* eslint-disable no-shadow */
 <template>
   <div class="article">
-    <Header
-      :pageinfo="{ left:'notback', title: 'Smart Signature', rightPage: 'home',
+    <BaseHeader
+      :pageinfo="{ left:'notback', title: 'Smart Signature v0.1.272', rightPage: 'home',
                    needLogin: true, }"/>
     <div class="tl_page">
       <main class="ta">
@@ -10,8 +10,8 @@
           <h1 dir="auto">{{post.title}}</h1>
           <address dir="auto">
             <router-link :to="{ name: 'User',
-                                params: { username:post.author }}">
-              <a> Author: {{post.author}}</a>
+                                params: { username: article.author }}">
+              <a> Author: {{article.author}}</a>
             </router-link>
             <br/>
             <span class="break_all">IPFS Hash: {{hash}}</span>
@@ -28,7 +28,7 @@
       <Row justify="center" style="padding: 0 20px">
           <i-col span="11" v-if="!isTotalSupportAmountVisible">正在从链上加载本文收到的赞赏</i-col>
           <i-col span="11" v-else-if="isTotalSupportAmountVisible">
-            <router-link :to="{ name: 'Comments', params: { post, sign, hash }}">
+            <router-link :to="{ name: 'Comments', params: { signId: article.id, hash }}">
               本文收到赞赏 {{computedTotalSupportedAmount}} 个EOS
             </router-link>
           </i-col>
@@ -77,14 +77,14 @@
 
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex';
-import { Header } from '@/components/';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
 import {
-  getArticleData, getArticleInfo, getAuth,
-  getSharesbysignid, addReadAmount, sendComment,
+  getArticleData, getArticleInfo, getSharesbysignid,
+  getAuth,
+  addReadAmount, sendComment,
 } from '@/api';
-import { getSignInfo, support } from '@/api/signature';
+import { support } from '@/api/signature';
 import 'mavon-editor/dist/css/index.css';
 
 // MarkdownIt 实例
@@ -99,13 +99,10 @@ const RewardStatus = { // 0=加载中,1=未打赏 2=已打赏
 export default {
   name: 'Article',
   props: ['hash'],
-  components: {
-    Header,
-    mavonEditor,
-  },
+  components: { mavonEditor },
   computed: {
-    ...mapState(['isScatterConnected', 'scatterAccount']),
     ...mapGetters(['currentUsername']),
+    ...mapState(['isScatterConnected', 'isScatterLoggingIn', 'scatterAccount']),
     isLogined() {
       return this.scatterAccount !== null;
     },
@@ -122,19 +119,12 @@ export default {
       return `我在智能签名上发现了一篇好文章！${shareLink} 赞赏好文，分享有收益 ！`;
     },
     getDisplayedFissionFactor() {
-      return this.sign.fission_factor / 1000;
+      return this.article.fission_factor / 1000;
     },
-    computedTotalSupportedAmount: {
-      // getter
-      get() {
-        let totalSupportedAmount = 0.0000;
-        for (let index = 0; index < this.shares.length; index += 1) {
-          const element = this.shares[index].amount;
-          totalSupportedAmount += parseFloat(element) / 10000;
-        }
-        return totalSupportedAmount.toFixed(4);
-      },
-      /* // countTotalSupportedAmount, old version, dont del
+    computedTotalSupportedAmount() {
+      // 如果为 0 个EOS 显示为 0 比 0.0000 适合
+      return this.totalSupportedAmount ? (this.totalSupportedAmount / 10000).toFixed(4) : 0;
+    /* // countTotalSupportedAmount, old version, dont del
         const { actions } = await getContractActions();
         // console.log(actions.map(a => a.action_trace));
         const actions2 = actions.filter(a => a.action_trace.act.account === 'eosio.token'
@@ -166,29 +156,24 @@ export default {
   async created() {
     document.title = '正在加载文章 - Smart Signature';
     this.initClipboard(); // 分享按钮功能需要放在前面 保证功能的正常执行
-    this.getArticleData();
-
+    this.setArticleData();
     const { data } = await getArticleInfo(this.hash);
-    console.log('Article info :', data);
-
-    const signs = await getSignInfo(data.id);
-    // eslint-disable-next-line prefer-destructuring
-    this.sign = signs[0];
-    console.log('sign :', this.sign); // fix: ReferenceError: sign is not defined
-
+    this.article = data;
+    console.log('Article info :', this.article);
+    this.totalSupportedAmount = data.value;
     this.readamount = data.read;
 
-    const signid = this.sign.id;
+    const signid = data.id;
     const shares = localStorage.getItem(`sign id : ${signid}'s shares`);
     // eslint-disable-next-line no-shadow
     const setShares = ({ signid }) => {
-      getSharesbysignid({ signid })
+      getSharesbysignid(signid, 1)
         .then((response) => {
           // eslint-disable-next-line no-shadow
           const shares = response.data;
-          console.log('shares : ', shares);
           localStorage.setItem(`sign id : ${signid}'s shares`, JSON.stringify(shares));
           this.shares = shares; // for watch
+          console.log('Article\'s shares : ', this.shares);
         });
     };
 
@@ -217,9 +202,9 @@ export default {
       author: 'Loading...',
       title: 'Loading...',
       content: '**Please wait for the connection to IPFS**',
-      desc: '',
     },
-    sign: {
+    article: {
+      author: 'Loading...',
       // NO MORE Cannot read property 'fission_factor' of null
       fission_factor: 0,
     },
@@ -239,9 +224,6 @@ export default {
     post({ author, title }) {
       // 当文章从 IPFS fetched 到， post 会更新，我们要更新网页 title
       document.title = `${title} by ${author} - Smart Signature`;
-    },
-    sign({ author }) {
-      this.post.author = author;
     },
     currentUsername() {
       this.setisSupported(this.shares);
@@ -269,7 +251,7 @@ export default {
         });
       });
     },
-    async getArticleData() {
+    async setArticleData() {
       const { data } = await getArticleData(this.hash);
       this.post = data.data;
       console.info('post :', this.post);
@@ -299,23 +281,16 @@ export default {
     },
     async support() {
       this.visible3 = false;
-      try { // 錢包登录
-        // 開了網頁之後，才開 Scatter ，這時候沒有做 connectScatterAsync 就登录不能
-        // 昨天沒加檢查已連而已 - Roger that
-        if (!this.isScatterConnected) await this.connectScatterAsync();
-        await this.loginScatterAsync();
+      try {
+        await this.loginCheck();
       } catch (error) {
-        console.error(error);
-        console.warn('Unable to connect wallets');
-        this.$Modal.error({
-          title: '无法与你的钱包建立链接並登录',
-          content: '请检查钱包是否打开并解锁',
-        });
+        // console.log(error);
+        this.$Message.error('本功能需登录钱包');
         return;
       }
-
       // amount
-      const { comment, sign } = this;
+      const { comment, article } = this;
+
       const amount = parseFloat(this.amount);
       if (Number.isNaN(amount) || amount < 0.01) { // amount / 10000
         this.$Message.warning('请输入正确的金额 最小赞赏金额为 0.01 EOS');
@@ -325,44 +300,65 @@ export default {
       console.log('final amount :', amount);
       console.log('final comment :', comment);
 
-      await getAuth();
-
-      // eslint-disable-next-line camelcase
-      const sign_id = sign.id;
+      const signId = article.id;
       const referrer = this.getInvite;
       console.log('referrer :', referrer);
       this.isSupported = RewardStatus.LOADING;
       try {
-        await support({ amount, sign_id, referrer });
+        // eslint-disable-next-line camelcase
+        await support({ amount, sign_id: signId, referrer });
         console.log('Send comment...');
-        await sendComment({ comment, sign_id },
+        // eslint-disable-next-line camelcase
+        await sendComment({ comment, sign_id: signId },
           (error, response) => {
-            console.log(response);
+            console.log(response.statusCode);
+            if (response.statusCode !== 200) throw new Error(error);
             if (error) throw new Error(error);
           });
         this.isSupported = RewardStatus.REWARDED;
         this.$Message.success('赞赏成功！');
         // tricky speed up
-        this.totalSupportedAmount += parseFloat(amount);
+        // this.totalSupportedAmount += parseFloat(amount);
+        const { data } = await getArticleInfo(this.hash);
+        this.totalSupportedAmount = data.value;
       } catch (error) {
         console.log(JSON.stringify(error));
         this.$Message.error('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额。');
         this.isSupported = RewardStatus.NOT_REWARD_YET;
       }
     },
-    async share() {
+    async share() { // 只是為了 await
       try {
-        if (!this.isScatterConnected) await this.connectScatterAsync();
-        console.info(this.isScatterConnected);
-        // await this.suggestNetworkAsync();
-        if (!this.isScatterConnected) throw new Error('no');
-        await this.loginScatterAsync();
-      } catch (e) {
-        console.warn('Unable to connect wallets');
-        this.$Modal.error({
-          title: '无法与你的钱包建立链接',
+        await this.loginCheck();
+      } catch (error) {
+        // console.log(error);
+        this.$Message.error('失败');
+      }
+    },
+    async loginCheck() { // https://juejin.im/post/5a2df151f265da4304068fc1
+      const { isScatterConnected, isScatterLoggingIn } = this;
+      try { // 錢包登录
+      // 開了網頁之後，才開 Scatter ，這時候沒有做 connectScatterAsync 就登录不能
+      // 昨天沒加檢查已連而已 - Roger that
+        if (!isScatterConnected) {
+          await this.connectScatterAsync();
+          if (isScatterConnected && !isScatterLoggingIn) {
+            await this.loginScatterAsync()
+              .then((id) => {
+                if (!id) throw console.error('no identity');
+                this.$Message.success('自动登录成功');
+              });
+          }
+        }
+      } catch (error) {
+        const errMeg = 'Unable to log in to wallet';
+        console.warn(errMeg); // 一句滿意的英文 log
+        console.warn('Reason :', error); // 一份可愛的理由
+        this.$Modal.error({ // 親切的用戶提示
+          title: '无法与你的钱包建立链接並登录',
           content: '请检查钱包是否打开并解锁',
         });
+        throw errMeg; // 歡喜的 throw
       }
     },
   },

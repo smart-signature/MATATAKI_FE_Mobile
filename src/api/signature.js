@@ -3,7 +3,7 @@
 /* eslint-disable no-alert */
 import { eos, currentEOSAccount as currentAccount } from './scatter';
 
-const SIGNATURE_CONTRACT = 'signature.bp';
+export const CONTRACT_ACCOUNT = process.env.VUE_APP_SIGNATURE_CONTRACT;
 
 async function support({ amount = null, sign_id = null, referrer = null }) {
   if (currentAccount() == null) {
@@ -32,7 +32,7 @@ async function withdraw() {
     return;
   }
 
-  // const contract = await eos().contract(SIGNATURE_CONTRACT);
+  // const contract = await eos().contract(CONTRACT_ACCOUNT);
 
   if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
 
@@ -40,7 +40,7 @@ async function withdraw() {
   return eos().transaction({
     actions: [
       {
-        account: SIGNATURE_CONTRACT,
+        account: CONTRACT_ACCOUNT,
         name: 'claim',
         authorization: [{
           actor: currentAccount().name,
@@ -67,7 +67,7 @@ function transferEOS({ amount = 0, memo = '' }) {
         }],
         data: {
           from: currentAccount().name,
-          to: SIGNATURE_CONTRACT,
+          to: CONTRACT_ACCOUNT,
           quantity: `${(amount).toFixed(4).toString()} EOS`,
           memo,
         },
@@ -79,7 +79,7 @@ function transferEOS({ amount = 0, memo = '' }) {
 async function getContractActions() { // 190325 之後才許重構
   const param = {
     json: true,
-    account_name: SIGNATURE_CONTRACT,
+    account_name: CONTRACT_ACCOUNT,
     /* pos: -1, */
     offset: -200,
   };
@@ -108,7 +108,7 @@ async function getContractActions() { // 190325 之後才許重構
 async function getSharesInfo(owner) {
   const { rows } = await eos().getTableRows({
     json: true,
-    code: SIGNATURE_CONTRACT,
+    code: CONTRACT_ACCOUNT,
     scope: owner,
     table: 'shares',
     limit: 1000,
@@ -119,8 +119,8 @@ async function getSharesInfo(owner) {
 async function getSharesInfo() {
   const { rows } = await eos().getTableRows({
     json: true,
-    code: SIGNATURE_CONTRACT,
-    scope: SIGNATURE_CONTRACT,
+    code: CONTRACT_ACCOUNT,
+    scope: CONTRACT_ACCOUNT,
     table: 'shares',
     limit: 10000,
   });
@@ -130,8 +130,8 @@ async function getSharesInfo() {
 async function getSignInfo(id) {
   const { rows } = await eos().getTableRows({
     json: true,
-    code: SIGNATURE_CONTRACT,
-    scope: SIGNATURE_CONTRACT,
+    code: CONTRACT_ACCOUNT,
+    scope: CONTRACT_ACCOUNT,
     table: 'signs',
     lower_bound: id,
     limit: 1,
@@ -144,8 +144,8 @@ async function getSignsInfo() { // 未调用
   // eslint-disable-next-line no-undef
   const { rows } = await eosapi.getTableRows({
     json: true,
-    code: SIGNATURE_CONTRACT,
-    scope: SIGNATURE_CONTRACT,
+    code: CONTRACT_ACCOUNT,
+    scope: CONTRACT_ACCOUNT,
     table: 'signs',
     limit: 10000,
   });
@@ -166,7 +166,7 @@ async function getPlayerBills(owner) {
 async function getPlayerIncome(name) {
   const { rows } = await eos().getTableRows({
     json: true,
-    code: SIGNATURE_CONTRACT,
+    code: CONTRACT_ACCOUNT,
     scope: name,
     table: 'players',
     limit: 1,
@@ -183,8 +183,8 @@ async function getSignbyhash({ hash = null }) {
   }
   const resp = await eosapi.getTableRows({
     json: true,
-    code: SIGNATURE_CONTRACT,
-    scope: SIGNATURE_CONTRACT,
+    code: CONTRACT_ACCOUNT,
+    scope: CONTRACT_ACCOUNT,
     table: 'signs',
     lower_bound: hash,
     limit: 1,
@@ -196,8 +196,8 @@ async function getSignbyhash({ hash = null }) {
 async function getGoods() {
   const { rows } = await eosapi().getTableRows({
     json: true,
-    code: SIGNATURE_CONTRACT,
-    scope: SIGNATURE_CONTRACT,
+    code: CONTRACT_ACCOUNT,
+    scope: CONTRACT_ACCOUNT,
     table: 'goods',
     limit: 10000,
   });

@@ -4,7 +4,6 @@ import API from '@/api/scatter';
 
 // https://github.com/axios/axios
 
-// export const apiServer = 'https://apitest.smartsignature.io'; // 以后都在这里改
 export const apiServer = process.env.VUE_APP_API;
 const AccessMethod = { POST: 0, GET: 1 };
 
@@ -57,6 +56,7 @@ const newPublishArticle = ({
 );
 
 const getArticleData = hash => axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
+const getArticleInfo = hash => axios.get(`${apiServer}/post/${hash}`);
 const getArticlesList = ({ page = 1 }) => axios.get(
   `${apiServer}/posts`, { params: { page } },
 );
@@ -67,15 +67,13 @@ const getArticlesList = ({ page = 1 }) => axios.get(
   create_time: "2019-03-26T01:04:21.000Z"
   sign_id: 173
 */
-const getSharesbysignid = ({ signid }) => axios.get(`${apiServer}/shares?signid=${signid}`);
-const getArticleInfo = hash => axios.get(`${apiServer}/post/${hash}`);
-
+const getSharesbysignid = (signid, page) => axios.get(`${apiServer}/shares?signid=${signid}&page=${page}`);
 
 // /<summary>
 // /根据用户名，公钥，客户端签名请求access_token
 // /</summary>
 function auth({
-  username, publickey, sign,
+  username, publicKey, sign,
 }, callback) {
   const url = `${apiServer}/auth`;
   // console.log(username + ", " + typeof(username))
@@ -90,7 +88,7 @@ function auth({
     dataType: 'json',
     form: {
       username,
-      publickey,
+      publickey: publicKey,
       sign,
     },
   }, callback);
@@ -98,12 +96,11 @@ function auth({
 // /<summary>
 // /装载access_token
 // /</summary>
-async function getAuth() {
-  // 1.取得签名
-  await API.authSignature((username, publickey, sign) => {
-    console.log('API.authSignature :', username, publickey, sign);
+const getAuth = () => {
+  API.authSignature(({username, publicKey, signature}) => {
+    console.log('API.authSignature :', username, publicKey, signature);
     // 2. 将取得的签名和用户名和公钥post到服务端 获得accessToken并保存
-    auth({ username, publickey, sign }, (error, response, body) => {
+    auth({ username, publicKey, sign: signature }, (error, response, body) => {
       console.log(body);
       if (!error) {
         // 3. save accessToken
@@ -113,10 +110,27 @@ async function getAuth() {
     });
   });
 }
+// 4. 使用accessToken 示例。 请求修改某些和用户数据相关的api时，需要按照oauth2规范，在header里带上 accessToken， 以表示有权调用
+// const accessToken = localStorage.getItem("ACCESS_TOKEN");
+// request({
+//   uri: "some api url that need auth",
+//   rejectUnauthorized: false,
+//   json: true,
+//   headers: { Accept: '*/*', "x-access-token": accessToken },
+//   dataType: 'json',
+//   method: 'POST',
+//   form: {
+//     username:"joetothemoon",
+//     followed:"tengavinwood",
+//   },
+// }, function(err,resp, body){
+//    console.log(body);
+// });
+
 // /<summary>
 // /后端访问入口，当遇到401的时候直接重新拿token
 // /</summary>
-async function accessBackend(data, callback = () => {}, method = AccessMethod.POST) {
+async function accessBackend(options, callback = () => {}, method = AccessMethod.POST) {
   let reqFunc = null;
   switch (method) {
     case AccessMethod.POST:
@@ -128,11 +142,11 @@ async function accessBackend(data, callback = () => {}, method = AccessMethod.PO
     default:
       break;
   }
-  reqFunc(data, async (err, response, body) => {
+  reqFunc(options, async (err, response, body) => {
     if (response.statusCode === 401) {
       localStorage.removeItem('ACCESS_TOKEN');
       await getAuth();
-      return reqFunc(data, callback);
+      return reqFunc(options, callback);
     }
     return callback(err, response, body);
   });

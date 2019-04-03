@@ -1,20 +1,29 @@
 <template>
   <div class="card asset">
     <a>
-      <h2 class="asset-quantity"
-        :style='{ color: `${assetColor}` }'>
-        {{(asset.quantity.substring(0,1) !== '-' ? '+': '') + asset.quantity}}</h2>
-      <p class="asset-information">{{friendlyDate}}</p>
+      <Row justify="center" >
+        <i-col span="16">
+           <h2 class="asset-quantity"
+             :style='{ color: `${assetColor}` }'>
+             {{(asset.quantity.substring(0,1) !== '-' ? '+': '') + asset.quantity}}</h2>
+           <p class="asset-information">{{friendlyDate}}</p>
+         </i-col>
+         <i-col span="8" >
+           <!--<ArticleCard :article="asset.article" />-->
+         </i-col>
+      </Row>
     </a>
   </div>
 </template>
 
 <script>
 import moment from 'moment';
+import { ArticleCard } from '@/components/';
 
 export default {
   name: 'AssetCard',
   props: ['asset'],
+  components: { ArticleCard },
   computed: {
     friendlyDate() {
       const isAppleSlave = navigator.platform.includes('iPhone');
@@ -30,7 +39,7 @@ export default {
     },
   },
   created() {
-    // console.log(this.asset.quantity);
+    // console.log(this.asset.article);
   },
 };
 </script>

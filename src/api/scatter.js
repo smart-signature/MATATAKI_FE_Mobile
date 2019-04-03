@@ -21,13 +21,9 @@ const eosClient = Eos({
 });
 
 const API = {
-   // 示例代码。。请随便改。。。
-   authSignature(callback) {
-
+  authSignature(callback) {
     const account = this.getAccount();
-
     eosClient.getAccount(account.name, (error, result) => {
-
       // 获取当前权限
       const permissions = result.permissions.find(x => x.perm_name === account.authority);
       // 获取当前权限的public key
@@ -35,10 +31,11 @@ const API = {
       // 需要签名的数据
       const sign_data = `${account.name}`;
       // 申请签名
-      ScatterJS.scatter.getArbitrarySignature(publicKey, sign_data, 'Auth').then(signature => {
-        callback(account.name, publicKey, signature);
+      ScatterJS.scatter.getArbitrarySignature(publicKey, sign_data, 'Auth')
+      .then(signature => {
+        callback({username: account.name, publicKey, signature});
       }).catch(error => {
-        
+        console.log(error);
       });
     })
   },
@@ -51,21 +48,19 @@ const API = {
       // 获取当前权限的public key
       const publicKey = permissions.required_auth.keys[0].key;
       // 需要签名的数据
+      const hashPiece1 = hash.slice(0, 12);
+      const hashPiece2 = hash.slice(12, 24);
+      const hashPiece3 = hash.slice(24, 36);
+      const hashPiece4 = hash.slice(36, 48);
 
-      const hash_piece1 = hash.slice(0, 12);
-      const hash_piece2 = hash.slice(12, 24);
-      const hash_piece3 = hash.slice(24, 36);
-      const hash_piece4 = hash.slice(36, 48);
-
-      const sign_data = `${author} ${hash_piece1} ${hash_piece2} ${hash_piece3} ${hash_piece4}`;
+      const sign_data = `${author} ${hashPiece1} ${hashPiece2} ${hashPiece3} ${hashPiece4}`;
       // 申请签名
-      ScatterJS.scatter
-        .getArbitrarySignature(publicKey, sign_data, 'Smart Signature')
-          .then(signature => {
-            callback(null, signature, publicKey, account.name);
-          }).catch(error => {
-            console.log(error);
-          });
+      ScatterJS.scatter.getArbitrarySignature(publicKey, sign_data, 'Smart Signature')
+      .then(signature => {
+        callback(null, signature, publicKey, account.name);
+      }).catch(error => {
+        console.log(error);
+      });
     })
   },
 

@@ -1,12 +1,8 @@
 <template>
   <div class="assetpage">
-    <za-nav-bar>
-      <div slot="left">
-        <za-icon theme="primary" type="arrow-left" @click="goBack"></za-icon>
-      </div>
-      <div slot="title">{{username}}的资产明细</div>
-      <div slot="right"></div>
-    </za-nav-bar>
+    <BaseHeader
+      :pageinfo="{ left: 'back', title: `${username}的资产明细`, rightPage: 'home',
+                   needLogin: false, }"/>
     <div class="topcard">
       <div class="toptext1">待提现</div><br/>
       <div class="topremain">{{playerincome.toFixed(4)}}</div>
@@ -55,7 +51,6 @@
     <div class="assets">
     <!--<za-tabs v-model="activeNameSwipe" @change="handleClick">-->
       <!--<za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label">-->
-
         <za-pull :on-refresh="refresh" :refreshing="refreshing" :loading="loading">
           <div class="content">
             <AssetCard :asset="a" v-for="a in sortedAssets" :key="a.timestamp"/>
@@ -69,18 +64,21 @@
 
 <script>
 import { AssetCard } from '@/components/';
+import { getArticleInfo } from '@/api';
 import {
+  CONTRACT_ACCOUNT,
   getPlayerBills, getPlayerIncome,
+  getSignInfo,
   withdraw,
-} from '../../api/signature';
+} from '@/api/signature';
 import { isEmptyArray } from '@/common/methods';
 
 export default {
   name: 'Asset',
   props: ['username'],
   components: { AssetCard },
-  async created() {
-    await this.refresh();
+  created() {
+    this.refresh();
     // this.sharecost = this.getPlayerTotalCost();
   },
   data() {
@@ -128,20 +126,20 @@ export default {
     },
   },
   methods: {
-    // ...mapActions(['loginScatterAsync']),
     async getAssetsList() {
       console.log('Connecting to EOS fetch assets...');
-      const actions = await getPlayerBills(this.username);
+      const actions = (await getPlayerBills(this.username)).map(a => a.action_trace);
       // console.log(actions.map(a => a.action_trace));
-      const actions2 = actions.filter(a => a.action_trace.act.account === 'signature.bp'
-          && a.action_trace.act.name === 'bill'
-          && a.action_trace.act.data.type !== 'test income' /* 過濾 test income */
-          && a.action_trace.act.data.quantity !== '0.0000 EOS'); /* 過濾 0 的收入支出 */
-      // console.log("actions>??",actions2);
+      const actions2 = actions.filter(a => a.act.account === CONTRACT_ACCOUNT
+          && a.act.name === 'bill'
+          && a.act.data.type !== 'test income' /* 過濾 test income */
+          && a.act.data.quantity !== '0.0000 EOS'); /* 過濾 0 的收入支出 */
+      console.log('actions>??', actions2);
       return actions2.map(a => ({
-        quantity: a.action_trace.act.data.quantity,
-        type: a.action_trace.act.data.type,
-        timestamp: a.action_trace.block_time,
+        quantity: a.act.data.quantity,
+        type: a.act.data.type,
+        timestamp: a.block_time,
+        signId: a.act.data.signId,
       }));
     },
     computeAmount({ elements, type }) {
@@ -203,7 +201,23 @@ export default {
       const getPlayerTotalIncomePromise = this.getPlayerTotalIncome(username);
       const getAssetsListPromise = this.getAssetsList();
       this.playerincome = await getPlayerTotalIncomePromise;
-      this.assets = await getAssetsListPromise;
+      const assets = await getAssetsListPromise;
+      this.assets = await Promise.all(assets.map(async (a) => {
+        const signs = await getSignInfo(a.signId);
+        // eslint-disable-next-line
+        const { ipfs_hash } = signs[0];
+        // console.log(assets, 'sign : ', sign);
+        const { data } = await getArticleInfo(ipfs_hash);
+        // const { data } = await getArticleInfo('QmWiNv5SMRCTX7ncqEvoNmxy56Qd2ySPQQ3aUAQ3yxLKE2');
+        // console.log(data);
+        return {
+          article: data,
+          timestamp: a.timestamp,
+          type: a.type,
+          signId: a.signId,
+          quantity: a.quantity,
+        };
+      }));
 
       console.log(username, '\'s total income:', this.playerincome);
       console.log(username, '\'s assets:', this.assets);
