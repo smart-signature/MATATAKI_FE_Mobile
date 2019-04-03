@@ -129,7 +129,7 @@ async function getSignInfo(id) {
 }
 
 // eslint-disable-next-line no-unused-vars
-async function getSignsInfo() { // 未调用
+const getSignsInfo = async () => { // 未调用
   // eslint-disable-next-line no-undef
   const { rows } = await eosapi.getTableRows({
     json: true,
