@@ -5,7 +5,7 @@ import { eos, currentEOSAccount as currentAccount } from './scatter';
 
 export const CONTRACT_ACCOUNT = process.env.VUE_APP_SIGNATURE_CONTRACT;
 
-async function support({ amount = null, sign_id = null, referrer = null }) {
+const support = async ({ amount = null, sign_id = null, referrer = null }) => {
   if (currentAccount() == null) {
     alert('请先登录');
     return;
@@ -24,7 +24,7 @@ async function support({ amount = null, sign_id = null, referrer = null }) {
     amount,
     memo: ((referrer != null) ? `support ${sign_id} ${referrer}` : `support ${sign_id}`),
   });
-}
+};
 
 const withdraw = async () => {
   if (currentAccount() == null) {
@@ -48,7 +48,7 @@ const withdraw = async () => {
       },
     ],
   });
-}
+};
 
 function transferEOS({ amount = 0, memo = '' }) {
   // return new Promise((resolve, reject) => {
@@ -111,7 +111,7 @@ const getSharesInfo = async (owner) => {
     limit: 1000,
   });
   return rows;
-}
+};
 
 async function getSignInfo(id) {
   const { rows } = await eos().getTableRows({
@@ -136,7 +136,7 @@ const getSignsInfo = async () => { // 未调用
     limit: 10000,
   });
   return rows;
-}
+};
 
 async function getPlayerBills(owner) {
   const { actions } = await eos().getActions({
