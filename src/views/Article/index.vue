@@ -38,6 +38,9 @@
       <Divider />
       <Row style="white-space:nowrap;">
         <i-col span="11">
+          <za-button v-if="isSupported===-1" class="button-support"
+            size='xl' theme="primary" 
+            @click="share">赞赏</za-button>
           <za-button v-if="isSupported===0" class="button-support"
             size='xl' theme="primary" disabled>加载中</za-button>
           <za-button v-else-if="isSupported===1" class="button-support"
@@ -90,7 +93,8 @@ import 'mavon-editor/dist/css/index.css';
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
 
-const RewardStatus = { // 0=加载中,1=未打赏 2=已打赏
+const RewardStatus = { // 0=加载中,1=未打赏 2=已打赏, -1未登录
+  NOT_LOGGINED: -1,
   LOADING: 0,
   NOT_REWARD_YET: 1,
   REWARDED: 2,
@@ -278,6 +282,8 @@ export default {
           this.isSupported = RewardStatus.NOT_REWARD_YET;
         }
       }
+      else
+        this.isSupported = RewardStatus.NOT_LOGGINED;
     },
     async support() {
       this.visible3 = false;
@@ -340,18 +346,30 @@ export default {
       try { // 錢包登录
       // 開了網頁之後，才開 Scatter ，這時候沒有做 connectScatterAsync 就登录不能
       // 昨天沒加檢查已連而已 - Roger that
+      console.log("scatter status",isScatterConnected)
         if (!isScatterConnected) {
           await this.connectScatterAsync();
-          if (isScatterConnected && !isScatterLoggingIn) {
-            await this.loginScatterAsync()
-              .then((id) => {
-                if (!id) throw console.error('no identity');
-                this.$Message.success('自动登录成功');
-              });
-          }
         }
+        if (isScatterConnected && !isScatterLoggingIn) {
+          await this.loginScatterAsync()
+            .then(() => {
+              this.$Message.success('自动登录成功');
+              this.setisSupported();
+            });
+        }
+        // if (!isScatterConnected) {
+        //   await this.connectScatterAsync();
+        //   if (isScatterConnected && !isScatterLoggingIn) {
+        //     await this.loginScatterAsync()
+        //       .then((id) => {
+        //         console.log("dsfafsadfsafsafd");
+        //         if (!id) throw console.error('no identity');
+        //         this.$Message.success('自动登录成功');
+        //       });
+        //   }
+        // }
       } catch (error) {
-        const errMeg = 'Unable to log in to wallet';
+        const errMeg = 'Unable to log-in to wallet';
         console.warn(errMeg); // 一句滿意的英文 log
         console.warn('Reason :', error); // 一份可愛的理由
         this.$Modal.error({ // 親切的用戶提示
