@@ -65,7 +65,7 @@ export default {
               try {
                 getAuth();
               } catch (error) {
-                
+
               }
             })
             .catch(() => {

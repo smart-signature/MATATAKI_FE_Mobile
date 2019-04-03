@@ -87,19 +87,19 @@ export const OrderBy = {
   TimeLine: '最新发布',
   SupportAmount: '最多赞赏金额',
   RecentSupport: '最新赞赏',
-  SupportTimes: '最多打赏次数'
+  SupportTimes: '最多打赏次数',
 };
 
 const getArticles = ({ page = 1, orderBy = OrderBy.TimeLine }) => {
   switch (orderBy) {
     case OrderBy.SupportAmount:
-      return getArticlesBySupportAmountRanking({ page })
+      return getArticlesBySupportAmountRanking({ page });
     case OrderBy.SupportTimes:
-      return getArticlesBySupportTimesRanking({ page })
+      return getArticlesBySupportTimesRanking({ page });
     default:
-      return getArticlesList({ page }) // orderBy 不符合以上 0case 就默认就给你按照时间排序了
+      return getArticlesList({ page }); // orderBy 不符合以上 0case 就默认就给你按照时间排序了
   }
-}
+};
 
 
 /*
@@ -139,7 +139,7 @@ function auth({
 // /装载access_token
 // /</summary>
 const getAuth = () => {
-  API.authSignature(({username, publicKey, signature}) => {
+  API.authSignature(({ username, publicKey, signature }) => {
     console.log('API.authSignature :', username, publicKey, signature);
     // 2. 将取得的签名和用户名和公钥post到服务端 获得accessToken并保存
     auth({ username, publicKey, sign: signature }, (error, response, body) => {
@@ -151,7 +151,7 @@ const getAuth = () => {
       }
     });
   });
-}
+};
 // 4. 使用accessToken 示例。 请求修改某些和用户数据相关的api时，需要按照oauth2规范，在header里带上 accessToken， 以表示有权调用
 // const accessToken = localStorage.getItem("ACCESS_TOKEN");
 // request({

@@ -16,10 +16,10 @@ import { Promise } from 'q';
 export default {
   name: 'ArticlesRanking',
   props: {
-      orderType: {
-        type: String,
-        default: OrderBy.TimeLine,
-      }
+    orderType: {
+      type: String,
+      default: OrderBy.TimeLine,
+    },
   },
   computed: {
     ...mapGetters(['currentUsername']),

@@ -9,10 +9,10 @@
 </template>
 
 <script>
-import ArticlesRanking from "./ArticlesRanking";
+import { mapGetters } from 'vuex';
+import ArticlesRanking from './ArticlesRanking';
 import { getArticlesList } from '@/api/';
 import { OrderBy, getArticles } from '@/api/backend';
-import { mapGetters } from 'vuex';
 
 export default {
   name: 'home',
