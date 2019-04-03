@@ -318,7 +318,9 @@ export default {
         this.isSupported = RewardStatus.REWARDED;
         this.$Message.success('赞赏成功！');
         // tricky speed up
-        this.totalSupportedAmount += parseFloat(amount);
+        // this.totalSupportedAmount += parseFloat(amount);
+        const { data } = await getArticleInfo(this.hash);
+        this.totalSupportedAmount = data.value;
       } catch (error) {
         console.log(JSON.stringify(error));
         this.$Message.error('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额。');
