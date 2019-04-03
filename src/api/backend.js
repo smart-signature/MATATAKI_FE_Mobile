@@ -111,7 +111,7 @@ const getAuth = () => {
     API.authSignature(({username, publicKey, signature}) => {
       console.log('API.authSignature :', username, publicKey, signature);
       // 2. post到服务端 获得accessToken并保存
-      auth({ username, publickey, sign: signature }, (error, response, body) => {
+      auth({ username, publicKey, sign: signature }, (error, response, body) => {
         console.log(body);
         if (!error) {
           // 3. save accessToken
