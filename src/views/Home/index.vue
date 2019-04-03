@@ -44,18 +44,18 @@
       </div>
     </div>
     <MyBanner/>
-    <ArticlesList ref='ArticlesList'/>
+    <ArticleRankings ref='ArticleRankings'/>
   </div>
 </template>
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex';
 import MyBanner from './MyBanner.vue';
-import ArticlesList from './ArticlesList.vue';
+import ArticleRankings from './ArticlesRankings.vue';
 
 export default {
   name: 'Home',
-  components: { ArticlesList, MyBanner },
+  components: { ArticleRankings, MyBanner },
   created() {
     document.title = '首页 - SmartSignature';
   },

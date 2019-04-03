@@ -54,7 +54,7 @@ export default new Vuex.Store({
           dispatch('getMyBalances');
         }
       } else throw 'failed to connect wallet';
-      return connected ;
+      return connected;
     },
     async getMyBalances({ commit, state }) {
       const { name } = state.scatterAccount;
