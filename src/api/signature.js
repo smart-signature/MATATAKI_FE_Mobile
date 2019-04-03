@@ -26,15 +26,11 @@ async function support({ amount = null, sign_id = null, referrer = null }) {
   });
 }
 
-async function withdraw() {
+const withdraw = async () => {
   if (currentAccount() == null) {
     alert('请先登录');
     return;
   }
-
-  // const contract = await eos().contract(CONTRACT_ACCOUNT);
-
-  if (currentAccount() == null) { throw new Error('NOT-LOGINED'); }
 
   // eslint-disable-next-line consistent-return
   return eos().transaction({
@@ -53,6 +49,7 @@ async function withdraw() {
     ],
   });
 }
+
 function transferEOS({ amount = 0, memo = '' }) {
   // return new Promise((resolve, reject) => {
   if (currentAccount() == null) throw (new Error('NOT-LOGINED'));
