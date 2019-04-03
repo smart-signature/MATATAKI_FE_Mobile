@@ -2,7 +2,7 @@
 <template>
   <div class="article">
     <BaseHeader
-      :pageinfo="{ left:'notback', title: 'Smart Signature', rightPage: 'home',
+      :pageinfo="{ left:'notback', title: 'Smart Signature v0.1.272', rightPage: 'home',
                    needLogin: true, }"/>
     <div class="tl_page">
       <main class="ta">
