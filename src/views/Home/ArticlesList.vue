@@ -1,10 +1,26 @@
 <template>
   <div class="articles">
     <za-tabs v-model="activeNameSwipe" @change="handleClick">
-      <za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label">
+      <za-tab-pane :label="orderBy.TimeLine" :name="orderBy.TimeLine">
         <za-pull :on-refresh="refresh" :refreshing="refreshing">
           <div class="content" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
             <ArticleCard :article="a" v-for="a in articles" :key="a.id"/>
+          </div>
+          <p class="loading-stat">{{displayAboutScroll}}</p>
+        </za-pull>
+      </za-tab-pane>
+      <za-tab-pane :label="orderBy.SupportTimes" :name="orderBy.SupportTimes">
+        <za-pull :on-refresh="refresh" :refreshing="refreshing">
+          <div class="content" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
+            <ArticleCard :article="a" v-for="a in articlesBySupportTimes" :key="a.id"/>
+          </div>
+          <p class="loading-stat">{{displayAboutScroll}}</p>
+        </za-pull>
+      </za-tab-pane>
+      <za-tab-pane :label="orderBy.SupportAmount" :name="orderBy.SupportAmount">
+        <za-pull :on-refresh="refresh" :refreshing="refreshing">
+          <div class="content" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
+            <ArticleCard :article="a" v-for="a in articlesBySupportAmount" :key="a.id"/>
           </div>
           <p class="loading-stat">{{displayAboutScroll}}</p>
         </za-pull>
@@ -15,10 +31,10 @@
 
 <script>
 import { getArticlesList } from '@/api/';
+import { OrderBy, getArticles } from '@/api/backend';
 import { ArticleCard } from '@/components/';
 import { mapGetters } from 'vuex';
-
-const TimeLine = '最新发布';
+import { Promise } from 'q';
 
 export default {
   name: 'home',
@@ -33,10 +49,19 @@ export default {
   },
   components: { ArticleCard },
   created() {
-    this.getArticlesList();
+    this.getRankings();
+    // this.getArticlesList();
   },
   methods: {
-    async getArticlesList(page) {
+    getRankings(page) {
+      this.busy = true;
+      getArticles({ orderBy: OrderBy.TimeLine }).then(({data}) => { this.articles = data });
+      getArticles({ orderBy: OrderBy.SupportAmount }).then(({data}) => { this.articlesBySupportAmount = data });
+      getArticles({ orderBy: OrderBy.SupportTimes }).then(({data}) => { this.articlesBySupportTimes = data });
+      this.articles = this.articles.filter(a => Date.parse(a.create_time) > Date.parse('2019-03-25T06:00:00'));
+      this.busy = false;
+    },
+    async getArticlesList() {
       this.busy = true;
       const { data } = await getArticlesList({ page });
       this.articles = data;
@@ -73,16 +98,25 @@ export default {
   },
   data() {
     return {
+      orderBy: OrderBy, // <template> 只认 data 内的变量
       refreshing: false,
       articles: [],
+      articlesBySupportAmount: [],
+      articlesBySupportTimes: [],
       busy: false,
       page: 1,
       isTheEndOfTheScroll: false,
-      activeNameSwipe: TimeLine,
-      selectedLabelDefault: TimeLine,
+      activeNameSwipe: OrderBy.TimeLine,
+      selectedLabelDefault: OrderBy.TimeLine,
       tabs: [
         {
-          label: TimeLine,
+          label: OrderBy.TimeLine,
+        },
+        {
+          label: OrderBy.SupportAmount,
+        },
+        {
+          label: OrderBy.SupportTimes,
         },
       ],
     };
