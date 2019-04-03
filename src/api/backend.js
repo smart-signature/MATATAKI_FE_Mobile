@@ -122,6 +122,8 @@ async function getAuth(options, callback, reqFunc, cb) {
         }
       });
     });
+  }else{
+    cb(options, callback, reqFunc);
   }
 }
 // 4. 使用accessToken 示例。 请求修改某些和用户数据相关的api时，需要按照oauth2规范，在header里带上 accessToken， 以表示有权调用
