@@ -2,14 +2,14 @@
   <div class="comments">
     <!-- <BaseHeader
       :pageinfo="{ left:'back', title: '赞赏队列', rightPage: 'home', needLogin: false, }" /> -->
-    <div class="tl">
+    <!-- <div class="tl"> -->
       <za-pull :on-refresh="refresh" :refreshing="refreshing">
         <div class="content" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
           <CommentCard :comment="a" v-for="a in sortedComments" :key="a.timestamp"/>
         </div>
         <p class="loading-stat">{{displayAboutScroll}}</p>
       </za-pull>
-    </div>
+    <!-- </div> -->
   </div>
 </template>
 
