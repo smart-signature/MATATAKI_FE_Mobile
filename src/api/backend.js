@@ -132,7 +132,7 @@ const auth = ({ username, publicKey, sign }, callback) => {
 // /装载access_token
 // /</summary>
 
-const getAuth = async (options, callback, cb) => {
+const getAuth = async (cb) => {
   const currentToken = localStorage.getItem('ACCESS_TOKEN');
   let decodedData = null;
   if (currentToken != null) {
@@ -151,11 +151,11 @@ const getAuth = async (options, callback, cb) => {
           const accessToken = body;
           console.info('got the access token :', accessToken);
           localStorage.setItem('ACCESS_TOKEN', accessToken);
-          cb(options, callback);
+          cb();
         }
       });
     });
-  } else cb(options, callback);
+  } else cb();
 };
 
 /*
@@ -165,11 +165,11 @@ const getAuth = async (options, callback, cb) => {
 */
 const accessBackend = async (options, callback = () => {}) => {
   // 更新 Auth
-  getAuth(options, callback, (options, callback) => { // 爱的魔力转圈圈，回调回调到你不分黑夜白天
+  getAuth(() => { // 爱的魔力转圈圈，回调回调到你不分黑夜白天
     // 在这里套了7层callback，callback里面的async语法是无效的，所以一层一层套出来
     options.headers['x-access-token'] = localStorage.getItem('ACCESS_TOKEN');
     console.info('b4 request send, Options :', options);
-    request(options, callback);
+    request(options, callback); // 都是 request 害的，改用 axios 沒這些破事
   });
 };
 
