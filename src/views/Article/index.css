@@ -120,6 +120,10 @@
   color:rgba(255,255,255,1);
   letter-spacing:1px;
 }
+.footer-block .button-support:disabled {
+  background: #D7D7D7;
+  color: #fff;
+}
 .footer-block .button-share {
   border-radius:2px;
   border:1px solid rgba(41,139,111,1);
