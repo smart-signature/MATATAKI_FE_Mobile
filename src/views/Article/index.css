@@ -52,7 +52,7 @@
   color:rgba(0,0,0,1);
   letter-spacing:1px;
   padding: 0;
-  margin: 30px 0 28px;
+  margin: 30px 0 18px;
 }
 
 /* footer */
@@ -95,35 +95,81 @@
 }
 .footer-block .amount-img {
   width: 14px;
-  margin-right: 10px;
+  margin-right: 4px;
 }
-
+.footer-block .amount-text {
+  font-size:12px;
+  font-family:PingFangSC-Regular;
+  font-weight:400;
+  letter-spacing: 1px;
+}
 .footer-block .button-support,
 .footer-block .button-share {
   outline: none;
   border: none;
-}
-.footer-block .button-support {
   width:56px;
   height:25px;
+  font-size:12px;
+  cursor: pointer;
+}
+.footer-block .button-support {
   background:rgba(71,137,112,1);
   border-radius:2px;
-  font-size:12px;
   font-family:PingFangSC-Medium;
   font-weight:500;
   color:rgba(255,255,255,1);
   letter-spacing:1px;
 }
 .footer-block .button-share {
-  width:56px;
-  height:25px;
   border-radius:2px;
   border:1px solid rgba(41,139,111,1);
-  font-size:12px;
   font-family:PingFangSC-Semibold;
   font-weight:600;
   color:rgba(71,137,112,1);
   background-color: #F2F2F2;
   letter-spacing:1px;
   margin-left: 14px;
+}
+
+@media screen and (min-width: 750px) {
+  .ta_header h1 {
+    font-size:22px;
+  }
+
+  .ta_header p {
+    font-size:16px;
+  }
+
+  .avatar-size {
+    transform: scale(1)  ;
+  }
+
+  .ta_header .author {
+    font-size:16px;
+  }
+
+  .commentslist-title {
+    font-size:16px;
+  }
+
+  .footer {
+    height:64px;
+  }
+
+  .footer-block .button-support,
+  .footer-block .button-share {
+    width: 66px;
+    height: 35px;
+    font-size:14px;
+  }
+  .footer-block .amount,
+  .footer-block .fission {
+    font-size:14px;
+  }
+  .footer-block .amount-img {
+    width: 16px;
+  }
+  .footer-block .amount-text {
+    font-size:14px;
+  }
 }

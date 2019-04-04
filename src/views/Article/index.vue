@@ -28,14 +28,14 @@
             <img class="amount-img" src="@/assets/img/amount.png" />
             {{computedTotalSupportedAmount}}
           </div>
-          <div>赞赏总额</div>
+          <div class="amount-text">赞赏总额</div>
         </div>
         <div class="fission">
           <div>
             <img class="amount-img" src="@/assets/img/fission.png" />
             {{getDisplayedFissionFactor}}
           </div>
-          <div>裂变系数</div>
+          <div class="amount-text">裂变系数</div>
         </div>
       </div>
       <div class="footer-block">

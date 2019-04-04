@@ -140,4 +140,9 @@ export default {
 .loading-stat {
   text-align: center;
 }
+@media screen and (min-width: 750px) {
+  .comments {
+    margin-bottom: 80px;
+  }
+}
 </style>
