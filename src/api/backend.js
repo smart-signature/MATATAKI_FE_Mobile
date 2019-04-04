@@ -11,9 +11,9 @@ export const apiServer = process.env.VUE_APP_API;
 // ↑ 12 days ago
 const publishArticle = ({
   author, title, hash, publicKey, signature, username, fissionFactor,
-}, callback) => {
+}, callback) => 
   // const url = `http://localhost:7001/publish`;
-  return request.post({
+   request.post({
     uri: `${apiServer}/publish`,
     rejectUnauthorized: false,
     json: true,
@@ -28,8 +28,8 @@ const publishArticle = ({
       title,
       sign: signature,
     },
-  }, callback);
-}
+  }, callback)
+;
 
 // 開發測試中
 // eslint-disable-next-line no-unused-vars
@@ -87,7 +87,7 @@ export const OrderBy = {
   TimeLine: '最新发布',
   SupportAmount: '最多赞赏金额',
   RecentSupport: '最新赞赏',
-  SupportTimes: '最多打赏次数',
+  SupportTimes: '最多赞赏次数',
 };
 
 const getArticles = ({ page = 1, orderBy = OrderBy.TimeLine }) => {
@@ -114,8 +114,7 @@ const getSharesbysignid = (signid, page) => axios.get(`${apiServer}/shares?signi
 // /<summary>
 // /根据用户名，公钥，客户端签名请求access_token
 // /</summary>
-const auth = ({ username, publicKey, sign }, callback) => {
-  return request.post({
+const auth = ({ username, publicKey, sign }, callback) => request.post({
     uri: `${apiServer}/auth`,
     rejectUnauthorized: false,
     json: true,
@@ -127,7 +126,6 @@ const auth = ({ username, publicKey, sign }, callback) => {
       sign,
     },
   }, callback);
-}
 // /<summary>
 // /装载access_token
 // /</summary>
