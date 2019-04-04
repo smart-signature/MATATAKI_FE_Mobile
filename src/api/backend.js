@@ -149,7 +149,7 @@ const getAuth = async (options, callback, cb) => {
         if (!error) {
           // 3. save accessToken
           const accessToken = body;
-          console.info('got the access token :'accessToken);
+          console.info('got the access token :', accessToken);
           localStorage.setItem('ACCESS_TOKEN', accessToken);
           cb(options, callback);
         }
