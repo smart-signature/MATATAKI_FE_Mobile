@@ -186,7 +186,7 @@ export default {
     follow_user() {
       // alert('follow');
       const { username, currentUsername } = this;
-      if(!currentUsername || !username){
+      if (!currentUsername || !username) {
         this.$Notice.error({
           title: '账号信息无效，关注失败',
         });
@@ -213,7 +213,7 @@ export default {
     unfollow_user() {
       // alert('follow');
       const { username, currentUsername } = this;
-      if(!currentUsername || !username){
+      if (!currentUsername || !username) {
         this.$Notice.error({
           title: '账号信息无效，取消关注失败',
         });
