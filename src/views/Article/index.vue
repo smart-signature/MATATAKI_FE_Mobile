@@ -39,7 +39,7 @@
         </div>
       </div>
       <div class="footer-block">
-          <button v-if="isSupported===0" class="button-support"
+          <button v-if="isSupported===-1" class="button-support"
              disabled>加载中</button>
           <button v-else-if="isSupported===1" class="button-support"
             @click="visible3=true" >赞赏</button>
@@ -61,10 +61,13 @@
           </i-col>
           <i-col span="2"><Divider type="vertical" /></i-col>
           <i-col span="11">裂变系数：{{getDisplayedFissionFactor}}</i-col>
-      </Row> -->
-      <!-- <Divider /> -->
-      <!-- <Row style="white-space:nowrap;"> -->
-        <!-- <i-col span="11">
+      </Row>
+      <Divider />
+      <Row style="white-space:nowrap;">
+        <i-col span="11">
+          <za-button v-if="isSupported===-1" class="button-support"
+            size='xl' theme="primary"
+            @click="share">赞赏</za-button>
           <za-button v-if="isSupported===0" class="button-support"
             size='xl' theme="primary" disabled>加载中</za-button>
           <za-button v-else-if="isSupported===1" class="button-support"
@@ -108,7 +111,6 @@ import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
 import {
   getArticleData, getArticleInfo, getSharesbysignid,
-  getAuth,
   addReadAmount, sendComment,
 } from '@/api';
 import { support } from '@/api/signature';
@@ -119,7 +121,8 @@ import CommentsList from './CommentsList.vue';
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
 
-const RewardStatus = { // 0=加载中,1=未打赏 2=已打赏
+const RewardStatus = { // 0=加载中,1=未打赏 2=已打赏, -1未登录
+  NOT_LOGGINED: -1,
   LOADING: 0,
   NOT_REWARD_YET: 1,
   REWARDED: 2,
@@ -306,6 +309,8 @@ export default {
         } else {
           this.isSupported = RewardStatus.NOT_REWARD_YET;
         }
+      } else {
+        this.isSupported = RewardStatus.NOT_LOGGINED;
       }
     },
     async support() {
@@ -329,8 +334,6 @@ export default {
       console.log('final amount :', amount);
       console.log('final comment :', comment);
 
-      await getAuth();
-
       const signId = article.id;
       const referrer = this.getInvite;
       console.log('referrer :', referrer);
@@ -349,7 +352,9 @@ export default {
         this.isSupported = RewardStatus.REWARDED;
         this.$Message.success('赞赏成功！');
         // tricky speed up
-        this.totalSupportedAmount += parseFloat(amount);
+        // this.totalSupportedAmount += parseFloat(amount);
+        const { data } = await getArticleInfo(this.hash);
+        this.totalSupportedAmount = data.value;
       } catch (error) {
         console.log(JSON.stringify(error));
         this.$Message.error('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额。');
@@ -369,18 +374,30 @@ export default {
       try { // 錢包登录
       // 開了網頁之後，才開 Scatter ，這時候沒有做 connectScatterAsync 就登录不能
       // 昨天沒加檢查已連而已 - Roger that
+        console.log('scatter status', isScatterConnected);
         if (!isScatterConnected) {
           await this.connectScatterAsync();
-          if (isScatterConnected && !isScatterLoggingIn) {
-            await this.loginScatterAsync()
-              .then((id) => {
-                if (!id) throw console.error('no identity');
-                this.$Message.success('自动登录成功');
-              });
-          }
         }
+        if (isScatterConnected && !isScatterLoggingIn) {
+          await this.loginScatterAsync()
+            .then(() => {
+              this.$Message.success('自动登录成功');
+              this.setisSupported();
+            });
+        }
+        // if (!isScatterConnected) {
+        //   await this.connectScatterAsync();
+        //   if (isScatterConnected && !isScatterLoggingIn) {
+        //     await this.loginScatterAsync()
+        //       .then((id) => {
+        //         console.log("dsfafsadfsafsafd");
+        //         if (!id) throw console.error('no identity');
+        //         this.$Message.success('自动登录成功');
+        //       });
+        //   }
+        // }
       } catch (error) {
-        const errMeg = 'Unable to log in to wallet';
+        const errMeg = 'Unable to log-in to wallet';
         console.warn(errMeg); // 一句滿意的英文 log
         console.warn('Reason :', error); // 一份可愛的理由
         this.$Modal.error({ // 親切的用戶提示

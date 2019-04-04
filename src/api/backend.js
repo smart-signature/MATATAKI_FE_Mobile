@@ -1,17 +1,17 @@
 import axios from 'axios';
 import request from 'request';
 import API from '@/api/scatter';
+import { Base64 } from 'js-base64';
 
 // https://github.com/axios/axios
 
 export const apiServer = process.env.VUE_APP_API;
-const AccessMethod = { POST: 0, GET: 1 };
 
 // NOTICE!! publishArticle will be tested and replaced very soon
 // ↑ 12 days ago
-function publishArticle({
+const publishArticle = ({
   author, title, hash, publicKey, signature, username, fissionFactor,
-}, callback) {
+}, callback) => {
   // const url = `http://localhost:7001/publish`;
   return request.post({
     uri: `${apiServer}/publish`,
@@ -57,9 +57,51 @@ const newPublishArticle = ({
 
 const getArticleData = hash => axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
 const getArticleInfo = hash => axios.get(`${apiServer}/post/${hash}`);
+
+/**
+ * 获取按照发表时间文章排行榜 https://github.com/smart-signature/smart-signature-backend/blob/master/doc.md#获取文章列表
+ * @param {number} page： 第 {page} 页
+ */
 const getArticlesList = ({ page = 1 }) => axios.get(
   `${apiServer}/posts`, { params: { page } },
 );
+
+/**
+ * 获取打赏金额文章排行榜 https://github.com/smart-signature/smart-signature-backend/blob/master/doc.md#获取打赏金额排行榜
+ * @param {number} page： 第 {page} 页
+ */
+const getArticlesBySupportAmountRanking = ({ page = 1 }) => axios.get(
+  `${apiServer}/getSupportAmountRanking`, { params: { page } },
+);
+
+
+/**
+ * 获取打赏次数文章排行榜 https://github.com/smart-signature/smart-signature-backend/blob/master/doc.md#获取打赏次数排行榜
+ * @param {number} page： 第 {page} 页
+ */
+const getArticlesBySupportTimesRanking = ({ page = 1 }) => axios.get(
+  `${apiServer}/getSupportTimesRanking`, { params: { page } },
+);
+
+export const OrderBy = {
+  TimeLine: '最新发布',
+  SupportAmount: '最多赞赏金额',
+  RecentSupport: '最新赞赏',
+  SupportTimes: '最多打赏次数',
+};
+
+const getArticles = ({ page = 1, orderBy = OrderBy.TimeLine }) => {
+  switch (orderBy) {
+    case OrderBy.SupportAmount:
+      return getArticlesBySupportAmountRanking({ page });
+    case OrderBy.SupportTimes:
+      return getArticlesBySupportTimesRanking({ page });
+    default:
+      return getArticlesList({ page }); // orderBy 不符合以上 0case 就默认就给你按照时间排序了
+  }
+};
+
+
 /*
   amount: 2000
   author: "minakokojima"
@@ -72,23 +114,16 @@ const getSharesbysignid = (signid, page) => axios.get(`${apiServer}/shares?signi
 // /<summary>
 // /根据用户名，公钥，客户端签名请求access_token
 // /</summary>
-function auth({
-  username, publickey, sign,
-}, callback) {
-  const url = `${apiServer}/auth`;
-  // console.log(username + ", " + typeof(username))
-  // console.log(publickey + ", " + typeof(publickey))
-  // console.log(sign + ", " + typeof(sign))
-  // const url = `http://localhost:7001/auth`;
+const auth = ({ username, publicKey, sign }, callback) => {
   return request.post({
-    uri: url,
+    uri: `${apiServer}/auth`,
     rejectUnauthorized: false,
     json: true,
     headers: { Accept: '*/*', Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==' },
     dataType: 'json',
     form: {
       username,
-      publickey,
+      publickey: publicKey,
       sign,
     },
   }, callback);
@@ -96,72 +131,55 @@ function auth({
 // /<summary>
 // /装载access_token
 // /</summary>
-async function getAuth() {
-  // 1.取得签名
-  await API.authSignature(({username, publickey, signature}) => {
-    console.log('API.authSignature :', username, publickey, signature);
-    // 2. 将取得的签名和用户名和公钥post到服务端 获得accessToken并保存
-    auth({ username, publickey, sign: signature }, (error, response, body) => {
-      console.log(body);
-      if (!error) {
-        // 3. save accessToken
-        const accessToken = body;
-        localStorage.setItem('ACCESS_TOKEN', accessToken);
-      }
-    });
-  });
-}
-// 4. 使用accessToken 示例。 请求修改某些和用户数据相关的api时，需要按照oauth2规范，在header里带上 accessToken， 以表示有权调用
-// const accessToken = localStorage.getItem("ACCESS_TOKEN");
-// request({
-//   uri: "some api url that need auth",
-//   rejectUnauthorized: false,
-//   json: true,
-//   headers: { Accept: '*/*', "x-access-token": accessToken },
-//   dataType: 'json',
-//   method: 'POST',
-//   form: {
-//     username:"joetothemoon",
-//     followed:"tengavinwood",
-//   },
-// }, function(err,resp, body){
-//    console.log(body);
-// });
 
-// /<summary>
-// /后端访问入口，当遇到401的时候直接重新拿token
-// /</summary>
-async function accessBackend(options, callback = () => {}, method = AccessMethod.POST) {
-  let reqFunc = null;
-  switch (method) {
-    case AccessMethod.POST:
-      reqFunc = request.post;
-      break;
-    case AccessMethod.GET:
-      reqFunc = request.get;
-      break;
-    default:
-      break;
+const getAuth = async (cb) => {
+  const currentToken = localStorage.getItem('ACCESS_TOKEN');
+  let decodedData = null;
+  if (currentToken != null) {
+    let tokenPayload = currentToken.substring(currentToken.indexOf('.') + 1);
+    tokenPayload = tokenPayload.substring(0, tokenPayload.indexOf('.'));
+    decodedData = JSON.parse(Base64.decode(tokenPayload));
   }
-  reqFunc(options, async (err, response, body) => {
-    if (response.statusCode === 401) {
-      localStorage.removeItem('ACCESS_TOKEN');
-      await getAuth();
-      return reqFunc(options, callback);
-    }
-    return callback(err, response, body);
+  // 1. 拆包token抓出时间并判断这个时间和系统时间的差异
+  if (decodedData === null || (decodedData.exp < new Date().getTime())) {
+    API.authSignature(({ username, publicKey, signature }) => {
+      console.log('API.authSignature :', username, publicKey, signature);
+      // 2. 将取得的签名和用户名和公钥post到服务端 获得accessToken并保存
+      auth({ username, publicKey, sign: signature }, (error, response, body) => {
+        if (!error) {
+          // 3. save accessToken
+          const accessToken = body;
+          console.info('got the access token :', accessToken);
+          localStorage.setItem('ACCESS_TOKEN', accessToken);
+          cb();
+        }
+      });
+    });
+  } else cb();
+};
+
+/*
+ * /<summary>
+ * /后端访问入口，当遇到401的时候直接重新拿token
+ * /</summary>
+*/
+const accessBackend = async (options, callback = () => {}) => {
+  // 更新 Auth
+  getAuth(() => { // 爱的魔力转圈圈，回调回调到你不分黑夜白天
+    // 在这里套了7层callback，callback里面的async语法是无效的，所以一层一层套出来
+    options.headers['x-access-token'] = localStorage.getItem('ACCESS_TOKEN');
+    console.info('b4 request send, Options :', options);
+    request(options, callback); // 都是 request 害的，改用 axios 沒這些破事
   });
-}
+};
+
 // Be used in User page.
-function Follow({
-  username, followed,
-}, callback) {
+const Follow = ({ username, followed }, callback) => {
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
-  console.log(accessToken);
-  const url = `${apiServer}/follow`;
-  // const url = `http://localhost:7001/publish`;
+  console.log('accessToken: ', accessToken);
   return accessBackend({
-    uri: url,
+    method: 'POST',
+    uri: `${apiServer}/follow`,
     rejectUnauthorized: false,
     json: true,
     headers: { Accept: '*/*', 'x-access-token': accessToken },
@@ -170,19 +188,16 @@ function Follow({
       username,
       followed,
     },
-  }, callback, AccessMethod.POST);
-}
+  }, callback);
+};
 
 // Be used in User page.
-function Unfollow({
-  username, followed,
-}, callback) {
+const Unfollow = ({ username, followed }, callback) => {
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
-  console.log(accessToken);
-  const url = `${apiServer}/unfollow`;
-  // const url = `http://localhost:7001/publish`;
+  console.log('accessToken: ', accessToken);
   return accessBackend({
-    uri: url,
+    method: 'POST',
+    uri: `${apiServer}/unfollow`,
     rejectUnauthorized: false,
     json: true,
     headers: { Accept: '*/*', 'x-access-token': accessToken },
@@ -191,58 +206,55 @@ function Unfollow({
       username,
       followed,
     },
-  }, callback, AccessMethod.POST);
-}
+  }, callback);
+};
 
 // Be used in User page.
-function getUser({
-  username,
-}, callback) {
+const getUser = ({ username }, callback) => {
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
-  const url = `${apiServer}/user/${username}`;
-  // const url = `http://localhost:7001/publish`;
   return accessBackend({
-    uri: url,
+    method: 'GET',
+    uri: `${apiServer}/user/${username}`,
     rejectUnauthorized: false,
     json: true,
     headers: { Accept: '*/*', 'x-access-token': accessToken },
     dataType: 'json',
     form: {},
-  }, callback, AccessMethod.GET);
-}
+  }, callback);
+};
 
 // eslint-disable-next-line camelcase
-function sendComment({ comment, sign_id }, callback) {
+const sendComment = ({ comment, sign_id }, callback) => {
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
   return accessBackend({
+    method: 'POST',
     uri: `${apiServer}/post/comment`,
     rejectUnauthorized: false,
     json: true,
     headers: { Accept: '*/*', 'x-access-token': accessToken },
     dataType: 'json',
     form: { comment, sign_id },
-  }, callback, AccessMethod.POST);
-}
+  }, callback);
+};
 
 // be Used in Article Page
-function addReadAmount({
-  articlehash,
-}, callback) {
+const addReadAmount = ({ articlehash }, callback) => {
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
-  const url = `${apiServer}/post/show/${articlehash}`;
   return accessBackend({
-    uri: url,
+    method: 'POST',
+    uri: `${apiServer}/post/show/${articlehash}`,
     rejectUnauthorized: false,
     json: true,
     headers: { Accept: '*/*', 'x-access-token': accessToken },
     dataType: 'json',
     form: {},
-  }, callback, AccessMethod.POST);
-}
+  }, callback);
+};
 
 export {
   publishArticle, auth, getAuth,
   getArticleData, getArticlesList, getArticleInfo,
   Follow, Unfollow, getUser,
   getSharesbysignid, addReadAmount, sendComment,
+  getArticles, getArticlesBySupportAmountRanking, getArticlesBySupportTimesRanking,
 };
