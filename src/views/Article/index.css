@@ -177,3 +177,18 @@
     font-size:14px;
   }
 }
+
+
+/* comments */
+
+.comments {
+  margin-bottom: 60px;
+}
+.loading-stat {
+  text-align: center;
+}
+@media screen and (min-width: 750px) {
+  .comments {
+    margin-bottom: 80px;
+  }
+}
