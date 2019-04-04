@@ -193,10 +193,9 @@ export default {
         return;
       }
       Follow({
-        followed: username, username: currentUsername,
+        followed: username, following: currentUsername,
       // eslint-disable-next-line no-unused-vars
       }, (error, response, body) => { // body 未使用
-        console.log(response);
         if (!error) {
           this.$Notice.success({
             title: '关注成功',
@@ -220,7 +219,7 @@ export default {
         return;
       }
       Unfollow({
-        followed: username, username: currentUsername,
+        followed: username, following: currentUsername,
       // eslint-disable-next-line no-unused-vars
       }, (error, response, body) => { // response body 未使用
         if (!error) {

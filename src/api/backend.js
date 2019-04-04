@@ -172,9 +172,9 @@ const accessBackend = async (options, callback = () => {}) => {
 };
 
 // Be used in User page.
-const Follow = ({ username, followed }, callback) => {
+const Follow = ({ following, followed }, callback) => {
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
-  console.log('accessToken: ', accessToken);
+  // console.log('accessToken: ', accessToken);
   return accessBackend({
     method: 'POST',
     uri: `${apiServer}/follow`,
@@ -183,16 +183,16 @@ const Follow = ({ username, followed }, callback) => {
     headers: { Accept: '*/*', 'x-access-token': accessToken },
     dataType: 'json',
     form: {
-      username,
+      username: following,
       followed,
     },
   }, callback);
 };
 
 // Be used in User page.
-const Unfollow = ({ username, followed }, callback) => {
+const Unfollow = ({ following, followed }, callback) => {
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
-  console.log('accessToken: ', accessToken);
+  // console.log('accessToken: ', accessToken);
   return accessBackend({
     method: 'POST',
     uri: `${apiServer}/unfollow`,
@@ -201,7 +201,7 @@ const Unfollow = ({ username, followed }, callback) => {
     headers: { Accept: '*/*', 'x-access-token': accessToken },
     dataType: 'json',
     form: {
-      username,
+      username: following,
       followed,
     },
   }, callback);
