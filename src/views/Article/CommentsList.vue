@@ -1,6 +1,6 @@
 <template>
   <div class="comments">
-    <Header
+    <BaseHeader
       :pageinfo="{ left:'back', title: '赞赏队列', rightPage: 'home', needLogin: false, }" />
     <div class="tl">
       <za-pull :on-refresh="refresh" :refreshing="refreshing">
@@ -14,16 +14,13 @@
 </template>
 
 <script>
-import axios from 'axios';
-import { CommentCard, Header } from '@/components/';
-import { getArticleData, getSharesbysignid } from '@/api/';
-import { apiServer } from '@/api/backend';
-import { getSignInfo } from '@/api/signature';
+import { CommentCard } from '@/components/';
+import { getArticleData, getArticleInfo, getSharesbysignid } from '@/api/';
 
 export default {
   name: 'Comments',
-  props: ['post', 'sign', 'hash'],
-  components: { CommentCard, Header },
+  props: ['signId', 'hash'],
+  components: { CommentCard },
   computed: {
     sortedComments() {
       // console.log(this.assets);
@@ -39,13 +36,11 @@ export default {
     },
   },
   created() {
-    const { copyPost, copySign, hash } = this;
-    if (copyPost === undefined || copySign === undefined) {
-      this.setArticleData(hash);
+    const { copySignId, hash } = this;
+    if (copySignId === undefined) {
       this.setSign(hash);
-    } else {
-      this.getSharesbysignid(this.copySign.id);
     }
+    this.setArticleData(hash);
   },
   data() {
     return {
@@ -61,8 +56,8 @@ export default {
       busy: false,
       page: 1,
       isTheEndOfTheScroll: false,
-      copyPost: this.post,
-      copySign: this.sign,
+      copyPost: null,
+      copySignId: this.signId,
     };
   },
   methods: {
@@ -72,28 +67,41 @@ export default {
       console.info('post :', this.copyPost);
     },
     async setSign(hash) {
-      const { data } = await axios.get(`${apiServer}/post/${hash}`);
-      const signs = await getSignInfo(data.id);
-      // eslint-disable-next-line prefer-destructuring
-      this.copySign = signs[0];
-      console.log('sign :', this.copySign); // fix: ReferenceError: sign is not defined
-      await this.getSharesbysignid(this.copySign.id);
+      const { data } = await getArticleInfo(hash);
+      this.copySignId = data.id;
+
+      await this.getArticlesList(this.copySignId, this.page);
+      this.page += 1;
     },
-    async getSharesbysignid(signId) {
-      await getSharesbysignid({ signid: signId })
+    async getArticlesList(signId, page) {
+      await getSharesbysignid(signId, page)
         .then((response) => {
           console.log('shares : ', response.data);
-          this.comments = response.data.map(a => ({
-            author: a.author,
-            timestamp: a.create_time,
-            quantity: `${parseFloat(a.amount) / 10000} EOS`,
-            message: a.comment,
-          }));
+          const { data } = response;
+          if (data.length === 0) {
+            this.busy = true;
+            this.isTheEndOfTheScroll = true;
+          } else {
+            data.map((a) => {
+              this.comments.push({
+                author: a.author,
+                timestamp: a.create_time,
+                quantity: `${parseFloat(a.amount) / 10000} EOS`,
+                message: a.comment,
+              });
+              return true;
+            });
+            // 列表最后一列小于二十显示加载完
+            if (data.length > 0 && data.length < 20) this.isTheEndOfTheScroll = true;
+            this.busy = false;
+          }
         });
     },
     loadMore() {
+      if (this.copySignId === undefined) return; // 默认会加载一次 如果没有id 后面不执行， 由上面的方法调用一次
       if (this.isTheEndOfTheScroll) return;
       this.busy = true;
+      this.getArticlesList(this.copySignId, this.page);
       this.page += 1;
       /*
       getArticlesList({ page: this.page }).then(({ data }) => {

@@ -1,5 +1,5 @@
 <template>
-  <div class="my-Header">
+  <div class="BaseHeader">
     <za-nav-bar>
       <div slot="left">
           <za-icon v-if="pageinfo.left==='back'"
@@ -25,12 +25,15 @@
 <script>
 // eslint-disable-next-line no-unused-vars
 import { mapState, mapActions, mapGetters } from 'vuex'; // mapGetters 未使用
+import {
+  getAuth,
+} from '@/api';
 
 export default {
-  name: 'my-Header',
+  name: 'BaseHeader',
   props: ['pageinfo'],
   computed: {
-    ...mapState(['isScatterConnected']),
+    ...mapState(['currentUsername', 'isScatterConnected', 'isScatterLoggingIn']),
   },
   // 依據 https://blog.csdn.net/m0_37728716/article/details/81289317
   // 從 crearted 改成 mounted
@@ -52,17 +55,22 @@ export default {
   },
   watch: {
     isScatterConnected(newState) {
-      const { pageinfo } = this;
+      const { pageinfo, currentUsername, isScatterLoggingIn } = this;
       if (pageinfo.needLogin !== undefined && pageinfo.needLogin) {
-        if (newState) {
+        if (newState && !isScatterLoggingIn) {
+          console.log('auto log in');
           this.loginScatterAsync()
-            // eslint-disable-next-line no-unused-vars
-            .then((id) => { // id 未使用
+            .then((id) => {
               this.$Message.success('自动登录成功');
+              try {
+                getAuth();
+              } catch (error) {
+
+              }
             })
             .catch(() => {
               console.log('Unable to log in wallet');
-              this.$Message.error('自动登录失败，钱包需打开并解锁');
+              this.$Message.error('自动登录失败，钱包需打开并解锁...');
             });
         }
       }

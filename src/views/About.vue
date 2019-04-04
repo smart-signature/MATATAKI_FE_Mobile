@@ -1,6 +1,8 @@
 <template>
   <div class="about">
-    <Header :pageinfo="{ left:'back', title: '关于我们', rightPage: 'home', }" />
+    <BaseHeader
+      :pageinfo="{ left: 'back', title: `关于我们`, rightPage: 'home',
+                   needLogin: false, }"/>
     <div class="about-card">
       <h1 class="about-title">{{items.title}}</h1>
       <p class="about-detail">{{items.detail}}</p>
@@ -15,14 +17,10 @@
 </template>
 
 <script>
-import { Header } from '@/components/';
 import items from '../assets/QuestionAndAnswer.json';
 
 export default {
   name: 'About',
-  components: {
-    Header,
-  },
   data: () => ({
     items,
   }),

@@ -1,27 +1,25 @@
 <template>
-  <div class="articles">
-    <za-tabs v-model="activeNameSwipe" @change="handleClick">
-      <za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label">
-        <za-pull :on-refresh="refresh" :refreshing="refreshing">
-          <div class="content" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
+    <za-pull :on-refresh="refresh" :refreshing="refreshing">
+        <div class="content" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
             <ArticleCard :article="a" v-for="a in articles" :key="a.id"/>
-          </div>
-          <p class="loading-stat">{{displayAboutScroll}}</p>
-        </za-pull>
-      </za-tab-pane>
-    </za-tabs>
-  </div>
+        </div>
+        <p class="loading-stat">{{displayAboutScroll}}</p>
+    </za-pull>
 </template>
 
 <script>
-import { getArticlesList } from '@/api/';
+import { OrderBy, getArticles } from '@/api/backend';
 import { ArticleCard } from '@/components/';
 import { mapGetters } from 'vuex';
 
-const TimeLine = '最新发布';
-
 export default {
-  name: 'home',
+  name: 'ArticlesRanking',
+  props: {
+    orderType: {
+      type: String,
+      default: OrderBy.TimeLine,
+    },
+  },
   computed: {
     ...mapGetters(['currentUsername']),
     displayAboutScroll() {
@@ -33,19 +31,14 @@ export default {
   },
   components: { ArticleCard },
   created() {
-    this.getArticlesList();
+    this.getArticles();
   },
   methods: {
-    async getArticlesList(page) {
+    async getArticles(page) {
       this.busy = true;
-      const { data } = await getArticlesList({ page });
-      this.articles = data;
-      console.log(this.articles);
-      this.articles = this.articles.filter(a => Date.parse(a.create_time) > Date.parse('2019-03-25T06:00:00'));
+      const { data } = await getArticles({ orderBy: this.orderType });
+      this.articles = data.filter(a => Date.parse(a.create_time) > Date.parse('2019-03-25T06:00:00'));
       this.busy = false;
-    },
-    handleClick(tab, event) {
-      console.log(tab, event);
     },
     loadMore() {
       if (this.isTheEndOfTheScroll) {
@@ -53,7 +46,7 @@ export default {
       }
       this.busy = true;
       this.page += 1;
-      getArticlesList({ page: this.page }).then(({ data }) => {
+      getArticles({ orderBy: this.orderType, page: this.page }).then(({ data }) => {
         console.info(`Page ${this.page} data length: ${data.length}`);
         if (data.length === 0) {
           this.busy = true;
@@ -67,7 +60,7 @@ export default {
     },
     async refresh() {
       this.refreshing = true;
-      await this.getArticlesList();
+      await this.getArticles();
       this.refreshing = false;
     },
   },
@@ -78,13 +71,6 @@ export default {
       busy: false,
       page: 1,
       isTheEndOfTheScroll: false,
-      activeNameSwipe: TimeLine,
-      selectedLabelDefault: TimeLine,
-      tabs: [
-        {
-          label: TimeLine,
-        },
-      ],
     };
   },
 };

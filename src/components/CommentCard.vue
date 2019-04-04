@@ -23,10 +23,10 @@ export default {
       return this.comment.message !== '' ? this.comment.message : '用户没有留下评论';
     },
     friendlyDate() {
-      const isAppleSlave = navigator.platform.includes('iPhone');
+      // const isAppleSlave = navigator.platform.includes('iPhone');
       const time = new Date(this.comment.timestamp);
       return moment(time.getTime() - time.getTimezoneOffset()
-                    * 60000 * (isAppleSlave ? 0 : 1)).fromNow();
+                   * 60000).fromNow();// 返回的数据带了时区
       // moment(this.asset.timestamp).fromNow();
     },
   },
