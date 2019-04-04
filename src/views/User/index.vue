@@ -142,10 +142,10 @@ export default {
         }
       }
       if (!accessvalid) {
-        API.authSignature((username, publickey, sign) => {
-          console.log(username, publickey, sign);
+        API.authSignature(({username, publicKey, signature}) => {
+          console.log(username, publicKey, signature);
           // 2. post到服务端 获得accessToken并保存
-          auth({ username, publickey, sign }, (error, response, body) => {
+          auth({ username, publicKey, sign: signature }, (error, response, body) => {
             console.log(body);
             if (!error) {
               // 3. save accessToken
@@ -186,7 +186,7 @@ export default {
     follow_user() {
       // alert('follow');
       const { username, currentUsername } = this;
-      if(!currentUsername || !username){
+      if (!currentUsername || !username) {
         this.$Notice.error({
           title: '账号信息无效，关注失败',
         });
@@ -213,7 +213,7 @@ export default {
     unfollow_user() {
       // alert('follow');
       const { username, currentUsername } = this;
-      if(!currentUsername || !username){
+      if (!currentUsername || !username) {
         this.$Notice.error({
           title: '账号信息无效，取消关注失败',
         });
