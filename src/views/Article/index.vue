@@ -39,12 +39,12 @@
         </div>
       </div>
       <div class="footer-block">
-          <button v-if="isSupported===-1" class="button-support"
-             disabled>加载中</button>
-          <button v-else-if="isSupported===1" class="button-support"
-            @click="visible3=true" >赞赏</button>
-          <button v-else-if="isSupported===2" class="button-support"
-             disabled>已赞赏</button>
+          <button v-if="isSupported===-1" class="button-support" @click="share">赞赏</button>
+          <button v-if="isSupported===0" class="button-support" disabled>赞赏中</button>
+          <button v-else-if="isSupported===1"
+            class="button-support" @click="visible3=true" >赞赏</button>
+          <button v-else-if="isSupported===2" class="button-support" disabled>已赞赏</button>
+
           <button class="button-share"
             :data-clipboard-text="getClipboard"
             @click="share">分享</button>
@@ -245,7 +245,7 @@ export default {
     comment: '',
     isSupported: RewardStatus.LOADING,
     isTotalSupportAmountVisible: false, // 正在加载和加载完毕的文本切换
-    totalSupportedAmount: 0.0000,
+    totalSupportedAmount: 0,
     visible3: false,
     v3: '',
     v5: '',
@@ -352,9 +352,8 @@ export default {
         this.isSupported = RewardStatus.REWARDED;
         this.$Message.success('赞赏成功！');
         // tricky speed up
-        // this.totalSupportedAmount += parseFloat(amount);
-        const { data } = await getArticleInfo(this.hash);
-        this.totalSupportedAmount = data.value;
+        // 前端手动加一下钱 立马调接口获取不到 value 值
+        this.totalSupportedAmount += parseFloat(amount * 10000);
       } catch (error) {
         console.log(JSON.stringify(error));
         this.$Message.error('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额。');
