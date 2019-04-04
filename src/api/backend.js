@@ -122,7 +122,6 @@ function auth({
   // console.log(username + ", " + typeof(username))
   // console.log(publickey + ", " + typeof(publickey))
   // console.log(sign + ", " + typeof(sign))
-  // const url = `http://localhost:7001/auth`;
   return request.post({
     uri: url,
     rejectUnauthorized: false,
@@ -170,23 +169,6 @@ async function getAuth(options, callback, reqFunc, cb) {
   }
 }
 
-
-// 4. 使用accessToken 示例。 请求修改某些和用户数据相关的api时，需要按照oauth2规范，在header里带上 accessToken， 以表示有权调用
-// const accessToken = localStorage.getItem("ACCESS_TOKEN");
-// request({
-//   uri: "some api url that need auth",
-//   rejectUnauthorized: false,
-//   json: true,
-//   headers: { Accept: '*/*', "x-access-token": accessToken },
-//   dataType: 'json',
-//   method: 'POST',
-//   form: {
-//     username:"joetothemoon",
-//     followed:"tengavinwood",
-//   },
-// }, function(err,resp, body){
-//    console.log(body);
-// });
 
 // /<summary>
 // /后端访问入口，当遇到401的时候直接重新拿token
