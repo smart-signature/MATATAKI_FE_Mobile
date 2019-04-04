@@ -221,7 +221,8 @@ export default {
 
     this.signId = data.id;
     console.log(this.signId);
-    this.getArticlesList(data.id, 1);
+    this.getArticlesList(data.id, this.page);
+    this.page += 1;
     // 后续没问题就可以删掉了
     // const shares = localStorage.getItem(`sign id : ${signid}'s shares`);
     // eslint-disable-next-line no-shadow
@@ -481,7 +482,7 @@ export default {
         });
     },
     loadMore() {
-      if (this.signId === null) return; // 默认会加载一次 如果没有id 后面不执行， 由上面的方法调用一次
+      if (this.signId === null || this.signId === undefined) return; // 默认会加载一次 如果没有id 后面不执行， 由上面的方法调用一次
       if (this.isTheEndOfTheScroll) return;
       this.busy = true;
       this.getArticlesList(this.signId, this.page);
