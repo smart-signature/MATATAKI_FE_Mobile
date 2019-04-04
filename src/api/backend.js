@@ -168,7 +168,7 @@ const accessBackend = async (options, callback = () => {}) => {
   getAuth(options, callback, (options, callback) => { // 爱的魔力转圈圈，回调回调到你不分黑夜白天
     // 在这里套了7层callback，callback里面的async语法是无效的，所以一层一层套出来
     options.headers['x-access-token'] = localStorage.getItem('ACCESS_TOKEN');
-    console.info('Options :', options);
+    console.info('b4 request send, Options :', options);
     request(options, callback);
   });
 };
