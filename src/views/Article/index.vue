@@ -356,17 +356,6 @@ export default {
               this.setisSupported();
             });
         }
-        // if (!isScatterConnected) {
-        //   await this.connectScatterAsync();
-        //   if (isScatterConnected && !isScatterLoggingIn) {
-        //     await this.loginScatterAsync()
-        //       .then((id) => {
-        //         console.log("dsfafsadfsafsafd");
-        //         if (!id) throw console.error('no identity');
-        //         this.$Message.success('自动登录成功');
-        //       });
-        //   }
-        // }
       } catch (error) {
         const errMeg = 'Unable to log-in to wallet';
         console.warn(errMeg); // 一句滿意的英文 log
