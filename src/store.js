@@ -100,6 +100,7 @@ export default new Vuex.Store({
           dispatch('getMyBalances');
         } catch (err) {
           console.error('Failed to log in Scatter :', err);
+          reject(false);
         }
         commit('setIsScatterLoggingIn', false);
         resolve(this.scatterAccount ? account : false);
