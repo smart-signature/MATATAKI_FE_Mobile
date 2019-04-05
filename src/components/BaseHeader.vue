@@ -62,11 +62,6 @@ export default {
           this.loginScatterAsync()
             .then((id) => {
               this.$Message.success('自动登录成功');
-              try {
-                getAuth();
-              } catch (error) {
-
-              }
             })
             .catch(() => {
               console.log('Unable to log in wallet');
