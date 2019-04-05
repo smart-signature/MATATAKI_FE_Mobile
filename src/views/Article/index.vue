@@ -3,29 +3,67 @@
   <div class="article">
     <BaseHeader
       :pageinfo="{ left:'notback', title: 'Smart Signature', rightPage: 'home',
-                   needLogin: true, }"/>
-    <div class="tl_page">
-      <main class="ta">
-        <header class="ta_header">
-          <h1 dir="auto">{{post.title}}</h1>
-          <address dir="auto">
-            <router-link :to="{ name: 'User',
-                                params: { username: article.author }}">
-              <a> Author: {{article.author}}</a>
-            </router-link>
-            <br/>
-            <span class="break_all">IPFS Hash: {{hash}}</span>
-            <br/>
-            <span>阅读次数：{{readamount}}</span>
-          </address>
-        </header>
-        <mavon-editor v-show="false" style="display: none;"/>
-        <div class="markdown-body" v-html="compiledMarkdown"></div>
-      </main>
+      needLogin: true, }"/>
+    <header class="ta_header">
+      <h1 dir="auto">{{post.title}}</h1>
+      <p>
+      <Avatar
+        icon="ios-person" class="avatar-size" size="small" />
+      <router-link
+        class="author"
+        :to="{ name: 'User', params: { username:post.author }}">
+        Author: {{post.author}}
+      </router-link>
+      {{articleCreateTime}} | {{article.read || 0}}阅读</p>
+      <p class="break_all">IPFS Hash: {{hash}}</p>
+    </header>
+    <mavon-editor v-show="false" style="display: none;"/>
+    <div class="markdown-body" v-html="compiledMarkdown"></div>
+    <div class="commentslist-title">赞赏队列 ({{article.ups || 0}})</div>
+
+    <div class="comments">
+      <!-- <div class="tl"> -->
+      <za-pull :on-refresh="refresh" :refreshing="refreshing">
+        <div class="content" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
+          <CommentCard :comment="a" v-for="a in sortedComments" :key="a.timestamp"/>
+        </div>
+        <p class="loading-stat">{{displayAboutScroll}}</p>
+      </za-pull>
+      <!-- </div> -->
     </div>
-    <footer class="footer-article">
-      <Divider />
-      <Row justify="center" style="padding: 0 20px">
+
+    <footer class="footer">
+      <div class="footer-block">
+        <div class="amount">
+          <div>
+            <img class="amount-img" src="@/assets/img/amount.png" />
+            {{computedTotalSupportedAmount}}
+          </div>
+          <div class="amount-text">赞赏总额</div>
+        </div>
+        <div class="fission">
+          <div>
+            <img class="amount-img" src="@/assets/img/fission.png" />
+            {{getDisplayedFissionFactor}}
+          </div>
+          <div class="amount-text">裂变系数</div>
+        </div>
+      </div>
+      <div class="footer-block">
+          <button v-if="isSupported===-1" class="button-support" @click="share">赞赏</button>
+          <button v-if="isSupported===0" class="button-support" disabled>赞赏中</button>
+          <button v-else-if="isSupported===1"
+            class="button-support" @click="visible3=true" >赞赏</button>
+          <button v-else-if="isSupported===2" class="button-support" disabled>已赞赏</button>
+
+          <button class="button-share"
+            :data-clipboard-text="getClipboard"
+            @click="share">分享</button>
+      </div>
+    </footer>
+    <!-- <footer class="footer-article"> -->
+      <!-- <Divider /> -->
+      <!-- <Row justify="center" style="padding: 0 20px">
           <i-col span="11" v-if="!isTotalSupportAmountVisible">正在从链上加载本文收到的赞赏</i-col>
           <i-col span="11" v-else-if="isTotalSupportAmountVisible">
             <router-link :to="{ name: 'Comments', params: { signId: article.id, hash }}">
@@ -48,8 +86,8 @@
             @click="visible3=true" >赞赏</za-button>
           <za-button v-else-if="isSupported===2" class="button-support"
             size='xl' theme="primary" disabled>已赞赏</za-button>
-        </i-col>
-        <i-col span="2"><Divider type="vertical" style="opacity: 0;" /></i-col>
+        </i-col> -->
+        <!-- <i-col span="2"><Divider type="vertical" style="opacity: 0;" /></i-col> -->
         <za-modal :visible="visible3"
            @close="handleClose" radius="" @maskClick="visible3 = false" :showClose="true"
            style="background:rgba(243,243,243,1);">
@@ -67,14 +105,14 @@
               size='xl' theme="primary"
               @click="support">赞赏</za-button></Row>
         </za-modal>
-        <i-col span="11">
+        <!-- <i-col span="11">
           <za-button class="button-share"
             size='xl' theme="primary"
             :data-clipboard-text="getClipboard"
             @click="share" ghost="true">分享</za-button>
-        </i-col>
-      </Row>
-    </footer>
+        </i-col> -->
+      <!-- </Row> -->
+    <!-- </footer> -->
   </div>
 </template>
 
@@ -88,6 +126,9 @@ import {
 } from '@/api';
 import { support } from '@/api/signature';
 import 'mavon-editor/dist/css/index.css';
+import moment from 'moment';
+// import CommentsList from './CommentsList.vue';
+import { CommentCard } from '@/components/';
 
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
@@ -102,7 +143,7 @@ const RewardStatus = { // 0=加载中,1=未打赏 2=已打赏, -1未登录
 export default {
   name: 'Article',
   props: ['hash'],
-  components: { mavonEditor },
+  components: { mavonEditor, CommentCard },
   computed: {
     ...mapGetters(['currentUsername']),
     ...mapState(['isScatterConnected', 'isScatterLoggingIn', 'scatterAccount']),
@@ -149,6 +190,17 @@ export default {
       }
       return invite;
     },
+    displayAboutScroll() {
+      if (this.isTheEndOfTheScroll) {
+        return '🎉 哇，你真勤奋，所有 comments 已经加载完了～ 🎉';
+      }
+      return '😄 勤奋地加载更多精彩内容 😄';
+    },
+    sortedComments() {
+      // if need change to asc, swap a & b
+      return this.comments.slice(0) // 使用slice创建数组副本 消除副作用
+        .sort((a, b) => (new Date(b.timestamp)).getTime() - (new Date(a.timestamp)).getTime());
+    },
   },
   /*
     created
@@ -163,44 +215,60 @@ export default {
     const { data } = await getArticleInfo(this.hash);
     this.article = data;
     console.log('Article info :', this.article);
+    console.log(this.article);
     this.totalSupportedAmount = data.value;
-    this.readamount = data.read;
+    this.articleCreateTime = moment(data.create_time).format('MMMDo');
 
-    const signid = data.id;
-    const shares = localStorage.getItem(`sign id : ${signid}'s shares`);
+    this.signId = data.id;
+    console.log(this.signId);
+    this.getArticlesList(data.id, this.page);
+    this.page += 1;
+    // 后续没问题就可以删掉了
+    // const shares = localStorage.getItem(`sign id : ${signid}'s shares`);
     // eslint-disable-next-line no-shadow
-    const setShares = ({ signid }) => {
-      getSharesbysignid(signid, 1)
-        .then((response) => {
-          // eslint-disable-next-line no-shadow
-          const shares = response.data;
-          localStorage.setItem(`sign id : ${signid}'s shares`, JSON.stringify(shares));
-          this.shares = shares; // for watch
-          console.log('Article\'s shares : ', this.shares);
-        });
-    };
+    // 后续没问题就可以删掉了
+    // const setShares = ({ signid }) => {
+    //   getSharesbysignid(signid, 1)
+    //     .then((response) => {
+    //       // eslint-disable-next-line no-shadow
+    //       const shares = response.data;
+    //       localStorage.setItem(`sign id : ${signid}'s shares`, JSON.stringify(shares));
+    //       this.shares = shares; // for watch
+    //       console.log('Article\'s shares : ', this.shares);
+    //     });
+    // };
 
     // Use cache or do first time downloading
-    if (shares) {
-      this.shares = JSON.parse(shares);
-    } else { // first time need await
-      await setShares({ signid });
-    }
+    // 后续没问题就可以删掉了
+    // if (shares) {
+    //   this.shares = JSON.parse(shares);
+    // } else { // first time need await
+    //   await setShares({ signid });
+    // }
 
     // Setup
     this.isTotalSupportAmountVisible = true;
     this.setisSupported();
 
     // Update to latest data
-    setShares({ signid });
+    // 后续没问题就可以删掉了
+    // setShares({ signid });
 
     addReadAmount({ articlehash: this.hash });
+  },
+  mounted() {
   },
   beforeDestroy() {
     // 组件销毁之前 销毁clipboard
     this.clipboard.destroy();
   },
   data: () => ({
+    isTheEndOfTheScroll: false,
+    signId: null,
+    comments: [],
+    refreshing: false,
+    busy: false,
+    page: 1,
     post: {
       author: 'Loading...',
       title: 'Loading...',
@@ -216,12 +284,12 @@ export default {
     comment: '',
     isSupported: RewardStatus.LOADING,
     isTotalSupportAmountVisible: false, // 正在加载和加载完毕的文本切换
-    totalSupportedAmount: 0.0000,
+    totalSupportedAmount: 0,
     visible3: false,
     v3: '',
     v5: '',
-    readamount: 0,
     clipboard: null,
+    articleCreateTime: ' 月 日',
   }),
   watch: {
     post({ author, title }) {
@@ -323,9 +391,20 @@ export default {
         this.isSupported = RewardStatus.REWARDED;
         this.$Message.success('赞赏成功！');
         // tricky speed up
-        // this.totalSupportedAmount += parseFloat(amount);
-        const { data } = await getArticleInfo(this.hash);
-        this.totalSupportedAmount = data.value;
+        // 前端手动加一下钱 立马调接口获取不到 value 值
+        this.totalSupportedAmount += parseFloat(amount * 10000);
+        this.comments.length = 0;
+        // 手动添加一个赞赏
+        const time = new Date(Date.now());
+        const timeNow = time.getTime() + time.getTimezoneOffset()
+                   * 60000;
+
+        this.comments.push({
+          author: this.scatterAccount.name,
+          timestamp: timeNow,
+          quantity: `${amount} EOS`,
+          message: comment,
+        });
       } catch (error) {
         console.log(JSON.stringify(error));
         this.$Message.error('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额。');
@@ -367,6 +446,43 @@ export default {
         throw errMeg; // 歡喜的 throw
       }
     },
+    async getArticlesList(signId, page) {
+      await getSharesbysignid(signId, page)
+        .then((response) => {
+          console.log('shares : ', response.data);
+          const { data } = response;
+          if (data.length === 0) {
+            this.busy = true;
+            this.isTheEndOfTheScroll = true;
+          } else {
+            data.map((a) => {
+              this.comments.push({
+                author: a.author,
+                timestamp: a.create_time,
+                quantity: `${parseFloat(a.amount) / 10000} EOS`,
+                message: a.comment,
+              });
+              return true;
+            });
+            // 列表最后一列小于二十显示加载完
+            if (data.length > 0 && data.length < 20) this.isTheEndOfTheScroll = true;
+            this.busy = false;
+          }
+        });
+    },
+    loadMore() {
+      if (this.signId === null || this.signId === undefined) return; // 默认会加载一次 如果没有id 后面不执行， 由上面的方法调用一次
+      if (this.isTheEndOfTheScroll) return;
+      this.busy = true;
+      this.getArticlesList(this.signId, this.page);
+      this.page += 1;
+    },
+    async refresh() {
+      this.refreshing = true;
+      this.comments.length = 0;
+      await this.getArticlesList(this.signId, 1);
+      this.refreshing = false;
+    },
   },
 };
 </script>
@@ -376,19 +492,13 @@ export default {
 .break_all {
   word-break: break-all;
 }
-.markdown-body {
-  padding: 20px;
-  font-family: -apple-system,SF UI Text,Arial,
-              PingFang SC,Hiragino Sans GB,
-              Microsoft YaHei,WenQuanYi Micro Hei,sans-serif;
-  color: #2f2f2f;
-}
+
 .footer-article {
   margin-bottom: 20px;
 }
 .article {
   text-align: left;
-  max-width: 732px;
+  max-width: 750px;
   margin: 0 auto;
 }
 .ta .tac .iframe_wrap,
@@ -397,10 +507,6 @@ export default {
 .ta .tac video {
   max-width: 100%;
   vertical-align: top;
-}
-.tl_page {
-  position: relative;
-  padding: 21px 0;
 }
 .tl_message {
   font-family: CustomSansSerif, "Lucida Grande", Arial, sans-serif;
@@ -459,7 +565,6 @@ export default {
   left: 50%;
   z-index: -1;
 }
-.ta .ta_header,
 .ta .tac,
 .ta .tac .ql-editor {
   font-family: "Open Sans",sans-serif;
@@ -470,7 +575,6 @@ export default {
   margin: 0;
   color: rgba(0, 0, 0, 0.8);
 }
-.ta address,
 .ta h1,
 .ta h2 {
   font-family: CustomSansSerif, "Lucida Grande", Arial, sans-serif;
@@ -494,31 +598,18 @@ export default {
   font-size: 32px;
   margin: 21px 21px 12px;
 }
+
 .ta h2 {
   font-size: 24px;
   margin: -6px 21px 12px;
   color: rgba(0, 0, 0, 0.44);
 }
-.ta address,
-.ta address a {
-  color: #79828b;
-}
-.ta address {
-  font-size: 15px;
-  margin: 12px 21px;
-}
-.ta address time:before {
-  content: "â€¢";
-  padding: 0 7px;
-}
+
 .ta a[href] {
   color: inherit;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0.44);
   text-decoration: none;
   border-bottom: 0.1em solid rgba(0, 0, 0, 0.7);
-}
-.ta address a[href] {
-  border-bottom: none;
 }
 .footer-article {
   font-size: 12px;
@@ -544,11 +635,9 @@ export default {
   background-color: #fff;
   cursor: pointer;
 }
-.tl_page {
-  position: relative;
-  padding: 21px 0;
-}
+
 .markdown-body.tac {
     margin: 20px;
 }
 </style>
+<style src="./index.css" scoped></style>
