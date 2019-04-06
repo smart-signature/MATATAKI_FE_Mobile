@@ -7,7 +7,7 @@
       <div class="toptext1">待提现</div><br/>
       <div class="topremain">{{playerincome.toFixed(4)}}</div>
       <div style="position:absolute;right:40px;top:90px;">
-          <Button class="withdraw" ghost @click="visible = true">提现</Button>
+          <Button class="withdraw" ghost @click="visible = true"><div style="margin-top:-2px">提现</div></Button>
           <za-confirm
             :visible="visible"
             title="提现确认" message="确定要提现吗？"
@@ -340,6 +340,6 @@ Button.withdraw, Button.withdraw:focus, Button.withdraw:hover {
   letter-spacing: 2px;
   max-width: 94px;
   max-height: 35px;
-  margin-right: 18px;
+  margin-right: 0px;
 }
 </style>
