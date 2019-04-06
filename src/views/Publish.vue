@@ -123,9 +123,14 @@ export default {
           if (err) failed('2nd step failed');
           publishArticle({
             author, title, hash, publicKey, signature, username: currentUsername, fissionFactor,
-          }, (error, response, body) => {
-            if (body.msg !== 'success' || error) failed(error);
-            else success(hash);
+          })
+          .then( (response) => {
+            if (response.data.msg !== 'success') failed(error);
+            success(hash);
+          })
+          .catch( (error) => {
+            failed(error);
+            console.log(error);
           });
         });
       } catch (error) {

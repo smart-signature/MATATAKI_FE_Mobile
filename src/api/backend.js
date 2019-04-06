@@ -7,9 +7,7 @@ import { Base64 } from 'js-base64';
 
 export const apiServer = process.env.VUE_APP_API;
 
-// NOTICE!! publishArticle will be tested and replaced very soon
-// ↑ 12 days ago
-const publishArticle = ({
+const oldpublishArticle = ({
   author, title, hash, publicKey, signature, username, fissionFactor,
 }, callback) => 
   // const url = `http://localhost:7001/publish`;
@@ -33,7 +31,7 @@ const publishArticle = ({
 
 // 開發測試中
 // eslint-disable-next-line no-unused-vars
-const newPublishArticle = ({
+const publishArticle = ({
   author, title, hash, publicKey, signature, username, fissionFactor,
 }) => axios.post(
   `${apiServer}/publish`,
@@ -46,13 +44,11 @@ const newPublishArticle = ({
     title,
     sign: signature,
   },
-  { // 還是 request 的參數
-    // 傳多餘或是名字錯誤的項進去不會發生任何事(除非是少項有檢查)，js神奇的地方
-    // dataType 不知道哪來的參數，只有 jQuery ajax() 才有 datatype lol
-    strictSSL: false, // request 內部會翻成 rejectUnauthorized: false,
-    json: true,
-    headers: { Accept: '*/*' },
-  },
+  // 傳多餘或是名字錯誤的項進去不會發生任何事(除非是少項有檢查)，js神奇的地方
+  // dataType 不知道哪來的參數，只有 jQuery ajax() 才有 datatype lol
+  // strictSSL: false, // request 內部會翻成 rejectUnauthorized: false,
+  // json: true,
+  //  headers: { Accept: '*/*' },
 );
 
 const getArticleData = hash => axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
