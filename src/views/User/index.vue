@@ -43,13 +43,14 @@
     <div class="topcard" v-if="isMe">
       <Row type="flex" justify="center" class="code-row-bg">
           <Col span="11">
-            <p class="centervalue">{{mySignIncome}} EOS</p>
-            <p class="centertext">创作收益</p>
+            <p class="centervalue">{{mySignIncome + myShareIncome}} EOS</p>
+            <p class="centertext">历史总收入</p>
           </Col>
           <Col span="1"><Divider type="vertical" style="height:33px;margin-top:10px;" /></Col>
           <Col span="11">
-            <p class="centervalue">{{myShareIncome}} EOS</p>
-            <p class="centertext">赞赏收益</p>
+            <Button class="detail" ghost @click='jumpTo({ name: "Asset", params: { username }})'><div style="margin-top:-2px">资产明细</div></Button>
+            <!-- <p class="centervalue">{{myShareIncome}} EOS</p>
+            <p class="centertext">赞赏收益</p> -->
           </Col>
       </Row>
     </div>
@@ -57,7 +58,7 @@
     <!-- <ArticlesList ref="ArticlesList"/> -->
     <div class="centercard" v-if="isMe">
       <za-cell is-link has-arrow @click='jumpTo({ name: "Asset", params: { username }})'>
-        资产明细
+        草稿箱
         <!-- <za-icon type='right' slot='icon'/> -->
       </za-cell>
       <za-cell is-link has-arrow @click='jumpTo({ name: "Original", params: { username }})'>
@@ -327,5 +328,21 @@ a {
   font-size: 14px;
   font-weight: bold;
   opacity: 0.4;
+}
+Button.detail, Button.detail:focus, Button.detail:hover {
+  background-color: rgba(0, 0, 0, 1);
+  border-radius: 2px;
+  color: rgba(255,255,255,1);
+  /* float: right; */
+  font-size: 12px;
+  margin-top: 12px;
+  width: 80px;
+  height: 25px;
+  letter-spacing: 2px;
+  max-width: 94px;
+  max-height: 35px;
+  text-align: center;
+  padding-left: 12px;
+  /* margin-right: 0px; */
 }
 </style>

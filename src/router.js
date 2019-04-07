@@ -68,5 +68,17 @@ export default new Router({
       props: true,
       component: () => import(/* webpackChunkName: "new-post" */ './views/Publish.vue'),
     },
+    {
+      path: '/fanslist',
+      name: 'fanslist',
+      props: true,
+      component: () => import(/* webpackChunkName: "new-post" */ './views/User/FansList.vue'),
+    },
+    {
+      path: '/followlist',
+      name: 'followlist',
+      props: true,
+      component: () => import(/* webpackChunkName: "new-post" */ './views/User/FollowList.vue'),
+    },
   ],
 });
