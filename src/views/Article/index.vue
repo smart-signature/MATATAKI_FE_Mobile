@@ -364,10 +364,10 @@ export default {
         return;
       }
       // amount
-      const { comment, article } = this;
+      const { article, comment } = this;
 
       const amount = parseFloat(this.amount);
-      if (Number.isNaN(amount) || amount < 0.01) { // amount / 10000
+      if (Number.isNaN(amount) || amount < 0.01) {
         this.$Message.warning('请输入正确的金额 最小赞赏金额为 0.01 EOS');
         return;
       }
@@ -378,8 +378,9 @@ export default {
       const signId = article.id;
       const referrer = this.getInvite;
       console.log('referrer :', referrer);
-      this.isSupported = RewardStatus.LOADING;
+      
       try {
+        this.isSupported = RewardStatus.LOADING;
         // eslint-disable-next-line camelcase
         await support({ amount, sign_id: signId, referrer });
         console.log('Send comment...');
