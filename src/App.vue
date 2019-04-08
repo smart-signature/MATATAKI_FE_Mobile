@@ -41,14 +41,12 @@ export default {
   computed: {
     ...mapState(['scatterAccount']),
   },
-  async created() { // https://juejin.im/post/5bfa4bb951882558ae3c171e
+  created() { // https://juejin.im/post/5bfa4bb951882558ae3c171e
     window.updateNotify = this.updateNotify;
     try {
       // Scatter 10.0 need to suggestNetwork, if not, scatter is not working on login
-      await this.connectScatterAsync()
-        // eslint-disable-next-line no-unused-vars
-        .then(v => ( // v 未使用
-        // https://get-scatter.com/docs/api-suggest-network
+      this.connectScatterAsync()
+        .then(() => (
           this.suggestNetworkAsync()
             .then(added => (console.log('Suggest network result: ', added)))
         ));

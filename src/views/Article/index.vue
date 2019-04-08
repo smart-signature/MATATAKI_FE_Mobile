@@ -208,25 +208,17 @@ export default {
     数据观测(data observer)，属性和方法的运算， watch/event 事件回调。
     然而，挂载阶段还没开始，$el 属性目前不可见。
   */
-  async created() {
+  created() {
     document.title = '正在加载文章 - Smart Signature';
     this.initClipboard(); // 分享按钮功能需要放在前面 保证功能的正常执行
-    this.setArticleData();
-    const { data } = await getArticleInfo(this.hash);
-    this.article = data;
-    console.log('Article info :', this.article);
-    console.log(this.article);
-    this.totalSupportedAmount = data.value;
-    this.articleCreateTime = moment(data.create_time).format('MMMDo');
 
-    this.signId = data.id;
-    console.log(this.signId);
-    this.getArticlesList(data.id, this.page);
-    this.page += 1;
+    const { hash } = this;
+    this.setArticleData(hash);
+    this.setArticleInfo(hash);
+
     // 后续没问题就可以删掉了
     // const shares = localStorage.getItem(`sign id : ${signid}'s shares`);
     // eslint-disable-next-line no-shadow
-    // 后续没问题就可以删掉了
     // const setShares = ({ signid }) => {
     //   getSharesbysignid(signid, 1)
     //     .then((response) => {
@@ -237,9 +229,7 @@ export default {
     //       console.log('Article\'s shares : ', this.shares);
     //     });
     // };
-
     // Use cache or do first time downloading
-    // 后续没问题就可以删掉了
     // if (shares) {
     //   this.shares = JSON.parse(shares);
     // } else { // first time need await
@@ -250,8 +240,8 @@ export default {
     this.isTotalSupportAmountVisible = true;
     this.setisSupported();
 
-    // Update to latest data
     // 后续没问题就可以删掉了
+    // Update to latest data
     // setShares({ signid });
 
     addReadAmount({ articlehash: this.hash });
@@ -322,10 +312,22 @@ export default {
         });
       });
     },
-    async setArticleData() {
-      const { data } = await getArticleData(this.hash);
+    async setArticleData(hash) {
+      const { data } = await getArticleData(hash);
       this.post = data.data;
       console.info('post :', this.post);
+    },
+    async setArticleInfo(hash) {
+      const { data } = await getArticleInfo(hash);
+      this.article = data;
+      console.info('Article info :', this.article);
+      const { article, page } = this;
+      this.articleCreateTime = moment(article.create_time).format('MMMDo');
+      this.totalSupportedAmount = article.value;
+      this.signId = article.id;
+      // console.debug(this.signId);
+      await this.getArticlesList(article.id, page);
+      this.page += 1;
     },
     handleClose() {
       this.visible3 = false;

@@ -63,9 +63,6 @@ export default {
       this.$router.go(-1);
     },
   },
-  async created() {
-
-  },
 };
 </script>
 <style>
