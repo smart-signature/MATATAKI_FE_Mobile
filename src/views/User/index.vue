@@ -180,9 +180,8 @@ export default {
       this.editing = !this.editing;
     },
     refresh_user() {
-      getUser({
-        username: this.username,
-      }, (error, response, body) => {
+      const { username } = this;
+      getUser({ username }, (error, response, body) => {
         this.follows = body.follows;
         this.fans = body.fans;
         this.followed = body.is_follow;
@@ -248,7 +247,6 @@ export default {
     this.refresh_user();
     const user = this.isMe ? '我' : this.username;
     document.title = `${user}的个人主页 - SmartSignature`;
-    await this.authDemo();
   },
 };
 </script>
