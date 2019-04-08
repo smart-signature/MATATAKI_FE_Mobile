@@ -6,6 +6,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex';
+import { version } from '../package.json'
 
 export default {
   data: () => ({}),
@@ -43,6 +44,7 @@ export default {
   },
   created() { // https://juejin.im/post/5bfa4bb951882558ae3c171e
     window.updateNotify = this.updateNotify;
+    console.info('Smart Signature version :', version);
     try {
       // Scatter 10.0 need to suggestNetwork, if not, scatter is not working on login
       this.connectScatterAsync()

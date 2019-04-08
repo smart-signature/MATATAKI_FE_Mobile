@@ -64,15 +64,21 @@ export default new Router({
     },
     {
       path: '/fanslist',
-      name: 'fanslist',
+      name: 'Fanslist',
       props: true,
       component: () => import(/* webpackChunkName: "new-post" */ './views/User/FansList.vue'),
     },
     {
       path: '/followlist',
-      name: 'followlist',
+      name: 'Followlist',
       props: true,
       component: () => import(/* webpackChunkName: "new-post" */ './views/User/FollowList.vue'),
     },
+    {
+      path: '/draftbox',
+      name: 'DraftBox',
+      props: true,
+      component: () => import(/* webpackChunkName: "new-post" */ './views/User/DraftBox.vue'),
+    }
   ],
 });
