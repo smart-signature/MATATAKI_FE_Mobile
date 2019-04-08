@@ -22,7 +22,7 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ './views/About.vue'),
     },
     {
-      path: '/article/:hash',
+      path: '/article/:id',
       name: 'Article',
       props: true,
       component: () => import(/* webpackChunkName: "article" */ './views/Article/index.vue'),
@@ -79,6 +79,6 @@ export default new Router({
       name: 'DraftBox',
       props: true,
       component: () => import(/* webpackChunkName: "new-post" */ './views/User/DraftBox.vue'),
-    }
+    },
   ],
 });

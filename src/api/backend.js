@@ -49,6 +49,8 @@ const publishArticle = ({
 
 const getArticleData = hash => axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
 const getArticleInfo = hash => axios.get(`${apiServer}/post/${hash}`);
+// 获取单篇文章的信息 （短链接 issues）
+const getArticleInHash = id => axios.get(`${apiServer}/p/${id}`);
 
 /**
  * 获取按照发表时间文章排行榜 https://github.com/smart-signature/smart-signature-backend/blob/master/doc.md#获取文章列表
@@ -222,7 +224,7 @@ const addReadAmount = ({ articlehash }, callback) => accessBackend({
 
 export {
   publishArticle, auth, getAuth,
-  getArticleData, getArticlesList, getArticleInfo,
+  getArticleData, getArticlesList, getArticleInfo, getArticleInHash,
   Follow, Unfollow, getUser,
   getSharesbysignid, addReadAmount, sendComment,
   getArticles, getArticlesBySupportAmountRanking, getArticlesBySupportTimesRanking,
