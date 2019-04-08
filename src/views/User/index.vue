@@ -12,7 +12,7 @@
            width="50px" src="/img/camera.png" v-if="editing"/>
       <div class="texts">
         <p class="username">{{username}}</p>
-        <p class="userstatu">关注：{{follows}} 粉丝：{{fans}}</p>
+        <p class="userstatu"><a @click="jumpTo({ name: 'Followlist' })">关注：{{follows}}</a><a style="margin-left:14px;"@click="jumpTo({ name: 'Fanslist' })"> 粉丝：{{fans}}</a></p>
       </div>
       <div v-if="editing">
         <Button class="rightbutton" size="small" type="success"
@@ -57,7 +57,7 @@
     <!-- todo(minakokojima): 顯示該作者發表的文章。-->
     <!-- <ArticlesList ref="ArticlesList"/> -->
     <div class="centercard" v-if="isMe">
-      <za-cell is-link has-arrow @click='jumpTo({ name: "Asset", params: { username }})'>
+      <za-cell is-link has-arrow @click='jumpTo({ name: "DraftBox" })'>
         草稿箱
         <!-- <za-icon type='right' slot='icon'/> -->
       </za-cell>
