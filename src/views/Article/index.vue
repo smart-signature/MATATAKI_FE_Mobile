@@ -383,14 +383,25 @@ export default {
         this.isSupported = RewardStatus.LOADING;
         // eslint-disable-next-line camelcase
         await support({ amount, sign_id: signId, referrer });
-        console.log('Send comment...');
-        // eslint-disable-next-line camelcase
-        await sendComment({ comment, sign_id: signId },
-          (error, response) => {
-            console.log(response.statusCode);
-            if (response.statusCode !== 200) throw new Error(error);
-            if (error) throw new Error(error);
+        try {
+          console.log('Send comment...');
+          // eslint-disable-next-line camelcase
+          await sendComment({ comment, sign_id: signId },
+            (error, response) => {
+              console.log(response.statusCode);
+              if (response.statusCode !== 200) throw new Error(error);
+              if (error) throw new Error(error);
           });
+        } catch (error) {
+          console.log('Resend comment...');
+          // eslint-disable-next-line camelcase
+          await sendComment({ comment, sign_id: signId },
+            (error, response) => {
+              console.log(response.statusCode);
+              if (response.statusCode !== 200) throw new Error(error);
+              if (error) throw new Error(error);
+          });
+        }
         this.isSupported = RewardStatus.REWARDED;
         this.$Message.success('赞赏成功！');
         // tricky speed up
