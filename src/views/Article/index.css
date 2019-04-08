@@ -59,7 +59,8 @@
 .footer {
   max-width: 750px;
   width:100%;
-  height:44px;
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
   background:rgba(242,242,242,1);
   position: fixed;
   bottom: 0;
@@ -68,19 +69,21 @@
   align-items: center;
   border-top: 1px solid #e8e8e8;
   box-sizing: border-box;
+  
 }
 .footer-block {
   flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 8px 0;
 }
 .footer-block .amount,
 .footer-block .fission {
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-size:12px;
+  font-size: 13px;
   font-family:PingFangSC-Regular;
   font-weight:400;
   color:#494949;
@@ -91,7 +94,7 @@
   align-items: center;
 }
 .footer-block .amount {
-  margin-right: 30px;
+  margin-right: 16px;
 }
 .footer-block .amount-img {
   width: 14px;
@@ -107,32 +110,53 @@
 .footer-block .button-share {
   outline: none;
   border: none;
-  width:56px;
-  height:25px;
-  font-size:12px;
+  padding: 6px 10px;
+  font-size:13px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border-radius:3px;
 }
 .footer-block .button-support {
   background:rgba(71,137,112,1);
-  border-radius:2px;
   font-family:PingFangSC-Medium;
   font-weight:500;
   color:rgba(255,255,255,1);
   letter-spacing:1px;
+  border:1px solid rgba(71,137,112,1);
 }
 .footer-block .button-support:disabled {
   background: #D7D7D7;
   color: #fff;
+  border:1px solid #D7D7D7;
 }
 .footer-block .button-share {
-  border-radius:2px;
   border:1px solid rgba(41,139,111,1);
   font-family:PingFangSC-Semibold;
   font-weight:600;
   color:rgba(71,137,112,1);
   background-color: #F2F2F2;
   letter-spacing:1px;
-  margin-left: 14px;
+  margin-left: 8px;
+}
+.footer-block .button-support img {
+  width: 12px;
+  margin-left: 4px;
+}
+.footer-block .button-share img {
+  width: 14px;
+  margin-left: 4px;
+}
+
+/* comments */
+
+.comments {
+  margin-bottom: 60px;
+}
+.loading-stat {
+  text-align: center;
 }
 
 @media screen and (min-width: 750px) {
@@ -156,15 +180,20 @@
     font-size:16px;
   }
 
-  .footer {
-    height:64px;
+  .footer-block {
+    padding: 12px 0;
   }
 
   .footer-block .button-support,
   .footer-block .button-share {
-    width: 66px;
-    height: 35px;
     font-size:14px;
+    padding: 8px 16px;
+  }
+  .footer-block .button-support img {
+    width: 14px;
+  }
+  .footer-block .button-share img {
+    width: 16px;
   }
   .footer-block .amount,
   .footer-block .fission {
@@ -176,18 +205,6 @@
   .footer-block .amount-text {
     font-size:14px;
   }
-}
-
-
-/* comments */
-
-.comments {
-  margin-bottom: 60px;
-}
-.loading-stat {
-  text-align: center;
-}
-@media screen and (min-width: 750px) {
   .comments {
     margin-bottom: 80px;
   }

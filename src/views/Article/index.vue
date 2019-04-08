@@ -36,29 +36,29 @@
       <div class="footer-block">
         <div class="amount">
           <div>
-            <img class="amount-img" src="@/assets/img/amount.png" />
+            <img class="amount-img" src="@/assets/img/icon_amount.png" />
             {{computedTotalSupportedAmount}}
           </div>
           <div class="amount-text">赞赏总额</div>
         </div>
         <div class="fission">
           <div>
-            <img class="amount-img" src="@/assets/img/fission.png" />
+            <img class="amount-img" src="@/assets/img/icon_fission.png" />
             {{getDisplayedFissionFactor}}
           </div>
           <div class="amount-text">裂变系数</div>
         </div>
       </div>
       <div class="footer-block">
-          <button v-if="isSupported===-1" class="button-support" @click="share">赞赏</button>
-          <button v-if="isSupported===0" class="button-support" disabled>赞赏中</button>
+          <button v-if="isSupported===-1" class="button-support" @click="share">赞赏<img src="@/assets/img/icon_support.png" /></button>
+          <button v-if="isSupported===0" class="button-support" disabled>赞赏中<img src="@/assets/img/icon_support.png" /></button>
           <button v-else-if="isSupported===1"
-            class="button-support" @click="visible3=true" >赞赏</button>
-          <button v-else-if="isSupported===2" class="button-support" disabled>已赞赏</button>
+            class="button-support" @click="visible3=true" >赞赏<img src="@/assets/img/icon_support.png" /></button>
+          <button v-else-if="isSupported===2" class="button-support" disabled>已赞赏<img src="@/assets/img/icon_support.png" /></button>
 
           <button class="button-share"
             :data-clipboard-text="getClipboard"
-            @click="share">分享</button>
+            @click="share">分享<img src="@/assets/img/icon_share.png" /></button>
       </div>
     </footer>
     <!-- <footer class="footer-article"> -->
