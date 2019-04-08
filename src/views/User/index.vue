@@ -12,7 +12,11 @@
            width="50px" src="/img/camera.png" v-if="editing"/>
       <div class="texts">
         <p class="username">{{username}}</p>
-        <p class="userstatu"><a @click="jumpTo({ name: 'Followlist' })">关注：{{follows}}</a><a style="margin-left:14px;"@click="jumpTo({ name: 'Fanslist' })"> 粉丝：{{fans}}</a></p>
+        <!-- <p class="userstatu"><a @click="jumpTo({ name: 'Followlist' })">关注：{{follows}}</a><a style="margin-left:14px;"@click="jumpTo({ name: 'Fanslist' })"> 粉丝：{{fans}}</a></p> -->
+        <p class="userstatu">
+          <span>关注：{{follows}}</span>
+          <span style="margin-left:14px;">粉丝：{{fans}}</span>
+        </p>
       </div>
       <div v-if="editing">
         <Button class="rightbutton" size="small" type="success"
@@ -57,9 +61,9 @@
     <!-- todo(minakokojima): 顯示該作者發表的文章。-->
     <!-- <ArticlesList ref="ArticlesList"/> -->
     <div class="centercard" v-if="isMe">
-      <za-cell is-link has-arrow @click='jumpTo({ name: "DraftBox" })'>
+      <za-cell is-link has-arrow>
         草稿箱
-        <!-- <za-icon type='right' slot='icon'/> -->
+        <!-- <za-icon type='right' slot='icon'/> @click='jumpTo({ name: "DraftBox" })'-->
       </za-cell>
       <za-cell is-link has-arrow @click='jumpTo({ name: "Original", params: { username }})'>
         我的文章
