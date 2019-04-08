@@ -7,30 +7,26 @@ import { Base64 } from 'js-base64';
 
 export const apiServer = process.env.VUE_APP_API;
 
+// eslint-disable-next-line no-unused-vars
 const oldpublishArticle = ({
   author, title, hash, publicKey, signature, username, fissionFactor,
-}, callback) => 
-  // const url = `http://localhost:7001/publish`;
-   request.post({
-    uri: `${apiServer}/publish`,
-    rejectUnauthorized: false,
-    json: true,
-    headers: { Accept: '*/*' },
-    dataType: 'json',
-    form: {
-      author,
-      fissionFactor,
-      hash,
-      publickey: publicKey,
-      username,
-      title,
-      sign: signature,
-    },
-  }, callback)
-;
+}, callback) => request.post({
+  uri: `${apiServer}/publish`,
+  rejectUnauthorized: false,
+  json: true,
+  headers: { Accept: '*/*' },
+  dataType: 'json',
+  form: {
+    author,
+    fissionFactor,
+    hash,
+    publickey: publicKey,
+    username,
+    title,
+    sign: signature,
+  },
+}, callback);
 
-// 開發測試中
-// eslint-disable-next-line no-unused-vars
 const publishArticle = ({
   author, title, hash, publicKey, signature, username, fissionFactor,
 }) => axios.post(
@@ -111,21 +107,21 @@ const getSharesbysignid = (signid, page) => axios.get(`${apiServer}/shares?signi
 // /根据用户名，公钥，客户端签名请求access_token
 // /</summary>
 const auth = ({ username, publicKey, sign }, callback) => request.post({
-    uri: `${apiServer}/auth`,
-    rejectUnauthorized: false,
-    json: true,
-    headers: { Accept: '*/*', Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==' },
-    dataType: 'json',
-    form: {
-      username,
-      publickey: publicKey,
-      sign,
-    },
-  }, callback);
+  uri: `${apiServer}/auth`,
+  rejectUnauthorized: false,
+  json: true,
+  headers: { Accept: '*/*', Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==' },
+  dataType: 'json',
+  form: {
+    username,
+    publickey: publicKey,
+    sign,
+  },
+}, callback);
+
 // /<summary>
 // /装载access_token
 // /</summary>
-
 const getAuth = async (cb) => {
   const currentToken = localStorage.getItem('ACCESS_TOKEN');
   let decodedData = null;
@@ -136,8 +132,9 @@ const getAuth = async (cb) => {
   }
   // 1. 拆包token抓出时间并判断这个时间和系统时间的差异
   if (decodedData === null || (decodedData.exp < new Date().getTime())) {
+    console.log('Retake authtoken...');
     API.authSignature(({ username, publicKey, signature }) => {
-      console.log('API.authSignature :', username, publicKey, signature);
+      console.info('API.authSignature :', username, publicKey, signature);
       // 2. 将取得的签名和用户名和公钥post到服务端 获得accessToken并保存
       auth({ username, publicKey, sign: signature }, (error, response, body) => {
         if (!error) {
@@ -163,87 +160,65 @@ const accessBackend = async (options, callback = () => {}) => {
     // 在这里套了7层callback，callback里面的async语法是无效的，所以一层一层套出来
     options.headers['x-access-token'] = localStorage.getItem('ACCESS_TOKEN');
     console.info('b4 request send, Options :', options);
+    console.info('b4 request send, x-access-token :', options.headers['x-access-token']);
     request(options, callback); // 都是 request 害的，改用 axios 沒這些破事
   });
 };
 
 // Be used in User page.
-const Follow = ({ username, followed }, callback) => {
-  const accessToken = localStorage.getItem('ACCESS_TOKEN');
-  console.log('accessToken: ', accessToken);
-  return accessBackend({
-    method: 'POST',
-    uri: `${apiServer}/follow`,
-    rejectUnauthorized: false,
-    json: true,
-    headers: { Accept: '*/*', 'x-access-token': accessToken },
-    dataType: 'json',
-    form: {
-      username,
-      followed,
-    },
-  }, callback);
-};
+const Follow = ({ username, followed }, callback) => accessBackend({
+  method: 'POST',
+  uri: `${apiServer}/follow`,
+  rejectUnauthorized: false,
+  json: true,
+  headers: { Accept: '*/*' },
+  dataType: 'json',
+  form: { username, followed },
+}, callback);
 
 // Be used in User page.
-const Unfollow = ({ username, followed }, callback) => {
-  const accessToken = localStorage.getItem('ACCESS_TOKEN');
-  console.log('accessToken: ', accessToken);
-  return accessBackend({
-    method: 'POST',
-    uri: `${apiServer}/unfollow`,
-    rejectUnauthorized: false,
-    json: true,
-    headers: { Accept: '*/*', 'x-access-token': accessToken },
-    dataType: 'json',
-    form: {
-      username,
-      followed,
-    },
-  }, callback);
-};
+const Unfollow = ({ username, followed }, callback) => accessBackend({
+  method: 'POST',
+  uri: `${apiServer}/unfollow`,
+  rejectUnauthorized: false,
+  json: true,
+  headers: { Accept: '*/*' },
+  dataType: 'json',
+  form: { username, followed },
+}, callback);
 
 // Be used in User page.
-const getUser = ({ username }, callback) => {
-  const accessToken = localStorage.getItem('ACCESS_TOKEN');
-  return accessBackend({
-    method: 'GET',
-    uri: `${apiServer}/user/${username}`,
-    rejectUnauthorized: false,
-    json: true,
-    headers: { Accept: '*/*', 'x-access-token': accessToken },
-    dataType: 'json',
-    form: {},
-  }, callback);
-};
+const getUser = ({ username }, callback) => accessBackend({
+  method: 'GET',
+  uri: `${apiServer}/user/${username}`,
+  rejectUnauthorized: false,
+  json: true,
+  headers: { Accept: '*/*' },
+  dataType: 'json',
+  form: {},
+}, callback);
 
 // eslint-disable-next-line camelcase
-const sendComment = ({ comment, sign_id }, callback) => {
-  const accessToken = localStorage.getItem('ACCESS_TOKEN');
-  return accessBackend({
-    method: 'POST',
-    uri: `${apiServer}/post/comment`,
-    rejectUnauthorized: false,
-    json: true,
-    headers: { Accept: '*/*', 'x-access-token': accessToken },
-    dataType: 'json',
-    form: { comment, sign_id },
-  }, callback);
-};
+const sendComment = ({ comment, sign_id }, callback) => accessBackend({
+  method: 'POST',
+  uri: `${apiServer}/post/comment`,
+  rejectUnauthorized: false,
+  json: true,
+  headers: { Accept: '*/*' },
+  dataType: 'json',
+  form: { comment, sign_id },
+}, callback);
 
 // be Used in Article Page
-const addReadAmount = ({ articlehash }, callback) => {
-  const accessToken = localStorage.getItem('ACCESS_TOKEN');
-  return accessBackend({
-    method: 'POST',
-    uri: `${apiServer}/post/show/${articlehash}`,
-    rejectUnauthorized: false,
-    json: true,
-    headers: { Accept: '*/*', 'x-access-token': accessToken },
-    dataType: 'json',
-    form: {},
-  }, callback);
-};
+const addReadAmount = ({ articlehash }, callback) => accessBackend({
+  method: 'POST',
+  uri: `${apiServer}/post/show/${articlehash}`,
+  rejectUnauthorized: false,
+  json: true,
+  headers: { Accept: '*/*' },
+  dataType: 'json',
+  form: {},
+}, callback);
 
 export {
   publishArticle, auth, getAuth,
