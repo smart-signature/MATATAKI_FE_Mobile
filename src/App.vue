@@ -12,6 +12,7 @@ export default {
   data: () => ({}),
   methods: {
     ...mapActions([
+      'cyanobridgegetAccount',
       'connectScatterAsync',
       'suggestNetworkAsync',
       'loginScatterAsync',
@@ -45,6 +46,7 @@ export default {
   created() { // https://juejin.im/post/5bfa4bb951882558ae3c171e
     window.updateNotify = this.updateNotify;
     console.info('Smart Signature version :', version);
+    const { cyanobridgegetAccount } = this;
     try {
       // Scatter 10.0 need to suggestNetwork, if not, scatter is not working on login
       this.connectScatterAsync()
@@ -56,6 +58,11 @@ export default {
     } catch (e) {
       console.warn('Unable to connect wallets');
       this.$Message.error('钱包连接失败，钱包需打开并解锁');
+    }
+    try {
+      cyanobridgegetAccount();
+    } catch (error) {
+      
     }
   },
 };

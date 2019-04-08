@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import api, { currentEOSAccount } from './api/scatter';
+import cyanobridgeAPI from './api/cyanobridge';
 
 Vue.use(Vuex);
 
@@ -9,6 +10,9 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    cyanobridge: {
+      account: null,
+    },
     isScatterConnected: false,
     scatterAccount: null,
     balances: {
@@ -33,8 +37,16 @@ export default new Vuex.Store({
     setMyBalance(state, { symbol, balance }) {
       state.balances[symbol] = balance;
     },
+    setCyanobridgeAccount(state, account) {
+      state.cyanobridge.account = account;
+    },
   },
   actions: {
+    async cyanobridgegetAccount({ commit, dispatch }) {
+      console.log('Connecting to wallet ...');
+      const result = await cyanobridgeAPI.getAccount();
+      commit('setCyanobridgeAccount', result);
+    },
     async connectScatterAsync({ commit, dispatch }) {
       console.log('Connecting to wallet or Scatter desktop...');
       // try {
