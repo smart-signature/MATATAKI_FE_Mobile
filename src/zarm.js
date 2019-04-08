@@ -2,7 +2,7 @@ import Vue from 'vue';
 import {
   Actionsheet, Alert, Button, Cell, Pull,
   TabPane, Tabs, NavBar, Icon, Confirm, Input,
-  Modal, KeyboardPicker,
+  Modal, KeyboardPicker, SwipeAction
 } from 'zarm-vue';
 
 // Instead of doing this: - Frank
@@ -13,7 +13,7 @@ import {
 [
   Actionsheet, Alert, Button, Cell, Pull,
   TabPane, Tabs, NavBar, Icon, Confirm,
-  Input,
+  Input, SwipeAction,
   Modal, KeyboardPicker,
 ].map(component => Vue.use(component));
 
