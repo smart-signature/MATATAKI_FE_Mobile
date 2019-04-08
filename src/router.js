@@ -80,5 +80,11 @@ export default new Router({
       props: true,
       component: () => import(/* webpackChunkName: "new-post" */ './views/User/DraftBox.vue'),
     },
+    {
+      path: '/_easter-egg',
+      name: 'EasterEgg',
+      props: true,
+      component: () => import(/* webpackChunkName: "easter-egg" */ './views/EasterEgg.vue'),
+    },
   ],
 });

@@ -40,12 +40,12 @@ export default {
       followlist: [
         {
           name: '画夜夜的鹿角',
-          fans: '73'
+          fans: '73',
         },
         {
           name: '小岛美奈子',
-          fans: '2.4w'
-        }
+          fans: '2.4w',
+        },
       ],
       actions2: [{
         theme: 'error',
@@ -69,12 +69,12 @@ export default {
     goBack() {
       this.$router.go(-1);
     },
-    ClickRightIcon(){
+    ClickRightIcon() {
       this.clickicon = true;
     },
-    cancelCb(reason, event){
-      console.log(reason, event)
-    }
+    cancelCb(reason, event) {
+      console.log(reason, event);
+    },
   },
 };
 </script>
