@@ -40,12 +40,15 @@ export default {
   components: {
     'mavon-editor': mavonEditor,
   },
-  async created() {
+  created() {
     if (this.currentUsername) {
       return;
     }
-    await this.suggestNetworkAsync();
-    await this.loginScatterAsync();
+    this.suggestNetworkAsync()
+    .then(added => {
+      console.log('Suggest network result: ', added);
+      this.loginScatterAsync();
+    });
   },
   mounted() {
     this.resize();

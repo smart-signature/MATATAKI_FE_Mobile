@@ -76,9 +76,6 @@ export default {
       console.log(reason, event)
     }
   },
-  async created() {
-
-  },
 };
 </script>
 <style>
