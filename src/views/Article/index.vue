@@ -15,7 +15,7 @@
         Author: {{post.author}}
       </router-link>
       {{articleCreateTime}} | {{article.read || 0}}阅读</p>
-      <p class="break_all">IPFS Hash: {{hash}}</p>
+      <p class="break_all">IPFS Hash: {{article.hash}}</p>
     </header>
     <mavon-editor v-show="false" style="display: none;"/>
     <div class="markdown-body" v-html="compiledMarkdown"></div>
@@ -122,7 +122,7 @@ import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
 import {
   getArticleData, getArticleInfo, getSharesbysignid,
-  addReadAmount, sendComment,
+  addReadAmount, sendComment, getArticleInHash,
 } from '@/api';
 import { support } from '@/api/signature';
 import 'mavon-editor/dist/css/index.css';
@@ -142,7 +142,7 @@ const RewardStatus = { // 0=加载中,1=未打赏 2=已打赏, -1未登录
 
 export default {
   name: 'Article',
-  props: ['hash'],
+  props: ['id'],
   components: { mavonEditor, CommentCard },
   computed: {
     ...mapGetters(['currentUsername']),
@@ -154,13 +154,14 @@ export default {
       return markdownIt.render(this.post.content);
     },
     getClipboard() {
+      console.log(this.article);
       const { currentUsername } = this;
       const { protocol, host } = window.location;
-      const articleUrl = `${protocol}//${host}/article/${this.hash}`;
+      const articleUrl = `${protocol}//${host}/article/${this.article.id}`;
       const shareLink = this.isLogined
         ? `${articleUrl}?invite=${currentUsername}`
         : articleUrl;
-      return `我在智能签名上发现了一篇好文章！${shareLink} 赞赏好文，分享有收益 ！`;
+      return `《${this.article.title}》by ${this.article.username} \n${shareLink}\n赞赏好文，分享有收益 ！`;
     },
     getDisplayedFissionFactor() {
       return this.article.fission_factor / 1000;
@@ -212,9 +213,8 @@ export default {
     document.title = '正在加载文章 - Smart Signature';
     this.initClipboard(); // 分享按钮功能需要放在前面 保证功能的正常执行
 
-    const { hash } = this;
-    this.setArticleData(hash);
-    this.setArticleInfo(hash);
+    const { id } = this;
+    this.getArticleInHash(id);
 
     // 后续没问题就可以删掉了
     // const shares = localStorage.getItem(`sign id : ${signid}'s shares`);
@@ -312,6 +312,19 @@ export default {
         });
       });
     },
+    // 通过id 获取hash值
+    async getArticleInHash(id) {
+      await getArticleInHash(id).then((res) => {
+        if (res.status === 200) {
+          const { hash } = res.data;
+          this.setArticleData(hash);
+          this.setArticleInfo(hash);
+        }
+      }).catch((err) => {
+        console.log(err);
+        this.$Message.error('发生错误请重试');
+      });
+    },
     async setArticleData(hash) {
       const { data } = await getArticleData(hash);
       this.post = data.data;
@@ -378,7 +391,7 @@ export default {
       const signId = article.id;
       const referrer = this.getInvite;
       console.log('referrer :', referrer);
-      
+
       try {
         this.isSupported = RewardStatus.LOADING;
         // eslint-disable-next-line camelcase
@@ -391,7 +404,7 @@ export default {
               console.log(response.statusCode);
               if (response.statusCode !== 200) throw new Error(error);
               if (error) throw new Error(error);
-          });
+            });
         } catch (error) {
           console.log('Resend comment...');
           // eslint-disable-next-line camelcase
@@ -400,7 +413,7 @@ export default {
               console.log(response.statusCode);
               if (response.statusCode !== 200) throw new Error(error);
               if (error) throw new Error(error);
-          });
+            });
         }
         this.isSupported = RewardStatus.REWARDED;
         this.$Message.success('赞赏成功！');
