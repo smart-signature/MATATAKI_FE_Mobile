@@ -5,9 +5,9 @@
 </template>
 
 <script>
-import Konami from "konami";
+import Konami from 'konami';
 import { mapActions, mapState } from 'vuex';
-import { version } from '../package.json'
+import { version } from '../package.json';
 
 export default {
   data: () => ({}),
@@ -41,12 +41,12 @@ export default {
     },
     triggerEasterEgg() {
       // 当用户在键盘输入 ⬆️⬆️⬇️⬇️⬅️➡️⬅️➡️BA 时触发这个函数
-      this.$Message.info("恭喜你找到了隐藏彩蛋！");
+      this.$Message.info('恭喜你找到了隐藏彩蛋！');
       this.$router.push({ name: 'EasterEgg' });
-    }
+    },
   },
   mounted() {
-    const easterEgg = new Konami(() => { this.triggerEasterEgg() });
+    const easterEgg = new Konami(() => { this.triggerEasterEgg(); });
   },
   computed: {
     ...mapState(['scatterAccount']),

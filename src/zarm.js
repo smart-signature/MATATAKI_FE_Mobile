@@ -2,7 +2,7 @@ import Vue from 'vue';
 import {
   Actionsheet, Alert, Button, Cell, Pull,
   TabPane, Tabs, NavBar, Icon, Confirm, Input,
-  Modal, KeyboardPicker, SwipeAction
+  Modal, KeyboardPicker, SwipeAction,
 } from 'zarm-vue';
 
 // Instead of doing this: - Frank

@@ -12,25 +12,25 @@
 
 <script>
 export default {
-    name: "Easter-Egg",
-    computed: {
-        env() {
-            return process.env.NODE_ENV;
-        },
-        version() {
-            return process.env.VUE_APP_VERSION
-        },
-        isDevelopment() {
-            return this.env === "development";
-        },
-        commitHash() {
-            return process.env.VUE_APP_COMMIT_HASH
-        },
-        checkIsBuildOnCommit() {
-            // undefined will be stringify to "undefined" 
-            // Ref: https://github.com/vuejs/vue-cli/blob/dev/packages/%40vue/cli-service/lib/util/resolveClientEnv.js#L1
-            return this.commitHash !== "undefined"
-        }
-    }
-}
+  name: 'Easter-Egg',
+  computed: {
+    env() {
+      return process.env.NODE_ENV;
+    },
+    version() {
+      return process.env.VUE_APP_VERSION;
+    },
+    isDevelopment() {
+      return this.env === 'development';
+    },
+    commitHash() {
+      return process.env.VUE_APP_COMMIT_HASH;
+    },
+    checkIsBuildOnCommit() {
+      // undefined will be stringify to "undefined"
+      // Ref: https://github.com/vuejs/vue-cli/blob/dev/packages/%40vue/cli-service/lib/util/resolveClientEnv.js#L1
+      return this.commitHash !== 'undefined';
+    },
+  },
+};
 </script>
