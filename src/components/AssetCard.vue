@@ -2,13 +2,14 @@
   <div class="card asset">
     <a>
       <Row justify="center" >
-        <i-col span="16">
+        <i-col span="18">
            <h2 class="asset-quantity"
              :style='{ color: `${assetColor}` }'>
              {{(asset.quantity.substring(0,1) !== '-' ? '+': '') + asset.quantity}}</h2>
            <p class="asset-information">{{friendlyDate}}</p>
          </i-col>
-         <i-col span="8" >
+         <i-col span="6" class="detailright">
+           {{(asset.article.title).length > 11 ? (asset.article.title).slice(0,11)+'...' : asset.article.title}}
            <!--<ArticleCard :article="asset.article" />-->
          </i-col>
       </Row>
@@ -57,5 +58,17 @@ h2.asset-quantity {
 }
 .asset-information {
   color: rgb(105,105,105);
+}
+.detailright{
+  margin-top: -10px;
+  width: 60px;
+  height: 62px;
+  float: right;
+  background-color: #ecebeb;
+  color: #777777;
+  font-size: 11px;
+  font-weight: normal;
+  padding: 4px;
+  margin-bottom: -10px;
 }
 </style>

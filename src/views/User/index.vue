@@ -12,7 +12,11 @@
            width="50px" src="/img/camera.png" v-if="editing"/>
       <div class="texts">
         <p class="username">{{username}}</p>
-        <p class="userstatu">关注：{{follows}} 粉丝：{{fans}}</p>
+        <!-- <p class="userstatu"><a @click="jumpTo({ name: 'Followlist' })">关注：{{follows}}</a><a style="margin-left:14px;"@click="jumpTo({ name: 'Fanslist' })"> 粉丝：{{fans}}</a></p> -->
+        <p class="userstatu">
+          <span>关注：{{follows}}</span>
+          <span style="margin-left:14px;">粉丝：{{fans}}</span>
+        </p>
       </div>
       <div v-if="editing">
         <Button class="rightbutton" size="small" type="success"
@@ -43,22 +47,23 @@
     <div class="topcard" v-if="isMe">
       <Row type="flex" justify="center" class="code-row-bg">
           <Col span="11">
-            <p class="centervalue">{{mySignIncome}} EOS</p>
-            <p class="centertext">创作收益</p>
+            <p class="centervalue">{{mySignIncome + myShareIncome}} EOS</p>
+            <p class="centertext">历史总收入</p>
           </Col>
           <Col span="1"><Divider type="vertical" style="height:33px;margin-top:10px;" /></Col>
           <Col span="11">
-            <p class="centervalue">{{myShareIncome}} EOS</p>
-            <p class="centertext">赞赏收益</p>
+            <Button class="detail" ghost @click='jumpTo({ name: "Asset", params: { username }})'><div style="margin-top:-2px">资产明细</div></Button>
+            <!-- <p class="centervalue">{{myShareIncome}} EOS</p>
+            <p class="centertext">赞赏收益</p> -->
           </Col>
       </Row>
     </div>
     <!-- todo(minakokojima): 顯示該作者發表的文章。-->
     <!-- <ArticlesList ref="ArticlesList"/> -->
     <div class="centercard" v-if="isMe">
-      <za-cell is-link has-arrow @click='jumpTo({ name: "Asset", params: { username }})'>
-        资产明细
-        <!-- <za-icon type='right' slot='icon'/> -->
+      <za-cell is-link has-arrow>
+        草稿箱
+        <!-- <za-icon type='right' slot='icon'/> @click='jumpTo({ name: "DraftBox" })'-->
       </za-cell>
       <za-cell is-link has-arrow @click='jumpTo({ name: "Original", params: { username }})'>
         我的文章
@@ -175,9 +180,8 @@ export default {
       this.editing = !this.editing;
     },
     refresh_user() {
-      getUser({
-        username: this.username,
-      }, (error, response, body) => {
+      const { username } = this;
+      getUser({ username }, (error, response, body) => {
         this.follows = body.follows;
         this.fans = body.fans;
         this.followed = body.is_follow;
@@ -243,7 +247,6 @@ export default {
     this.refresh_user();
     const user = this.isMe ? '我' : this.username;
     document.title = `${user}的个人主页 - SmartSignature`;
-    await this.authDemo();
   },
 };
 </script>
@@ -327,5 +330,21 @@ a {
   font-size: 14px;
   font-weight: bold;
   opacity: 0.4;
+}
+Button.detail, Button.detail:focus, Button.detail:hover {
+  background-color: rgba(0, 0, 0, 1);
+  border-radius: 2px;
+  color: rgba(255,255,255,1);
+  /* float: right; */
+  font-size: 12px;
+  margin-top: 12px;
+  width: 80px;
+  height: 25px;
+  letter-spacing: 2px;
+  max-width: 94px;
+  max-height: 35px;
+  text-align: center;
+  padding-left: 12px;
+  /* margin-right: 0px; */
 }
 </style>

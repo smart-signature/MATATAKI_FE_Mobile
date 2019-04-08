@@ -15,7 +15,7 @@
         Author: {{post.author}}
       </router-link>
       {{articleCreateTime}} | {{article.read || 0}}阅读</p>
-      <p class="break_all">IPFS Hash: {{hash}}</p>
+      <p class="break_all">IPFS Hash: {{article.hash}}</p>
     </header>
     <mavon-editor v-show="false" style="display: none;"/>
     <div class="markdown-body" v-html="compiledMarkdown"></div>
@@ -36,29 +36,29 @@
       <div class="footer-block">
         <div class="amount">
           <div>
-            <img class="amount-img" src="@/assets/img/amount.png" />
+            <img class="amount-img" src="@/assets/img/icon_amount.png" />
             {{computedTotalSupportedAmount}}
           </div>
           <div class="amount-text">赞赏总额</div>
         </div>
         <div class="fission">
           <div>
-            <img class="amount-img" src="@/assets/img/fission.png" />
+            <img class="amount-img" src="@/assets/img/icon_fission.png" />
             {{getDisplayedFissionFactor}}
           </div>
           <div class="amount-text">裂变系数</div>
         </div>
       </div>
       <div class="footer-block">
-          <button v-if="isSupported===-1" class="button-support" @click="share">赞赏</button>
-          <button v-if="isSupported===0" class="button-support" disabled>赞赏中</button>
+          <button v-if="isSupported===-1" class="button-support" @click="share">赞赏<img src="@/assets/img/icon_support.png" /></button>
+          <button v-if="isSupported===0" class="button-support" disabled>赞赏中<img src="@/assets/img/icon_support.png" /></button>
           <button v-else-if="isSupported===1"
-            class="button-support" @click="visible3=true" >赞赏</button>
-          <button v-else-if="isSupported===2" class="button-support" disabled>已赞赏</button>
+            class="button-support" @click="visible3=true" >赞赏<img src="@/assets/img/icon_support.png" /></button>
+          <button v-else-if="isSupported===2" class="button-support" disabled>已赞赏<img src="@/assets/img/icon_support.png" /></button>
 
           <button class="button-share"
             :data-clipboard-text="getClipboard"
-            @click="share">分享</button>
+            @click="share">分享<img src="@/assets/img/icon_share.png" /></button>
       </div>
     </footer>
     <!-- <footer class="footer-article"> -->
@@ -122,7 +122,7 @@ import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
 import {
   getArticleData, getArticleInfo, getSharesbysignid,
-  addReadAmount, sendComment,
+  addReadAmount, sendComment, getArticleInHash,
 } from '@/api';
 import { support } from '@/api/signature';
 import 'mavon-editor/dist/css/index.css';
@@ -142,7 +142,7 @@ const RewardStatus = { // 0=加载中,1=未打赏 2=已打赏, -1未登录
 
 export default {
   name: 'Article',
-  props: ['hash'],
+  props: ['id'],
   components: { mavonEditor, CommentCard },
   computed: {
     ...mapGetters(['currentUsername']),
@@ -154,13 +154,14 @@ export default {
       return markdownIt.render(this.post.content);
     },
     getClipboard() {
+      console.log(this.article);
       const { currentUsername } = this;
       const { protocol, host } = window.location;
-      const articleUrl = `${protocol}//${host}/article/${this.hash}`;
+      const articleUrl = `${protocol}//${host}/article/${this.article.id}`;
       const shareLink = this.isLogined
         ? `${articleUrl}?invite=${currentUsername}`
         : articleUrl;
-      return `我在智能签名上发现了一篇好文章！${shareLink} 赞赏好文，分享有收益 ！`;
+      return `《${this.article.title}》by ${this.article.username} \n${shareLink}\n赞赏好文，分享有收益 ！`;
     },
     getDisplayedFissionFactor() {
       return this.article.fission_factor / 1000;
@@ -208,25 +209,16 @@ export default {
     数据观测(data observer)，属性和方法的运算， watch/event 事件回调。
     然而，挂载阶段还没开始，$el 属性目前不可见。
   */
-  async created() {
+  created() {
     document.title = '正在加载文章 - Smart Signature';
     this.initClipboard(); // 分享按钮功能需要放在前面 保证功能的正常执行
-    this.setArticleData();
-    const { data } = await getArticleInfo(this.hash);
-    this.article = data;
-    console.log('Article info :', this.article);
-    console.log(this.article);
-    this.totalSupportedAmount = data.value;
-    this.articleCreateTime = moment(data.create_time).format('MMMDo');
 
-    this.signId = data.id;
-    console.log(this.signId);
-    this.getArticlesList(data.id, this.page);
-    this.page += 1;
+    const { id } = this;
+    this.getArticleInHash(id);
+
     // 后续没问题就可以删掉了
     // const shares = localStorage.getItem(`sign id : ${signid}'s shares`);
     // eslint-disable-next-line no-shadow
-    // 后续没问题就可以删掉了
     // const setShares = ({ signid }) => {
     //   getSharesbysignid(signid, 1)
     //     .then((response) => {
@@ -237,9 +229,7 @@ export default {
     //       console.log('Article\'s shares : ', this.shares);
     //     });
     // };
-
     // Use cache or do first time downloading
-    // 后续没问题就可以删掉了
     // if (shares) {
     //   this.shares = JSON.parse(shares);
     // } else { // first time need await
@@ -250,8 +240,8 @@ export default {
     this.isTotalSupportAmountVisible = true;
     this.setisSupported();
 
-    // Update to latest data
     // 后续没问题就可以删掉了
+    // Update to latest data
     // setShares({ signid });
 
     addReadAmount({ articlehash: this.hash });
@@ -322,10 +312,35 @@ export default {
         });
       });
     },
-    async setArticleData() {
-      const { data } = await getArticleData(this.hash);
+    // 通过id 获取hash值
+    async getArticleInHash(id) {
+      await getArticleInHash(id).then((res) => {
+        if (res.status === 200) {
+          const { hash } = res.data;
+          this.setArticleData(hash);
+          this.setArticleInfo(hash);
+        }
+      }).catch((err) => {
+        console.log(err);
+        this.$Message.error('发生错误请重试');
+      });
+    },
+    async setArticleData(hash) {
+      const { data } = await getArticleData(hash);
       this.post = data.data;
       console.info('post :', this.post);
+    },
+    async setArticleInfo(hash) {
+      const { data } = await getArticleInfo(hash);
+      this.article = data;
+      console.info('Article info :', this.article);
+      const { article, page } = this;
+      this.articleCreateTime = moment(article.create_time).format('MMMDo');
+      this.totalSupportedAmount = article.value;
+      this.signId = article.id;
+      // console.debug(this.signId);
+      await this.getArticlesList(article.id, page);
+      this.page += 1;
     },
     handleClose() {
       this.visible3 = false;
@@ -362,10 +377,10 @@ export default {
         return;
       }
       // amount
-      const { comment, article } = this;
+      const { article, comment } = this;
 
       const amount = parseFloat(this.amount);
-      if (Number.isNaN(amount) || amount < 0.01) { // amount / 10000
+      if (Number.isNaN(amount) || amount < 0.01) {
         this.$Message.warning('请输入正确的金额 最小赞赏金额为 0.01 EOS');
         return;
       }
@@ -376,18 +391,30 @@ export default {
       const signId = article.id;
       const referrer = this.getInvite;
       console.log('referrer :', referrer);
-      this.isSupported = RewardStatus.LOADING;
+
       try {
+        this.isSupported = RewardStatus.LOADING;
         // eslint-disable-next-line camelcase
         await support({ amount, sign_id: signId, referrer });
-        console.log('Send comment...');
-        // eslint-disable-next-line camelcase
-        await sendComment({ comment, sign_id: signId },
-          (error, response) => {
-            console.log(response.statusCode);
-            if (response.statusCode !== 200) throw new Error(error);
-            if (error) throw new Error(error);
-          });
+        try {
+          console.log('Send comment...');
+          // eslint-disable-next-line camelcase
+          await sendComment({ comment, sign_id: signId },
+            (error, response) => {
+              console.log(response.statusCode);
+              if (response.statusCode !== 200) throw new Error(error);
+              if (error) throw new Error(error);
+            });
+        } catch (error) {
+          console.log('Resend comment...');
+          // eslint-disable-next-line camelcase
+          await sendComment({ comment, sign_id: signId },
+            (error, response) => {
+              console.log(response.statusCode);
+              if (response.statusCode !== 200) throw new Error(error);
+              if (error) throw new Error(error);
+            });
+        }
         this.isSupported = RewardStatus.REWARDED;
         this.$Message.success('赞赏成功！');
         // tricky speed up
@@ -435,17 +462,6 @@ export default {
               this.setisSupported();
             });
         }
-        // if (!isScatterConnected) {
-        //   await this.connectScatterAsync();
-        //   if (isScatterConnected && !isScatterLoggingIn) {
-        //     await this.loginScatterAsync()
-        //       .then((id) => {
-        //         console.log("dsfafsadfsafsafd");
-        //         if (!id) throw console.error('no identity');
-        //         this.$Message.success('自动登录成功');
-        //       });
-        //   }
-        // }
       } catch (error) {
         const errMeg = 'Unable to log-in to wallet';
         console.warn(errMeg); // 一句滿意的英文 log

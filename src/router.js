@@ -22,16 +22,10 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ './views/About.vue'),
     },
     {
-      path: '/article/:hash',
+      path: '/article/:id',
       name: 'Article',
       props: true,
       component: () => import(/* webpackChunkName: "article" */ './views/Article/index.vue'),
-    },
-    {
-      path: '/article/:hash/comments',
-      name: 'Comments',
-      props: true,
-      component: () => import(/* webpackChunkName: "article-comments" */ './views/Article/CommentsList.vue'),
     },
     // {
     //   path: '/login',
@@ -67,6 +61,24 @@ export default new Router({
       name: 'Publish',
       props: true,
       component: () => import(/* webpackChunkName: "new-post" */ './views/Publish.vue'),
+    },
+    {
+      path: '/fanslist',
+      name: 'Fanslist',
+      props: true,
+      component: () => import(/* webpackChunkName: "new-post" */ './views/User/FansList.vue'),
+    },
+    {
+      path: '/followlist',
+      name: 'Followlist',
+      props: true,
+      component: () => import(/* webpackChunkName: "new-post" */ './views/User/FollowList.vue'),
+    },
+    {
+      path: '/draftbox',
+      name: 'DraftBox',
+      props: true,
+      component: () => import(/* webpackChunkName: "new-post" */ './views/User/DraftBox.vue'),
     },
   ],
 });
