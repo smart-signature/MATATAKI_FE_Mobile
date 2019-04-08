@@ -142,7 +142,7 @@ const RewardStatus = { // 0=加载中,1=未打赏 2=已打赏, -1未登录
 
 export default {
   name: 'Article',
-  props: ['id'],
+  props: ['hash'],
   components: { mavonEditor, CommentCard },
   computed: {
     ...mapGetters(['currentUsername']),
@@ -213,8 +213,8 @@ export default {
     document.title = '正在加载文章 - Smart Signature';
     this.initClipboard(); // 分享按钮功能需要放在前面 保证功能的正常执行
 
-    const { id } = this;
-    this.getArticleInHash(id);
+    const { hash } = this;
+    this.getArticleInInfo(hash);
 
     // 后续没问题就可以删掉了
     // const shares = localStorage.getItem(`sign id : ${signid}'s shares`);
@@ -313,17 +313,24 @@ export default {
       });
     },
     // 通过id 获取hash值
-    async getArticleInHash(id) {
-      await getArticleInHash(id).then((res) => {
-        if (res.status === 200) {
-          const { hash } = res.data;
-          this.setArticleData(hash);
-          this.setArticleInfo(hash);
-        }
-      }).catch((err) => {
-        console.log(err);
-        this.$Message.error('发生错误请重试');
-      });
+    async getArticleInInfo(hashOrId) {
+      // 如果是id查询查询hash然后查询文章 否则直接用hash查询文章
+      const reg = /^\+?[0-9][0-9]*$/;
+      if (reg.test(hashOrId)) {
+        await getArticleInHash(hashOrId).then((res) => {
+          if (res.status === 200) {
+            const { hash } = res.data;
+            this.setArticleData(hash);
+            this.setArticleInfo(hash);
+          }
+        }).catch((err) => {
+          console.log(err);
+          this.$Message.error('发生错误请重试');
+        });
+      } else {
+        this.setArticleData(hashOrId);
+        this.setArticleInfo(hashOrId);
+      }
     },
     async setArticleData(hash) {
       const { data } = await getArticleData(hash);
