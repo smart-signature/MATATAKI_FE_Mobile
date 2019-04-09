@@ -213,6 +213,45 @@ const getUser = ({ username }, callback) => accessBackend({
   form: {},
 }, callback);
 
+// Be used in User page.
+const setUserName = ({ newname }, callback) => accessBackend({
+  method: 'POST',
+  uri: `${apiServer}/user/setNickname`,
+  rejectUnauthorized: false,
+  json: true,
+  headers: { Accept: '*/*' },
+  dataType: 'json',
+  form: {
+    nickname: newname
+  },
+}, callback);
+
+// Be used in User page.
+const getFansList = ({ username }, callback) => accessBackend({
+  method: 'POST',
+  uri: `${apiServer}/follows`,
+  rejectUnauthorized: false,
+  json: true,
+  headers: { Accept: '*/*' },
+  dataType: 'json',
+  form: {
+    username
+  },
+}, callback);
+
+// Be used in User page.
+const getFollowList = ({ username }, callback) => accessBackend({
+  method: 'POST',
+  uri: `${apiServer}/fans`,
+  rejectUnauthorized: false,
+  json: true,
+  headers: { Accept: '*/*' },
+  dataType: 'json',
+  form: {
+    username
+  },
+}, callback);
+
 // eslint-disable-next-line camelcase
 const sendComment = ({ comment, sign_id }, callback) => accessBackend({
   method: 'POST',
@@ -238,7 +277,7 @@ const addReadAmount = ({ articlehash }, callback) => accessBackend({
 export {
   publishArticle, auth, getAuth,
   getArticleData, getArticlesList, getArticleInfo, getArticleInHash,
-  Follow, Unfollow, getUser,
+  Follow, Unfollow, getUser, setUserName, getFansList, getFollowList,
   getSharesbysignid, addReadAmount, sendComment,
   getArticles, getArticlesBySupportAmountRanking, getArticlesBySupportTimesRanking,
 };
