@@ -110,8 +110,8 @@ const getCurrentAccessToken = () => {
   const accessToken = localStorage.getItem('new_ACCESS_TOKEN');
   return accessToken !== null ? JSON.parse(accessToken) : null;
 };
-const setAccessToken = (accessToken) => localStorage.setItem(
-  'new_ACCESS_TOKEN', JSON.stringify(accessToken)
+const setAccessToken = accessToken => localStorage.setItem(
+  'new_ACCESS_TOKEN', JSON.stringify(accessToken),
 );
 // localStorage.setItem('ACCESS_TOKEN', accessToken);
 
@@ -143,10 +143,10 @@ const getAuth = async (cb) => {
     tokenPayload = tokenPayload.substring(0, tokenPayload.indexOf('.'));
     decodedData = JSON.parse(Base64.decode(tokenPayload));
   }
-  const username = currentToken != null ? currentToken.username : null ;
+  const username = currentToken != null ? currentToken.username : null;
   // 1. 拆包token抓出时间并判断这个时间和系统时间的差异
-  if ( username !== currentAccount() ||
-    decodedData === null || (decodedData.exp < new Date().getTime())) {
+  if (username !== currentAccount()
+    || decodedData === null || (decodedData.exp < new Date().getTime())) {
     console.log('Retake authtoken...');
     API.authSignature(({ username, publicKey, signature }) => {
       console.info('API.authSignature :', username, publicKey, signature);

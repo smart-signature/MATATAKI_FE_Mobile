@@ -105,8 +105,8 @@ export default {
       const author = currentUsername;
       const content = markdownData;
       const failed = error => this.$Notice.error({ title: '发送失败', desc: error });
-      const jumpToArticle = id => this.$router.push({
-        name: 'Article', params: { id },
+      const jumpToArticle = hash => this.$router.push({
+        name: 'Article', params: { hash },
       });
       const success = async (hash) => {
         this.$Notice.success({
@@ -114,14 +114,9 @@ export default {
           desc: '3秒后跳转到你发表的文章',
         });
 
-        await getArticleInfo(hash).then((res) => {
-          setTimeout(() => {
-            jumpToArticle(res.data.id);
-          }, 3 * 1000);
-        }).catch((err) => {
-          console.log(err);
-          failed(err);
-        });
+        setTimeout(() => {
+          jumpToArticle(hash);
+        }, 3 * 1000);
       };
 
       try {
