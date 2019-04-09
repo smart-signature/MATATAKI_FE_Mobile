@@ -32,7 +32,7 @@ import { sendPost } from '@/api/ipfs';
 import API from '@/api/scatter';
 import { mavonEditor } from 'mavon-editor';
 import {
-  publishArticle, defaultImagesUploader, auth, getArticleInfo,
+  publishArticle, defaultImagesUploader, getArticleInfo,
 } from '../api';
 
 import 'mavon-editor/dist/css/index.css'; // editor css
