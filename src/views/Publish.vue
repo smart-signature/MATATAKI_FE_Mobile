@@ -36,7 +36,6 @@ import {
 } from '../api';
 
 import 'mavon-editor/dist/css/index.css'; // editor css
-import { Promise } from 'q';
 
 export default {
   name: 'NewPost',
