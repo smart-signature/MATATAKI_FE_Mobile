@@ -1,7 +1,7 @@
 defaults: &defaults
   working_directory: ~/repo
   docker:
-    - image: circleci/node:8.11.1
+    - image: circleci/node:10.15.3
 
 
 # Javascript Node CircleCI 2.0 configuration file
