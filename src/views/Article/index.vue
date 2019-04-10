@@ -182,7 +182,6 @@ export default {
     this.isTotalSupportAmountVisible = true;
     this.setisSupported();
 
-    addReadAmount({ articlehash: this.hash });
   },
   mounted() {
   },
@@ -258,6 +257,7 @@ export default {
             const { hash } = res.data;
             this.setArticleData(hash);
             this.setArticleInfo(hash);
+            addReadAmount({ articlehash: this.hash }); // 增加文章阅读量
           }
         }).catch((err) => {
           console.log(err);
@@ -266,6 +266,7 @@ export default {
       } else {
         this.setArticleData(hashOrId);
         this.setArticleInfo(hashOrId);
+        addReadAmount({ articlehash: this.hash }); // 增加文章阅读量
       }
     },
     async setArticleData(hash) {
