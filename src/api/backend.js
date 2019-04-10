@@ -107,12 +107,10 @@ const getArticles = ({ page = 1, orderBy = OrderBy.TimeLine }) => {
 const getSharesbysignid = (signid, page) => axios.get(`${apiServer}/shares?signid=${signid}&page=${page}`);
 
 const getCurrentAccessToken = () => {
-  const accessToken = localStorage.getItem('new_ACCESS_TOKEN');
-  return accessToken !== null ? JSON.parse(accessToken) : null;
+  const accessToken = localStorage.getItem('ACCESS_TOKEN');
+  return accessToken;
 };
-const setAccessToken = accessToken => localStorage.setItem(
-  'new_ACCESS_TOKEN', JSON.stringify(accessToken),
-);
+const setAccessToken = token => localStorage.setItem('ACCESS_TOKEN', token);
 // localStorage.setItem('ACCESS_TOKEN', accessToken);
 
 // /<summary>
@@ -138,14 +136,14 @@ const getAuth = async (cb) => {
   const currentToken = getCurrentAccessToken();
   let decodedData = null;
   if (currentToken != null) {
-    const { accessToken } = currentToken;
-    let tokenPayload = accessToken.substring(accessToken.indexOf('.') + 1);
+    let tokenPayload = currentToken.substring(currentToken.indexOf('.') + 1);
     tokenPayload = tokenPayload.substring(0, tokenPayload.indexOf('.'));
     decodedData = JSON.parse(Base64.decode(tokenPayload));
   }
-  const username = currentToken != null ? currentToken.username : null;
-  // 1. 拆包token抓出时间并判断这个时间和系统时间的差异
-  if (username !== currentAccount()
+  const username = decodedData.iss;
+  // iss:用户名,exp:token过期时间。
+  // 1. 拆包token抓出时间,和用户并判断这个时间和系统时间，用户和当前登录用户的差异
+  if (username !== currentAccount().name
     || decodedData === null || (decodedData.exp < new Date().getTime())) {
     console.log('Retake authtoken...');
     API.authSignature(({ username, publicKey, signature }) => {
@@ -156,7 +154,7 @@ const getAuth = async (cb) => {
           // 3. save accessToken
           const accessToken = body;
           console.info('got the access token :', accessToken);
-          setAccessToken({ username, accessToken });
+          setAccessToken(accessToken);
           cb();
         }
       });
@@ -173,7 +171,7 @@ const accessBackend = async (options, callback = () => {}) => {
   // 更新 Auth
   getAuth(() => { // 爱的魔力转圈圈，回调回调到你不分黑夜白天
     // 在这里套了7层callback，callback里面的async语法是无效的，所以一层一层套出来
-    options.headers['x-access-token'] = getCurrentAccessToken().accessToken;
+    options.headers['x-access-token'] = getCurrentAccessToken();
     console.info('b4 request send, Options :', options);
     console.info('b4 request send, x-access-token :', options.headers['x-access-token']);
     request(options, callback); // 都是 request 害的，改用 axios 沒這些破事
