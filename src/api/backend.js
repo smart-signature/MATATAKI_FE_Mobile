@@ -110,7 +110,7 @@ const getCurrentAccessToken = () => {
   const accessToken = localStorage.getItem('ACCESS_TOKEN');
   return accessToken;
 };
-
+const setAccessToken = token => localStorage.setItem('ACCESS_TOKEN', token);
 // localStorage.setItem('ACCESS_TOKEN', accessToken);
 
 // /<summary>
@@ -154,7 +154,7 @@ const getAuth = async (cb) => {
           // 3. save accessToken
           const accessToken = body;
           console.info('got the access token :', accessToken);
-          localStorage.setItem('ACCESS_TOKEN', accessToken);
+          setAccessToken(accessToken);
           cb();
         }
       });
