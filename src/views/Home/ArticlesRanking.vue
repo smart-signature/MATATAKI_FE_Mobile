@@ -1,7 +1,7 @@
 <template>
     <za-pull :on-refresh="refresh" :refreshing="refreshing">
-        <div class="content" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
-            <ArticleCard :article="a" v-for="a in articles" :key="a.id"/>
+        <div v-infinite-scroll="loadMore" infinite-scroll-disabled="tabArticlesBusy">
+            <ArticleCard :article="a" v-for="a in tabArticles" :key="a.id"/>
         </div>
         <p class="loading-stat">{{displayAboutScroll}}</p>
     </za-pull>
@@ -28,48 +28,80 @@ export default {
       }
       return '😄 勤奋地加载更多精彩内容 😄';
     },
+    tabArticles() {
+      return this.articlesData[this.typeName].articles;
+    },
+    tabArticlesBusy() {
+      return this.articlesData[this.typeName].busy;
+    },
   },
   components: { ArticleCard },
   created() {
-    this.getArticles();
   },
   methods: {
-    async getArticles(page) {
+    async getArticles(params, isEmptyArray) {
+      if (this.isTheEndOfTheScroll) return;
       this.busy = true;
-      const { data } = await getArticles({ orderBy: this.orderType });
-      this.articles = data.filter(a => Date.parse(a.create_time) > Date.parse('2019-03-25T06:00:00'));
-      this.busy = false;
-    },
-    loadMore() {
-      if (this.isTheEndOfTheScroll) {
-        return;
-      }
-      this.busy = true;
-      this.page += 1;
-      getArticles({ orderBy: this.orderType, page: this.page }).then(({ data }) => {
-        console.info(`Page ${this.page} data length: ${data.length}`);
+      await getArticles(params).then(({ data }) => {
+        const articlesData = this.articlesData[this.typeName];
         if (data.length === 0) {
-          this.busy = true;
+          articlesData.busy = true;
           this.isTheEndOfTheScroll = true;
         } else {
-          this.articles = [...this.articles, ...data]; // Merge arrays with destruction
-          this.articles = this.articles.filter(a => Date.parse(a.create_time) > Date.parse('2019-03-25T06:00:00'));
-          this.busy = false;
+          // 清空数组 ps: 如果在 refresh 里面清空数组
+          // 1.点击的时会先执行触摸刷新的方法 导致无法正常单击切换页面
+          // 2.因为先执行触摸方法 清空了数组 会给页面造成影响
+          if (isEmptyArray) articlesData.articles.length = 0;
+          // Merge arrays with destruction
+          articlesData.articles = [...articlesData.articles, ...data];
+          articlesData.articles = articlesData.articles.filter(a => Date.parse(a.create_time) > Date.parse('2019-03-25T06:00:00'));
+          articlesData.page += 1;
+          articlesData.busy = false;
+          // 列表最后一列小于二十显示加载完
+          if (data.length > 0 && data.length < 20) this.isTheEndOfTheScroll = true;
         }
       });
     },
+    loadMore(isEmptyArray = false) {
+      if (this.typeName === OrderBy.TimeLine) {
+        this.typeName = 'TimeLine';
+      } else if (this.typeName === OrderBy.SupportAmount) {
+        this.typeName = 'SupportAmount';
+      } else if (this.typeName === OrderBy.SupportTimes) {
+        this.typeName = 'SupportTimes';
+      }
+      // eslint-disable-next-line max-len
+      this.getArticles({ orderBy: this.orderType, page: this.articlesData[this.typeName].page }, isEmptyArray);
+    },
     async refresh() {
       this.refreshing = true;
-      await this.getArticles();
+      this.isTheEndOfTheScroll = false; // 显示未加载完成
+      this.articlesData[this.typeName].page = 1; // 重置分页索引
+      await this.loadMore(true);
       this.refreshing = false;
     },
   },
   data() {
     return {
       refreshing: false,
-      articles: [],
-      busy: false,
-      page: 1,
+      typeName: 'TimeLine', // 默认
+      articlesData: {
+        TimeLine: {
+          articles: [],
+          page: 1,
+          busy: false,
+        },
+        SupportAmount: {
+          articles: [],
+          page: 1,
+          busy: false,
+        },
+        SupportTimes: {
+          articles: [],
+          page: 1,
+          busy: false,
+        },
+      },
       isTheEndOfTheScroll: false,
     };
   },

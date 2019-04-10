@@ -1,6 +1,6 @@
 <template>
   <div class="articles">
-    <za-tabs v-model="activeNameSwipe" @change="handleClick">
+    <za-tabs v-model="activeNameSwipe">
       <za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label">
         <ArticlesRanking :orderType="tab.label" />
       </za-tab-pane>
@@ -28,9 +28,6 @@ export default {
   created() {
   },
   methods: {
-    handleClick(tab, event) {
-      console.log(tab, event);
-    },
   },
   data() {
     return {
