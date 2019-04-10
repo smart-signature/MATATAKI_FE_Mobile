@@ -7,38 +7,51 @@
       <div slot="title" v-if="isMe">个人主页</div>
     </za-nav-bar>
     <div class="usercard" >
-      <img width="50px" class="userpic" src="../../assets/logo.png" />
       <img style="position:absolute; z-index:1;left:40px;"
-           width="50px" src="/img/camera.png" v-if="editing"/>
-      <div class="texts">
-        <p class="username">{{username}}</p>
-        <p class="userstatu"><a @click="jumpTo({ name: 'Followlist' })">关注：{{follows}}</a><a style="margin-left:14px;"@click="jumpTo({ name: 'Fanslist' })"> 粉丝：{{fans}}</a></p>
-      </div>
-      <div v-if="editing">
-        <Button class="rightbutton" size="small" type="success"
-                ghost @click="save">
-          <div>完成</div>
-        </Button>
-      </div>
-      <div v-else>
-        <div v-if="isMe">
-          <Button class="rightbutton" size="small" type="success" ghost @click="edit">
-            <div>编辑</div>
-          </Button>
-        </div>
-        <div v-else>
-          <div v-if="!followed">
-            <Button class="rightbutton" size="small" type="success" ghost @click="follow_user">
-              <div>关注</div>
+              width="50px" src="/img/camera.png" v-if="editing"/>
+      <Row type="flex" justify="center" class="code-row-bg">
+        <Col span="4">
+          <img width="50px" class="userpic" src="../../assets/logo.png" />
+        </Col>
+        <Col span="14">
+          <div class="texts">
+            <p v-if="!editing" class="username">{{nickname == "" ? username : nickname}}</p>
+            <za-input v-if="editing" class="userinput" ref='inputFirst' v-model='newname'></za-input>
+            <!-- <p class="userstatu"><a @click="jumpTo({ name: 'Followlist' })">关注：{{follows}}</a><a style="margin-left:14px;"@click="jumpTo({ name: 'Fanslist' })"> 粉丝：{{fans}}</a></p> -->
+            <p class="userstatu">
+              <span>关注：{{follows}}</span>
+              <span style="margin-left:14px;">粉丝：{{fans}}</span>
+            </p>
+          </div>
+        </Col>
+        <Col span="6">
+          <div v-if="editing">
+            <Button class="rightbutton" size="small" type="success"
+                    ghost @click="save">
+              <div>完成</div>
             </Button>
           </div>
           <div v-else>
-            <Button class="rightbutton" size="small" type="success" ghost @click="unfollow_user">
-              <div>取消关注</div>
-            </Button>
+            <div v-if="isMe">
+              <Button class="rightbutton" size="small" type="success" ghost @click="edit">
+                <div>编辑</div>
+              </Button>
+            </div>
+            <div v-else>
+              <div v-if="!followed">
+                <Button class="rightbutton" size="small" type="success" ghost @click="follow_user">
+                  <div>关注</div>
+                </Button>
+              </div>
+              <div v-else>
+                <Button class="rightbutton" size="small" type="success" ghost @click="unfollow_user">
+                  <div>取消关注</div>
+                </Button>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </Col>
+      </Row>
     </div>
     <div class="topcard" v-if="isMe">
       <Row type="flex" justify="center" class="code-row-bg">
@@ -57,9 +70,9 @@
     <!-- todo(minakokojima): 顯示該作者發表的文章。-->
     <!-- <ArticlesList ref="ArticlesList"/> -->
     <div class="centercard" v-if="isMe">
-      <za-cell is-link has-arrow @click='jumpTo({ name: "DraftBox" })'>
+      <za-cell is-link has-arrow>
         草稿箱
-        <!-- <za-icon type='right' slot='icon'/> -->
+        <!-- <za-icon type='right' slot='icon'/> @click='jumpTo({ name: "DraftBox" })'-->
       </za-cell>
       <za-cell is-link has-arrow @click='jumpTo({ name: "Original", params: { username }})'>
         我的文章
@@ -90,7 +103,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import { getPlayerIncome } from '@/api/signature';
 import {
-  Follow, Unfollow, getUser, auth,
+  Follow, Unfollow, getUser, auth, setUserName,
 } from '../../api';
 import ArticlesList from './ArticlesList.vue';
 import API from '@/api/scatter';
@@ -110,6 +123,8 @@ export default {
       followed: false,
       follows: 0,
       fans: 0,
+      nickname: '',
+      newname: '',
     };
   },
   computed: {
@@ -143,7 +158,7 @@ export default {
         }
       }
       if (!accessvalid) {
-        API.authSignature(({username, publicKey, signature}) => {
+        API.authSignature(({ username, publicKey, signature }) => {
           console.log(username, publicKey, signature);
           // 2. post到服务端 获得accessToken并保存
           auth({ username, publicKey, sign: signature }, (error, response, body) => {
@@ -172,16 +187,38 @@ export default {
       this.editing = !this.editing;
     },
     save() {
-      this.$Message.success('保存');
-      this.editing = !this.editing;
+      setUserName({newname: this.newname}, (error, response, body) => {
+        if (!error) {
+          this.$Notice.success({
+            title: '保存成功',
+          });
+          this.nickname = this.newname;
+        } else {
+          console.log(response.statusCode);
+          if(response.statusCode == 500){
+            this.$Notice.error({
+              title: '昵称已存在，清重新设置',
+            });
+          }else{
+            this.$Notice.error({
+              title: '保存失败',
+            });
+          }
+          this.newname = this.nickname == "" ? this.username : this.nickname;
+        }
+        this.refresh_user();
+        this.editing = !this.editing;
+      });
     },
     refresh_user() {
-      getUser({
-        username: this.username,
-      }, (error, response, body) => {
+      const { username } = this;
+      getUser({ username }, (error, response, body) => {
+        console.log(body);
         this.follows = body.follows;
         this.fans = body.fans;
         this.followed = body.is_follow;
+        this.nickname = body.nickname;
+        this.newname = this.nickname == "" ? this.username : this.nickname;
       });
     },
     follow_user() {
@@ -244,7 +281,6 @@ export default {
     this.refresh_user();
     const user = this.isMe ? '我' : this.username;
     document.title = `${user}的个人主页 - SmartSignature`;
-    await this.authDemo();
   },
 };
 </script>
@@ -272,6 +308,13 @@ a {
 .username{
   font-size: 22px;
   font-weight: bolder;
+  float: left;
+}
+.userinput{
+  font-size: 22px;
+  font-weight: bolder;
+  margin-top: -12px;
+  height: 45px;
 }
 .userstatu{
   font-size: 14px;

@@ -31,20 +31,20 @@ export default {
       draftlist: [
         {
           title: '从加密游戏到智能签名',
-          date: '1月24日'
+          date: '1月24日',
         },
         {
           title: '从加密游戏到智能签名',
-          date: '1月24日'
-        }
+          date: '1月24日',
+        },
       ],
-      action1:[
+      action1: [
         {
           theme: '',
           text: '删除',
           onClick: () => console.log('右按钮1'),
-        }
-      ]
+        },
+      ],
     };
   },
   computed: {

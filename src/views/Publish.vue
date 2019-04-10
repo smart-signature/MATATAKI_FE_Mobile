@@ -31,9 +31,12 @@ import { mapGetters, mapActions, mapState } from 'vuex';
 import { sendPost } from '@/api/ipfs';
 import API from '@/api/scatter';
 import { mavonEditor } from 'mavon-editor';
-import { publishArticle, defaultImagesUploader, auth } from '../api';
+import {
+  publishArticle, defaultImagesUploader, auth, getArticleInfo,
+} from '../api';
 
 import 'mavon-editor/dist/css/index.css'; // editor css
+import { Promise } from 'q';
 
 export default {
   name: 'NewPost',
@@ -45,10 +48,10 @@ export default {
       return;
     }
     this.suggestNetworkAsync()
-    .then(added => {
-      console.log('Suggest network result: ', added);
-      this.loginScatterAsync();
-    });
+      .then((added) => {
+        console.log('Suggest network result: ', added);
+        this.loginScatterAsync();
+      });
   },
   mounted() {
     this.resize();
@@ -101,18 +104,20 @@ export default {
       } = this;
       const author = currentUsername;
       const content = markdownData;
-
-      const success = (hash) => {
+      const failed = error => this.$Notice.error({ title: '发送失败', desc: error });
+      const jumpToArticle = hash => this.$router.push({
+        name: 'Article', params: { hash },
+      });
+      const success = async (hash) => {
         this.$Notice.success({
           title: '发送成功',
           desc: '3秒后跳转到你发表的文章',
         });
-        const jumpToArticle = () => this.$router.push({
-          name: 'Article', params: { hash },
-        });
-        setTimeout(jumpToArticle, 3 * 1000);
+
+        setTimeout(() => {
+          jumpToArticle(hash);
+        }, 3 * 1000);
       };
-      const failed = error => this.$Notice.error({ title: '发送失败', desc: error });
 
       try {
         const { data } = await sendPost({
@@ -127,14 +132,14 @@ export default {
           publishArticle({
             author, title, hash, publicKey, signature, username: currentUsername, fissionFactor,
           })
-          .then( (response) => {
-            if (response.data.msg !== 'success') failed(error);
-            success(hash);
-          })
-          .catch( (error) => {
-            failed(error);
-            console.log(error);
-          });
+            .then((response) => {
+              if (response.data.msg !== 'success') failed('失败请重试');
+              success(hash);
+            })
+            .catch((error) => {
+              failed(error);
+              console.log(error);
+            });
         });
       } catch (error) {
         console.error(error);
