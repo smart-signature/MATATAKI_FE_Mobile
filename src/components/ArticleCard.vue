@@ -1,12 +1,10 @@
 <template>
   <div class="card article">
     <router-link :to="{ name: 'Article', params: { hash }}">
-      <a>
         <h2 class="title">{{article.title}}</h2>
         <p class="article-infomation">{{friendlyDate}} by {{article.author}}</p>
-      </a>
     </router-link>
-    </div>
+  </div>
 </template>
 
 <script>

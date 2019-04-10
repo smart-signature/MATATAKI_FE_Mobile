@@ -362,7 +362,6 @@ export default {
         // tricky speed up
         // 前端手动加一下钱 立马调接口获取不到 value 值
         this.totalSupportedAmount += parseFloat(amount * 10000);
-        this.comments.length = 0;
         // 手动添加一个赞赏
         const time = new Date(Date.now());
         const timeNow = time.getTime() + time.getTimezoneOffset()
