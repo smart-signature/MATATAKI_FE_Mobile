@@ -101,7 +101,6 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { getPlayerIncome } from '@/api/signature';
 import {
   Follow, Unfollow, getUser, oldgetUser, 
   setUserName, getAssets
