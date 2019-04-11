@@ -185,13 +185,15 @@ export default {
     },
     refresh_user() {
       const { username } = this;
-      getUser({ username }, (error, response, body) => {
-        console.log(body);
-        this.follows = body.follows;
-        this.fans = body.fans;
-        this.followed = body.is_follow;
-        this.nickname = body.nickname;
-        this.newname = this.nickname == "" ? this.username : this.nickname;
+      getUser({ username })
+      .then((response) => {
+        const { data } = response;
+        console.log(data);
+        this.follows = data.follows;
+        this.fans = data.fans;
+        this.followed = data.is_follow;
+        this.nickname = data.nickname;
+        this.newname = this.nickname === "" ? this.username : this.nickname;
       });
     },
     follow_user() {

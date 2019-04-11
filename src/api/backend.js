@@ -198,7 +198,9 @@ const Unfollow = ({ username, followed }, callback) => accessBackend({
 }, callback);
 
 // Be used in User page.
-const getUser = ({ username }, callback) => accessBackend({
+const getUser = ({ username }) => axios.get(`${apiServer}/user/${username}`);
+// eslint-disable-next-line no-unused-vars
+const oldgetUser = ({ username }, callback) => accessBackend({
   method: 'GET',
   uri: `${apiServer}/user/${username}`,
   rejectUnauthorized: false,
