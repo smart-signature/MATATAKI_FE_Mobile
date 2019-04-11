@@ -202,7 +202,6 @@ const Unfollow = ({ username, followed }, callback) => accessBackend({
 
 // Be used in User page.
 const getUser = ({ username }) => axios.get(`${apiServer}/user/${username}`);
-// eslint-disable-next-line no-unused-vars
 const oldgetUser = ({ username }, callback) => accessBackend({
   method: 'GET',
   uri: `${apiServer}/user/${username}`,
@@ -277,7 +276,7 @@ const addReadAmount = ({ articlehash }, callback) => accessBackend({
 export {
   publishArticle, auth, getAuth,
   getArticleData, getArticlesList, getArticleInfo, getArticleInHash,
-  Follow, Unfollow, getUser, setUserName, getFansList, getFollowList,
+  Follow, Unfollow, getUser, setUserName, getFansList, getFollowList, oldgetUser,
   getSharesbysignid, addReadAmount, sendComment,
   getArticles, getArticlesBySupportAmountRanking, getArticlesBySupportTimesRanking,getAssets
 };

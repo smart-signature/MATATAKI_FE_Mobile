@@ -103,7 +103,8 @@
 import { mapGetters, mapActions } from 'vuex';
 import { getPlayerIncome } from '@/api/signature';
 import {
-  Follow, Unfollow, getUser, auth, setUserName,getAssets
+  Follow, Unfollow, getUser, oldgetUser, 
+  setUserName, getAssets
 } from '../../api';
 import ArticlesList from './ArticlesList.vue';
 import API from '@/api/scatter';
@@ -176,7 +177,16 @@ export default {
     },
     refresh_user() {
       const { username } = this;
-      getUser({ username })
+      if ( username !== null )
+        oldgetUser({ username }, (error, response, body) => {
+          console.log(body);
+          this.follows = body.follows;
+          this.fans = body.fans;
+          this.followed = body.is_follow;
+          this.nickname = body.nickname;
+          this.newname = this.nickname == "" ? this.username : this.nickname;
+        });
+      else getUser({ username })
       .then((response) => {
         const { data } = response;
         console.log(data);
