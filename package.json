@@ -7,10 +7,8 @@
     "build-dev": "vue-cli-service build --mode development",
     "build-prod": "vue-cli-service build --mode production",
     "lint": "vue-cli-service lint",
-    "build-for-netlify": "npm run build-prod && npm run fix-netlify-cs-routing",
-    "build-for-surge": "npm run build-prod && npm run fix-surge-cs-routing",
-    "fix-netlify-cs-routing": "echo '/*    /index.html   200' >> ./dist/_redirects",
-    "fix-surge-cs-routing": "mv ./dist/index.html ./dist/200.html"
+    "build-for-netlify": "npm run build-dev && npm run fix-netlify-cs-routing",
+    "fix-netlify-cs-routing": "echo '/*    /index.html   200' >> ./dist/_redirects"
   },
   "dependencies": {
     "axios": "^0.18.0",
