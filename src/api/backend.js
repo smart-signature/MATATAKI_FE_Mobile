@@ -41,11 +41,6 @@ const publishArticle = ({
     title,
     sign: signature,
   },
-  // 傳多餘或是名字錯誤的項進去不會發生任何事(除非是少項有檢查)，js神奇的地方
-  // dataType 不知道哪來的參數，只有 jQuery ajax() 才有 datatype lol
-  // strictSSL: false, // request 內部會翻成 rejectUnauthorized: false,
-  // json: true,
-  //  headers: { Accept: '*/*' },
 );
 
 const getArticleData = hash => axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
@@ -143,7 +138,7 @@ const getAuth = async (cb) => {
     tokenPayload = tokenPayload.substring(0, tokenPayload.indexOf('.'));
     decodedData = JSON.parse(Base64.decode(tokenPayload));
   }
-  const username = decodedData.iss;
+  const username = currentToken != null ? decodedData.iss : null;
   // iss:用户名,exp:token过期时间。
   // 1. 拆包token抓出时间,和用户并判断这个时间和系统时间，用户和当前登录用户的差异
   if (username !== currentAccount().name
@@ -181,6 +176,8 @@ const accessBackend = async (options, callback = () => {}) => {
   });
 };
 
+// dataType 不知道哪來的參數，只有 jQuery ajax() 才有 datatype lol
+
 // Be used in User page.
 const Follow = ({ username, followed }, callback) => accessBackend({
   method: 'POST',
@@ -204,7 +201,9 @@ const Unfollow = ({ username, followed }, callback) => accessBackend({
 }, callback);
 
 // Be used in User page.
-const getUser = ({ username }, callback) => accessBackend({
+const getUser = ({ username }) => axios.get(`${apiServer}/user/${username}`);
+// eslint-disable-next-line no-unused-vars
+const oldgetUser = ({ username }, callback) => accessBackend({
   method: 'GET',
   uri: `${apiServer}/user/${username}`,
   rejectUnauthorized: false,

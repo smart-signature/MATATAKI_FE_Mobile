@@ -221,7 +221,7 @@ export default {
       document.title = `${title} by ${author} - Smart Signature`;
     },
     currentUsername() {
-      this.setisSupported(this.shares);
+      this.setisSupported();
     },
   },
   methods: {
@@ -419,6 +419,7 @@ export default {
         .then((response) => {
           console.log('shares : ', response.data);
           const { data } = response;
+          this.shares = data;
           if (data.length === 0) {
             this.busy = true;
             this.isTheEndOfTheScroll = true;
@@ -436,6 +437,7 @@ export default {
             if (data.length > 0 && data.length < 20) this.isTheEndOfTheScroll = true;
             this.busy = false;
           }
+          this.setisSupported();
         });
     },
     loadMore() {

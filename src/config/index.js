@@ -1,6 +1,6 @@
 import { networks } from './network';
 
-const appScatterName = 'Smart Signature';
+const dappName = 'Smart Signature';
 
 const network = networks;
 
@@ -23,4 +23,4 @@ const i18n = [
   },
 ];
 
-export { appScatterName, i18n, network };
+export { dappName, i18n, network };
