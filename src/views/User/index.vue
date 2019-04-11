@@ -56,7 +56,7 @@
     <div class="topcard" v-if="isMe">
       <Row type="flex" justify="center" class="code-row-bg">
           <Col span="11">
-            <p class="centervalue">{{mySignIncome + myShareIncome}} EOS</p>
+            <p class="centervalue">{{playerincome}} EOS</p>
             <p class="centertext">历史总收入</p>
           </Col>
           <Col span="1"><Divider type="vertical" style="height:33px;margin-top:10px;" /></Col>
@@ -103,7 +103,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import { getPlayerIncome } from '@/api/signature';
 import {
-  Follow, Unfollow, getUser, auth, setUserName,
+  Follow, Unfollow, getUser, auth, setUserName,getAssets
 } from '../../api';
 import ArticlesList from './ArticlesList.vue';
 import API from '@/api/scatter';
@@ -115,10 +115,7 @@ export default {
   components: { ArticlesList },
   data() {
     return {
-      playerincome: {
-        sign_income: 0,
-        share_income: 0,
-      },
+      playerincome: 0,
       editing: false,
       followed: false,
       follows: 0,
@@ -129,12 +126,6 @@ export default {
   },
   computed: {
     ...mapGetters(['currentUsername']),
-    mySignIncome() {
-      return this.playerincome.sign_income / 10000;
-    },
-    myShareIncome() {
-      return this.playerincome.share_income / 10000;
-    },
     ifLogined() {
       return this.currentUsername !== null;
     },
@@ -249,10 +240,22 @@ export default {
         this.refresh_user();
       });
     },
+    // 获取历史总收入
+    async getAssets() {
+      await getAssets(this.username, 1)
+        .then(res => {
+          if (res.status === 200) {
+            this.playerincome = (res.data.totalSignIncome + res.data.totalShareIncome) / 10000
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$Message.error('获取历史收入错误请重试')
+        })
+    },
   },
-  async created() {
-    const playerincome = await getPlayerIncome(this.username);
-    this.playerincome = isEmptyArray(playerincome) ? playerincome[0] : this.playerincome;
+  created() {
+    this.getAssets()
     this.refresh_user();
     const user = this.isMe ? '我' : this.username;
     document.title = `${user}的个人主页 - SmartSignature`;

@@ -92,6 +92,9 @@ const getArticles = ({ page = 1, orderBy = OrderBy.TimeLine }) => {
 };
 
 
+// 获取资产明细
+const getAssets = (user, page) => axios.get(`${apiServer}/assets`, { params: { user,page } });
+
 /*
   amount: 2000
   author: "minakokojima"
@@ -219,7 +222,7 @@ const setUserName = ({ newname }, callback) => accessBackend({
   headers: { Accept: '*/*' },
   dataType: 'json',
   form: {
-    nickname: newname
+    nickname: newname,
   },
 }, callback);
 
@@ -232,7 +235,7 @@ const getFansList = ({ username }, callback) => accessBackend({
   headers: { Accept: '*/*' },
   dataType: 'json',
   form: {
-    username
+    username,
   },
 }, callback);
 
@@ -245,7 +248,7 @@ const getFollowList = ({ username }, callback) => accessBackend({
   headers: { Accept: '*/*' },
   dataType: 'json',
   form: {
-    username
+    username,
   },
 }, callback);
 
@@ -276,5 +279,5 @@ export {
   getArticleData, getArticlesList, getArticleInfo, getArticleInHash,
   Follow, Unfollow, getUser, setUserName, getFansList, getFollowList,
   getSharesbysignid, addReadAmount, sendComment,
-  getArticles, getArticlesBySupportAmountRanking, getArticlesBySupportTimesRanking,
+  getArticles, getArticlesBySupportAmountRanking, getArticlesBySupportTimesRanking,getAssets
 };
