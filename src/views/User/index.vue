@@ -15,7 +15,7 @@
         </Col>
         <Col span="14">
           <div class="texts">
-            <p v-if="!editing" class="username">{{nickname == "" ? username : nickname}}</p>
+            <p v-if="!editing" class="username">{{nickname == "" ? username : nickname}}<br /></p>
             <za-input v-if="editing" class="userinput" ref='inputFirst' v-model='newname'></za-input>
             <!-- <p class="userstatu"><a @click="jumpTo({ name: 'Followlist' })">关注：{{follows}}</a><a style="margin-left:14px;"@click="jumpTo({ name: 'Fanslist' })"> 粉丝：{{fans}}</a></p> -->
             <p class="userstatu">
@@ -188,22 +188,23 @@ export default {
     },
     save() {
       setUserName({newname: this.newname}, (error, response, body) => {
+        console.log(error);
         if (!error) {
-          this.$Notice.success({
-            title: '保存成功',
-          });
-          this.nickname = this.newname;
-        } else {
-          console.log(response.statusCode);
           if(response.statusCode == 500){
             this.$Notice.error({
               title: '昵称已存在，清重新设置',
             });
-          }else{
-            this.$Notice.error({
-              title: '保存失败',
+          } else {
+            this.$Notice.success({
+              title: '保存成功',
             });
           }
+          this.nickname = this.newname;
+        } else {
+          console.log(response.statusCode);
+          this.$Notice.error({
+            title: '保存失败',
+          });
           this.newname = this.nickname == "" ? this.username : this.nickname;
         }
         this.refresh_user();
@@ -308,7 +309,7 @@ a {
 .username{
   font-size: 22px;
   font-weight: bolder;
-  float: left;
+  text-align: left;
 }
 .userinput{
   font-size: 22px;
@@ -319,7 +320,7 @@ a {
 .userstatu{
   font-size: 14px;
   opacity: 0.4;
-  float:left;
+  text-align: left;
 }
 .texts{
   float: left;
