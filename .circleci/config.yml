@@ -42,7 +42,7 @@ jobs:
       # run builds!
       - run: 
           name: Build
-          command: yarn run build-for-surge
+          command: yarn run build-prod
 
       - store_artifacts:
           path: ~/repo/dist
@@ -52,7 +52,7 @@ jobs:
           root: ~/repo/
           paths:
             - dist
-  deploy-testing:
+  deploy-staging:
     <<: *defaults
     steps:
       - attach_workspace: 
@@ -64,11 +64,11 @@ jobs:
           command: |
             sudo npm i -g surge          
             cd ./dist/dist/
-            mv index.html 200.html # workaround for spa history router
-            surge --project ./ --domain testing.smartsignature.io
+            mv ./index.html ./200.html
+            surge --project ./ --domain staging.smartsignature.io
 workflows:
   version: 2
-  build-test:
+  "Build test":
     jobs:
       - build:
           filters:
@@ -76,15 +76,16 @@ workflows:
               ignore:
                 - /master/
                 - /testing/
-  build-and-deploy-testing:
+  #暂定用 testing 分支的内容 未来可能开一个 staging 分支？
+  "Build and Deploy to staging":
     jobs:
       - build:
           filters:
             branches:
-              only: /testing/
-      - deploy-testing:
+              only: /testing/ 
+      - deploy-staging:
           requires:
             - build
           filters:
             branches:
-              only: /testing/
+              only: /testing/ 
