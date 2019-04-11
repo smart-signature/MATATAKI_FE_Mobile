@@ -18,9 +18,9 @@
         <Col span="6">
           <p class="toptext2">创作历史收益</p>
           <p class="toptext3"
-            :style='getDisplayWritereward > 0 ? { color: "#f50" }
-                    : (getDisplayWritereward < 0 ? { color: "#87d068" } : {color: "#a7aab7"})'>
-            {{getDisplayWritereward}}
+            :style='assetsRewards.totalSignIncome > 0 ? { color: "#f50" }
+                    : (assetsRewards.totalSignIncome < 0 ? { color: "#87d068" } : {color: "#a7aab7"})'>
+            {{assetsRewards.totalSignIncome}}
           </p>
         </Col>
         <Col span="3" style="text-align:center">
@@ -29,9 +29,9 @@
         <Col span="6">
           <p class="toptext2">赞赏历史收益</p>
           <p class="toptext3"
-             :style='getDisplaySharereward > 0 ? { color: "#f50" }
-                     : (getDisplaySharereward < 0 ? { color: "#87d068" } : {color: "#a7aab7"})'>
-            {{getDisplaySharereward}}
+             :style='assetsRewards.totalShareIncome > 0 ? { color: "#f50" }
+                     : (assetsRewards.totalShareIncome < 0 ? { color: "#87d068" } : {color: "#a7aab7"})'>
+            {{assetsRewards.totalShareIncome}}
           </p>
         </Col>
         <Col span="3" style="text-align:center">
@@ -40,31 +40,28 @@
         <Col span="6">
           <p class="toptext2">赞赏历史支出</p>
           <p class="toptext3"
-            :style='getDisplaySharecost > 0 ? { color: "#f50" }
-                    : (getDisplaySharecost < 0 ? { color: "#87d068" } : {color: "#a7aab7"})'>
-            {{getDisplaySharecost}}
+            :style='assetsRewards.totalShareExpenses > 0 ? { color: "#f50" }
+                    : (assetsRewards.totalShareExpenses < 0 ? { color: "#87d068" } : {color: "#a7aab7"})'>
+            {{assetsRewards.totalShareExpenses}}
           </p>
         </Col>
       </Row>
     </div>
     <div class="detailtext">明细</div>
     <div class="assets">
-    <!--<za-tabs v-model="activeNameSwipe" @change="handleClick">-->
-      <!--<za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label">-->
-        <za-pull :on-refresh="refresh" :refreshing="refreshing" :loading="loading">
-          <div class="content">
-            <AssetCard :asset="a" v-for="a in sortedAssets" :key="a.timestamp"/>
-          </div>
-        </za-pull>
-      <!--</za-tab-pane>-->
-    <!--</za-tabs>-->
+      <za-pull :on-refresh="refresh" :refreshing="refreshing">
+        <div v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
+          <AssetCard :asset="a" v-for="a in assets" :key="a.timestamp"/>
+        </div>
+        <p class="loading-stat">{{displayAboutScroll}}</p>
+      </za-pull>
     </div>
   </div>
 </template>
 
 <script>
 import { AssetCard } from '@/components/';
-import { getArticleInfo } from '@/api';
+import { getAssets } from '@/api';
 import {
   CONTRACT_ACCOUNT,
   getPlayerBills, getPlayerIncome,
@@ -78,23 +75,13 @@ export default {
   props: ['username'],
   components: { AssetCard },
   created() {
-    this.refresh();
+    this.getPlayerTotalIncome(this.username);
     // this.sharecost = this.getPlayerTotalCost();
   },
   data() {
     return {
-      assets: [
-        // { // sample
-        //  quantity: '10.2333 EOS',
-        //  timestamp: Date.now(),
-        //  type: 'test income',
-        // },
-        // { // sample
-        //  quantity: '100.2333 EOS',
-        //  timestamp: Date.now() + 1,
-        // type: 'test income',
-        // },
-      ],
+      assets: [],
+      page: 1,
       activeNameSwipe: '全部',
       selectedLabelDefault: '全部',
       tabs: [
@@ -102,54 +89,43 @@ export default {
         { label: '支持收入' },
         { label: '转发收入' },
       ],
-      playerincome: 0.0000,
-      loading: false,
+      playerincome: 0,
+      assetsRewards: {
+        totalSignIncome: 0,
+        totalShareIncome: 0,
+        totalShareExpenses: 0,
+      },
       refreshing: false,
       visible: false,
+      isTheEndOfTheScroll: false,
+      busy: false,
     };
   },
   computed: {
-    sortedAssets() {
-      // console.log(this.assets);
-      // if need change to asc, swap a & b
-      return this.assets.slice(0) // 使用slice创建数组副本 消除副作用
-        .sort((a, b) => (new Date(b.timestamp)).getTime() - (new Date(a.timestamp)).getTime());
-    },
-    getDisplaySharecost() {
-      return this.computeAmount({ elements: this.assets, type: 'support expenses' });
-    },
-    getDisplaySharereward() {
-      return this.computeAmount({ elements: this.assets, type: 'share income' });
-    },
-    getDisplayWritereward() {
-      return this.computeAmount({ elements: this.assets, type: 'sign income' });
+    displayAboutScroll() {
+      if (this.isTheEndOfTheScroll) {
+        return '🎉 哇，你真勤奋，所有明细已经加载完了～ 🎉';
+      }
+      return '😄 勤奋地加载更多精彩内容 😄';
     },
   },
   methods: {
-    async getAssetsList() {
-      console.log('Connecting to EOS fetch assets...');
-      const actions = (await getPlayerBills(this.username)).map(a => a.action_trace);
-      // console.log(actions.map(a => a.action_trace));
-      const actions2 = actions.filter(a => a.act.account === CONTRACT_ACCOUNT
-          && a.act.name === 'bill'
-          && a.act.data.type !== 'test income' /* 過濾 test income */
-          && a.act.data.quantity !== '0.0000 EOS'); /* 過濾 0 的收入支出 */
-      console.log('actions>??', actions2);
-      return actions2.map(a => ({
-        quantity: a.act.data.quantity,
-        type: a.act.data.type,
-        timestamp: a.block_time,
-        signId: a.act.data.signId,
-      }));
-    },
-    computeAmount({ elements, type }) {
-      let amount = 0;
-      for (let index = 0; index < elements.length; index += 1) {
-        const element = elements[index];
-        if (element.type === type) { amount += parseFloat(element.quantity.replace(' EOS', '')); }
-      }
-      return (amount > 0 ? '+' : '') + parseFloat(amount).toFixed(4);
-    },
+    // async getAssetsList() {
+    //   console.log('Connecting to EOS fetch assets...');
+    //   const actions = (await getPlayerBills(this.username)).map(a => a.action_trace);
+    //   // console.log(actions.map(a => a.action_trace));
+    //   const actions2 = actions.filter(a => a.act.account === CONTRACT_ACCOUNT
+    //       && a.act.name === 'bill'
+    //       && a.act.data.type !== 'test income' /* 過濾 test income */
+    //       && a.act.data.quantity !== '0.0000 EOS'); /* 過濾 0 的收入支出 */
+    //   console.log('actions>??', actions2);
+    //   return actions2.map(a => ({
+    //     quantity: a.act.data.quantity,
+    //     type: a.act.data.type,
+    //     timestamp: a.block_time,
+    //     signId: a.act.data.signId,
+    //   }));
+    // },
     // getPlayerTotalCost() { // 過一段時間不用就刪了 :P
     //   console.log('assets::', JSON.stringify(this.assets));
     //   const temp = this.assets.reduce((acc, asset) => {
@@ -164,16 +140,9 @@ export default {
     async getPlayerTotalIncome(name) {
       console.log('Connecting to EOS fetch player income...');
       const playerincome = await getPlayerIncome(name); // 从合约拿到支持收入和转发收入
-      if (isEmptyArray(playerincome)) {
-        console.log('share reward :', playerincome[0].share_income / 10000);
-        console.log('write reward :', playerincome[0].sign_income / 10000);
-      } else {
-        console.log('share reward :', 0);
-        console.log('write reward :', 0);
-      }
-      return isEmptyArray(playerincome)
+      this.playerincome = isEmptyArray(playerincome)
         ? (playerincome[0].share_income + playerincome[0].sign_income) / 10000
-        : 0.0000;
+        : 0;
       // 截止2019年3月24日中午12时合约拿过来的东西要除以10000才能正常显示
     },
     handleClick(tab, event) {
@@ -182,47 +151,19 @@ export default {
     handleOk() {
       this.withdraw(this.username);
     },
+
+    async loadMore(isEmptyArr = false) {
+      // 默认第一次会加载
+      if (this.isTheEndOfTheScroll) return;
+      this.busy = true;
+      await this.getAssets(this.username, this.page, isEmptyArr);
+    },
     async refresh() {
       this.refreshing = true;
-      this.loading = true;
-      /*
-        同时触发独立的异步操作 for noobs
-
-        // 写法一
-        let [foo, bar] = await Promise.all([getFoo(), getBar()]);
-
-        // 写法二
-        let fooPromise = getFoo();
-        let barPromise = getBar();
-        let foo = await fooPromise;
-        let bar = await barPromise;
-      */
-      const { username } = this;
-      const getPlayerTotalIncomePromise = this.getPlayerTotalIncome(username);
-      const getAssetsListPromise = this.getAssetsList();
-      this.playerincome = await getPlayerTotalIncomePromise;
-      const assets = await getAssetsListPromise;
-      this.assets = await Promise.all(assets.map(async (a) => {
-        const signs = await getSignInfo(a.signId);
-        // eslint-disable-next-line
-        const { ipfs_hash } = signs[0];
-        // console.log(assets, 'sign : ', sign);
-        const { data } = await getArticleInfo(ipfs_hash);
-        // const { data } = await getArticleInfo('QmWiNv5SMRCTX7ncqEvoNmxy56Qd2ySPQQ3aUAQ3yxLKE2');
-        // console.log(data);
-        return {
-          article: data,
-          timestamp: a.timestamp,
-          type: a.type,
-          signId: a.signId,
-          quantity: a.quantity,
-        };
-      }));
-
-      console.log(username, '\'s total income:', this.playerincome);
-      console.log(username, '\'s assets:', this.assets);
+      this.isTheEndOfTheScroll = false;
+      this.page = 1;
+      await this.loadMore(true);
       this.refreshing = false;
-      this.loading = false;
     },
     goBack() {
       this.$router.go(-1);
@@ -236,6 +177,30 @@ export default {
           this.$Message.error('提现失败!');
         });
       this.visible = false; // 成功和失败都关闭弹窗
+    },
+    // 获取历史总收入
+    async getAssets(user, page, isEmptyArr = false) {
+      await getAssets(user, page)
+        .then((res) => {
+          if (res.status === 200) {
+            const { data } = res;
+            this.assetsRewards.totalSignIncome = data.totalSignIncome > 0 ? `+${data.totalSignIncome / 1000}` : data.totalSignIncome / 10000;
+            this.assetsRewards.totalShareIncome = data.totalShareIncome > 0 ? `+${data.totalShareIncome / 1000}` : data.totalShareIncome / 10000;
+            this.assetsRewards.totalShareExpenses = data.totalShareExpenses > 0 ? `+${data.totalShareExpenses / 1000}` : data.totalShareExpenses / 10000;
+            if (data.history.length >= 0 && data.history.length < 20) this.isTheEndOfTheScroll = true; // 数据请求完
+            else this.page += 1;
+            const historyFilter = data.history.filter(i => i.amount !== 0); // 过滤金额为0
+            if (isEmptyArr) this.assets.length = 0; // 清空数组
+            this.assets = [...this.assets, ...historyFilter]; // 合并数组
+            this.busy = false;
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          this.$Message.error('获取历史收入错误请重试');
+          this.busy = false;
+          this.isTheEndOfTheScroll = true;
+        });
     },
   },
 };
@@ -341,5 +306,11 @@ Button.withdraw, Button.withdraw:focus, Button.withdraw:hover {
   max-width: 94px;
   max-height: 35px;
   margin-right: 0px;
+}
+.loading-stat {
+  margin: 10px;
+  color: #999;
+  font-size: 13px;
+  text-align: center;
 }
 </style>
