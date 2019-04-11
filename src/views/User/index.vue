@@ -145,34 +145,6 @@ export default {
   },
   methods: {
     ...mapActions(['logoutScatterAsync']),
-    async authDemo() { // 示例代码。。请随便改。。。
-      // 1. 取得签名
-      let accessvalid = false;
-      const nowtime = new Date().getTime();
-      if (localStorage.getItem('ACCESS_TOKEN') != null) {
-        const accesstime = localStorage.getItem('ACCESS_TIME');
-        if (accesstime != null) {
-          if (nowtime - accesstime < 604800000) {
-            accessvalid = true;
-          }
-        }
-      }
-      if (!accessvalid) {
-        API.authSignature(({ username, publicKey, signature }) => {
-          console.log(username, publicKey, signature);
-          // 2. post到服务端 获得accessToken并保存
-          auth({ username, publicKey, sign: signature }, (error, response, body) => {
-            console.log(body);
-            if (!error) {
-              // 3. save accessToken
-              const accessToken = body;
-              localStorage.setItem('ACCESS_TOKEN', accessToken);
-              localStorage.setItem('ACCESS_TIME', nowtime);
-            }
-          });
-        });
-      }
-    },
     goBack() {
       this.$router.go(-1);
     },
