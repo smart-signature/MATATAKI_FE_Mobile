@@ -22,14 +22,12 @@
     <div class="commentslist-title">赞赏队列 ({{article.ups || 0}})</div>
 
     <div class="comments">
-      <!-- <div class="tl"> -->
       <za-pull :on-refresh="refresh" :refreshing="refreshing">
         <div class="content" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
           <CommentCard :comment="a" v-for="a in sortedComments" :key="a.timestamp"/>
         </div>
         <p class="loading-stat">{{displayAboutScroll}}</p>
       </za-pull>
-      <!-- </div> -->
     </div>
 
     <footer class="footer">
@@ -61,58 +59,20 @@
             @click="share">分享<img src="@/assets/img/icon_share.png" /></button>
       </div>
     </footer>
-    <!-- <footer class="footer-article"> -->
-      <!-- <Divider /> -->
-      <!-- <Row justify="center" style="padding: 0 20px">
-          <i-col span="11" v-if="!isTotalSupportAmountVisible">正在从链上加载本文收到的赞赏</i-col>
-          <i-col span="11" v-else-if="isTotalSupportAmountVisible">
-            <router-link :to="{ name: 'Comments', params: { signId: article.id, hash }}">
-              本文收到赞赏 {{computedTotalSupportedAmount}} 个EOS
-            </router-link>
-          </i-col>
-          <i-col span="2"><Divider type="vertical" /></i-col>
-          <i-col span="11">裂变系数：{{getDisplayedFissionFactor}}</i-col>
-      </Row>
-      <Divider />
-      <Row style="white-space:nowrap;">
-        <i-col span="11">
-          <za-button v-if="isSupported===-1" class="button-support"
-            size='xl' theme="primary"
-            @click="share">赞赏</za-button>
-          <za-button v-if="isSupported===0" class="button-support"
-            size='xl' theme="primary" disabled>加载中</za-button>
-          <za-button v-else-if="isSupported===1" class="button-support"
-            size='xl' theme="primary"
-            @click="visible3=true" >赞赏</za-button>
-          <za-button v-else-if="isSupported===2" class="button-support"
-            size='xl' theme="primary" disabled>已赞赏</za-button>
-        </i-col> -->
-        <!-- <i-col span="2"><Divider type="vertical" style="opacity: 0;" /></i-col> -->
-        <za-modal :visible="visible3"
-           @close="handleClose" radius="" @maskClick="visible3 = false" :showClose="true"
-           style="background:rgba(243,243,243,1);">
-           <div slot="title" style="textAlign: center;">赞赏此文章</div>
-            <Row><za-input
-              auto-height="" v-model="v3" type="textarea"
-              placeholder="输入推荐语…" @change="handleCommentChange">
-            </za-input></Row>
-            <br/>
-            <Row><za-input
-              v-model="v5" type="price" placeholder="输入打赏 EOS" @change="handleChange">
-            </za-input></Row>
-            <br/>
-            <Row><za-button class="button-support"
-              size='xl' theme="primary"
-              @click="support">赞赏</za-button></Row>
-        </za-modal>
-        <!-- <i-col span="11">
-          <za-button class="button-share"
-            size='xl' theme="primary"
-            :data-clipboard-text="getClipboard"
-            @click="share" ghost="true">分享</za-button>
-        </i-col> -->
-      <!-- </Row> -->
-    <!-- </footer> -->
+    <za-modal :visible="visible3" @close="handleClose" radius="" @maskClick="visible3 = false" :showClose="true">
+        <div slot="title" style="textAlign: center;">赞赏此文章</div>
+        <div class="support-input">
+        <za-input
+          auto-height="" v-model="comment" type="textarea"
+          rows="4"
+          placeholder="输入推荐语…">
+        </za-input>
+        </div>
+        <div class="support-input">
+          <input class="support-input__amount" placeholder="请输入 EOS" v-model="amount" type="text"  @input="handleChange" />
+        </div>
+        <button class="support-button" @click="support">赞赏</button>
+    </za-modal>
   </div>
 </template>
 
@@ -142,7 +102,7 @@ const RewardStatus = { // 0=加载中,1=未打赏 2=已打赏, -1未登录
 
 export default {
   name: 'Article',
-  props: ['id'],
+  props: ['hash'],
   components: { mavonEditor, CommentCard },
   computed: {
     ...mapGetters(['currentUsername']),
@@ -213,38 +173,12 @@ export default {
     document.title = '正在加载文章 - Smart Signature';
     this.initClipboard(); // 分享按钮功能需要放在前面 保证功能的正常执行
 
-    const { id } = this;
-    this.getArticleInHash(id);
-
-    // 后续没问题就可以删掉了
-    // const shares = localStorage.getItem(`sign id : ${signid}'s shares`);
-    // eslint-disable-next-line no-shadow
-    // const setShares = ({ signid }) => {
-    //   getSharesbysignid(signid, 1)
-    //     .then((response) => {
-    //       // eslint-disable-next-line no-shadow
-    //       const shares = response.data;
-    //       localStorage.setItem(`sign id : ${signid}'s shares`, JSON.stringify(shares));
-    //       this.shares = shares; // for watch
-    //       console.log('Article\'s shares : ', this.shares);
-    //     });
-    // };
-    // Use cache or do first time downloading
-    // if (shares) {
-    //   this.shares = JSON.parse(shares);
-    // } else { // first time need await
-    //   await setShares({ signid });
-    // }
+    const { hash } = this;
+    this.getArticleInInfo(hash);
 
     // Setup
     this.isTotalSupportAmountVisible = true;
     this.setisSupported();
-
-    // 后续没问题就可以删掉了
-    // Update to latest data
-    // setShares({ signid });
-
-    addReadAmount({ articlehash: this.hash });
   },
   mounted() {
   },
@@ -270,14 +204,12 @@ export default {
       fission_factor: 0,
     },
     shares: [],
-    amount: 0.0000,
+    amount: '',
     comment: '',
     isSupported: RewardStatus.LOADING,
     isTotalSupportAmountVisible: false, // 正在加载和加载完毕的文本切换
     totalSupportedAmount: 0,
     visible3: false,
-    v3: '',
-    v5: '',
     clipboard: null,
     articleCreateTime: ' 月 日',
   }),
@@ -287,7 +219,7 @@ export default {
       document.title = `${title} by ${author} - Smart Signature`;
     },
     currentUsername() {
-      this.setisSupported(this.shares);
+      this.setisSupported();
     },
   },
   methods: {
@@ -313,17 +245,26 @@ export default {
       });
     },
     // 通过id 获取hash值
-    async getArticleInHash(id) {
-      await getArticleInHash(id).then((res) => {
-        if (res.status === 200) {
-          const { hash } = res.data;
-          this.setArticleData(hash);
-          this.setArticleInfo(hash);
-        }
-      }).catch((err) => {
-        console.log(err);
-        this.$Message.error('发生错误请重试');
-      });
+    async getArticleInInfo(hashOrId) {
+      // 如果是id查询查询hash然后查询文章 否则直接用hash查询文章
+      const reg = /^[0-9]*$/;
+      if (reg.test(hashOrId)) {
+        await getArticleInHash(hashOrId).then((res) => {
+          if (res.status === 200) {
+            const { hash } = res.data;
+            this.setArticleData(hash);
+            this.setArticleInfo(hash);
+            addReadAmount({ articlehash: hash }); // 增加文章阅读量
+          }
+        }).catch((err) => {
+          console.log(err);
+          this.$Message.error('发生错误请重试');
+        });
+      } else {
+        this.setArticleData(hashOrId);
+        this.setArticleInfo(hashOrId);
+        addReadAmount({ articlehash: hashOrId }); // 增加文章阅读量
+      }
     },
     async setArticleData(hash) {
       const { data } = await getArticleData(hash);
@@ -345,13 +286,10 @@ export default {
     handleClose() {
       this.visible3 = false;
     },
-    handleCommentChange(v) {
-      this.comment = v;
-      console.log('comment :', this.comment);
-    },
-    handleChange(v) {
-      this.amount = v;
-      console.log('amount :', this.amount);
+    handleChange(e) {
+      // 小数点后三位 如果后面需要解除限制修改正则  {0,3}
+      e.target.value = (e.target.value.match(/^\d*(\.?\d{0,3})/g)[0]) || null;
+      this.amount = e.target.value;
     },
     setisSupported() {
       const { shares } = this;
@@ -368,14 +306,6 @@ export default {
       }
     },
     async support() {
-      this.visible3 = false;
-      try {
-        await this.loginCheck();
-      } catch (error) {
-        // console.log(error);
-        this.$Message.error('本功能需登录钱包');
-        return;
-      }
       // amount
       const { article, comment } = this;
 
@@ -387,6 +317,14 @@ export default {
 
       console.log('final amount :', amount);
       console.log('final comment :', comment);
+
+      this.visible3 = false;
+      try {
+        await this.loginCheck();
+      } catch (error) {
+        this.$Message.error('本功能需登录');
+        return;
+      }
 
       const signId = article.id;
       const referrer = this.getInvite;
@@ -420,7 +358,6 @@ export default {
         // tricky speed up
         // 前端手动加一下钱 立马调接口获取不到 value 值
         this.totalSupportedAmount += parseFloat(amount * 10000);
-        this.comments.length = 0;
         // 手动添加一个赞赏
         const time = new Date(Date.now());
         const timeNow = time.getTime() + time.getTimezoneOffset()
@@ -434,7 +371,7 @@ export default {
         });
       } catch (error) {
         console.log(JSON.stringify(error));
-        this.$Message.error('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额。');
+        this.$Message.error('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额');
         this.isSupported = RewardStatus.NOT_REWARD_YET;
       }
     },
@@ -478,6 +415,7 @@ export default {
         .then((response) => {
           console.log('shares : ', response.data);
           const { data } = response;
+          this.shares = data;
           if (data.length === 0) {
             this.busy = true;
             this.isTheEndOfTheScroll = true;
@@ -495,6 +433,7 @@ export default {
             if (data.length > 0 && data.length < 20) this.isTheEndOfTheScroll = true;
             this.busy = false;
           }
+          this.setisSupported();
         });
     },
     loadMore() {
@@ -665,6 +604,37 @@ export default {
 
 .markdown-body.tac {
     margin: 20px;
+}
+
+
+/* dialog */
+/* 改变层级 但高于普通元素的层级 */
+.za-modal {
+  z-index: 99;
+}
+.za-modal .za-modal-dialog{
+  background-color: #000!important;
+}
+.support-input {
+    margin: 16px 0;
+    border: 1px solid #dadada;
+    padding: 8px;
+    border-radius: 3px;
+}
+.support-input__amount {
+    width: 100%;
+    border: none;
+    outline: none;
+}
+.support-button {
+    display: block;
+    width: 100%;
+    border: none;
+    outline: none;
+    background: #478970;
+    color: #fff;
+    line-height: 46px;
+    border-radius: 3px;
 }
 </style>
 <style src="./index.css" scoped></style>

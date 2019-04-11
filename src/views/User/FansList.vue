@@ -39,13 +39,13 @@ export default {
       fanslist: [
         {
           name: '画夜夜的鹿角',
-          fans: '73'
+          fans: '73',
         },
         {
           name: '小岛美奈子',
-          fans: '2.4w'
-        }
-      ]
+          fans: '2.4w',
+        },
+      ],
     };
   },
   computed: {

@@ -4,14 +4,13 @@
       <Row justify="center" >
         <i-col span="18">
            <h2 class="asset-quantity"
-             :style='{ color: `${assetColor}` }'>
-             {{(asset.quantity.substring(0,1) !== '-' ? '+': '') + asset.quantity}}</h2>
+             :style='{ color: `${assetColor}` }'>{{assetAmount}} EOS</h2>
            <p class="asset-information">{{friendlyDate}}</p>
          </i-col>
-         <i-col span="6" class="detailright">
-           {{(asset.article.title).length > 11 ? (asset.article.title).slice(0,11)+'...' : asset.article.title}}
+         <!-- <i-col span="6" class="detailright"> -->
+           <!-- {{(asset.article.title).length > 11 ? (asset.article.title).slice(0,11)+'...' : asset.article.title}} -->
            <!--<ArticleCard :article="asset.article" />-->
-         </i-col>
+         <!-- </i-col> -->
       </Row>
     </a>
   </div>
@@ -19,28 +18,29 @@
 
 <script>
 import moment from 'moment';
-import { ArticleCard } from '@/components/';
+// import { ArticleCard } from '@/components/';
 
 export default {
   name: 'AssetCard',
   props: ['asset'],
-  components: { ArticleCard },
+  // components: { ArticleCard },
   computed: {
     friendlyDate() {
       const isAppleSlave = navigator.platform.includes('iPhone');
-      const time = new Date(this.asset.timestamp);
+      const time = new Date(this.asset.create_time);
       return moment(time.getTime() - time.getTimezoneOffset() * 60000 * (isAppleSlave ? 0 : 1))
         .fromNow();
-      // moment(this.asset.timestamp).fromNow();
+    },
+    assetAmount() {
+      return this.asset.amount > 0 ? `+${this.asset.amount / 10000}` : this.asset.amount / 10000;
     },
     assetColor() {
-      const asset = this.asset.quantity.replace(' EOS', '');
       // eslint-disable-next-line no-nested-ternary
-      return asset > 0 ? '#f50' : (asset < 0 ? '#87d068' : '#a7aab7');
+      return this.asset.amount > 0 ? '#f50' : (this.asset.amount < 0 ? '#87d068' : '#a7aab7');
     },
   },
   created() {
-    // console.log(this.asset.article);
+    console.log(this.asset);
   },
 };
 </script>

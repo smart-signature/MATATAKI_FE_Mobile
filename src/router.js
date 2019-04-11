@@ -22,7 +22,7 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ './views/About.vue'),
     },
     {
-      path: '/article/:id',
+      path: '/article/:hash',
       name: 'Article',
       props: true,
       component: () => import(/* webpackChunkName: "article" */ './views/Article/index.vue'),
@@ -79,6 +79,12 @@ export default new Router({
       name: 'DraftBox',
       props: true,
       component: () => import(/* webpackChunkName: "new-post" */ './views/User/DraftBox.vue'),
+    },
+    {
+      path: '/_easter-egg',
+      name: 'EasterEgg',
+      props: true,
+      component: () => import(/* webpackChunkName: "easter-egg" */ './views/EasterEgg.vue'),
     },
   ],
 });

@@ -7,47 +7,56 @@
       <div slot="title" v-if="isMe">个人主页</div>
     </za-nav-bar>
     <div class="usercard" >
-      <img width="50px" class="userpic" src="../../assets/logo.png" />
       <img style="position:absolute; z-index:1;left:40px;"
-           width="50px" src="/img/camera.png" v-if="editing"/>
-      <div class="texts">
-        <p class="username">{{username}}</p>
-        <!-- <p class="userstatu"><a @click="jumpTo({ name: 'Followlist' })">关注：{{follows}}</a><a style="margin-left:14px;"@click="jumpTo({ name: 'Fanslist' })"> 粉丝：{{fans}}</a></p> -->
-        <p class="userstatu">
-          <span>关注：{{follows}}</span>
-          <span style="margin-left:14px;">粉丝：{{fans}}</span>
-        </p>
-      </div>
-      <div v-if="editing">
-        <Button class="rightbutton" size="small" type="success"
-                ghost @click="save">
-          <div>完成</div>
-        </Button>
-      </div>
-      <div v-else>
-        <div v-if="isMe">
-          <Button class="rightbutton" size="small" type="success" ghost @click="edit">
-            <div>编辑</div>
-          </Button>
-        </div>
-        <div v-else>
-          <div v-if="!followed">
-            <Button class="rightbutton" size="small" type="success" ghost @click="follow_user">
-              <div>关注</div>
+              width="50px" src="/img/camera.png" v-if="editing"/>
+      <Row type="flex" justify="center" class="code-row-bg">
+        <Col span="4">
+          <img width="50px" class="userpic" src="../../assets/logo.png" />
+        </Col>
+        <Col span="14">
+          <div class="texts">
+            <p v-if="!editing" class="username">{{nickname == "" ? username : nickname}}<br /></p>
+            <za-input v-if="editing" class="userinput" ref='inputFirst' v-model='newname'></za-input>
+            <!-- <p class="userstatu"><a @click="jumpTo({ name: 'Followlist' })">关注：{{follows}}</a><a style="margin-left:14px;"@click="jumpTo({ name: 'Fanslist' })"> 粉丝：{{fans}}</a></p> -->
+            <p class="userstatu">
+              <span>关注：{{follows}}</span>
+              <span style="margin-left:14px;">粉丝：{{fans}}</span>
+            </p>
+          </div>
+        </Col>
+        <Col span="6">
+          <div v-if="editing">
+            <Button class="rightbutton" size="small" type="success"
+                    ghost @click="save">
+              <div>完成</div>
             </Button>
           </div>
           <div v-else>
-            <Button class="rightbutton" size="small" type="success" ghost @click="unfollow_user">
-              <div>取消关注</div>
-            </Button>
+            <div v-if="isMe">
+              <Button class="rightbutton" size="small" type="success" ghost @click="edit">
+                <div>编辑</div>
+              </Button>
+            </div>
+            <div v-else>
+              <div v-if="!followed">
+                <Button class="rightbutton" size="small" type="success" ghost @click="follow_user">
+                  <div>关注</div>
+                </Button>
+              </div>
+              <div v-else>
+                <Button class="rightbutton" size="small" type="success" ghost @click="unfollow_user">
+                  <div>取消关注</div>
+                </Button>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </Col>
+      </Row>
     </div>
     <div class="topcard" v-if="isMe">
       <Row type="flex" justify="center" class="code-row-bg">
           <Col span="11">
-            <p class="centervalue">{{mySignIncome + myShareIncome}} EOS</p>
+            <p class="centervalue">{{playerincome}} EOS</p>
             <p class="centertext">历史总收入</p>
           </Col>
           <Col span="1"><Divider type="vertical" style="height:33px;margin-top:10px;" /></Col>
@@ -94,7 +103,8 @@
 import { mapGetters, mapActions } from 'vuex';
 import { getPlayerIncome } from '@/api/signature';
 import {
-  Follow, Unfollow, getUser, auth,
+  Follow, Unfollow, getUser, oldgetUser, 
+  setUserName, getAssets
 } from '../../api';
 import ArticlesList from './ArticlesList.vue';
 import API from '@/api/scatter';
@@ -106,24 +116,17 @@ export default {
   components: { ArticlesList },
   data() {
     return {
-      playerincome: {
-        sign_income: 0,
-        share_income: 0,
-      },
+      playerincome: 0,
       editing: false,
       followed: false,
       follows: 0,
       fans: 0,
+      nickname: '',
+      newname: '',
     };
   },
   computed: {
     ...mapGetters(['currentUsername']),
-    mySignIncome() {
-      return this.playerincome.sign_income / 10000;
-    },
-    myShareIncome() {
-      return this.playerincome.share_income / 10000;
-    },
     ifLogined() {
       return this.currentUsername !== null;
     },
@@ -134,34 +137,6 @@ export default {
   },
   methods: {
     ...mapActions(['logoutScatterAsync']),
-    async authDemo() { // 示例代码。。请随便改。。。
-      // 1. 取得签名
-      let accessvalid = false;
-      const nowtime = new Date().getTime();
-      if (localStorage.getItem('ACCESS_TOKEN') != null) {
-        const accesstime = localStorage.getItem('ACCESS_TIME');
-        if (accesstime != null) {
-          if (nowtime - accesstime < 604800000) {
-            accessvalid = true;
-          }
-        }
-      }
-      if (!accessvalid) {
-        API.authSignature(({username, publicKey, signature}) => {
-          console.log(username, publicKey, signature);
-          // 2. post到服务端 获得accessToken并保存
-          auth({ username, publicKey, sign: signature }, (error, response, body) => {
-            console.log(body);
-            if (!error) {
-              // 3. save accessToken
-              const accessToken = body;
-              localStorage.setItem('ACCESS_TOKEN', accessToken);
-              localStorage.setItem('ACCESS_TIME', nowtime);
-            }
-          });
-        });
-      }
-    },
     goBack() {
       this.$router.go(-1);
     },
@@ -176,15 +151,50 @@ export default {
       this.editing = !this.editing;
     },
     save() {
-      this.$Message.success('保存');
-      this.editing = !this.editing;
+      setUserName({newname: this.newname}, (error, response, body) => {
+        console.log(error);
+        if (!error) {
+          if(response.statusCode == 500){
+            this.$Notice.error({
+              title: '昵称已存在，请重新设置',
+            });
+          } else {
+            this.$Notice.success({
+              title: '保存成功',
+            });
+          }
+          this.nickname = this.newname;
+        } else {
+          console.log(response.statusCode);
+          this.$Notice.error({
+            title: '保存失败',
+          });
+          this.newname = this.nickname == "" ? this.username : this.nickname;
+        }
+        this.refresh_user();
+        this.editing = !this.editing;
+      });
     },
     refresh_user() {
       const { username } = this;
-      getUser({ username }, (error, response, body) => {
-        this.follows = body.follows;
-        this.fans = body.fans;
-        this.followed = body.is_follow;
+      if ( username !== null )
+        oldgetUser({ username }, (error, response, body) => {
+          console.log(body);
+          this.follows = body.follows;
+          this.fans = body.fans;
+          this.followed = body.is_follow;
+          this.nickname = body.nickname;
+          this.newname = this.nickname == "" ? this.username : this.nickname;
+        });
+      else getUser({ username })
+      .then((response) => {
+        const { data } = response;
+        console.log(data);
+        this.follows = data.follows;
+        this.fans = data.fans;
+        this.followed = data.is_follow;
+        this.nickname = data.nickname;
+        this.newname = this.nickname === "" ? this.username : this.nickname;
       });
     },
     follow_user() {
@@ -240,10 +250,22 @@ export default {
         this.refresh_user();
       });
     },
+    // 获取历史总收入
+    async getAssets() {
+      await getAssets(this.username, 1)
+        .then(res => {
+          if (res.status === 200) {
+            this.playerincome = (res.data.totalSignIncome + res.data.totalShareIncome) / 10000
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$Message.error('获取历史收入错误请重试')
+        })
+    },
   },
-  async created() {
-    const playerincome = await getPlayerIncome(this.username);
-    this.playerincome = isEmptyArray(playerincome) ? playerincome[0] : this.playerincome;
+  created() {
+    this.getAssets()
     this.refresh_user();
     const user = this.isMe ? '我' : this.username;
     document.title = `${user}的个人主页 - SmartSignature`;
@@ -274,11 +296,18 @@ a {
 .username{
   font-size: 22px;
   font-weight: bolder;
+  text-align: left;
+}
+.userinput{
+  font-size: 22px;
+  font-weight: bolder;
+  margin-top: -12px;
+  height: 45px;
 }
 .userstatu{
   font-size: 14px;
   opacity: 0.4;
-  float:left;
+  text-align: left;
 }
 .texts{
   float: left;
