@@ -184,9 +184,9 @@ export default {
         .then((res) => {
           if (res.status === 200) {
             const { data } = res;
-            this.assetsRewards.totalSignIncome = data.totalSignIncome > 0 ? `+${data.totalSignIncome / 1000}` : data.totalSignIncome / 10000;
-            this.assetsRewards.totalShareIncome = data.totalShareIncome > 0 ? `+${data.totalShareIncome / 1000}` : data.totalShareIncome / 10000;
-            this.assetsRewards.totalShareExpenses = data.totalShareExpenses > 0 ? `+${data.totalShareExpenses / 1000}` : data.totalShareExpenses / 10000;
+            this.assetsRewards.totalSignIncome = data.totalSignIncome > 0 ? `+${data.totalSignIncome / 10000}` : data.totalSignIncome / 10000;
+            this.assetsRewards.totalShareIncome = data.totalShareIncome > 0 ? `+${data.totalShareIncome / 10000}` : data.totalShareIncome / 10000;
+            this.assetsRewards.totalShareExpenses = data.totalShareExpenses > 0 ? `+${data.totalShareExpenses / 10000}` : data.totalShareExpenses / 10000;
             if (data.history.length >= 0 && data.history.length < 20) this.isTheEndOfTheScroll = true; // 数据请求完
             else this.page += 1;
             const historyFilter = data.history.filter(i => i.amount !== 0); // 过滤金额为0
