@@ -13,7 +13,7 @@ const currentNetwork = config.network.eos.mainnet[0];
 
 // @trick: use function to lazy eval Scatter eos, in order to avoid no ID problem.
 const eos = () => ScatterJS.scatter.eos(currentNetwork, Eos, { expireInSeconds: 60 });
-const currentEOSAccount = () => ScatterJS.scatter.identity && ScatterJS.scatter.identity.accounts.find(x => x.blockchain === 'eos');
+const currentEOSAccount = () => ScatterJS.scatter.identity && API.getAccount();
 
 const eosClient = Eos({
   chainId: "aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906",
@@ -77,7 +77,7 @@ const API = {
     });
   },
   connectScatterAsync() {
-    return ScatterJS.scatter.connect(config.appScatterName, { initTimeout: 2000 });
+    return ScatterJS.scatter.connect(config.dappName, { initTimeout: 2000 });
   },
   suggestNetworkAsync() {
     return ScatterJS.scatter.suggestNetwork(currentNetwork);
@@ -123,19 +123,13 @@ const API = {
   getAccount() {
     return ScatterJS.scatter.identity.accounts.find(x => x.blockchain === 'eos');
   },
+  getArbitrarySignature(publicKey, data, memo) { 
+    return ScatterJS.scatter.getArbitrarySignature(publicKey, data, memo);
+  },
   getPublicKey() {
     return ScatterJS.scatter.getPublicKey('eos').then((publicKey) => {
       console.log(publicKey);
       return publicKey;
-    }).catch((error) => {
-      // todo(minakokojima): better error message.
-      alert(error);
-    });
-  },
-  getArbitrarySignatureAsync({ publicKey, data }) {
-    return ScatterJS.scatter.getArbitrarySignature({ publicKey, data }).then((signature) => {
-      console.log({ publicKey, data, signature });
-      return signature;
     }).catch((error) => {
       // todo(minakokojima): better error message.
       alert(error);
