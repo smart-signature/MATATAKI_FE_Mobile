@@ -77,7 +77,7 @@ const API = {
     });
   },
   connectScatterAsync() {
-    return ScatterJS.scatter.connect(config.appScatterName, { initTimeout: 2000 });
+    return ScatterJS.scatter.connect(config.dappName, { initTimeout: 2000 });
   },
   suggestNetworkAsync() {
     return ScatterJS.scatter.suggestNetwork(currentNetwork);
