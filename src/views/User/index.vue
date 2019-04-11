@@ -164,7 +164,7 @@ export default {
         if (!error) {
           if(response.statusCode == 500){
             this.$Notice.error({
-              title: '昵称已存在，清重新设置',
+              title: '昵称已存在，请重新设置',
             });
           } else {
             this.$Notice.success({
