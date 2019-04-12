@@ -172,7 +172,7 @@ export default {
           this.$Notice.error({
             title: '保存失败',
           });
-          this.newname = this.nickname == '' ? this.username : this.nickname;
+          this.newname = this.nickname === '' ? this.username : this.nickname;
         }
         this.refresh_user();
         this.editing = !this.editing;
@@ -187,7 +187,7 @@ export default {
           this.fans = body.fans;
           this.followed = body.is_follow;
           this.nickname = body.nickname;
-          this.newname = this.nickname == '' ? this.username : this.nickname;
+          this.newname = this.nickname === '' ? this.username : this.nickname;
         });
       } else {
         getUser({ username })
