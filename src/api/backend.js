@@ -8,40 +8,22 @@ import { currentEOSAccount as currentAccount } from './scatter';
 
 export const apiServer = process.env.VUE_APP_API;
 
-// eslint-disable-next-line no-unused-vars
-const oldpublishArticle = ({
-  author, title, hash, publicKey, signature, username, fissionFactor,
-}, callback) => request.post({
-  uri: `${apiServer}/publish`,
-  rejectUnauthorized: false,
-  json: true,
-  headers: { Accept: '*/*' },
-  dataType: 'json',
-  form: {
-    author,
-    fissionFactor,
-    hash,
-    publickey: publicKey,
-    username,
-    title,
-    sign: signature,
-  },
-}, callback);
-
 const publishArticle = ({
-  author, title, hash, publicKey, signature, username, fissionFactor,
-}) => axios.post(
-  `${apiServer}/publish`,
-  {
-    author,
-    fissionFactor,
-    hash,
-    publickey: publicKey,
-    username,
-    title,
-    sign: signature,
-  },
-);
+  author, title, hash, fissionFactor,
+}) => API.getSignature(author, hash).then(({ publicKey, signature, username }) => {
+  console.log('签名成功后调', publicKey, signature, username);
+  // if (err) failed('2nd step failed');
+  return axios.post(`${apiServer}/publish`,
+    {
+      author,
+      fissionFactor,
+      hash,
+      publickey: publicKey,
+      sign: signature,
+      title,
+      username,
+    },);
+});
 
 const getArticleData = hash => axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
 const getArticleInfo = hash => axios.get(`${apiServer}/post/${hash}`);
@@ -126,25 +108,27 @@ const auth = ({ username, publicKey, sign }, callback) => request.post({
     sign,
   },
 }, callback);
-
+// /<summary>
+// /拆token，返回json对象
+// /</summary>
+const disassembleToken = (token) => {
+  if (token === undefined || token === null) { return { iss: null, exp: 0 }; }
+  let tokenPayload = token.substring(token.indexOf('.') + 1);
+  tokenPayload = tokenPayload.substring(0, tokenPayload.indexOf('.'));
+  return JSON.parse(Base64.decode(tokenPayload));
+  // {iss:用户名，exp：token的过期时间，用ticks的形式表示}
+};
 // /<summary>
 // /装载access_token
 // /</summary>
 const getAuth = async (cb) => {
   const currentToken = getCurrentAccessToken();
-  let decodedData = null;
-  if (currentToken != null) {
-    let tokenPayload = currentToken.substring(currentToken.indexOf('.') + 1);
-    tokenPayload = tokenPayload.substring(0, tokenPayload.indexOf('.'));
-    decodedData = JSON.parse(Base64.decode(tokenPayload));
-  }
+  const decodedData = disassembleToken(currentToken); // 拆掉了
   const username = currentToken != null ? decodedData.iss : null;
-  // iss:用户名,exp:token过期时间。
-  // 1. 拆包token抓出时间,和用户并判断这个时间和系统时间，用户和当前登录用户的差异
   if (username !== currentAccount().name
     || decodedData === null || (decodedData.exp < new Date().getTime())) {
     console.log('Retake authtoken...');
-    API.authSignature(({ username, publicKey, signature }) => {
+    API.authSignature().then(({ username, publicKey, signature }) => {
       console.info('API.authSignature :', username, publicKey, signature);
       // 2. 将取得的签名和用户名和公钥post到服务端 获得accessToken并保存
       auth({ username, publicKey, sign: signature }, (error, response, body) => {
@@ -153,9 +137,13 @@ const getAuth = async (cb) => {
           const accessToken = body;
           console.info('got the access token :', accessToken);
           setAccessToken(accessToken);
-          cb();
         }
+        // 有沒有成功取得都得 cb()
+        cb();
       });
+    }, (err) => {
+      console.warn('取得用戶簽名出錯', err);
+      cb();
     });
   } else cb();
 };
@@ -170,8 +158,10 @@ const accessBackend = async (options, callback = () => {}) => {
   getAuth(() => { // 爱的魔力转圈圈，回调回调到你不分黑夜白天
     // 在这里套了7层callback，callback里面的async语法是无效的，所以一层一层套出来
     options.headers['x-access-token'] = getCurrentAccessToken();
-    console.info('b4 request send, Options :', options);
-    console.info('b4 request send, x-access-token :', options.headers['x-access-token']);
+    console.info(
+      'b4 request send, options :', options,
+      ', x-access-token :', options.headers['x-access-token']
+);
     request(options, callback); // 都是 request 害的，改用 axios 沒這些破事
   });
 };
@@ -289,5 +279,5 @@ export {
   Follow, Unfollow, getUser, setUserName, getFansList, getFollowList, oldgetUser,
   getSharesbysignid, addReadAmount, sendComment,
   getArticles, getArticlesBySupportAmountRanking, getArticlesBySupportTimesRanking, getAssets,
-  delArticle,
+  disassembleToken, delArticle,
 };
