@@ -339,17 +339,16 @@ export default {
           await sendComment({ comment, sign_id: signId },
             (error, response) => {
               console.log(response.statusCode);
-              if (response.statusCode !== 200) throw new Error(error);
-              if (error) throw new Error(error);
+              if (response.statusCode !== 200 || error ) throw new Error(error); // wrong way
             });
-        } catch (error) {
+        } catch (error) { // wrong way
+          console.error(error);
           console.log('Resend comment...');
           // eslint-disable-next-line camelcase
           await sendComment({ comment, sign_id: signId },
             (error, response) => {
               console.log(response.statusCode);
-              if (response.statusCode !== 200) throw new Error(error);
-              if (error) throw new Error(error);
+              if (response.statusCode !== 200 || error ) throw new Error(error); // wrong way
             });
         }
         this.isSupported = RewardStatus.REWARDED;

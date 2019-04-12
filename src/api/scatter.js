@@ -21,23 +21,23 @@ const eosClient = Eos({
 });
 
 const API = {
-  authSignature(callback) {
-    const account = this.getAccount();
-    eosClient.getAccount(account.name, (error, result) => {
-      // 获取当前权限
-      const permissions = result.permissions.find(x => x.perm_name === account.authority);
-      // 获取当前权限的public key
-      const publicKey = permissions.required_auth.keys[0].key;
-      // 需要签名的数据
-      const sign_data = `${account.name}`;
-      // 申请签名
-      ScatterJS.scatter.getArbitrarySignature(publicKey, sign_data, 'Auth')
-      .then(signature => {
-        callback({username: account.name, publicKey, signature});
-      }).catch(error => {
-        console.log(error);
+  authSignature() {
+    return new Promise((resolve, reject) => {
+      const { getAccount, getArbitrarySignature } = this;
+      const account = getAccount();
+      eosClient.getAccount(account.name).then((result) => {
+        // 获取当前权限
+        const permissions = result.permissions.find(x => x.perm_name === account.authority);
+        // 获取当前权限的public key
+        const publicKey = permissions.required_auth.keys[0].key;
+        // 需要签名的数据
+        const signData = account.name;
+        // 申请签名
+        getArbitrarySignature(publicKey, signData, 'Auth')
+        .then(signature => { resolve({ username: account.name, publicKey, signature }); })
+        .catch(error => reject(error));
       });
-    })
+    });
   },
 
   getSignature(author, hash, callback) {
