@@ -241,15 +241,15 @@ const getFollowList = ({ username }, callback) => accessBackend({
   },
 }, callback);
 
-// eslint-disable-next-line camelcase
-const sendComment = ({ comment, sign_id }, callback) => accessBackend({
+const sendComment = ({ comment, signId }, callback) => accessBackend({
   method: 'POST',
   uri: `${apiServer}/post/comment`,
   rejectUnauthorized: false,
   json: true,
   headers: { Accept: '*/*' },
   dataType: 'json',
-  form: { comment, sign_id },
+  // eslint-disable-next-line camelcase
+  form: { comment, sign_id: signId },
 }, callback);
 
 // be Used in Article Page
