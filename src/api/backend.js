@@ -130,7 +130,7 @@ const auth = ({ username, publicKey, sign }, callback) => request.post({
 // /拆token，返回json对象
 // /</summary>
 const disassembleToken = (token) => {
-  if (token === undefined || token === null) { return { iss: null, exp: null }; }
+  if (token === undefined || token === null) { return { iss: null, exp: 0 }; }
   let tokenPayload = token.substring(token.indexOf('.') + 1);
   tokenPayload = tokenPayload.substring(0, tokenPayload.indexOf('.'));
   return JSON.parse(Base64.decode(tokenPayload));
@@ -281,4 +281,5 @@ export {
   Follow, Unfollow, getUser, setUserName, getFansList, getFollowList, oldgetUser,
   getSharesbysignid, addReadAmount, sendComment,
   getArticles, getArticlesBySupportAmountRanking, getArticlesBySupportTimesRanking, getAssets,
+  disassembleToken,
 };
