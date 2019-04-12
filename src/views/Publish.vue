@@ -32,7 +32,7 @@ import { sendPost } from '@/api/ipfs';
 import API from '@/api/scatter';
 import { mavonEditor } from 'mavon-editor';
 import {
-  publishArticle, defaultImagesUploader, auth, getArticleInfo,
+  defaultImagesUploader, getArticleInfo, publishArticle,
 } from '../api';
 
 import 'mavon-editor/dist/css/index.css'; // editor css
@@ -104,7 +104,10 @@ export default {
       } = this;
       const author = currentUsername;
       const content = markdownData;
-      const failed = error => this.$Notice.error({ title: '发送失败', desc: error });
+      const failed = error => {
+        console.error('发送失败', error);
+        this.$Notice.error({ title: '发送失败', desc: error });
+      }
       const jumpToArticle = hash => this.$router.push({
         name: 'Article', params: { hash },
       });
@@ -114,9 +117,7 @@ export default {
           desc: '3秒后跳转到你发表的文章',
         });
 
-        setTimeout(() => {
-          jumpToArticle(hash);
-        }, 3 * 1000);
+        setTimeout(() => { jumpToArticle(hash); }, 3 * 1000);
       };
 
       try {
@@ -125,24 +126,12 @@ export default {
         });
         const { code, hash } = data;
         if (code !== 200) failed('1st step : send post to ipfs failed');
-        // eslint-disable-next-line no-unused-vars
-        API.getSignature(author, hash, (err, signature, publicKey, username) => { // username未使用
-          console.log('签名成功后调', signature, publicKey);
-          if (err) failed('2nd step failed');
-          publishArticle({
-            author, title, hash, publicKey, signature, username: currentUsername, fissionFactor,
-          })
-            .then((response) => {
-              if (response.data.msg !== 'success') failed('失败请重试');
-              success(hash);
-            })
-            .catch((error) => {
-              failed(error);
-              console.log(error);
-            });
-        });
+        publishArticle({ author, title, hash, fissionFactor })
+          .then((response) => {
+            if (response.data.msg !== 'success') failed('失败请重试');
+            success(hash);
+          }, (error) => { failed(error); });
       } catch (error) {
-        console.error(error);
         failed(error);
       }
     },

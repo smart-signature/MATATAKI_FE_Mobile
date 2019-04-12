@@ -8,40 +8,23 @@ import { currentEOSAccount as currentAccount } from './scatter';
 
 export const apiServer = process.env.VUE_APP_API;
 
-// eslint-disable-next-line no-unused-vars
-const oldpublishArticle = ({
-  author, title, hash, publicKey, signature, username, fissionFactor,
-}, callback) => request.post({
-  uri: `${apiServer}/publish`,
-  rejectUnauthorized: false,
-  json: true,
-  headers: { Accept: '*/*' },
-  dataType: 'json',
-  form: {
-    author,
-    fissionFactor,
-    hash,
-    publickey: publicKey,
-    username,
-    title,
-    sign: signature,
-  },
-}, callback);
-
 const publishArticle = ({
-  author, title, hash, publicKey, signature, username, fissionFactor,
-}) => axios.post(
-  `${apiServer}/publish`,
-  {
-    author,
-    fissionFactor,
-    hash,
-    publickey: publicKey,
-    username,
-    title,
-    sign: signature,
-  },
-);
+  author, title, hash, fissionFactor,
+}) => API.getSignature(author, hash).then(({ publicKey, signature, username }) => {
+  console.log('签名成功后调', publicKey, signature, username);
+  // if (err) failed('2nd step failed');
+  return axios.post(`${apiServer}/publish`,
+    {
+      author,
+      fissionFactor,
+      hash,
+      publickey: publicKey,
+      sign: signature,
+      title,
+      username,
+    },
+  );
+});
 
 const getArticleData = hash => axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
 const getArticleInfo = hash => axios.get(`${apiServer}/post/${hash}`);
