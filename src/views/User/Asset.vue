@@ -63,10 +63,7 @@
 import { AssetCard } from '@/components/';
 import { getAssets } from '@/api';
 import {
-  CONTRACT_ACCOUNT,
-  getPlayerBills, getPlayerIncome,
-  getSignInfo,
-  withdraw,
+  CONTRACT_ACCOUNT, getPlayerIncome, withdraw,
 } from '@/api/signature';
 import { isEmptyArray } from '@/common/methods';
 

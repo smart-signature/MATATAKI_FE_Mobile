@@ -22,14 +22,12 @@
     <div class="markdown-body" v-html="compiledMarkdown"></div>
     <div class="commentslist-title">赞赏队列 ({{article.ups || 0}})</div>
     <div class="comments">
-      <!-- <div class="tl"> -->
       <za-pull :on-refresh="refresh" :refreshing="refreshing">
         <div class="content" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
           <CommentCard :comment="a" v-for="a in sortedComments" :key="a.timestamp"/>
         </div>
         <p class="loading-stat">{{displayAboutScroll}}</p>
       </za-pull>
-      <!-- </div> -->
     </div>
 
     <footer class="footer">
@@ -331,11 +329,9 @@ export default {
       try {
         await this.loginCheck();
       } catch (error) {
-        // console.log(error);
-        this.$Message.error('本功能需登录钱包');
+        this.$Message.error('本功能需登录');
         return;
       }
-
 
       const signId = article.id;
       const referrer = this.getInvite;
@@ -343,8 +339,7 @@ export default {
 
       try {
         this.isSupported = RewardStatus.LOADING;
-        // eslint-disable-next-line camelcase
-        await support({ amount, sign_id: signId, referrer });
+        await support({ amount, signId, referrer });
         try {
           console.log('Send comment...');
           // eslint-disable-next-line camelcase
@@ -382,7 +377,7 @@ export default {
         });
       } catch (error) {
         console.log(JSON.stringify(error));
-        this.$Message.error('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额。');
+        this.$Message.error('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额');
         this.isSupported = RewardStatus.NOT_REWARD_YET;
       }
     },

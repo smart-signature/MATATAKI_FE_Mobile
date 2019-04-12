@@ -12,7 +12,6 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { getPlayerIncome } from '../../api/signature';
 import ArticlesList from './ArticlesList.vue';
 
 export default {
