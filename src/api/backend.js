@@ -93,7 +93,7 @@ const getArticles = ({ page = 1, orderBy = OrderBy.TimeLine }) => {
 
 
 // 获取资产明细
-const getAssets = (user, page) => axios.get(`${apiServer}/assets`, { params: { user,page } });
+const getAssets = (user, page) => axios.get(`${apiServer}/assets`, { params: { user, page } });
 
 /*
   amount: 2000
@@ -126,21 +126,23 @@ const auth = ({ username, publicKey, sign }, callback) => request.post({
     sign,
   },
 }, callback);
-
+// /<summary>
+// /拆token，返回json对象
+// /</summary>
+const disassembleToken = (token) => {
+  if (token === undefined || token === null) { return { iss: null, exp: 0 }; }
+  let tokenPayload = token.substring(token.indexOf('.') + 1);
+  tokenPayload = tokenPayload.substring(0, tokenPayload.indexOf('.'));
+  return JSON.parse(Base64.decode(tokenPayload));
+  // {iss:用户名，exp：token的过期时间，用ticks的形式表示}
+};
 // /<summary>
 // /装载access_token
 // /</summary>
 const getAuth = async (cb) => {
   const currentToken = getCurrentAccessToken();
-  let decodedData = null;
-  if (currentToken != null) {
-    let tokenPayload = currentToken.substring(currentToken.indexOf('.') + 1);
-    tokenPayload = tokenPayload.substring(0, tokenPayload.indexOf('.'));
-    decodedData = JSON.parse(Base64.decode(tokenPayload));
-  }
+  const decodedData = disassembleToken(currentToken); // 拆掉了
   const username = currentToken != null ? decodedData.iss : null;
-  // iss:用户名,exp:token过期时间。
-  // 1. 拆包token抓出时间,和用户并判断这个时间和系统时间，用户和当前登录用户的差异
   if (username !== currentAccount().name
     || decodedData === null || (decodedData.exp < new Date().getTime())) {
     console.log('Retake authtoken...');
@@ -283,5 +285,6 @@ export {
   getArticleData, getArticlesList, getArticleInfo, getArticleInHash,
   Follow, Unfollow, getUser, setUserName, getFansList, getFollowList, oldgetUser,
   getSharesbysignid, addReadAmount, sendComment,
-  getArticles, getArticlesBySupportAmountRanking, getArticlesBySupportTimesRanking,getAssets
+  getArticles, getArticlesBySupportAmountRanking, getArticlesBySupportTimesRanking, getAssets,
+  disassembleToken,
 };

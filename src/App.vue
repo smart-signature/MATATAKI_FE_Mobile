@@ -70,11 +70,11 @@ export default {
     }
 
     cyanobridgegetAccount()
-    .then(address => {
-      console.info('ONT address :', address);
-      this.$Message.success(`ONT address : ${address} ，登陸成功`);
-    })
-    .catch(result => console.warn('Failed to get ONT account :', result));
+      .then((address) => {
+        console.info('ONT address :', address);
+        this.$Message.success(`ONT address : ${address} ，登陸成功`);
+      })
+      .catch(result => console.warn('Failed to get ONT account :', result));
   },
 };
 </script>
