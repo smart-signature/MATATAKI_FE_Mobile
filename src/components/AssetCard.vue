@@ -39,9 +39,7 @@ export default {
       return this.asset.amount > 0 ? '#f50' : (this.asset.amount < 0 ? '#87d068' : '#a7aab7');
     },
   },
-  created() {
-    console.log(this.asset);
-  },
+  created() {},
 };
 </script>
 

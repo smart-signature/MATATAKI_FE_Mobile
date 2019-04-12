@@ -16,11 +16,11 @@
       </router-link>
       {{articleCreateTime}} | {{article.read || 0}}阅读</p>
       <p class="break_all">IPFS Hash: {{article.hash}}</p>
+      <Button v-if="isMe" @click="delArticleButton" class="del-acticle" type="error" icon="md-close" size="small">删除</Button>
     </header>
     <mavon-editor v-show="false" style="display: none;"/>
     <div class="markdown-body" v-html="compiledMarkdown"></div>
     <div class="commentslist-title">赞赏队列 ({{article.ups || 0}})</div>
-
     <div class="comments">
       <!-- <div class="tl"> -->
       <za-pull :on-refresh="refresh" :refreshing="refreshing">
@@ -61,6 +61,7 @@
             @click="share">分享<img src="@/assets/img/icon_share.png" /></button>
       </div>
     </footer>
+    <!-- 赞赏对话框 zarm -->
     <za-modal :visible="visible3" @close="handleClose" radius="" @maskClick="visible3 = false" :showClose="true">
         <div slot="title" style="textAlign: center;">赞赏此文章</div>
         <div class="support-input">
@@ -85,12 +86,14 @@ import { mavonEditor } from 'mavon-editor';
 import {
   getArticleData, getArticleInfo, getSharesbysignid,
   addReadAmount, sendComment, getArticleInHash,
+  delArticle,
 } from '@/api';
 import { support } from '@/api/signature';
 import 'mavon-editor/dist/css/index.css';
 import moment from 'moment';
 // import CommentsList from './CommentsList.vue';
 import { CommentCard } from '@/components/';
+import { sleep } from '@/common/methods';
 
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
@@ -163,6 +166,10 @@ export default {
       // if need change to asc, swap a & b
       return this.comments.slice(0) // 使用slice创建数组副本 消除副作用
         .sort((a, b) => (new Date(b.timestamp)).getTime() - (new Date(a.timestamp)).getTime());
+    },
+    isMe() {
+      console.log('isme', this.article, this.currentUsername);
+      return this.article.author === this.currentUsername;
     },
   },
   /*
@@ -452,6 +459,48 @@ export default {
       this.comments.length = 0;
       await this.getArticlesList(this.signId, 1);
       this.refreshing = false;
+    },
+    // 删除文章
+    delArticleButton() {
+      if (this.article.author !== this.currentUsername) {
+        this.$Message.error('您无权删除他人文章');
+        return;
+      }
+      const jumpTo = name => this.$router.push({ name });
+      const delSuccess = async () => {
+        this.$Modal.remove();
+        this.$Notice.success({
+          title: '删除成功',
+          desc: '三秒后自动返回首页',
+        });
+        await sleep(3000);
+        jumpTo('home');
+      };
+      const delArticleFunc = async (id) => {
+        if (!id) {
+          this.$Modal.remove();
+          this.$Message.error('删除错误');
+          return;
+        }
+        await delArticle({ id },
+          (error, response) => {
+            console.log(response);
+            if (response.statusCode !== 200) throw new Error(error);
+            if (error) throw new Error(error);
+            delSuccess();
+          });
+      };
+
+      this.$Modal.confirm({
+        title: '提示',
+        content: '<p>是否删除这篇文章</p>',
+        loading: true,
+        onOk: () => {
+          console.log(this);
+          console.log(this.article);
+          delArticleFunc(this.article.id);
+        },
+      });
     },
   },
 };
