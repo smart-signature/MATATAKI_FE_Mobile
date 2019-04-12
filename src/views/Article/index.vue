@@ -466,33 +466,29 @@ export default {
         this.$Modal.remove();
         this.$Notice.success({
           title: '删除成功',
-          desc: '三秒后自动返回首页',
+          desc: '三秒后自动跳转到首页',
         });
         await sleep(3000);
         jumpTo('home');
       };
+      const fail = (err) => {
+        this.$Modal.remove();
+        this.$Message.error('删除错误');
+        console.log('error', err);
+      };
       const delArticleFunc = async (id) => {
-        if (!id) {
-          this.$Modal.remove();
-          this.$Message.error('删除错误');
-          return;
-        }
+        if (!id) return fail('没有id');
         await delArticle({ id },
-          (error, response) => {
-            console.log(response);
-            if (response.statusCode !== 200) throw new Error(error);
-            if (error) throw new Error(error);
+          (err, res) => {
+            if (res.statusCode !== 200 || err || !res) return fail(err);
             delSuccess();
           });
       };
-
       this.$Modal.confirm({
         title: '提示',
         content: '<p>是否删除这篇文章</p>',
         loading: true,
         onOk: () => {
-          console.log(this);
-          console.log(this.article);
           delArticleFunc(this.article.id);
         },
       });

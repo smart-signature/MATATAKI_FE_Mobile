@@ -93,7 +93,7 @@ const getArticles = ({ page = 1, orderBy = OrderBy.TimeLine }) => {
 
 
 // 获取资产明细
-const getAssets = (user, page) => axios.get(`${apiServer}/assets`, { params: { user,page } });
+const getAssets = (user, page) => axios.get(`${apiServer}/assets`, { params: { user, page } });
 
 /*
   amount: 2000
@@ -273,10 +273,21 @@ const addReadAmount = ({ articlehash }, callback) => accessBackend({
   form: {},
 }, callback);
 
+const delArticle = ({ id }, callback) => accessBackend({
+  method: 'DELETE',
+  uri: `${apiServer}/post/${id}`,
+  rejectUnauthorized: false,
+  json: true,
+  headers: { Accept: '*/*' },
+  dataType: 'json',
+  form: {},
+}, callback);
+
 export {
   publishArticle, auth, getAuth,
   getArticleData, getArticlesList, getArticleInfo, getArticleInHash,
   Follow, Unfollow, getUser, setUserName, getFansList, getFollowList, oldgetUser,
   getSharesbysignid, addReadAmount, sendComment,
-  getArticles, getArticlesBySupportAmountRanking, getArticlesBySupportTimesRanking,getAssets
+  getArticles, getArticlesBySupportAmountRanking, getArticlesBySupportTimesRanking, getAssets,
+  delArticle,
 };
