@@ -150,6 +150,11 @@ export default {
       this.editing = !this.editing;
     },
     save() {
+      if(this.newname === this.nickname)
+      {
+        this.editing = !this.editing;
+        return;
+      }
       setUserName({newname: this.newname}, (error, response, body) => {
         console.log(error);
         if (!error) {
