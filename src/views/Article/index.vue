@@ -346,7 +346,7 @@ export default {
           await sendComment({ comment, sign_id: signId },
             (error, response) => {
               console.log(response.statusCode);
-              if (response.statusCode !== 200 || error ) throw new Error(error); // wrong way
+              if (response.statusCode !== 200 || error) throw new Error(error); // wrong way
             });
         } catch (error) { // wrong way
           console.error(error);
@@ -355,7 +355,7 @@ export default {
           await sendComment({ comment, sign_id: signId },
             (error, response) => {
               console.log(response.statusCode);
-              if (response.statusCode !== 200 || error ) throw new Error(error); // wrong way
+              if (response.statusCode !== 200 || error) throw new Error(error); // wrong way
             });
         }
         this.isSupported = RewardStatus.REWARDED;
@@ -485,7 +485,7 @@ export default {
       };
       this.$Modal.confirm({
         title: '提示',
-        content: '<p>是否删除这篇文章</p>',
+        content: '<p>该文章已上传至 IPFS 永久保存, 本次操作仅删除智能签名中的显示。</p>',
         loading: true,
         onOk: () => {
           delArticleFunc(this.article.id);
