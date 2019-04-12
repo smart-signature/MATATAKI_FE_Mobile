@@ -1,29 +1,29 @@
 <template>
   <div class="card asset">
-    <a>
       <Row justify="center" >
         <i-col span="18">
            <h2 class="asset-quantity"
              :style='{ color: `${assetColor}` }'>{{assetAmount}} EOS</h2>
            <p class="asset-information">{{friendlyDate}}</p>
          </i-col>
-         <!-- <i-col span="6" class="detailright"> -->
-           <!-- {{(asset.article.title).length > 11 ? (asset.article.title).slice(0,11)+'...' : asset.article.title}} -->
-           <!--<ArticleCard :article="asset.article" />-->
-         <!-- </i-col> -->
+         <i-col span="6" class="detailright">
+            <p v-clampy="3">{{asset.title}}</p>
+         </i-col>
       </Row>
-    </a>
   </div>
 </template>
 
 <script>
 import moment from 'moment';
-// import { ArticleCard } from '@/components/';
+// https://github.com/clampy-js/vue-clampy
+import clampy from '@clampy-js/vue-clampy';
 
 export default {
   name: 'AssetCard',
   props: ['asset'],
-  // components: { ArticleCard },
+  directives: {
+    clampy,
+  },
   computed: {
     friendlyDate() {
       const isAppleSlave = navigator.platform.includes('iPhone');
@@ -44,10 +44,6 @@ export default {
 </script>
 
 <style scoped>
-a {
-  color: #000;
-  text-decoration: none; /* no underline */
-}
 h2.asset-quantity {
   font-size: 18px;
   font-weight: 600;
@@ -66,7 +62,9 @@ h2.asset-quantity {
   color: #777777;
   font-size: 11px;
   font-weight: normal;
-  padding: 4px;
+  padding: 5px;
   margin-bottom: -10px;
+  box-sizing: border-box;
+  word-wrap: break-word;
 }
 </style>
