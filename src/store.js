@@ -46,13 +46,13 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         console.log('Connecting to wallet ...');
         cyanobridgeAPI.getAccount()
-        .then(result => {
-          const { result:address } = result;
-          commit('setCyanobridgeAccount', address);
-          console.log('1.');
-          resolve(address);
-        })
-        .catch(result => reject(result));
+          .then((result) => {
+            const { result: address } = result;
+            commit('setCyanobridgeAccount', address);
+            console.log('1.');
+            resolve(address);
+          })
+          .catch(result => reject(result));
       });
     },
     async connectScatterAsync({ commit, dispatch }) {

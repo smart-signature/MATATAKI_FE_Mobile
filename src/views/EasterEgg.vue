@@ -26,8 +26,8 @@ export default {
       return this.commitHash !== 'undefined';
     },
     commitUrl() {
-      return `https://github.com/smart-signature/smart-signature-future/commit/${this.commitHash}`
-    }
+      return `https://github.com/smart-signature/smart-signature-future/commit/${this.commitHash}`;
+    },
   },
 };
 </script>

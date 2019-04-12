@@ -1,6 +1,8 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Home from './views/Home/index.vue';
+import { disassembleToken } from './api/backend';
+
 
 Vue.use(Router);
 
@@ -43,6 +45,13 @@ export default new Router({
       name: 'Asset',
       props: true,
       component: () => import(/* webpackChunkName: "user-asset" */ './views/User/Asset.vue'),
+      beforeEnter: (to, from, next) => {
+        const currentUserName = to.params.username;
+        const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
+        // eslint-disable-next-line eqeqeq
+        if (tokenUserName != currentUserName) next(`/user/${tokenUserName}/asset`);
+        else { next(); }
+      }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
     },
     {
       path: '/user/:username/original',
