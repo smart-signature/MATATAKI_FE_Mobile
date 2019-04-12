@@ -102,8 +102,8 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import {
-  Follow, Unfollow, getUser, oldgetUser, 
-  setUserName, getAssets
+  Follow, Unfollow, getUser, oldgetUser,
+  setUserName, getAssets,
 } from '../../api';
 import ArticlesList from './ArticlesList.vue';
 import API from '@/api/scatter';
@@ -150,15 +150,14 @@ export default {
       this.editing = !this.editing;
     },
     save() {
-      if(this.newname === this.nickname)
-      {
+      if (this.newname === this.nickname) {
         this.editing = !this.editing;
         return;
       }
-      setUserName({newname: this.newname}, (error, response, body) => {
+      setUserName({ newname: this.newname }, (error, response, body) => {
         console.log(error);
         if (!error) {
-          if(response.statusCode == 500){
+          if (response.statusCode == 500) {
             this.$Notice.error({
               title: '昵称已存在，请重新设置',
             });
@@ -173,7 +172,7 @@ export default {
           this.$Notice.error({
             title: '保存失败',
           });
-          this.newname = this.nickname == "" ? this.username : this.nickname;
+          this.newname = this.nickname == '' ? this.username : this.nickname;
         }
         this.refresh_user();
         this.editing = !this.editing;
@@ -181,25 +180,27 @@ export default {
     },
     refresh_user() {
       const { username } = this;
-      if ( username !== null )
+      if (username !== null) {
         oldgetUser({ username }, (error, response, body) => {
           console.log(body);
           this.follows = body.follows;
           this.fans = body.fans;
           this.followed = body.is_follow;
           this.nickname = body.nickname;
-          this.newname = this.nickname == "" ? this.username : this.nickname;
+          this.newname = this.nickname == '' ? this.username : this.nickname;
         });
-      else getUser({ username })
-      .then((response) => {
-        const { data } = response;
-        console.log(data);
-        this.follows = data.follows;
-        this.fans = data.fans;
-        this.followed = data.is_follow;
-        this.nickname = data.nickname;
-        this.newname = this.nickname === "" ? this.username : this.nickname;
-      });
+      } else {
+        getUser({ username })
+          .then((response) => {
+            const { data } = response;
+            console.log(data);
+            this.follows = data.follows;
+            this.fans = data.fans;
+            this.followed = data.is_follow;
+            this.nickname = data.nickname;
+            this.newname = this.nickname === '' ? this.username : this.nickname;
+          });
+      }
     },
     follow_user() {
       // alert('follow');
@@ -257,19 +258,19 @@ export default {
     // 获取历史总收入
     async getAssets() {
       await getAssets(this.username, 1)
-        .then(res => {
+        .then((res) => {
           if (res.status === 200) {
-            this.playerincome = (res.data.totalSignIncome + res.data.totalShareIncome) / 10000
+            this.playerincome = (res.data.totalSignIncome + res.data.totalShareIncome) / 10000;
           }
         })
-        .catch(err => {
-          console.log(err)
-          this.$Message.error('获取历史收入错误请重试')
-        })
+        .catch((err) => {
+          console.log(err);
+          this.$Message.error('获取历史收入错误请重试');
+        });
     },
   },
   created() {
-    this.getAssets()
+    this.getAssets();
     this.refresh_user();
     const user = this.isMe ? '我' : this.username;
     document.title = `${user}的个人主页 - SmartSignature`;
