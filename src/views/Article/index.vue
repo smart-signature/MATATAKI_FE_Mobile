@@ -332,8 +332,7 @@ export default {
 
       try {
         this.isSupported = RewardStatus.LOADING;
-        // eslint-disable-next-line camelcase
-        await support({ amount, sign_id: signId, referrer });
+        await support({ amount, signId, referrer });
         try {
           console.log('Send comment...');
           // eslint-disable-next-line camelcase
