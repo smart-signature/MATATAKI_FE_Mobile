@@ -146,7 +146,7 @@ const getAuth = async (cb) => {
   if (username !== currentAccount().name
     || decodedData === null || (decodedData.exp < new Date().getTime())) {
     console.log('Retake authtoken...');
-    API.authSignature(({ username, publicKey, signature }) => {
+    API.authSignature().then(({ username, publicKey, signature }) => {
       console.info('API.authSignature :', username, publicKey, signature);
       // 2. 将取得的签名和用户名和公钥post到服务端 获得accessToken并保存
       auth({ username, publicKey, sign: signature }, (error, response, body) => {
@@ -155,9 +155,13 @@ const getAuth = async (cb) => {
           const accessToken = body;
           console.info('got the access token :', accessToken);
           setAccessToken(accessToken);
-          cb();
         }
+        // 有沒有成功取得都得 cb()
+        cb();
       });
+    }, (err) => {
+      console.warn('取得用戶簽名出錯', err);
+      cb();
     });
   } else cb();
 };
@@ -172,8 +176,9 @@ const accessBackend = async (options, callback = () => {}) => {
   getAuth(() => { // 爱的魔力转圈圈，回调回调到你不分黑夜白天
     // 在这里套了7层callback，callback里面的async语法是无效的，所以一层一层套出来
     options.headers['x-access-token'] = getCurrentAccessToken();
-    console.info('b4 request send, Options :', options);
-    console.info('b4 request send, x-access-token :', options.headers['x-access-token']);
+    console.info(
+      'b4 request send, options :', options,
+      ', x-access-token :', options.headers['x-access-token']);
     request(options, callback); // 都是 request 害的，改用 axios 沒這些破事
   });
 };
