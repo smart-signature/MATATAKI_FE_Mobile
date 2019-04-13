@@ -275,17 +275,20 @@ const delArticle = ({ id }, callback) => accessBackend({
 }, callback);
 
 // 设置头像
-const uploadAvatar = ({ avatarHash }, callback) => accessBackend({
+const uploadAvatar = ({ avatar }, callback) => accessBackend({
   method: 'POST',
   uri: `${apiServer}/user/setAvatar`,
   rejectUnauthorized: false,
   json: true,
   headers: { Accept: '*/*' },
   dataType: 'json',
-  form: {
-    avatar: avatarHash,
-  },
+  form: { avatar },
 }, callback);
+
+// 获取头像
+const getAvatarImage = hash => axios.get(`${apiServer}/image/${hash}`, {
+  responseType: 'arraybuffer',
+});
 
 export {
   publishArticle, auth, getAuth,
@@ -293,5 +296,5 @@ export {
   Follow, Unfollow, getUser, setUserName, getFansList, getFollowList, oldgetUser,
   getSharesbysignid, addReadAmount, sendComment,
   getArticles, getArticlesBySupportAmountRanking, getArticlesBySupportTimesRanking, getAssets,
-  disassembleToken, delArticle, uploadAvatar,
+  disassembleToken, delArticle, uploadAvatar, getAvatarImage,
 };
