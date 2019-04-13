@@ -8,7 +8,7 @@
     </za-nav-bar>
     <div class="usercard" >
       <img style="position:absolute; z-index:1;left:40px;"
-              width="50px" src="/img/camera.png" v-if="editing"/>
+              width="50px" src="/img/camera.png" @click="editingavatar = true" v-if="editing"/>
       <Row type="flex" justify="center" class="code-row-bg">
         <Col span="4">
           <img width="50px" class="userpic" src="../../assets/logo.png" />
@@ -96,6 +96,11 @@
       <Button class="bottombutton" long @click="logoutScatterAsync">退出登录</Button>
     </div>
     <ArticlesList :listtype="'others'" ref='ArticlesList' :username='username' v-if="!isMe"/>
+
+    <!-- ⬇头像编辑 -->
+    <za-modal :visible.sync='editingavatar' title="编辑头像" :show-close='true'>
+      <Avatar />
+    </za-modal>
   </div>
 </template>
 
@@ -108,11 +113,12 @@ import {
 import ArticlesList from './ArticlesList.vue';
 import API from '@/api/scatter';
 import { isEmptyArray } from '@/common/methods';
+import Avatar from './AvatarUploader.vue';
 
 export default {
   name: 'User',
   props: ['username'],
-  components: { ArticlesList },
+  components: { Avatar, ArticlesList },
   data() {
     return {
       playerincome: 0,
@@ -122,6 +128,7 @@ export default {
       fans: 0,
       nickname: '',
       newname: '',
+      editingavatar: false,
     };
   },
   computed: {
@@ -143,6 +150,9 @@ export default {
       console.log('editing');
       this.editing = !this.editing;
     },
+    // clickCamera(){
+    //   console.log("clicked.");
+    // },
     jumpTo(params) {
       this.$router.push(params);
     },
