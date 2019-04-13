@@ -263,6 +263,7 @@ const addReadAmount = ({ articlehash }, callback) => accessBackend({
   form: {},
 }, callback);
 
+// 删除文章
 const delArticle = ({ id }, callback) => accessBackend({
   method: 'DELETE',
   uri: `${apiServer}/post/${id}`,
@@ -273,11 +274,24 @@ const delArticle = ({ id }, callback) => accessBackend({
   form: {},
 }, callback);
 
+// 设置头像
+const uploadAvatar = ({ avatarHash }, callback) => accessBackend({
+  method: 'POST',
+  uri: `${apiServer}/user/setAvatar`,
+  rejectUnauthorized: false,
+  json: true,
+  headers: { Accept: '*/*' },
+  dataType: 'json',
+  form: {
+    avatar: avatarHash,
+  },
+}, callback);
+
 export {
   publishArticle, auth, getAuth,
   getArticleData, getArticlesList, getArticleInfo, getArticleInHash,
   Follow, Unfollow, getUser, setUserName, getFansList, getFollowList, oldgetUser,
   getSharesbysignid, addReadAmount, sendComment,
   getArticles, getArticlesBySupportAmountRanking, getArticlesBySupportTimesRanking, getAssets,
-  disassembleToken, delArticle,
+  disassembleToken, delArticle, uploadAvatar,
 };
