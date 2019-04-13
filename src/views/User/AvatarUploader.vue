@@ -17,14 +17,15 @@
           extensions="gif,jpg,jpeg,png,webp"
           accept="image/png,image/gif,image/jpeg,image/webp"
           name="avatar"
-          class="btn btn-primary"
           post-action="/upload/post"
           :drop="!edit"
           v-model="files"
           @input-filter="inputFilter"
           @input-file="inputFile"
           ref="upload">
-          Upload avatar
+          <za-button>
+            Upload avatar
+          </za-button>
         </file-upload>
       </div>
     </div>
@@ -34,12 +35,9 @@
         <img ref="editImage" :src="files[0].url" />
       </div>
       <div class="text-center p-4">
-        <button type="button" class="btn btn-secondary" @click.prevent="$refs.upload.clear">Cancel</button>
-        <button type="submit" class="btn btn-primary" @click.prevent="editSave">Save</button>
+        <za-button theme="error" @click.prevent="$refs.upload.clear">Cancel</za-button>
+        <za-button theme="primary" @click.prevent="editSave">Save</za-button>
       </div>
-    </div>
-    <div class="pt-5">
-      Source code: <a href="https://github.com/lian-yue/vue-upload-component/blob/master/docs/views/examples/Avatar.vue">/docs/views/examples/Avatar.vue</a>
     </div>
   </div>
 </template>
