@@ -7,11 +7,12 @@
       <div slot="title" v-if="isMe">个人主页</div>
     </za-nav-bar>
     <div class="usercard" >
-      <img style="position:absolute; z-index:1;left:40px;"
-              width="50px" src="/img/camera.png" @click="editingavatar = true" v-if="editing"/>
+      <!-- /img/camera.png -->
+      <img style="position:absolute; z-index:1;left:40px;" width="50px" src="/img/camera.png" @click="editingavatar = true" v-if="editing"/>
       <Row type="flex" justify="center" class="code-row-bg">
-        <Col span="4">
-          <img width="50px" class="userpic" src="../../assets/logo.png" />
+        <Col span="4" class="user-avatar">
+        <!-- ../../assets/logo.png -->
+          <img width="50px" class="userpic" :src="avatar" />
         </Col>
         <Col span="14">
           <div class="texts">
@@ -43,7 +44,7 @@
                 </Button>
               </div>
               <div v-else>
-                <Button class="rightbutton" 
+                <Button class="rightbutton"
                   size="small" type="success" ghost @click="unfollow_user">
                   <div>取消关注</div>
                 </Button>
@@ -61,7 +62,7 @@
           </Col>
           <Col span="1"><Divider type="vertical" style="height:33px;margin-top:10px;" /></Col>
           <Col span="11">
-            <Button class="detail" ghost 
+            <Button class="detail" ghost
               @click='jumpTo({ name: "Asset", params: { username }})'>
               <div style="margin-top:-2px">资产明细</div>
             </Button>
@@ -102,7 +103,7 @@
 
     <!-- ⬇头像编辑 -->
     <za-modal :visible.sync='editingavatar' title="编辑头像" :show-close='true'>
-      <Avatar />
+      <Avatar @setDone="setDone" />
     </za-modal>
   </div>
 </template>
@@ -111,8 +112,8 @@
 import { mapGetters, mapActions } from 'vuex';
 import {
   Follow, Unfollow, getUser, oldgetUser,
-  setUserName, getAssets,
-} from '../../api';
+  setUserName, getAssets, getAvatarImage,
+} from '@/api';
 import ArticlesList from './ArticlesList.vue';
 import Avatar from './AvatarUploader.vue';
 
@@ -129,6 +130,7 @@ export default {
       fans: 0,
       nickname: '',
       newname: '',
+      avatar: '',
       editingavatar: false,
     };
   },
@@ -199,6 +201,7 @@ export default {
           this.followed = body.is_follow;
           this.nickname = body.nickname;
           this.newname = this.nickname === '' ? this.username : this.nickname;
+          this.getAvatarImage(body.avatar);
         });
       } else {
         getUser({ username })
@@ -210,6 +213,7 @@ export default {
             this.followed = data.is_follow;
             this.nickname = data.nickname;
             this.newname = this.nickname === '' ? this.username : this.nickname;
+            this.getAvatarImage(data.avatar);
           });
       }
     },
@@ -278,6 +282,24 @@ export default {
           console.log(err);
           this.$Message.error('获取历史收入错误请重试');
         });
+    },
+    async getAvatarImage(hash) {
+      await getAvatarImage(hash).then((response) => {
+        this.avatar = `data:image/png;base64,${btoa(
+          new Uint8Array(response.data).reduce((data, byte) => data + String.fromCharCode(byte), ''),
+        )}`;
+        console.log(response);
+      })
+        .catch((err) => {
+          console.log(err);
+          this.avatar = require('../../assets/logo.png');
+        });
+    },
+    // 设置头像完成 子组件与夫组件通信
+    setDone(status) {
+      console.log(status);
+      this.editingavatar = status;
+      this.refresh_user();
     },
   },
   created() {
@@ -391,5 +413,14 @@ Button.detail, Button.detail:focus, Button.detail:hover {
   text-align: center;
   padding-left: 12px;
   /* margin-right: 0px; */
+}
+
+.user-avatar {
+  overflow: hidden;
+  border-radius: 3px;
+}
+.user-avatar img {
+  height: 100%;
+  object-fit: cover;
 }
 </style>

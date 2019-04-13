@@ -89,7 +89,6 @@ export default {
         arr[i] = binStr.charCodeAt(i);
       }
       const file = new File([arr], oldFile.name, { type: oldFile.type });
-      // 成功 true  失败 false
       await this.$refs.upload.update(oldFile.id, {
         file,
         type: file.type,
@@ -97,14 +96,15 @@ export default {
         active: true,
       });
     },
-    async uploadAvatar(hash) {
-      await uploadAvatar({ hash }, (err, res) => {
+    async uploadAvatar(avatar) {
+      await uploadAvatar({ avatar }, (err, res) => {
         if (res.statusCode !== 201 || err) {
           console.log(err);
           this.$Message.error('设置头像错误请重试');
           return;
         }
-        this.$Message.error('设置成功');
+        this.$emit('setDone', false);
+        this.$Message.success('设置成功');
       });
     },
     alert(message) {
@@ -112,8 +112,7 @@ export default {
     },
     inputFile(newFile, oldFile, prevent) {
       if (newFile && oldFile && !newFile.active && oldFile.active && newFile.response.code === 200) {
-        console.log(newFile.response.hash);
-        uploadAvatar(newFile.response.hash);
+        this.uploadAvatar(newFile.response.hash);
       }
 
       if (newFile && !oldFile) {
