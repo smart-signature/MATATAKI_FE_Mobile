@@ -50,9 +50,10 @@
 // export default {
 //   name: 'AvatarUploader',
 // }
-import Cropper from 'cropperjs'
-import FileUpload from 'vue-upload-component'
-import './css/cropper.css'
+import Cropper from 'cropperjs';
+import FileUpload from 'vue-upload-component';
+import './css/cropper.css';
+
 export default {
   components: {
     FileUpload,
@@ -62,76 +63,74 @@ export default {
       files: [],
       edit: false,
       cropper: false,
-    }
+    };
   },
   watch: {
     edit(value) {
       if (value) {
         this.$nextTick(function () {
           if (!this.$refs.editImage) {
-            return
+            return;
           }
-          let cropper = new Cropper(this.$refs.editImage, {
+          const cropper = new Cropper(this.$refs.editImage, {
             aspectRatio: 1 / 1,
             viewMode: 1,
-          })
-          this.cropper = cropper
-        })
-      } else {
-        if (this.cropper) {
-          this.cropper.destroy()
-          this.cropper = false
-        }
+          });
+          this.cropper = cropper;
+        });
+      } else if (this.cropper) {
+        this.cropper.destroy();
+        this.cropper = false;
       }
-    }
+    },
   },
   methods: {
     editSave() {
-      this.edit = false
-      let oldFile = this.files[0]
-      let binStr = atob(this.cropper.getCroppedCanvas().toDataURL(oldFile.type).split(',')[1])
-      let arr = new Uint8Array(binStr.length)
+      this.edit = false;
+      const oldFile = this.files[0];
+      const binStr = atob(this.cropper.getCroppedCanvas().toDataURL(oldFile.type).split(',')[1]);
+      const arr = new Uint8Array(binStr.length);
       for (let i = 0; i < binStr.length; i++) {
-        arr[i] = binStr.charCodeAt(i)
+        arr[i] = binStr.charCodeAt(i);
       }
-      let file = new File([arr], oldFile.name, { type: oldFile.type })
+      const file = new File([arr], oldFile.name, { type: oldFile.type });
       this.$refs.upload.update(oldFile.id, {
         file,
         type: file.type,
         size: file.size,
         active: true,
-      })
+      });
     },
     alert(message) {
-      alert(message)
+      alert(message);
     },
     inputFile(newFile, oldFile, prevent) {
       if (newFile && !oldFile) {
         this.$nextTick(function () {
-          this.edit = true
-        })
+          this.edit = true;
+        });
       }
       if (!newFile && oldFile) {
-        this.edit = false
+        this.edit = false;
       }
     },
     inputFilter(newFile, oldFile, prevent) {
       if (newFile && !oldFile) {
         if (!/\.(gif|jpg|jpeg|png|webp)$/i.test(newFile.name)) {
-          this.alert('Your choice is not a picture')
-          return prevent()
+          this.alert('Your choice is not a picture');
+          return prevent();
         }
       }
       if (newFile && (!oldFile || newFile.file !== oldFile.file)) {
-        newFile.url = ''
-        let URL = window.URL || window.webkitURL
+        newFile.url = '';
+        const URL = window.URL || window.webkitURL;
         if (URL && URL.createObjectURL) {
-          newFile.url = URL.createObjectURL(newFile.file)
+          newFile.url = URL.createObjectURL(newFile.file);
         }
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 <style>
 .example-avatar .avatar-upload .rounded-circle {
