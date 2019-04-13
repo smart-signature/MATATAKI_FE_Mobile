@@ -1,5 +1,6 @@
 import axios from 'axios';
 import request from 'request';
+import https from 'https';
 import API from '@/api/scatter';
 import { Base64 } from 'js-base64';
 import { currentEOSAccount as currentAccount } from './scatter';
@@ -96,7 +97,19 @@ const setAccessToken = token => localStorage.setItem('ACCESS_TOKEN', token);
 // /<summary>
 // /根据用户名，公钥，客户端签名请求access_token
 // /</summary>
-const auth = ({ username, publicKey, sign }, callback) => request.post({
+const auth = ({ username, publicKey, sign }) => axios.post(`${apiServer}/auth`,
+  { username, publickey: publicKey, sign, },
+  {
+    headers: { 
+      Accept: '*/*',
+      Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==',
+     },
+    // https://github.com/axios/axios/issues/535
+    httpsAgent: new https.Agent({ rejectUnauthorized: false }), 
+  }
+);
+
+const oldauth = ({ username, publicKey, sign }, callback) => request.post({
   uri: `${apiServer}/auth`,
   rejectUnauthorized: false,
   json: true,
@@ -131,10 +144,10 @@ const getAuth = async (cb) => {
     API.authSignature().then(({ username, publicKey, signature }) => {
       console.info('API.authSignature :', username, publicKey, signature);
       // 2. 将取得的签名和用户名和公钥post到服务端 获得accessToken并保存
-      auth({ username, publicKey, sign: signature }, (error, response, body) => {
-        if (!error) {
+      auth({ username, publicKey, sign: signature }).then((response) => {
+        if (response.status === 200) {
           // 3. save accessToken
-          const accessToken = body;
+          const accessToken = response.data;
           console.info('got the access token :', accessToken);
           setAccessToken(accessToken);
         }
