@@ -22,7 +22,7 @@ const publishArticle = ({
       sign: signature,
       title,
       username,
-    },);
+    });
 });
 
 const getArticleData = hash => axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
@@ -160,8 +160,8 @@ const accessBackend = async (options, callback = () => {}) => {
     options.headers['x-access-token'] = getCurrentAccessToken();
     console.info(
       'b4 request send, options :', options,
-      ', x-access-token :', options.headers['x-access-token']
-);
+      ', x-access-token :', options.headers['x-access-token'],
+    );
     request(options, callback); // 都是 request 害的，改用 axios 沒這些破事
   });
 };

@@ -111,8 +111,6 @@ import {
   setUserName, getAssets,
 } from '../../api';
 import ArticlesList from './ArticlesList.vue';
-import API from '@/api/scatter';
-import { isEmptyArray } from '@/common/methods';
 import Avatar from './AvatarUploader.vue';
 
 export default {
@@ -167,7 +165,7 @@ export default {
       setUserName({ newname: this.newname }, (error, response, body) => {
         console.log(error);
         if (!error) {
-          if (response.statusCode == 500) {
+          if (response.statusCode === 500) {
             this.$Notice.error({
               title: '昵称已存在，请重新设置',
             });

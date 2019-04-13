@@ -32,11 +32,10 @@ import { sendPost } from '@/api/ipfs';
 import API from '@/api/scatter';
 import { mavonEditor } from 'mavon-editor';
 import {
-  defaultImagesUploader, getArticleInfo, publishArticle,
+  defaultImagesUploader, publishArticle,
 } from '../api';
 
 import 'mavon-editor/dist/css/index.css'; // editor css
-import { Promise } from 'q';
 
 export default {
   name: 'NewPost',
@@ -104,10 +103,10 @@ export default {
       } = this;
       const author = currentUsername;
       const content = markdownData;
-      const failed = error => {
+      const failed = (error) => {
         console.error('发送失败', error);
         this.$Notice.error({ title: '发送失败', desc: error });
-      }
+      };
       const jumpToArticle = hash => this.$router.push({
         name: 'Article', params: { hash },
       });
@@ -126,7 +125,9 @@ export default {
         });
         const { code, hash } = data;
         if (code !== 200) failed('1st step : send post to ipfs failed');
-        publishArticle({ author, title, hash, fissionFactor })
+        publishArticle({
+          author, title, hash, fissionFactor,
+        })
           .then((response) => {
             if (response.data.msg !== 'success') failed('失败请重试');
             success(hash);
