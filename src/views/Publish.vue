@@ -22,14 +22,15 @@
         </FormItem>
       </Form>
     </div>
-    <mavon-editor ref=md v-model="markdownData" @imgAdd="$imgAdd" :toolbars="toolbars" :subfield="false" :boxShadow="false" placeholder="请输入 Markdown 格式的文字开始编辑"/>
+    <mavon-editor ref=md v-model="markdownData"
+      @imgAdd="$imgAdd" :toolbars="toolbars" :subfield="false" :boxShadow="false"
+      placeholder="请输入 Markdown 格式的文字开始编辑"/>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions, mapState } from 'vuex';
 import { sendPost } from '@/api/ipfs';
-import API from '@/api/scatter';
 import { mavonEditor } from 'mavon-editor';
 import {
   defaultImagesUploader, publishArticle,

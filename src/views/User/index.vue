@@ -17,8 +17,7 @@
           <div class="texts">
             <p v-if="!editing" class="username">{{nickname == "" ? username : nickname}}<br /></p>
             <za-input v-if="editing" class="userinput" ref='inputFirst' v-model='newname'></za-input>
-            <!-- <p class="userstatu"><a @click="jumpTo({ name: 'Followlist' })">关注：{{follows}}</a><a style="margin-left:14px;"@click="jumpTo({ name: 'Fanslist' })"> 粉丝：{{fans}}</a></p> -->
-            <p class="userstatu">
+            <p class="userstatus">
               <span>关注：{{follows}}</span>
               <span style="margin-left:14px;">粉丝：{{fans}}</span>
             </p>
@@ -44,7 +43,8 @@
                 </Button>
               </div>
               <div v-else>
-                <Button class="rightbutton" size="small" type="success" ghost @click="unfollow_user">
+                <Button class="rightbutton" 
+                  size="small" type="success" ghost @click="unfollow_user">
                   <div>取消关注</div>
                 </Button>
               </div>
@@ -61,7 +61,10 @@
           </Col>
           <Col span="1"><Divider type="vertical" style="height:33px;margin-top:10px;" /></Col>
           <Col span="11">
-            <Button class="detail" ghost @click='jumpTo({ name: "Asset", params: { username }})'><div style="margin-top:-2px">资产明细</div></Button>
+            <Button class="detail" ghost 
+              @click='jumpTo({ name: "Asset", params: { username }})'>
+              <div style="margin-top:-2px">资产明细</div>
+            </Button>
             <!-- <p class="centervalue">{{myShareIncome}} EOS</p>
             <p class="centertext">赞赏收益</p> -->
           </Col>
@@ -317,7 +320,7 @@ a {
   margin-top: -12px;
   height: 45px;
 }
-.userstatu{
+.userstatus{
   font-size: 14px;
   opacity: 0.4;
   text-align: left;
