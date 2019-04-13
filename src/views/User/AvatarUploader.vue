@@ -17,7 +17,7 @@
           extensions="gif,jpg,jpeg,png,webp"
           accept="image/png,image/gif,image/jpeg,image/webp"
           name="avatar"
-          post-action="/upload/post"
+          :post-action="postAction"
           :drop="!edit"
           v-model="files"
           @input-filter="inputFilter"
@@ -43,16 +43,10 @@
 </template>
 
 <script>
-// import { OrderBy, getArticles } from '@/api/backend';
-// import { ArticleCard } from '@/components/';
-// import { mapGetters } from 'vuex';
-
-// export default {
-//   name: 'AvatarUploader',
-// }
 import Cropper from 'cropperjs';
 import FileUpload from 'vue-upload-component';
 import './css/cropper.css';
+import { apiServer, uploadAvatar } from '@/api/backend';
 
 export default {
   components: {
@@ -63,6 +57,7 @@ export default {
       files: [],
       edit: false,
       cropper: false,
+      postAction: `${apiServer}/ipfs/upload`,
     };
   },
   watch: {
@@ -85,7 +80,7 @@ export default {
     },
   },
   methods: {
-    editSave() {
+    async editSave() {
       this.edit = false;
       const oldFile = this.files[0];
       const binStr = atob(this.cropper.getCroppedCanvas().toDataURL(oldFile.type).split(',')[1]);
@@ -94,17 +89,33 @@ export default {
         arr[i] = binStr.charCodeAt(i);
       }
       const file = new File([arr], oldFile.name, { type: oldFile.type });
-      this.$refs.upload.update(oldFile.id, {
+      // 成功 true  失败 false
+      await this.$refs.upload.update(oldFile.id, {
         file,
         type: file.type,
         size: file.size,
         active: true,
       });
     },
+    async uploadAvatar(hash) {
+      await uploadAvatar({ hash }, (err, res) => {
+        if (res.statusCode !== 201 || err) {
+          console.log(err);
+          this.$Message.error('设置头像错误请重试');
+          return;
+        }
+        this.$Message.error('设置成功');
+      });
+    },
     alert(message) {
       alert(message);
     },
     inputFile(newFile, oldFile, prevent) {
+      if (newFile && oldFile && !newFile.active && oldFile.active && newFile.response.code === 200) {
+        console.log(newFile.response.hash);
+        uploadAvatar(newFile.response.hash);
+      }
+
       if (newFile && !oldFile) {
         this.$nextTick(function () {
           this.edit = true;
