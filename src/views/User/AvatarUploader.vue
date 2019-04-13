@@ -54,6 +54,7 @@
 // }
 import Cropper from 'cropperjs'
 import FileUpload from 'vue-upload-component'
+import './css/cropper.css'
 export default {
   components: {
     FileUpload,
