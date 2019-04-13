@@ -87,28 +87,24 @@ const getAssets = (user, page) => axios.get(`${apiServer}/assets`, { params: { u
 */
 const getSharesbysignid = (signid, page) => axios.get(`${apiServer}/shares?signid=${signid}&page=${page}`);
 
-const getCurrentAccessToken = () => {
-  const accessToken = localStorage.getItem('ACCESS_TOKEN');
-  return accessToken;
-};
+const getCurrentAccessToken = () => localStorage.getItem('ACCESS_TOKEN');
 const setAccessToken = token => localStorage.setItem('ACCESS_TOKEN', token);
-// localStorage.setItem('ACCESS_TOKEN', accessToken);
 
 // /<summary>
 // /根据用户名，公钥，客户端签名请求access_token
 // /</summary>
 const auth = ({ username, publicKey, sign }) => axios.post(`${apiServer}/auth`,
-  { username, publickey: publicKey, sign, },
+  { username, publickey: publicKey, sign },
   {
-    headers: { 
+    headers: {
       Accept: '*/*',
       Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==',
-     },
+    },
     // https://github.com/axios/axios/issues/535
-    httpsAgent: new https.Agent({ rejectUnauthorized: false }), 
-  }
-);
+    httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+  });
 
+// eslint-disable-next-line no-unused-vars
 const oldauth = ({ username, publicKey, sign }, callback) => request.post({
   uri: `${apiServer}/auth`,
   rejectUnauthorized: false,
@@ -134,48 +130,53 @@ const disassembleToken = (token) => {
 // /<summary>
 // /装载access_token
 // /</summary>
-const getAuth = async (cb) => {
+const getAuth = () => new Promise((resolve, reject) => {
   const currentToken = getCurrentAccessToken();
-  const decodedData = disassembleToken(currentToken); // 拆掉了
+  const decodedData = disassembleToken(currentToken); // 拆包
   const username = currentToken != null ? decodedData.iss : null;
-  if ((currentAccount() !== null && username !== currentAccount().name)
-    || decodedData === null || (decodedData.exp < new Date().getTime())) {
+  if (currentAccount() !== null && ( currentToken === null
+    || decodedData === null || decodedData.exp < new Date().getTime()
+    || username !== currentAccount().name )) {
     console.log('Retake authtoken...');
     API.authSignature().then(({ username, publicKey, signature }) => {
       console.info('API.authSignature :', username, publicKey, signature);
-      // 2. 将取得的签名和用户名和公钥post到服务端 获得accessToken并保存
-      auth({ username, publicKey, sign: signature }).then((response) => {
-        if (response.status === 200) {
-          // 3. save accessToken
-          const accessToken = response.data;
-          console.info('got the access token :', accessToken);
-          setAccessToken(accessToken);
-        }
-        // 有沒有成功取得都得 cb()
-        cb();
-      });
-    }, (err) => {
-      console.warn('取得用戶簽名出錯', err);
-      cb();
+      // 2. 将取得的签名和用户名和公钥post到服务端 获得accessToken
+      return auth({ username, publicKey, sign: signature });
+    }).then((response) => {
+      if (response.status === 200) {
+        // 3. save accessToken
+        const accessToken = response.data;
+        console.info('got the access token :', accessToken);
+        setAccessToken(accessToken);
+        resolve(accessToken);
+      } else {
+        throw new Error('auth 出錯');
+      }
+    }).catch((err) => {
+      console.warn('取得用戶新簽名出錯', err);
+      reject();
     });
-  } else cb();
-};
+  } else resolve(currentToken);
+});
 
 /*
  * /<summary>
  * /后端访问入口，当遇到401的时候直接重新拿token
  * /</summary>
 */
-const accessBackend = async (options, callback = () => {}) => {
+const accessBackend = (options, callback = () => {}) => {
   // 更新 Auth
-  getAuth(() => { // 爱的魔力转圈圈，回调回调到你不分黑夜白天
-    // 在这里套了7层callback，callback里面的async语法是无效的，所以一层一层套出来
+  getAuth().then((accessToken) => {
+    options.headers['x-access-token'] = accessToken;
+  }).catch(() => {
+    console.warn('將使用 access token 存檔');
     options.headers['x-access-token'] = getCurrentAccessToken();
+  }).then(() => { // Do this whatever happened before
     console.info(
       'b4 request send, options :', options,
       ', x-access-token :', options.headers['x-access-token'],
     );
-    request(options, callback); // 都是 request 害的，改用 axios 沒這些破事
+    request(options, callback);
   });
 };
 
@@ -236,8 +237,6 @@ const getFansList = ({ username }, callback) => accessBackend({
   json: true,
   headers: { Accept: '*/*' },
   dataType: 'json',
-  form: {
-  },
 }, callback);
 
 // Be used in User page.
@@ -248,8 +247,6 @@ const getFollowList = ({ username }, callback) => accessBackend({
   json: true,
   headers: { Accept: '*/*' },
   dataType: 'json',
-  form: {
-  },
 }, callback);
 
 const sendComment = ({ comment, signId }, callback) => accessBackend({
