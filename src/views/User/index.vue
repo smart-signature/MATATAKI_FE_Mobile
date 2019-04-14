@@ -288,16 +288,16 @@ export default {
         });
     },
     async getAvatarImage(hash) {
-      await getAvatarImage(hash).then((response) => {
+      const response = await getAvatarImage(hash)
+      try{
         this.avatar = `data:image/png;base64,${btoa(
           new Uint8Array(response.data).reduce((data, byte) => data + String.fromCharCode(byte), ''),
         )}`;
         console.log(response);
-      })
-        .catch((err) => {
-          console.log(err);
-          this.avatar = require('../../assets/logo.png');
-        });
+      }catch(e){
+        console.log(err);
+        this.avatar = require('../../assets/logo.png');
+      }
     },
     // 设置头像完成 子组件与夫组件通信
     setDone(status) {
