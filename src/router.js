@@ -90,6 +90,12 @@ export default new Router({
       component: () => import(/* webpackChunkName: "new-post" */ './views/User/DraftBox.vue'),
     },
     {
+      path: '/avatar',
+      name: 'AvatarUploader',
+      props: true,
+      component: () => import(/* webpackChunkName: "new-post" */ './views/User/AvatarUploader.vue'),
+    },
+    {
       path: '/_easter-egg',
       name: 'EasterEgg',
       props: true,

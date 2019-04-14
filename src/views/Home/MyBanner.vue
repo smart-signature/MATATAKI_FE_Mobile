@@ -1,35 +1,49 @@
 <template>
-    <div class="my-banner">
-      <div class="my-stat">
-        <div class="logined" v-if="isLogined">
-          <img src="../../assets/logo.png" class="round_icon">
-          <Button class="my-user-page" ghost type="text"
-              @click="toUserPage(currentUsername)">我的主页</Button>
-          <p class="username">{{currentUsername}}</p>
-          <p class="my-balance">
-            {{eosBalance}}
-            <span class="coin-symbol">EOS</span>
-          </p>
-
-        </div>
-        <div class="not-login-yet" v-else>
-         <Row>
-            <Col span="14"><p class="login-notification">即刻登录，<br/>开始智能签名之旅</p></Col>
-            <Col span="10">
-              <Button class="login-btn" ghost type="text"
-              @click="loginWithWallet"
-              style="float: right">立即登录</Button>
-            </Col>
-          </Row>
-        </div>
-
+  <div class="my-banner">
+    <div class="my-stat">
+      <div class="logined" v-if="isLogined">
+        <img :src="avatar" class="round_icon">
+        <Button class="my-user-page" ghost type="text" @click="toUserPage(currentUsername)">我的主页</Button>
+        <p class="username">{{newname}}</p>
+        <p class="my-balance">
+          {{eosBalance}}
+          <span class="coin-symbol">EOS</span>
+        </p>
       </div>
-
+      <div class="not-login-yet" v-else>
+        <Row>
+          <Col span="14">
+            <p class="login-notification">
+              即刻登录，
+              <br>开始智能签名之旅
+            </p>
+          </Col>
+          <Col span="10">
+            <Button
+              class="login-btn"
+              ghost
+              type="text"
+              @click="loginWithWallet"
+              style="float: right"
+            >立即登录</Button>
+          </Col>
+        </Row>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
+import {
+  Follow,
+  Unfollow,
+  getUser,
+  oldgetUser,
+  setUserName,
+  getAssets,
+  getAvatarImage,
+} from '@/api';
 
 export default {
   name: 'My-Banner',
@@ -43,15 +57,20 @@ export default {
       return this.scatterAccount !== null;
     },
   },
-  created() {
-
+  data() {
+    return {
+      avatar: require('../../assets/logo.png'),
+      newname: '',
+    };
   },
+  created() {},
   methods: {
     ...mapActions([
       'connectScatterAsync',
       'suggestNetworkAsync',
       'loginScatterAsync',
-      'logoutScatterAsync']),
+      'logoutScatterAsync',
+    ]),
     toUserPage(username) {
       this.$router.push({ name: 'User', params: { username } });
     },
@@ -79,8 +98,45 @@ export default {
     handleClick(tab, event) {
       console.log(tab, event);
     },
+    async getAvatarImage(hash) {
+      await getAvatarImage(hash)
+        .then((response) => {
+          this.avatar = `data:image/png;base64,${btoa(
+            new Uint8Array(response.data).reduce(
+              (data, byte) => data + String.fromCharCode(byte),
+              '',
+            ),
+          )}`;
+          console.log(response);
+        })
+        .catch((err) => {
+          console.log(err);
+          this.avatar = require('../../assets/logo.png');
+        });
+    },
+    refresh_user() {
+      const username = this.currentUsername;
+      console.log(username);
+      getUser({ username }).then((response) => {
+        const { data } = response;
+        console.log(data);
+        this.newname = data.nickname === '' ? username : data.nickname;
+        this.getAvatarImage(data.avatar);
+      });
+    },
   },
-  data: () => ({}),
+  mounted() {
+    if (this.currentUsername) {
+      this.refresh_user();
+    }
+  },
+  watch: {
+    currentUsername() {
+      if (this.currentUsername) {
+        this.refresh_user();
+      }
+    },
+  },
 };
 </script>
 
@@ -105,7 +161,7 @@ export default {
   margin-top: 16px;
   margin-bottom: 19px;
 }
-.round_icon{
+.round_icon {
   float: left;
 
   width: 38px;
@@ -116,7 +172,7 @@ export default {
   justify-content: center;
   overflow: hidden;
 }
-Button.my-user-page {
+button.my-user-page {
   background-color: #000;
   float: right;
   margin-right: 18px;
@@ -141,15 +197,17 @@ Button.my-user-page {
 
 .login-notification {
   font-size: 14px;
-  font-weight:bold;
+  font-weight: bold;
   /* line-height:10px; */
-  color:rgba(39,39,39,1);
+  color: rgba(39, 39, 39, 1);
 }
-.login-btn, .login-btn:focus, .login-btn:hover {
-  color: #FFF;
+.login-btn,
+.login-btn:focus,
+.login-btn:hover {
+  color: #fff;
   background-color: #000;
   border-radius: 2px;
-  font-size:16px;
+  font-size: 16px;
   letter-spacing: 2px;
 }
 </style>

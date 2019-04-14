@@ -22,7 +22,7 @@ const publishArticle = ({
       sign: signature,
       title,
       username,
-    },);
+    });
 });
 
 const getArticleData = hash => axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
@@ -160,8 +160,8 @@ const accessBackend = async (options, callback = () => {}) => {
     options.headers['x-access-token'] = getCurrentAccessToken();
     console.info(
       'b4 request send, options :', options,
-      ', x-access-token :', options.headers['x-access-token']
-);
+      ', x-access-token :', options.headers['x-access-token'],
+    );
     request(options, callback); // 都是 request 害的，改用 axios 沒這些破事
   });
 };
@@ -263,6 +263,7 @@ const addReadAmount = ({ articlehash }, callback) => accessBackend({
   form: {},
 }, callback);
 
+// 删除文章
 const delArticle = ({ id }, callback) => accessBackend({
   method: 'DELETE',
   uri: `${apiServer}/post/${id}`,
@@ -273,11 +274,27 @@ const delArticle = ({ id }, callback) => accessBackend({
   form: {},
 }, callback);
 
+// 设置头像
+const uploadAvatar = ({ avatar }, callback) => accessBackend({
+  method: 'POST',
+  uri: `${apiServer}/user/setAvatar`,
+  rejectUnauthorized: false,
+  json: true,
+  headers: { Accept: '*/*' },
+  dataType: 'json',
+  form: { avatar },
+}, callback);
+
+// 获取头像
+const getAvatarImage = hash => axios.get(`${apiServer}/image/${hash}`, {
+  responseType: 'arraybuffer',
+});
+
 export {
   publishArticle, auth, getAuth,
   getArticleData, getArticlesList, getArticleInfo, getArticleInHash,
   Follow, Unfollow, getUser, setUserName, getFansList, getFollowList, oldgetUser,
   getSharesbysignid, addReadAmount, sendComment,
   getArticles, getArticlesBySupportAmountRanking, getArticlesBySupportTimesRanking, getAssets,
-  disassembleToken, delArticle,
+  disassembleToken, delArticle, uploadAvatar, getAvatarImage,
 };
