@@ -217,27 +217,25 @@ const setUserName = ({ newname }, callback) => accessBackend({
 
 // Be used in User page.
 const getFansList = ({ username }, callback) => accessBackend({
-  method: 'POST',
-  uri: `${apiServer}/follows`,
+  method: 'GET',
+  uri: `${apiServer}/fans?user=${username}`,
   rejectUnauthorized: false,
   json: true,
   headers: { Accept: '*/*' },
   dataType: 'json',
   form: {
-    username,
   },
 }, callback);
 
 // Be used in User page.
 const getFollowList = ({ username }, callback) => accessBackend({
-  method: 'POST',
-  uri: `${apiServer}/fans`,
+  method: 'GET',
+  uri: `${apiServer}/follows?user=${username}`,
   rejectUnauthorized: false,
   json: true,
   headers: { Accept: '*/*' },
   dataType: 'json',
   form: {
-    username,
   },
 }, callback);
 
