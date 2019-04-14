@@ -136,10 +136,10 @@ export default {
           }
           this.refreshing = false;
           this.loading = false;
-          this.lists.followlist.forEach((item, index) => {
-            this.lists.followlist[index].username = this.lists.followlist[index].followed;
-            this.lists.followlist[index].avatar = require("../../assets/logo.png");
-            this.getUserData(this.lists.followlist, index);
+          this.lists.fanslist.forEach((item, index) => {
+            this.lists.fanslist[index].followed = this.lists.fanslist[index].username;
+            this.lists.fanslist[index].avatar = require("../../assets/logo.png");
+            this.getUserData(this.lists.fanslist, index);
           });
         });
       }
@@ -150,7 +150,7 @@ export default {
         await getAvatarImage(hash)
           .then(response => {
             this.avatarloading = false;
-            this.lists.followlist[index].avatar = `data:image/png;base64,${btoa(
+            list[index].avatar = `data:image/png;base64,${btoa(
               new Uint8Array(response.data).reduce(
                 (data, byte) => data + String.fromCharCode(byte),
                 ""
@@ -159,7 +159,6 @@ export default {
             this.avatarloading = true;
           })
           .catch(err => {
-            this.lists.followlist[index].avatar, require("../../assets/logo.png");
             list[index].avatar = require("../../assets/logo.png");
           });
       }
