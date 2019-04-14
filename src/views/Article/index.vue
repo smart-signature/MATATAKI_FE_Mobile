@@ -7,16 +7,16 @@
     <header class="ta_header">
       <h1 dir="auto">{{post.title}}</h1>
       <p>
-      <Avatar
-        icon="ios-person" class="avatar-size" size="small" />
-      <router-link
-        class="author"
-        :to="{ name: 'User', params: { username:post.author }}">
-        Author: {{post.author}}
-      </router-link>
-      {{articleCreateTime}} | {{article.read || 0}}阅读</p>
+        <Avatar icon="ios-person" class="avatar-size" size="small" />
+        <router-link class="author"
+          :to="{ name: 'User', params: { username:post.author }}">
+          Author: {{post.author}}
+        </router-link>
+        {{articleCreateTime}} | {{article.read || 0}}阅读
+      </p>
       <p class="break_all">IPFS Hash: {{article.hash}}</p>
       <Button v-if="isMe" @click="delArticleButton" class="del-acticle" type="error" icon="md-close" size="small">删除</Button>
+      <p><br/><a data-pocket-label="pocket" data-pocket-count="horizontal" class="pocket-btn" data-lang="en"></a></p>
     </header>
     <mavon-editor v-show="false" style="display: none;"/>
     <div class="markdown-body" v-html="compiledMarkdown"></div>
@@ -188,6 +188,15 @@ export default {
     this.setisSupported();
   },
   mounted() {
+    !function(d,i){
+      if(!d.getElementById(i)){
+        let j=d.createElement("script");
+        j.id=i;
+        j.src="https://widgets.getpocket.com/v1/j/btn.js?v=1";
+        var w=d.getElementById(i);
+        d.body.appendChild(j);
+      }
+    }(document,"pocket-btn-js");
   },
   beforeDestroy() {
     // 组件销毁之前 销毁clipboard
@@ -501,7 +510,6 @@ export default {
 .break_all {
   word-break: break-all;
 }
-
 .footer-article {
   margin-bottom: 20px;
 }
