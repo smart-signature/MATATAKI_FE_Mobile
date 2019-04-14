@@ -45,12 +45,12 @@ import { getFollowList, getFansList, getUser } from '@/api/backend';
 
 export default {
   name: 'DeaftBox',
-  props: ['listtype','username'],
+  props: ['listtype', 'username'],
   data() {
     return {
-      lists:{
+      lists: {
         followlist: [],
-        fanslist:[],
+        fanslist: [],
       },
       actions2: [{
         theme: 'error',
@@ -62,10 +62,14 @@ export default {
       refreshing: false,
       loading: false,
       tabs: [
-        { label: '粉丝', 
-          listname: 'fanslist' },
-        { label: '关注', 
-          listname: 'followlist'  }
+        {
+          label: '粉丝',
+          listname: 'fanslist',
+        },
+        {
+          label: '关注',
+          listname: 'followlist',
+        },
       ],
     };
   },
@@ -87,16 +91,16 @@ export default {
       this.clickicon = true;
     },
     jumpToUser(username) {
-      this.$router.push({ name: 'User', params: { username }});
+      this.$router.push({ name: 'User', params: { username } });
     },
-    async RefreshList(){
+    async RefreshList() {
       this.refreshing = true;
       this.loading = true;
-      if (this.activeNameSwipe == '关注'){
-        getFollowList({username: this.username}, (error, response, body) => {
+      if (this.activeNameSwipe == '关注') {
+        getFollowList({ username: this.username }, (error, response, body) => {
           console.log(body.list);
           this.lists.followlist = body.list || [];
-          if (response.statusCode != 200){
+          if (response.statusCode != 200) {
             this.$Notice.error({
               title: '获取失败',
             });
@@ -105,10 +109,10 @@ export default {
           this.loading = false;
         });
       } else {
-        getFansList({username: this.username}, (error, response, body) => {
+        getFansList({ username: this.username }, (error, response, body) => {
           console.log(body.list);
           this.lists.fanslist = body.list || [];
-          if (response.statusCode != 200){
+          if (response.statusCode != 200) {
             this.$Notice.error({
               title: '获取失败',
             });
@@ -126,10 +130,10 @@ export default {
       console.log(tab.label);
     },
   },
-  async created(){
+  async created() {
     this.activeNameSwipe = this.listtype || '关注';
     await this.RefreshList();
-  }
+  },
 };
 </script>
 <style>
