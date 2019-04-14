@@ -197,8 +197,9 @@ export default {
       });
     },
     refresh_user() {
-      const { username } = this;
-      if (username !== null) {
+      if (this.username === null) this.username = this.currentUsername;
+      const { username, currentUsername } = this;
+      if (currentUsername !== null) {
         oldgetUser({ username }, (error, response, body) => {
           console.log(body);
           this.follows = body.follows;
