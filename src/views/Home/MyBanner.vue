@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from "vuex";
+import { mapState, mapActions, mapGetters } from 'vuex';
 import {
   Follow,
   Unfollow,
@@ -42,43 +42,43 @@ import {
   oldgetUser,
   setUserName,
   getAssets,
-  getAvatarImage
-} from "@/api";
+  getAvatarImage,
+} from '@/api';
 
 export default {
-  name: "My-Banner",
+  name: 'My-Banner',
   computed: {
-    ...mapState(["scatterAccount", "balances", "isScatterConnected"]),
-    ...mapGetters(["currentUsername"]),
+    ...mapState(['scatterAccount', 'balances', 'isScatterConnected']),
+    ...mapGetters(['currentUsername']),
     eosBalance() {
       return this.balances.eos.slice(0, -4);
     },
     isLogined() {
       return this.scatterAccount !== null;
-    }
+    },
   },
   data() {
     return {
-      avatar: require("../../assets/logo.png"),
-      newname: ""
+      avatar: require('../../assets/logo.png'),
+      newname: '',
     };
   },
   created() {},
   methods: {
     ...mapActions([
-      "connectScatterAsync",
-      "suggestNetworkAsync",
-      "loginScatterAsync",
-      "logoutScatterAsync"
+      'connectScatterAsync',
+      'suggestNetworkAsync',
+      'loginScatterAsync',
+      'logoutScatterAsync',
     ]),
     toUserPage(username) {
-      this.$router.push({ name: "User", params: { username } });
+      this.$router.push({ name: 'User', params: { username } });
     },
     async loginWithWallet() {
       if (!this.isScatterConnected) {
         this.$Modal.error({
-          title: "无法与你的钱包建立链接",
-          content: "请检查钱包是否打开并解锁"
+          title: '无法与你的钱包建立链接',
+          content: '请检查钱包是否打开并解锁',
         });
         return;
       }
@@ -88,10 +88,10 @@ export default {
         await this.suggestNetworkAsync();
         await this.loginScatterAsync();
       } catch (e) {
-        console.warn("Unable to connect wallets");
+        console.warn('Unable to connect wallets');
         this.$Modal.error({
-          title: "无法与你的钱包建立链接",
-          content: "请检查钱包是否打开并解锁"
+          title: '无法与你的钱包建立链接',
+          content: '请检查钱包是否打开并解锁',
         });
       }
     },
@@ -100,30 +100,30 @@ export default {
     },
     async getAvatarImage(hash) {
       await getAvatarImage(hash)
-        .then(response => {
+        .then((response) => {
           this.avatar = `data:image/png;base64,${btoa(
             new Uint8Array(response.data).reduce(
               (data, byte) => data + String.fromCharCode(byte),
-              ""
-            )
+              '',
+            ),
           )}`;
           console.log(response);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
-          this.avatar = require("../../assets/logo.png");
+          this.avatar = require('../../assets/logo.png');
         });
     },
     refresh_user() {
-      var username = this.currentUsername;
+      const username = this.currentUsername;
       console.log(username);
-      getUser({ username }).then(response => {
+      getUser({ username }).then((response) => {
         const { data } = response;
         console.log(data);
-        this.newname = data.nickname === "" ? username : data.nickname;
+        this.newname = data.nickname === '' ? username : data.nickname;
         this.getAvatarImage(data.avatar);
       });
-    }
+    },
   },
   mounted() {
     if (this.currentUsername) {
@@ -135,8 +135,8 @@ export default {
       if (this.currentUsername) {
         this.refresh_user();
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

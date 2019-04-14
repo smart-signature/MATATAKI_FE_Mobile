@@ -188,15 +188,15 @@ export default {
     this.setisSupported();
   },
   mounted() {
-    !function(d,i){
-      if(!d.getElementById(i)){
-        let j=d.createElement("script");
-        j.id=i;
-        j.src="https://widgets.getpocket.com/v1/j/btn.js?v=1";
-        var w=d.getElementById(i);
+    !(function (d, i) {
+      if (!d.getElementById(i)) {
+        const j = d.createElement('script');
+        j.id = i;
+        j.src = 'https://widgets.getpocket.com/v1/j/btn.js?v=1';
+        const w = d.getElementById(i);
         d.body.appendChild(j);
       }
-    }(document,"pocket-btn-js");
+    }(document, 'pocket-btn-js'));
   },
   beforeDestroy() {
     // 组件销毁之前 销毁clipboard

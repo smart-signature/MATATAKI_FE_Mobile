@@ -184,7 +184,7 @@ export default {
             this.assetsRewards.totalSignIncome = data.totalSignIncome > 0 ? `+${data.totalSignIncome / 10000}` : data.totalSignIncome / 10000;
             this.assetsRewards.totalShareIncome = data.totalShareIncome > 0 ? `+${data.totalShareIncome / 10000}` : data.totalShareIncome / 10000;
             this.assetsRewards.totalShareExpenses = data.totalShareExpenses > 0 ? `+${data.totalShareExpenses / 10000}` : data.totalShareExpenses / 10000;
-            if (data.history.length >= 0 && data.history.length < 20) this.isTheEndOfTheScroll = true; // 数据请求完
+            if (data.history.length >= 0 && data.history.length < 20) { this.isTheEndOfTheScroll = true; } // 数据请求完
             else this.page += 1;
             const historyFilter = data.history.filter(i => i.amount !== 0); // 过滤金额为0
             if (isEmptyArr) this.assets.length = 0; // 清空数组

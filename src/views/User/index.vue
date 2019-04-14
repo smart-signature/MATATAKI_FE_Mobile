@@ -8,7 +8,8 @@
     </za-nav-bar>
     <div class="usercard" >
       <!-- /img/camera.png -->
-      <img style="position:absolute; z-index:1;left:40px;" width="50px" src="/img/camera.png" @click="editingavatar = true" v-if="editing"/>
+      <img style="position:absolute; z-index:1;left:40px;" width="50px"
+        src="/img/camera.png" @click="editingavatar = true" v-if="editing"/>
       <Row type="flex" justify="center" class="code-row-bg">
         <Col span="4" class="user-avatar">
         <!-- ../../assets/logo.png -->
@@ -17,7 +18,8 @@
         <Col span="14">
           <div class="texts">
             <p v-if="!editing" class="username">{{nickname == "" ? username : nickname}}<br /></p>
-            <za-input v-if="editing" class="userinput" ref='inputFirst' v-model='newname'></za-input>
+            <za-input v-if="editing" class="userinput" ref='inputFirst'
+              v-model='newname'></za-input>
             <p class="userstatus">
               <span>关注：{{follows}}</span>
               <span style="margin-left:14px;">粉丝：{{fans}}</span>
@@ -150,7 +152,6 @@ export default {
       this.$router.go(-1);
     },
     edit() {
-      console.log('editing');
       this.editing = !this.editing;
     },
     // clickCamera(){
@@ -193,7 +194,6 @@ export default {
     },
     refresh_user() {
       const { username } = this;
-      console.log(username);
       if (username !== null) {
         oldgetUser({ username }, (error, response, body) => {
           console.log(body);
@@ -219,7 +219,6 @@ export default {
       }
     },
     follow_user() {
-      // alert('follow');
       const { username, currentUsername } = this;
       if (!currentUsername || !username) {
         this.$Notice.error({
@@ -246,7 +245,6 @@ export default {
       });
     },
     unfollow_user() {
-      // alert('follow');
       const { username, currentUsername } = this;
       if (!currentUsername || !username) {
         this.$Notice.error({
