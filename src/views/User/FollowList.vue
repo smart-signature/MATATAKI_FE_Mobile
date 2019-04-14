@@ -26,7 +26,10 @@
         </Row>
       </div>
     </div>
-    <za-actionsheet :visible.sync='clickicon' :actions='actions2' @cancel='cancelCb'></za-actionsheet>
+    <za-actionsheet :visible.sync='clickicon'
+      :actions='actions2'
+      @cancel='cancelCb'>
+    </za-actionsheet>
   </div>
 </template>
 

@@ -85,7 +85,7 @@ export default {
       const oldFile = this.files[0];
       const binStr = atob(this.cropper.getCroppedCanvas().toDataURL(oldFile.type).split(',')[1]);
       const arr = new Uint8Array(binStr.length);
-      for (let i = 0; i < binStr.length; i++) {
+      for (let i = 0; i < binStr.length; i += 1) {
         arr[i] = binStr.charCodeAt(i);
       }
       const file = new File([arr], oldFile.name, { type: oldFile.type });
@@ -111,7 +111,9 @@ export default {
       alert(message);
     },
     inputFile(newFile, oldFile, prevent) {
-      if (newFile && oldFile && !newFile.active && oldFile.active && newFile.response.code === 200) {
+      if (newFile && oldFile
+        && !newFile.active && oldFile.active
+        && newFile.response.code === 200) {
         this.uploadAvatar(newFile.response.hash);
       }
 
