@@ -3,13 +3,13 @@
           width="50px" src="/img/camera.png"> -->
   <div class="example-avatar">
     <div v-show="$refs.upload && $refs.upload.dropActive" class="drop-active">
-      <h3>Drop files to upload</h3>
+      <h3>拖动图片到这里上传</h3>
     </div>
     <div class="avatar-upload"  v-show="!edit">
       <div class="text-center p-2">
         <label for="avatar">
           <img :src="files.length ? files[0].url : 'https://www.gravatar.com/avatar/default?s=200&r=pg&d=mm'"  class="rounded-circle" />
-          <h4 class="pt-2">or<br/>Drop files anywhere to upload</h4>
+          <h4 class="pt-2">或者<br/>拖动图片到这里上传</h4>
         </label>
       </div>
       <div class="text-center p-2">
@@ -24,7 +24,7 @@
           @input-file="inputFile"
           ref="upload">
           <za-button>
-            Upload avatar
+            上传头像
           </za-button>
         </file-upload>
       </div>
