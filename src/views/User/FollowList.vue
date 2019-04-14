@@ -12,7 +12,7 @@
         <za-pull :on-refresh="refresh" :refreshing="refreshing" :loading="loading">
           <div class="content">
             <div v-for="(item, index) in lists[tab.listname]" :key="index">
-              <div class="onecard" @click="jumpToUser(item.followed || item.username)">
+              <div class="onecard" @click="jumpToUser( item.username )">
                 <Row>
                   <Col span="3">
                     <img v-if="avatarloading" width="33px" class="onecard_pic" :src="item.avatar">
