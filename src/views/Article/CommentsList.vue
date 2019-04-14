@@ -1,15 +1,11 @@
 <template>
   <div class="comments">
-    <!-- <BaseHeader
-      :pageinfo="{ left:'back', title: '赞赏队列', rightPage: 'home', needLogin: false, }" /> -->
-    <!-- <div class="tl"> -->
-      <za-pull :on-refresh="refresh" :refreshing="refreshing">
-        <div class="content" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
-          <CommentCard :comment="a" v-for="a in sortedComments" :key="a.timestamp"/>
-        </div>
-        <p class="loading-stat">{{displayAboutScroll}}</p>
-      </za-pull>
-    <!-- </div> -->
+    <za-pull :on-refresh="refresh" :refreshing="refreshing">
+      <div class="content" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
+        <CommentCard :comment="a" v-for="a in sortedComments" :key="a.timestamp"/>
+      </div>
+      <p class="loading-stat">{{displayAboutScroll}}</p>
+    </za-pull>
   </div>
 </template>
 
@@ -23,7 +19,6 @@ export default {
   components: { CommentCard },
   computed: {
     sortedComments() {
-      // console.log(this.assets);
       // if need change to asc, swap a & b
       return this.comments.slice(0) // 使用slice创建数组副本 消除副作用
         .sort((a, b) => (new Date(b.timestamp)).getTime() - (new Date(a.timestamp)).getTime());

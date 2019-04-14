@@ -7,58 +7,78 @@
       <div slot="title" v-if="isMe">个人主页</div>
     </za-nav-bar>
     <div class="usercard" >
-      <img width="50px" class="userpic" src="../../assets/logo.png" />
-      <img style="position:absolute; z-index:1;left:40px;"
-           width="50px" src="/img/camera.png" v-if="editing"/>
-      <div class="texts">
-        <p class="username">{{username}}</p>
-        <p class="userstatu">关注：{{follows}} 粉丝：{{fans}}</p>
-      </div>
-      <div v-if="editing">
-        <Button class="rightbutton" size="small" type="success"
-                ghost @click="save">
-          <div>完成</div>
-        </Button>
-      </div>
-      <div v-else>
-        <div v-if="isMe">
-          <Button class="rightbutton" size="small" type="success" ghost @click="edit">
-            <div>编辑</div>
-          </Button>
-        </div>
-        <div v-else>
-          <div v-if="!followed">
-            <Button class="rightbutton" size="small" type="success" ghost @click="follow_user">
-              <div>关注</div>
+      <!-- /img/camera.png -->
+      <img style="position:absolute; z-index:1;left:40px;" width="50px"
+        src="/img/camera.png" @click="editingavatar = true" v-if="editing"/>
+      <Row type="flex" justify="center" class="code-row-bg">
+        <Col span="4" class="user-avatar">
+        <!-- ../../assets/logo.png -->
+          <img width="50px" class="userpic" :src="avatar" />
+        </Col>
+        <Col span="14">
+          <div class="texts">
+            <p v-if="!editing" class="username">{{nickname == "" ? username : nickname}}<br /></p>
+            <za-input v-if="editing" class="userinput" ref='inputFirst'
+              v-model='newname'></za-input>
+            <p class="userstatus">
+              <span>关注：{{follows}}</span>
+              <span style="margin-left:14px;">粉丝：{{fans}}</span>
+            </p>
+          </div>
+        </Col>
+        <Col span="6">
+          <div v-if="editing">
+            <Button class="rightbutton" size="small" type="success"
+                    ghost @click="save">
+              <div>完成</div>
             </Button>
           </div>
           <div v-else>
-            <Button class="rightbutton" size="small" type="success" ghost @click="unfollow_user">
-              <div>取消关注</div>
-            </Button>
+            <div v-if="isMe">
+              <Button class="rightbutton" size="small" type="success" ghost @click="edit">
+                <div>编辑</div>
+              </Button>
+            </div>
+            <div v-else>
+              <div v-if="!followed">
+                <Button class="rightbutton" size="small" type="success" ghost @click="follow_user">
+                  <div>关注</div>
+                </Button>
+              </div>
+              <div v-else>
+                <Button class="rightbutton"
+                  size="small" type="success" ghost @click="unfollow_user">
+                  <div>取消关注</div>
+                </Button>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </Col>
+      </Row>
     </div>
     <div class="topcard" v-if="isMe">
       <Row type="flex" justify="center" class="code-row-bg">
           <Col span="11">
-            <p class="centervalue">{{mySignIncome}} EOS</p>
-            <p class="centertext">创作收益</p>
+            <p class="centervalue">{{playerincome}} EOS</p>
+            <p class="centertext">历史总收入</p>
           </Col>
           <Col span="1"><Divider type="vertical" style="height:33px;margin-top:10px;" /></Col>
           <Col span="11">
-            <p class="centervalue">{{myShareIncome}} EOS</p>
-            <p class="centertext">赞赏收益</p>
+            <Button class="detail" ghost
+              @click='jumpTo({ name: "Asset", params: { username }})'>
+              <div style="margin-top:-2px">资产明细</div>
+            </Button>
+            <!-- <p class="centervalue">{{myShareIncome}} EOS</p>
+            <p class="centertext">赞赏收益</p> -->
           </Col>
       </Row>
     </div>
     <!-- todo(minakokojima): 顯示該作者發表的文章。-->
     <!-- <ArticlesList ref="ArticlesList"/> -->
     <div class="centercard" v-if="isMe">
-      <za-cell is-link has-arrow @click='jumpTo({ name: "Asset", params: { username }})'>
-        资产明细
-        <!-- <za-icon type='right' slot='icon'/> -->
+      <za-cell is-link has-arrow>
+        草稿箱
+        <!-- <za-icon type='right' slot='icon'/> @click='jumpTo({ name: "DraftBox" })'-->
       </za-cell>
       <za-cell is-link has-arrow @click='jumpTo({ name: "Original", params: { username }})'>
         我的文章
@@ -82,43 +102,42 @@
       <Button class="bottombutton" long @click="logoutScatterAsync">退出登录</Button>
     </div>
     <ArticlesList :listtype="'others'" ref='ArticlesList' :username='username' v-if="!isMe"/>
+
+    <!-- ⬇头像编辑 -->
+    <za-modal :visible.sync='editingavatar' title="编辑头像" :show-close='true'>
+      <Avatar @setDone="setDone" />
+    </za-modal>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { getPlayerIncome } from '@/api/signature';
 import {
-  Follow, Unfollow, getUser, auth,
-} from '../../api';
+  Follow, Unfollow, getUser, oldgetUser,
+  setUserName, getAssets, getAvatarImage,
+} from '@/api';
 import ArticlesList from './ArticlesList.vue';
-import API from '@/api/scatter';
-import { isEmptyArray } from '@/common/methods';
+import Avatar from './AvatarUploader.vue';
 
 export default {
   name: 'User',
   props: ['username'],
-  components: { ArticlesList },
+  components: { Avatar, ArticlesList },
   data() {
     return {
-      playerincome: {
-        sign_income: 0,
-        share_income: 0,
-      },
+      playerincome: 0,
       editing: false,
       followed: false,
       follows: 0,
       fans: 0,
+      nickname: '',
+      newname: '',
+      avatar: require('../../assets/logo.png'),
+      editingavatar: false,
     };
   },
   computed: {
     ...mapGetters(['currentUsername']),
-    mySignIncome() {
-      return this.playerincome.sign_income / 10000;
-    },
-    myShareIncome() {
-      return this.playerincome.share_income / 10000;
-    },
     ifLogined() {
       return this.currentUsername !== null;
     },
@@ -129,41 +148,15 @@ export default {
   },
   methods: {
     ...mapActions(['logoutScatterAsync']),
-    async authDemo() { // 示例代码。。请随便改。。。
-      // 1. 取得签名
-      let accessvalid = false;
-      const nowtime = new Date().getTime();
-      if (localStorage.getItem('ACCESS_TOKEN') != null) {
-        const accesstime = localStorage.getItem('ACCESS_TIME');
-        if (accesstime != null) {
-          if (nowtime - accesstime < 604800000) {
-            accessvalid = true;
-          }
-        }
-      }
-      if (!accessvalid) {
-        API.authSignature(({username, publicKey, signature}) => {
-          console.log(username, publicKey, signature);
-          // 2. post到服务端 获得accessToken并保存
-          auth({ username, publicKey, sign: signature }, (error, response, body) => {
-            console.log(body);
-            if (!error) {
-              // 3. save accessToken
-              const accessToken = body;
-              localStorage.setItem('ACCESS_TOKEN', accessToken);
-              localStorage.setItem('ACCESS_TIME', nowtime);
-            }
-          });
-        });
-      }
-    },
     goBack() {
       this.$router.go(-1);
     },
     edit() {
-      console.log('editing');
       this.editing = !this.editing;
     },
+    // clickCamera(){
+    //   console.log("clicked.");
+    // },
     jumpTo(params) {
       this.$router.push(params);
     },
@@ -171,20 +164,61 @@ export default {
       this.editing = !this.editing;
     },
     save() {
-      this.$Message.success('保存');
-      this.editing = !this.editing;
-    },
-    refresh_user() {
-      getUser({
-        username: this.username,
-      }, (error, response, body) => {
-        this.follows = body.follows;
-        this.fans = body.fans;
-        this.followed = body.is_follow;
+      if (this.newname === this.nickname) {
+        this.editing = !this.editing;
+        return;
+      }
+      setUserName({ newname: this.newname }, (error, response, body) => {
+        console.log(error);
+        if (!error) {
+          if (response.statusCode === 500) {
+            this.$Notice.error({
+              title: '昵称已存在，请重新设置',
+            });
+          } else {
+            this.$Notice.success({
+              title: '保存成功',
+            });
+          }
+          this.nickname = this.newname;
+        } else {
+          console.log(response.statusCode);
+          this.$Notice.error({
+            title: '保存失败',
+          });
+          this.newname = this.nickname === '' ? this.username : this.nickname;
+        }
+        this.refresh_user();
+        this.editing = !this.editing;
       });
     },
+    refresh_user() {
+      const { username } = this;
+      if (username !== null) {
+        oldgetUser({ username }, (error, response, body) => {
+          console.log(body);
+          this.follows = body.follows;
+          this.fans = body.fans;
+          this.followed = body.is_follow;
+          this.nickname = body.nickname;
+          this.newname = this.nickname === '' ? this.username : this.nickname;
+          this.getAvatarImage(body.avatar);
+        });
+      } else {
+        getUser({ username })
+          .then((response) => {
+            const { data } = response;
+            console.log(data);
+            this.follows = data.follows;
+            this.fans = data.fans;
+            this.followed = data.is_follow;
+            this.nickname = data.nickname;
+            this.newname = this.nickname === '' ? this.username : this.nickname;
+            this.getAvatarImage(data.avatar);
+          });
+      }
+    },
     follow_user() {
-      // alert('follow');
       const { username, currentUsername } = this;
       if (!currentUsername || !username) {
         this.$Notice.error({
@@ -211,7 +245,6 @@ export default {
       });
     },
     unfollow_user() {
-      // alert('follow');
       const { username, currentUsername } = this;
       if (!currentUsername || !username) {
         this.$Notice.error({
@@ -236,14 +269,43 @@ export default {
         this.refresh_user();
       });
     },
+    // 获取历史总收入
+    async getAssets() {
+      await getAssets(this.username, 1)
+        .then((res) => {
+          if (res.status === 200) {
+            this.playerincome = (res.data.totalSignIncome + res.data.totalShareIncome) / 10000;
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          this.$Message.error('获取历史收入错误请重试');
+        });
+    },
+    async getAvatarImage(hash) {
+      await getAvatarImage(hash).then((response) => {
+        this.avatar = `data:image/png;base64,${btoa(
+          new Uint8Array(response.data).reduce((data, byte) => data + String.fromCharCode(byte), ''),
+        )}`;
+        console.log(response);
+      })
+        .catch((err) => {
+          console.log(err);
+          this.avatar = require('../../assets/logo.png');
+        });
+    },
+    // 设置头像完成 子组件与夫组件通信
+    setDone(status) {
+      console.log(status);
+      this.editingavatar = status;
+      this.refresh_user();
+    },
   },
-  async created() {
-    const playerincome = await getPlayerIncome(this.username);
-    this.playerincome = isEmptyArray(playerincome) ? playerincome[0] : this.playerincome;
+  created() {
+    this.getAssets();
     this.refresh_user();
     const user = this.isMe ? '我' : this.username;
     document.title = `${user}的个人主页 - SmartSignature`;
-    await this.authDemo();
   },
 };
 </script>
@@ -271,11 +333,18 @@ a {
 .username{
   font-size: 22px;
   font-weight: bolder;
+  text-align: left;
 }
-.userstatu{
+.userinput{
+  font-size: 22px;
+  font-weight: bolder;
+  margin-top: -12px;
+  height: 45px;
+}
+.userstatus{
   font-size: 14px;
   opacity: 0.4;
-  float:left;
+  text-align: left;
 }
 .texts{
   float: left;
@@ -327,5 +396,30 @@ a {
   font-size: 14px;
   font-weight: bold;
   opacity: 0.4;
+}
+Button.detail, Button.detail:focus, Button.detail:hover {
+  background-color: rgba(0, 0, 0, 1);
+  border-radius: 2px;
+  color: rgba(255,255,255,1);
+  /* float: right; */
+  font-size: 12px;
+  margin-top: 12px;
+  width: 80px;
+  height: 25px;
+  letter-spacing: 2px;
+  max-width: 94px;
+  max-height: 35px;
+  text-align: center;
+  padding-left: 12px;
+  /* margin-right: 0px; */
+}
+
+.user-avatar {
+  overflow: hidden;
+  border-radius: 3px;
+}
+.user-avatar img {
+  height: 100%;
+  object-fit: cover;
 }
 </style>

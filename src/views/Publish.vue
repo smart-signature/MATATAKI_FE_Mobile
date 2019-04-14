@@ -22,16 +22,19 @@
         </FormItem>
       </Form>
     </div>
-    <mavon-editor ref=md v-model="markdownData" @imgAdd="$imgAdd" :toolbars="toolbars" :subfield="false" :boxShadow="false" placeholder="请输入 Markdown 格式的文字开始编辑"/>
+    <mavon-editor ref=md v-model="markdownData"
+      @imgAdd="$imgAdd" :toolbars="toolbars" :subfield="false" :boxShadow="false"
+      placeholder="请输入 Markdown 格式的文字开始编辑"/>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions, mapState } from 'vuex';
 import { sendPost } from '@/api/ipfs';
-import API from '@/api/scatter';
 import { mavonEditor } from 'mavon-editor';
-import { publishArticle, defaultImagesUploader, auth } from '../api';
+import {
+  defaultImagesUploader, publishArticle,
+} from '../api';
 
 import 'mavon-editor/dist/css/index.css'; // editor css
 
@@ -40,12 +43,15 @@ export default {
   components: {
     'mavon-editor': mavonEditor,
   },
-  async created() {
+  created() {
     if (this.currentUsername) {
       return;
     }
-    await this.suggestNetworkAsync();
-    await this.loginScatterAsync();
+    this.suggestNetworkAsync()
+      .then((added) => {
+        console.log('Suggest network result: ', added);
+        this.loginScatterAsync();
+      });
   },
   mounted() {
     this.resize();
@@ -98,18 +104,21 @@ export default {
       } = this;
       const author = currentUsername;
       const content = markdownData;
-
-      const success = (hash) => {
+      const failed = (error) => {
+        console.error('发送失败', error);
+        this.$Notice.error({ title: '发送失败', desc: error });
+      };
+      const jumpToArticle = hash => this.$router.push({
+        name: 'Article', params: { hash },
+      });
+      const success = async (hash) => {
         this.$Notice.success({
           title: '发送成功',
           desc: '3秒后跳转到你发表的文章',
         });
-        const jumpToArticle = () => this.$router.push({
-          name: 'Article', params: { hash },
-        });
-        setTimeout(jumpToArticle, 3 * 1000);
+
+        setTimeout(() => { jumpToArticle(hash); }, 3 * 1000);
       };
-      const failed = error => this.$Notice.error({ title: '发送失败', desc: error });
 
       try {
         const { data } = await sendPost({
@@ -117,24 +126,14 @@ export default {
         });
         const { code, hash } = data;
         if (code !== 200) failed('1st step : send post to ipfs failed');
-        // eslint-disable-next-line no-unused-vars
-        API.getSignature(author, hash, (err, signature, publicKey, username) => { // username未使用
-          console.log('签名成功后调', signature, publicKey);
-          if (err) failed('2nd step failed');
-          publishArticle({
-            author, title, hash, publicKey, signature, username: currentUsername, fissionFactor,
-          })
-          .then( (response) => {
-            if (response.data.msg !== 'success') failed(error);
+        publishArticle({
+          author, title, hash, fissionFactor,
+        })
+          .then((response) => {
+            if (response.data.msg !== 'success') failed('失败请重试');
             success(hash);
-          })
-          .catch( (error) => {
-            failed(error);
-            console.log(error);
-          });
-        });
+          }, (error) => { failed(error); });
       } catch (error) {
-        console.error(error);
         failed(error);
       }
     },

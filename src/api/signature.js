@@ -1,79 +1,57 @@
-/* eslint-disable consistent-return */
-/* eslint-disable camelcase */
-/* eslint-disable no-alert */
 import { eos, currentEOSAccount as currentAccount } from './scatter';
+
+// https://github.com/EOSIO/eosjs/tree/v16.0.9
 
 export const CONTRACT_ACCOUNT = process.env.VUE_APP_SIGNATURE_CONTRACT;
 
-const support = async ({ amount = null, sign_id = null, referrer = null }) => {
-  if (currentAccount() == null) {
-    alert('请先登录');
-    return;
-  }
-  if (amount == null) {
-    alert('amount cant be 0');
-    return;
-  }
-  if (sign_id == null) {
-    alert('sign_id can\'t be null');
-    return;
-  }
-
-  // eslint-disable-next-line no-use-before-define
-  return transferEOS({
-    amount,
-    memo: ((referrer != null) ? `support ${sign_id} ${referrer}` : `support ${sign_id}`),
-  });
-};
-
-const withdraw = async () => {
-  if (currentAccount() == null) {
-    alert('请先登录');
-    return;
-  }
-
-  // eslint-disable-next-line consistent-return
-  return eos().transaction({
-    actions: [
-      {
-        account: CONTRACT_ACCOUNT,
-        name: 'claim',
-        authorization: [{
-          actor: currentAccount().name,
-          permission: currentAccount().authority,
-        }],
-        data: {
-          from: currentAccount().name,
-        },
-      },
-    ],
-  });
-};
-
-function transferEOS({ amount = 0, memo = '' }) {
-  // return new Promise((resolve, reject) => {
+const transferEOS = ({ amount = 0, memo = '' }) => {
   if (currentAccount() == null) throw (new Error('NOT-LOGINED'));
   return eos().transaction({
-    actions: [
-      {
-        account: 'eosio.token',
-        name: 'transfer',
-        authorization: [{
-          actor: currentAccount().name,
-          permission: currentAccount().authority,
-        }],
-        data: {
-          from: currentAccount().name,
-          to: CONTRACT_ACCOUNT,
-          quantity: `${(amount).toFixed(4).toString()} EOS`,
-          memo,
-        },
+    actions: [{
+      account: 'eosio.token',
+      name: 'transfer',
+      authorization: [{
+        actor: currentAccount().name,
+        permission: currentAccount().authority,
+      }],
+      data: {
+        from: currentAccount().name,
+        to: CONTRACT_ACCOUNT,
+        quantity: `${(amount).toFixed(4).toString()} EOS`,
+        memo,
       },
-    ],
+    }],
   });
-}
+};
+
+const support = ({ amount = null, signId = null, referrer = null }) => {
+  if (currentAccount() === null) { throw new Error('请先登录'); }
+  if (amount === null) { throw new Error('amount cant be 0'); }
+  if (signId === null) { throw new Error('sign_id can\'t be null'); }
+  return transferEOS({
+    amount,
+    memo: ((referrer != null) ? `support ${signId} ${referrer}` : `support ${signId}`),
+  });
+};
+
+const withdraw = () => {
+  if (currentAccount() == null) { throw new Error('请先登录'); }
+  return eos().transaction({
+    actions: [{
+      account: CONTRACT_ACCOUNT,
+      name: 'claim',
+      authorization: [{
+        actor: currentAccount().name,
+        permission: currentAccount().authority,
+      }],
+      data: { from: currentAccount().name },
+    }],
+  });
+};
+
+
 // https://eosio.stackexchange.com/questions/1459/how-to-get-all-the-actions-of-one-account
-const getContractActions = async () => {
+const getContractActions = () => {
   const param = {
     json: true,
     account_name: CONTRACT_ACCOUNT,
@@ -111,7 +89,7 @@ const getSharesInfo = async (owner) => {
   return rows;
 };
 
-async function getSignInfo(id) {
+const getSignInfo = async (id) => {
   const { rows } = await eos().getTableRows({
     json: true,
     code: CONTRACT_ACCOUNT,
@@ -121,12 +99,11 @@ async function getSignInfo(id) {
     limit: 1,
   });
   return rows;
-}
+};
 
 // eslint-disable-next-line no-unused-vars
-const getSignsInfo = async () => { // 未调用
-  // eslint-disable-next-line no-undef
-  const { rows } = await eosapi.getTableRows({
+const getSignsInfo = async () => {
+  const { rows } = await eos().getTableRows({
     json: true,
     code: CONTRACT_ACCOUNT,
     scope: CONTRACT_ACCOUNT,
@@ -136,7 +113,7 @@ const getSignsInfo = async () => { // 未调用
   return rows;
 };
 
-async function getPlayerBills(owner) {
+const getPlayerBills = async (owner) => {
   const { actions } = await eos().getActions({
     json: true,
     account_name: owner,
@@ -145,9 +122,9 @@ async function getPlayerBills(owner) {
   });
   // console.log("player actions",actions);
   return actions;
-}
+};
 
-async function getPlayerIncome(name) {
+const getPlayerIncome = async (name) => {
   const { rows } = await eos().getTableRows({
     json: true,
     code: CONTRACT_ACCOUNT,
@@ -155,9 +132,9 @@ async function getPlayerIncome(name) {
     table: 'players',
     limit: 1,
   });
-    // console.log("player income:",rows)  //for debug
+  // console.debug('getPlayerIncome : ', rows);
   return rows;
-}
+};
 
 /*
 async function getGoods() {

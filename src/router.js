@@ -1,6 +1,8 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Home from './views/Home/index.vue';
+import { disassembleToken } from './api/backend';
+
 
 Vue.use(Router);
 
@@ -27,12 +29,6 @@ export default new Router({
       props: true,
       component: () => import(/* webpackChunkName: "article" */ './views/Article/index.vue'),
     },
-    {
-      path: '/article/:hash/comments',
-      name: 'Comments',
-      props: true,
-      component: () => import(/* webpackChunkName: "article-comments" */ './views/Article/CommentsList.vue'),
-    },
     // {
     //   path: '/login',
     //   name: 'Login',
@@ -49,6 +45,13 @@ export default new Router({
       name: 'Asset',
       props: true,
       component: () => import(/* webpackChunkName: "user-asset" */ './views/User/Asset.vue'),
+      beforeEnter: (to, from, next) => {
+        const currentUserName = to.params.username;
+        const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
+        // eslint-disable-next-line eqeqeq
+        if (tokenUserName != currentUserName) next(`/user/${tokenUserName}/asset`);
+        else { next(); }
+      }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
     },
     {
       path: '/user/:username/original',
@@ -67,6 +70,36 @@ export default new Router({
       name: 'Publish',
       props: true,
       component: () => import(/* webpackChunkName: "new-post" */ './views/Publish.vue'),
+    },
+    {
+      path: '/fanslist',
+      name: 'Fanslist',
+      props: true,
+      component: () => import(/* webpackChunkName: "new-post" */ './views/User/FansList.vue'),
+    },
+    {
+      path: '/followlist',
+      name: 'Followlist',
+      props: true,
+      component: () => import(/* webpackChunkName: "new-post" */ './views/User/FollowList.vue'),
+    },
+    {
+      path: '/draftbox',
+      name: 'DraftBox',
+      props: true,
+      component: () => import(/* webpackChunkName: "new-post" */ './views/User/DraftBox.vue'),
+    },
+    {
+      path: '/avatar',
+      name: 'AvatarUploader',
+      props: true,
+      component: () => import(/* webpackChunkName: "new-post" */ './views/User/AvatarUploader.vue'),
+    },
+    {
+      path: '/_easter-egg',
+      name: 'EasterEgg',
+      props: true,
+      component: () => import(/* webpackChunkName: "easter-egg" */ './views/EasterEgg.vue'),
     },
   ],
 });

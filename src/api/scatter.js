@@ -13,7 +13,7 @@ const currentNetwork = config.network.eos.mainnet[0];
 
 // @trick: use function to lazy eval Scatter eos, in order to avoid no ID problem.
 const eos = () => ScatterJS.scatter.eos(currentNetwork, Eos, { expireInSeconds: 60 });
-const currentEOSAccount = () => ScatterJS.scatter.identity && ScatterJS.scatter.identity.accounts.find(x => x.blockchain === 'eos');
+const currentEOSAccount = () => ScatterJS.scatter.identity && API.getAccount();
 
 const eosClient = Eos({
   chainId: "aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906",
@@ -21,47 +21,46 @@ const eosClient = Eos({
 });
 
 const API = {
-  authSignature(callback) {
-    const account = this.getAccount();
-    eosClient.getAccount(account.name, (error, result) => {
-      // 获取当前权限
-      const permissions = result.permissions.find(x => x.perm_name === account.authority);
-      // 获取当前权限的public key
-      const publicKey = permissions.required_auth.keys[0].key;
-      // 需要签名的数据
-      const sign_data = `${account.name}`;
-      // 申请签名
-      ScatterJS.scatter.getArbitrarySignature(publicKey, sign_data, 'Auth')
-      .then(signature => {
-        callback({username: account.name, publicKey, signature});
-      }).catch(error => {
-        console.log(error);
+  authSignature() {
+    return new Promise((resolve, reject) => {
+      const { getAccount, getArbitrarySignature } = this;
+      const account = getAccount();
+      eosClient.getAccount(account.name).then((result) => {
+        // 获取当前权限
+        const permissions = result.permissions.find(x => x.perm_name === account.authority);
+        // 获取当前权限的public key
+        const publicKey = permissions.required_auth.keys[0].key;
+        // 需要签名的数据
+        const signData = account.name;
+        // 申请签名
+        getArbitrarySignature(publicKey, signData, 'Auth')
+        .then(signature => { resolve({ publicKey, signature, username: account.name }); })
+        .catch(error => reject(error));
       });
-    })
+    });
   },
 
-  getSignature(author, hash, callback) {
-    const account = this.getAccount();
-    eosClient.getAccount(account.name, (err, result) => {
-      // 获取当前权限
-      const permissions = result.permissions.find(x => x.perm_name === account.authority);
-      // 获取当前权限的public key
-      const publicKey = permissions.required_auth.keys[0].key;
-      // 需要签名的数据
-      const hashPiece1 = hash.slice(0, 12);
-      const hashPiece2 = hash.slice(12, 24);
-      const hashPiece3 = hash.slice(24, 36);
-      const hashPiece4 = hash.slice(36, 48);
-
-      const sign_data = `${author} ${hashPiece1} ${hashPiece2} ${hashPiece3} ${hashPiece4}`;
-      // 申请签名
-      ScatterJS.scatter.getArbitrarySignature(publicKey, sign_data, 'Smart Signature')
-      .then(signature => {
-        callback(null, signature, publicKey, account.name);
-      }).catch(error => {
-        console.log(error);
+  getSignature(author, hash) {
+    return new Promise((resolve, reject) => {
+      const { getAccount, getArbitrarySignature } = this;
+      const account = getAccount();
+      eosClient.getAccount(account.name).then((result) => {
+        // 获取当前权限
+        const permissions = result.permissions.find(x => x.perm_name === account.authority);
+        // 获取当前权限的public key
+        const publicKey = permissions.required_auth.keys[0].key;
+        // 需要签名的数据
+        const hashPiece1 = hash.slice(0, 12);
+        const hashPiece2 = hash.slice(12, 24);
+        const hashPiece3 = hash.slice(24, 36);
+        const hashPiece4 = hash.slice(36, 48);
+        const signData = `${author} ${hashPiece1} ${hashPiece2} ${hashPiece3} ${hashPiece4}`;
+        // 申请签名
+        getArbitrarySignature(publicKey, signData, 'Smart Signature')
+        .then(signature => { resolve({ publicKey, signature, username: account.name }); })
+        .catch(error => { reject(error); });
       });
-    })
+    });
   },
 
   async getBalancesByContract({ tokenContract = 'eosio.token', accountName, symbol }) {
@@ -77,7 +76,7 @@ const API = {
     });
   },
   connectScatterAsync() {
-    return ScatterJS.scatter.connect(config.appScatterName, { initTimeout: 2000 });
+    return ScatterJS.scatter.connect(config.dappName, { initTimeout: 2000 });
   },
   suggestNetworkAsync() {
     return ScatterJS.scatter.suggestNetwork(currentNetwork);
@@ -123,19 +122,13 @@ const API = {
   getAccount() {
     return ScatterJS.scatter.identity.accounts.find(x => x.blockchain === 'eos');
   },
+  getArbitrarySignature(publicKey, data, memo) { 
+    return ScatterJS.scatter.getArbitrarySignature(publicKey, data, memo);
+  },
   getPublicKey() {
     return ScatterJS.scatter.getPublicKey('eos').then((publicKey) => {
       console.log(publicKey);
       return publicKey;
-    }).catch((error) => {
-      // todo(minakokojima): better error message.
-      alert(error);
-    });
-  },
-  getArbitrarySignatureAsync({ publicKey, data }) {
-    return ScatterJS.scatter.getArbitrarySignature({ publicKey, data }).then((signature) => {
-      console.log({ publicKey, data, signature });
-      return signature;
     }).catch((error) => {
       // todo(minakokojima): better error message.
       alert(error);

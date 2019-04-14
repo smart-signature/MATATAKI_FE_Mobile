@@ -8,8 +8,10 @@ import defaultImagesUploader from './imagesUploader';
 
 export {
   getArticlesList, publishArticle, auth, getAuth,
-  getArticleData, getArticleInfo,
-  Follow, Unfollow, getUser,
-  getSharesbysignid, sendComment, addReadAmount,
+  getArticleData, getArticleInfo, getArticleInHash,
+  Follow, Unfollow, getUser, oldgetUser,
+  setUserName, getFansList, getFollowList,
+  getSharesbysignid, sendComment, addReadAmount, getAssets,
+  delArticle, uploadAvatar, getAvatarImage,
 } from './backend';
 export { defaultImagesUploader };
