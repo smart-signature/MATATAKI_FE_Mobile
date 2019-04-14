@@ -125,7 +125,7 @@ const getAuth = async (cb) => {
   const currentToken = getCurrentAccessToken();
   const decodedData = disassembleToken(currentToken); // 拆掉了
   const username = currentToken != null ? decodedData.iss : null;
-  if (username !== currentAccount().name
+  if (currentAccount() === null || username !== currentAccount().name
     || decodedData === null || (decodedData.exp < new Date().getTime())) {
     console.log('Retake authtoken...');
     API.authSignature().then(({ username, publicKey, signature }) => {
