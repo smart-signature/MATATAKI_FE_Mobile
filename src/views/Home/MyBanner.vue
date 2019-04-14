@@ -59,8 +59,8 @@ export default {
   },
   data() {
     return {
-      avatar: require('../../assets/logo.png'),
-      newname: ''
+      avatar: require("../../assets/logo.png"),
+      newname: ""
     };
   },
   created() {},
@@ -120,16 +120,21 @@ export default {
       getUser({ username }).then(response => {
         const { data } = response;
         console.log(data);
-        this.newname = data.nickname === '' ? username : data.nickname;
+        this.newname = data.nickname === "" ? username : data.nickname;
         this.getAvatarImage(data.avatar);
       });
     }
   },
+  mounted() {
+    if (this.currentUsername) {
+      this.refresh_user();
+    }
+  },
   watch: {
     currentUsername() {
-        if(this.currentUsername) {
-          this.refresh_user();
-        }
+      if (this.currentUsername) {
+        this.refresh_user();
+      }
     }
   }
 };
