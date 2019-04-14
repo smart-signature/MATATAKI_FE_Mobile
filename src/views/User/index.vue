@@ -130,7 +130,7 @@ export default {
       fans: 0,
       nickname: '',
       newname: '',
-      avatar: '',
+      avatar: require('../../assets/logo.png'),
       editingavatar: false,
     };
   },
@@ -193,6 +193,7 @@ export default {
     },
     refresh_user() {
       const { username } = this;
+      console.log(username);
       if (username !== null) {
         oldgetUser({ username }, (error, response, body) => {
           console.log(body);
