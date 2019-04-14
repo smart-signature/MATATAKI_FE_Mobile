@@ -12,10 +12,10 @@
         <za-pull :on-refresh="refresh" :refreshing="refreshing" :loading="loading">
           <div class="content">
             <div v-for="(item, index) in lists[tab.listname]" :key="index">
-              <div class="onecard" @click="jumpToUser( item.username )">
+              <div v-if="item.followed !== '' && item.username !== ''" class="onecard" @click="jumpToUser( item.username )">
                 <Row>
                   <Col span="3">
-                    <img v-if="avatarloading" width="33px" class="onecard_pic" :src="item.avatar">
+                    <img width="33px" class="onecard_pic" :src="item.avatar">
                   </Col>
                   <Col span="21">
                     <Col span="18">
@@ -108,75 +108,81 @@ export default {
       this.refreshing = true;
       this.loading = true;
       if (this.activeNameSwipe == "关注") {
-        getFollowList({ username: this.username }, (error, response, body) => {
-          console.log(body.list);
-          this.lists.followlist = body.list || [];
+        getFollowList({ username: this.username }, async (error, response, body) => {
+          const list = body.list || [];
           if (response.statusCode != 200) {
             this.$Notice.error({
               title: "获取失败"
             });
+          }else{
+            for (const index in list){
+              list[index].username = list[index].followed;
+              if (this.lists.followlist[index] === undefined) list[index].avatar = require("../../assets/logo.png");
+              await this.getUserData(list, index);
+            };
+            this.lists.followlist = list;
           }
           this.refreshing = false;
           this.loading = false;
-
-          this.lists.followlist.forEach((item, index) => {
-            this.lists.followlist[index].username = this.lists.followlist[index].followed;
-            this.lists.followlist[index].avatar = require("../../assets/logo.png");
-            this.getUserData(this.lists.followlist, index);
-          });
         });
       } else {
-        getFansList({ username: this.username }, (error, response, body) => {
-          console.log(body.list);
-          this.lists.fanslist = body.list || [];
+        getFansList({ username: this.username }, async (error, response, body) => {
+          const list = body.list || [];
           if (response.statusCode != 200) {
             this.$Notice.error({
               title: "获取失败"
             });
+          }else{
+            for (const index in list){
+              list[index].followed = list[index].username;
+              if (this.lists.fanslist[index] === undefined) list[index].avatar = require("../../assets/logo.png");
+              await this.getUserData(list, index);
+            };
+            this.lists.fanslist = list;
           }
           this.refreshing = false;
           this.loading = false;
-          this.lists.fanslist.forEach((item, index) => {
-            this.lists.fanslist[index].followed = this.lists.fanslist[index].username;
-            this.lists.fanslist[index].avatar = require("../../assets/logo.png");
-            this.getUserData(this.lists.fanslist, index);
-          });
         });
       }
     },
     async getAvatarImage(hash, list, index) {
-
-      if (hash) {
-        await getAvatarImage(hash)
-          .then(response => {
-            this.avatarloading = false;
-            list[index].avatar = `data:image/png;base64,${btoa(
-              new Uint8Array(response.data).reduce(
-                (data, byte) => data + String.fromCharCode(byte),
-                ""
-              )
-            )}`;
-            this.avatarloading = true;
-          })
-          .catch(err => {
-            list[index].avatar = require("../../assets/logo.png");
-          });
+      if (hash && hash !== "") {
+        try{
+          const response = await getAvatarImage(hash)
+          // .then(response => {
+          // this.avatarloading = false;
+          list[index].avatar = `data:image/png;base64,${btoa(
+            new Uint8Array(response.data).reduce(
+              (data, byte) => data + String.fromCharCode(byte),
+              ""
+            )
+          )}`;
+          // this.avatarloading = true;
+        }catch(e){
+          console.log(e);
+          list[index].avatar = require("../../assets/logo.png");
+        }
+      }else{
+        list[index].avatar = require("../../assets/logo.png");
       }
     },
-    getUserData(list, index) {
+    async getUserData(list, index) {
       var username = list[index].username;
-      getUser({ username }).then(response => {
+      try{
+        const response = await getUser({ username });
         const { data } = response;
         list[index].followed = data.nickname === "" ? username : data.nickname;
-        this.getAvatarImage(data.avatar, list, index);
-      });
+        await this.getAvatarImage(data.avatar, list, index);
+      }catch(e){
+        console.log(e);
+      }
     },
     async refresh() {
       this.RefreshList();
     },
     handleClick(tab, event) {
       this.RefreshList();
-      console.log(tab.label);
+      // console.log(tab.label);
     }
   },
   async created() {
