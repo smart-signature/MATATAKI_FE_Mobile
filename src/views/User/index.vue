@@ -21,8 +21,12 @@
             <za-input v-if="editing" class="userinput" ref='inputFirst'
               v-model='newname'></za-input>
             <p class="userstatus">
-              <span>关注：{{follows}}</span>
-              <span style="margin-left:14px;">粉丝：{{fans}}</span>
+              <a @click="jumpTo({ name: 'FollowList', params: { listtype: '关注' }})">
+                关注：{{follows}}
+              </a>
+              <a style="margin-left:14px;" @click="jumpTo({ name: 'FollowList', params: { listtype: '粉丝' }})">
+                粉丝：{{fans}}
+              </a>
             </p>
           </div>
         </Col>
@@ -193,8 +197,9 @@ export default {
       });
     },
     refresh_user() {
-      const { username } = this;
-      if (username !== null) {
+      if (this.username === null) this.username = this.currentUsername;
+      const { username, currentUsername } = this;
+      if (currentUsername !== null) {
         oldgetUser({ username }, (error, response, body) => {
           console.log(body);
           this.follows = body.follows;

@@ -125,7 +125,7 @@ const getAuth = async (cb) => {
   const currentToken = getCurrentAccessToken();
   const decodedData = disassembleToken(currentToken); // 拆掉了
   const username = currentToken != null ? decodedData.iss : null;
-  if (username !== currentAccount().name
+  if ((currentAccount() !== null && username !== currentAccount().name)
     || decodedData === null || (decodedData.exp < new Date().getTime())) {
     console.log('Retake authtoken...');
     API.authSignature().then(({ username, publicKey, signature }) => {
@@ -217,27 +217,25 @@ const setUserName = ({ newname }, callback) => accessBackend({
 
 // Be used in User page.
 const getFansList = ({ username }, callback) => accessBackend({
-  method: 'POST',
-  uri: `${apiServer}/follows`,
+  method: 'GET',
+  uri: `${apiServer}/fans?user=${username}`,
   rejectUnauthorized: false,
   json: true,
   headers: { Accept: '*/*' },
   dataType: 'json',
   form: {
-    username,
   },
 }, callback);
 
 // Be used in User page.
 const getFollowList = ({ username }, callback) => accessBackend({
-  method: 'POST',
-  uri: `${apiServer}/fans`,
+  method: 'GET',
+  uri: `${apiServer}/follows?user=${username}`,
   rejectUnauthorized: false,
   json: true,
   headers: { Accept: '*/*' },
   dataType: 'json',
   form: {
-    username,
   },
 }, callback);
 
