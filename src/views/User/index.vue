@@ -274,8 +274,10 @@ export default {
       });
     },
     async setAvatarImage(hash) {
+      // 空hash 不去查询 显示默认Logo头像
+      if (!hash) return this.avatar = require('../../assets/logo.png');
       const response = await getAvatarImage(hash);
-      console.log(response);
+      // console.log(response);
       try {
         this.avatar = `data:image/png;base64,${btoa(
           new Uint8Array(response.data).reduce((data, byte) => data + String.fromCharCode(byte), ''),

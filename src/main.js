@@ -15,6 +15,9 @@ import './registerServiceWorker';
 // eslint-disable-next-line import/extensions
 import './plugins/iview.js';
 
+// global css
+import '@/assets/css/index.css';
+
 [
   VueHead, infiniteScroll,
 ].map(c => Vue.use(c));
