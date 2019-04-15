@@ -18,7 +18,12 @@
           <Input v-model="author" placeholder="写上你的大名..." clearable />
         </FormItem> -->
         <FormItem label="裂变系数">
-          <Input value="2" disabled placeholder="输入文章分享裂变系数" clearable />
+          <div class="fission-num-Input">
+            {{ fissionNum }}
+          </div>
+          <div class="fission-num-slider">
+            <vue-slider class="fission-num-slider2" :min="1" :max="5" :interval="0.1" v-model="fissionNum"></vue-slider>
+          </div>
         </FormItem>
       </Form>
     </div>
@@ -37,11 +42,14 @@ import {
 } from '../api';
 
 import 'mavon-editor/dist/css/index.css'; // editor css
+import VueSlider from 'vue-slider-component';
+import 'vue-slider-component/theme/default.css';
 
 export default {
   name: 'NewPost',
   components: {
     'mavon-editor': mavonEditor,
+    VueSlider,
   },
   created() {
     if (this.currentUsername) {
@@ -64,6 +72,7 @@ export default {
     fissionFactor: 2000,
     toolbars: {},
     screenWidth: document.body.clientWidth,
+    fissionNum: 2,
   }),
   computed: {
     ...mapGetters(['currentUsername']),
@@ -207,6 +216,9 @@ export default {
     screenWidth(val) {
       this.setToolBar(val);
     },
+    fissionNum() {
+      this.fissionFactor = this.fissionNum * 1000;
+    },
   },
 };
 </script>
@@ -243,5 +255,23 @@ export default {
   /* 编辑器层级大于modal 改变编辑器层级 */
   .v-note-wrapper{
     z-index: 1000;
+  }
+
+  .fission-num-Input{
+    width: 16%;
+    margin-bottom: 10px;
+    border: 1px solid;
+    border-radius: 5px;
+    border-color: #dcdcdc;
+    display: inline-table;
+  }
+  .fission-num-slider{
+    display: inline-table;
+    width: 70%;
+    margin-left: 15px;
+    margin-right: 10px;
+  }
+  .fission-num-slider2{
+        padding: 0px 0px 2px 0px !important;
   }
 </style>

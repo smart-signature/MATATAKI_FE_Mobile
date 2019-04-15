@@ -234,7 +234,7 @@ export default {
       }, ({ error, response }) => {
         console.log(error);
         if (!error) {
-          this.$Notice.success({ title: '关注成功', });
+          this.$Notice.success({ title: '关注成功' });
           this.followed = true;
         } else {
           this.$Notice.error({
@@ -247,17 +247,17 @@ export default {
     unfollow_user() {
       const { username, currentUsername } = this;
       if (!currentUsername || !username) {
-        this.$Notice.error({ title: '账号信息无效，取消关注失败', });
+        this.$Notice.error({ title: '账号信息无效，取消关注失败' });
         return;
       }
       Unfollow({
         followed: username, username: currentUsername,
       }, ({ error, response }) => {
         if (!error) {
-          this.$Notice.success({ title: '已取消关注', });
+          this.$Notice.success({ title: '已取消关注' });
           this.followed = false;
         } else {
-          this.$Notice.error({ title: '取消关注失败', });
+          this.$Notice.error({ title: '取消关注失败' });
         }
         this.refreshUser();
       });
@@ -280,7 +280,7 @@ export default {
         this.avatar = `data:image/png;base64,${btoa(
           new Uint8Array(response.data).reduce((data, byte) => data + String.fromCharCode(byte), ''),
         )}`;
-      } catch(err) {
+      } catch (err) {
         console.log(err);
         this.avatar = require('../../assets/logo.png');
       }

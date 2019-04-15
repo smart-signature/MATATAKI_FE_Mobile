@@ -121,9 +121,9 @@ const getAuth = () => new Promise((resolve, reject) => {
   const currentToken = getCurrentAccessToken();
   const decodedData = disassembleToken(currentToken); // 拆包
   const username = currentToken != null ? decodedData.iss : null;
-  if (currentAccount() !== null && ( currentToken === null
+  if (currentAccount() !== null && (currentToken === null
     || decodedData === null || decodedData.exp < new Date().getTime()
-    || username !== currentAccount().name )) {
+    || username !== currentAccount().name)) {
     console.log('Retake authtoken...');
     API.authSignature().then(({ username, publicKey, signature }) => {
       console.info('API.authSignature :', username, publicKey, signature);
@@ -163,7 +163,7 @@ const accessBackend = (options, callback = () => {}) => {
       'b4 request send, options :', options,
       ', x-access-token :', options.headers['x-access-token'],
     );
-    axios(options).then((response) => callback({ response }))
+    axios(options).then(response => callback({ response }))
       .catch((error) => {
         if (error.response) {
           // The request was made and the server responded with a status code
@@ -172,8 +172,8 @@ const accessBackend = (options, callback = () => {}) => {
           console.log(error.response.status);
           console.log(error.response.headers);
           callback({ error, response: error.response });
-          return ;
-        } else if (error.request) {
+          return;
+        } if (error.request) {
           // The request was made but no response was received
           // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
           // http.ClientRequest in node.js

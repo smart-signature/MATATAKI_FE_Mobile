@@ -57,14 +57,14 @@ export default {
     return {
       lists: {
         followlist: [],
-        fanslist: []
+        fanslist: [],
       },
       actions2: [
         {
           theme: 'error',
           text: '取消关注',
-          onClick: () => console.log('取消关注')
-        }
+          onClick: () => console.log('取消关注'),
+        },
       ],
       clickicon: false,
       activeNameSwipe: '粉丝',
@@ -74,17 +74,17 @@ export default {
       tabs: [
         {
           label: '粉丝',
-          listname: 'fanslist'
+          listname: 'fanslist',
         },
         {
           label: '关注',
-          listname: 'followlist'
-        }
-      ]
+          listname: 'followlist',
+        },
+      ],
     };
   },
-  watch:{
-    
+  watch: {
+
   },
   computed: {
     ...mapGetters(['currentUsername']),
@@ -94,7 +94,7 @@ export default {
     isMe() {
       const { username, currentUsername } = this;
       return username === currentUsername;
-    }
+    },
   },
   methods: {
     goBack() {
@@ -114,14 +114,14 @@ export default {
           const list = body.list || [];
           if (response.statusCode != 200) {
             this.$Notice.error({
-              title: '获取失败'
+              title: '获取失败',
             });
-          }else{
-            for (const index in list){
+          } else {
+            for (const index in list) {
               list[index].username = list[index].followed;
               if (this.lists.followlist[index] === undefined) list[index].avatar = require('../../assets/logo.png');
               await this.getUserData(list, index);
-            };
+            }
             this.lists.followlist = list;
           }
           this.refreshing = false;
@@ -132,14 +132,14 @@ export default {
           const list = body.list || [];
           if (response.statusCode != 200) {
             this.$Notice.error({
-              title: '获取失败'
+              title: '获取失败',
             });
-          }else{
-            for (const index in list){
+          } else {
+            for (const index in list) {
               list[index].followed = list[index].username;
               if (this.lists.fanslist[index] === undefined) list[index].avatar = require('../../assets/logo.png');
               await this.getUserData(list, index);
-            };
+            }
             this.lists.fanslist = list;
           }
           this.refreshing = false;
@@ -149,28 +149,28 @@ export default {
     },
     async getAvatarImage(hash, list, index) {
       if (hash && hash !== '') {
-        try{
-          const response = await getAvatarImage(hash)
+        try {
+          const response = await getAvatarImage(hash);
           // .then(response => {
           // this.avatarloading = false;
           list[index].avatar = `data:image/png;base64,${btoa(
             new Uint8Array(response.data).reduce(
               (data, byte) => data + String.fromCharCode(byte),
-              ''
-            )
+              '',
+            ),
           )}`;
           // this.avatarloading = true;
-        }catch(e){
+        } catch (e) {
           console.log(e);
           list[index].avatar = require('../../assets/logo.png');
         }
-      }else{
+      } else {
         list[index].avatar = require('../../assets/logo.png');
       }
     },
     async getUserData(list, index) {
-      var username = list[index].username;
-      try{
+      const { username } = list[index];
+      try {
         const response = await getUser({ username });
         const { data } = response;
         list[index].followed = data.nickname === '' ? username : data.nickname;
