@@ -14,14 +14,14 @@
         <div :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label">
           <za-pull :on-refresh="refresh" :refreshing="refreshing">
             <div class="content">
-              <div v-if="articles.length == 0" style="padding: 20px">
-                无文章
-              </div>
               <div v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
                 <ArticleCard :article="a" v-for="a in articles" :key="a.id"/>
               </div>
             </div>
-            <p class="loading-stat">{{displayAboutScroll}}</p>
+            <div v-if="articles.length == 0" style="padding: 20px">
+                无文章
+            </div>
+            <p v-else class="loading-stat">{{displayAboutScroll}}</p>
           </za-pull>
         </div>
       </div>
