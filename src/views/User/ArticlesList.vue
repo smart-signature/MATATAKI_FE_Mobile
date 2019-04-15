@@ -2,13 +2,9 @@
   <div>
     <div v-if="tabs.length >= 2">
       <div class="articles">
-        <za-tabs v-model="activeNameSwipe" @change="handleClick">
+        <za-tabs v-model="activeNameSwipe">
           <za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label">
-            <za-pull :on-refresh="refresh" :refreshing="refreshing" :loading="loading">
-              <div class="content">
-                <ArticleCard :article="a" v-for="a in articles" :key="a.id"/>
-              </div>
-            </za-pull>
+            <ArticlesListOthers :listtype="tab.label" :username="username" />
           </za-tab-pane>
         </za-tabs>
       </div>
@@ -16,13 +12,16 @@
     <div v-else>
       <div class="articles">
         <div :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label">
-          <za-pull :on-refresh="refresh" :refreshing="refreshing" :loading="loading">
+          <za-pull :on-refresh="refresh" :refreshing="refreshing">
             <div class="content">
               <div v-if="articles.length == 0" style="padding: 20px">
                 无文章
               </div>
-              <ArticleCard :article="a" v-for="a in articles" :key="a.id"/>
+              <div v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
+                <ArticleCard :article="a" v-for="a in articles" :key="a.id"/>
+              </div>
             </div>
+            <p class="loading-stat">{{displayAboutScroll}}</p>
           </za-pull>
         </div>
       </div>
@@ -31,16 +30,21 @@
 </template>
 
 <script>
-import axios from 'axios';
 import { ArticleCard } from '@/components/';
-import { apiServer } from '@/api/backend';
 import { mapGetters } from 'vuex';
+import ArticlesListOthers from './ArticlesListOthers.vue';
+import { getArticlesList, getArticleSupports } from '@/api/index';
 
 export const TimeLine = '最新发布';
 export default {
-  name: 'home',
+  name: 'ArticlesList',
   computed: {
     ...mapGetters(['currentUsername']),
+    displayAboutScroll() {
+      return this.isTheEndOfTheScroll
+        ? '🎉 哇，你真勤奋，所有 comments 已经加载完了～ 🎉'
+        : '😄 勤奋地加载更多精彩内容 😄';
+    },
   },
   props: {
     listtype: {
@@ -51,10 +55,9 @@ export default {
       type: String,
     },
   },
-  components: { ArticleCard },
+  components: { ArticleCard, ArticlesListOthers },
   created() {
-    // alert("this is " + this.listtype + " list")
-    this.getArticlesList();
+    // this.getArticlesList();
     if (this.listtype === 'others') {
       this.tabs = [
         { label: '文章列表' },
@@ -68,57 +71,49 @@ export default {
     }
   },
   methods: {
-    async getArticlesList() {
-      // const articles = 'https://smartsignature.azurewebsites.net/api/article';
-      // const articles = 'http://localhost:7001/posts';
-      if (this.listtype === 'original') {
-        const articles = `${apiServer}/posts?author=${this.username}`; // new backend api url
-        const { data } = await axios.get(articles);
-        this.articles = data;
-        // do something...
-      } else if (this.listtype === 'reward') {
-        const articles = `${apiServer}/supports?user=${this.username}`; // new backend api url
-        const { data } = await axios.get(articles);
-        this.articles = data;
-      } else if (this.listtype === 'others') {
-        if (this.tabid === 0) {
-          const articles = `${apiServer}/posts?author=${this.username}`; // new backend api url
-          const { data } = await axios.get(articles);
-          this.articles = data;
-        } else {
-          const articles = `${apiServer}/supports?user=${this.username}`; // new backend api url
-          const { data } = await axios.get(articles);
-          this.articles = data;
-        }
-      }
-      this.loading = false;
-    },
-    // eslint-disable-next-line no-unused-vars
-    handleClick(tab, event) { // event 未使用
-      if (this.listtype === 'others') {
-        // eslint-disable-next-line no-plusplus
-        for (let index = 0; index < this.tabs.length; index++) { // eslint 不允许一元运算符++ --
-          if (this.tabs[index].label === tab.name) {
-            this.tabid = index;
-            break;
-          }
-        }
-      }
-      this.articles = [];
-      this.refresh();
-    },
     async refresh() {
       this.refreshing = true;
-      this.loading = true;
-      await this.getArticlesList();
+      this.isTheEndOfTheScroll = false; // 显示未加载完成
+      this.page = 1; // 重置分页索引
+      await this.loadMore(true);
       this.refreshing = false;
-      this.loading = false;
+    },
+    async loadMore(isEmptyArray = false) {
+      if (this.isTheEndOfTheScroll) return;
+      this.busy = true;
+      await this.getArticlesList(this.username, this.page, isEmptyArray);
+    },
+    async getArticlesList(username, page, isEmptyArray) {
+      // 成功获取文章数据
+      const getArticleData = (res) => {
+        const { data } = res;
+        if (isEmptyArray) this.articles.length = 0;
+        this.articles = [...this.articles, ...data];
+        if (data.length >= 0 && data.length < 20) this.isTheEndOfTheScroll = true;
+        else this.page += 1;
+        this.busy = false;
+      };
+
+      if (this.listtype === 'original') {
+        await getArticlesList({ author: username, page }).then((res) => {
+          if (res.status === 200) getArticleData(res);
+        }).catch((err) => {
+          console.log(err);
+          this.$Message.error('获取文章发生错误');
+        });
+      } else if (this.listtype === 'reward') {
+        await getArticleSupports({ user: username, page }).then((res) => {
+          if (res.status === 200) getArticleData(res);
+        }).catch((err) => {
+          console.log(err);
+          this.$Message.error('获取文章发生错误');
+        });
+      }
     },
   },
   data() {
     return {
       refreshing: false,
-      loading: false,
       articles: [],
       activeNameSwipe: TimeLine,
       selectedLabelDefault: TimeLine,
@@ -127,7 +122,9 @@ export default {
           label: TimeLine,
         },
       ],
-      tabid: 0,
+      isTheEndOfTheScroll: false,
+      page: 1,
+      busy: false,
     };
   },
 };

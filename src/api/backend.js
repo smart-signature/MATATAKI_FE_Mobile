@@ -31,12 +31,18 @@ const getArticleInfo = hash => axios.get(`${apiServer}/post/${hash}`);
 // 获取单篇文章的信息 （短链接 issues）
 const getArticleInHash = id => axios.get(`${apiServer}/p/${id}`);
 
+// 获取支持过的文章列表 page user
+const getArticleSupports = params => axios.get(
+  `${apiServer}/supports`, { params },
+);
+
 /**
  * 获取按照发表时间文章排行榜 https://github.com/smart-signature/smart-signature-backend/blob/master/doc.md#获取文章列表
  * @param {number} page： 第 {page} 页
+ * @param {string} author 作者
  */
-const getArticlesList = ({ page = 1 }) => axios.get(
-  `${apiServer}/posts`, { params: { page } },
+const getArticlesList = params => axios.get(
+  `${apiServer}/posts`, { params },
 );
 
 /**
@@ -121,9 +127,9 @@ const getAuth = () => new Promise((resolve, reject) => {
   const currentToken = getCurrentAccessToken();
   const decodedData = disassembleToken(currentToken); // 拆包
   const username = currentToken != null ? decodedData.iss : null;
-  if (currentAccount() !== null && ( currentToken === null
+  if (currentAccount() !== null && (currentToken === null
     || decodedData === null || decodedData.exp < new Date().getTime()
-    || username !== currentAccount().name )) {
+    || username !== currentAccount().name)) {
     console.log('Retake authtoken...');
     API.authSignature().then(({ username, publicKey, signature }) => {
       console.info('API.authSignature :', username, publicKey, signature);
@@ -163,7 +169,7 @@ const accessBackend = (options, callback = () => {}) => {
       'b4 request send, options :', options,
       ', x-access-token :', options.headers['x-access-token'],
     );
-    axios(options).then((response) => callback({ response }))
+    axios(options).then(response => callback({ response }))
       .catch((error) => {
         if (error.response) {
           // The request was made and the server responded with a status code
@@ -172,8 +178,8 @@ const accessBackend = (options, callback = () => {}) => {
           console.log(error.response.status);
           console.log(error.response.headers);
           callback({ error, response: error.response });
-          return ;
-        } else if (error.request) {
+          return;
+        } if (error.request) {
           // The request was made but no response was received
           // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
           // http.ClientRequest in node.js
@@ -286,5 +292,5 @@ export {
   Follow, Unfollow, getUser, setUserName, getFansList, getFollowList, oldgetUser,
   getSharesbysignid, addReadAmount, sendComment,
   getArticles, getArticlesBySupportAmountRanking, getArticlesBySupportTimesRanking, getAssets,
-  disassembleToken, delArticle, uploadAvatar, getAvatarImage,
+  disassembleToken, delArticle, uploadAvatar, getAvatarImage, getArticleSupports,
 };
