@@ -1,5 +1,4 @@
 import axios from 'axios';
-import request from 'request';
 import https from 'https';
 import API from '@/api/scatter';
 import { Base64 } from 'js-base64';
@@ -8,6 +7,7 @@ import { currentEOSAccount as currentAccount } from './scatter';
 // https://github.com/axios/axios
 
 export const apiServer = process.env.VUE_APP_API;
+const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
 const publishArticle = ({
   author, title, hash, fissionFactor,
@@ -101,22 +101,9 @@ const auth = ({ username, publicKey, sign }) => axios.post(`${apiServer}/auth`,
       Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==',
     },
     // https://github.com/axios/axios/issues/535
-    httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+    httpsAgent,
   });
 
-// eslint-disable-next-line no-unused-vars
-const oldauth = ({ username, publicKey, sign }, callback) => request.post({
-  uri: `${apiServer}/auth`,
-  rejectUnauthorized: false,
-  json: true,
-  headers: { Accept: '*/*', Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==' },
-  dataType: 'json',
-  form: {
-    username,
-    publickey: publicKey,
-    sign,
-  },
-}, callback);
 // /<summary>
 // /拆token，返回json对象
 // /</summary>
@@ -176,121 +163,116 @@ const accessBackend = (options, callback = () => {}) => {
       'b4 request send, options :', options,
       ', x-access-token :', options.headers['x-access-token'],
     );
-    request(options, callback);
+    axios(options).then((response) => callback({ response }))
+      .catch((error) => {
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+          callback({ error, response: error.response });
+          return ;
+        } else if (error.request) {
+          // The request was made but no response was received
+          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+          // http.ClientRequest in node.js
+          console.log(error.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log('Error', error.message);
+        }
+        console.log(error.config);
+        callback({ error });
+      });
   });
 };
-
-// dataType 不知道哪來的參數，只有 jQuery ajax() 才有 datatype lol
 
 // Be used in User page.
 const Follow = ({ username, followed }, callback) => accessBackend({
   method: 'POST',
-  uri: `${apiServer}/follow`,
-  rejectUnauthorized: false,
-  json: true,
+  url: `${apiServer}/follow`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
-  form: { username, followed },
+  httpsAgent,
+  data: { username, followed },
 }, callback);
 
 // Be used in User page.
 const Unfollow = ({ username, followed }, callback) => accessBackend({
   method: 'POST',
-  uri: `${apiServer}/unfollow`,
-  rejectUnauthorized: false,
-  json: true,
+  url: `${apiServer}/unfollow`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
-  form: { username, followed },
+  httpsAgent,
+  data: { username, followed },
 }, callback);
 
 // Be used in User page.
 const getUser = ({ username }) => axios.get(`${apiServer}/user/${username}`);
 const oldgetUser = ({ username }, callback) => accessBackend({
   method: 'GET',
-  uri: `${apiServer}/user/${username}`,
-  rejectUnauthorized: false,
-  json: true,
+  url: `${apiServer}/user/${username}`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
-  form: {},
+  httpsAgent,
+  data: {},
 }, callback);
 
 // Be used in User page.
 const setUserName = ({ newname }, callback) => accessBackend({
   method: 'POST',
-  uri: `${apiServer}/user/setNickname`,
-  rejectUnauthorized: false,
-  json: true,
+  url: `${apiServer}/user/setNickname`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
-  form: {
-    nickname: newname,
-  },
+  httpsAgent,
+  data: { nickname: newname },
 }, callback);
 
 // Be used in User page.
 const getFansList = ({ username }, callback) => accessBackend({
   method: 'GET',
-  uri: `${apiServer}/fans?user=${username}`,
-  rejectUnauthorized: false,
-  json: true,
+  url: `${apiServer}/fans?user=${username}`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
+  httpsAgent,
 }, callback);
 
 // Be used in User page.
 const getFollowList = ({ username }, callback) => accessBackend({
   method: 'GET',
-  uri: `${apiServer}/follows?user=${username}`,
-  rejectUnauthorized: false,
-  json: true,
+  url: `${apiServer}/follows?user=${username}`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
+  httpsAgent,
 }, callback);
 
 const sendComment = ({ comment, signId }, callback) => accessBackend({
   method: 'POST',
-  uri: `${apiServer}/post/comment`,
-  rejectUnauthorized: false,
-  json: true,
+  url: `${apiServer}/post/comment`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
+  httpsAgent,
   // eslint-disable-next-line camelcase
-  form: { comment, sign_id: signId },
+  data: { comment, sign_id: signId },
 }, callback);
 
 // be Used in Article Page
 const addReadAmount = ({ articlehash }, callback) => accessBackend({
   method: 'POST',
-  uri: `${apiServer}/post/show/${articlehash}`,
-  rejectUnauthorized: false,
-  json: true,
+  url: `${apiServer}/post/show/${articlehash}`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
-  form: {},
+  httpsAgent,
 }, callback);
 
 // 删除文章
 const delArticle = ({ id }, callback) => accessBackend({
   method: 'DELETE',
-  uri: `${apiServer}/post/${id}`,
-  rejectUnauthorized: false,
-  json: true,
+  url: `${apiServer}/post/${id}`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
-  form: {},
+  httpsAgent,
 }, callback);
 
 // 设置头像
 const uploadAvatar = ({ avatar }, callback) => accessBackend({
   method: 'POST',
-  uri: `${apiServer}/user/setAvatar`,
-  rejectUnauthorized: false,
-  json: true,
+  url: `${apiServer}/user/setAvatar`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
-  form: { avatar },
+  httpsAgent,
+  data: { avatar },
 }, callback);
 
 // 获取头像

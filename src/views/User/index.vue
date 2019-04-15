@@ -172,7 +172,7 @@ export default {
         this.editing = !this.editing;
         return;
       }
-      setUserName({ newname: this.newname }, (error, response, body) => {
+      setUserName({ newname: this.newname }, ({ error, response }) => {
         console.log(error);
         if (!error) {
           if (response.statusCode === 500) {
@@ -192,35 +192,33 @@ export default {
           });
           this.newname = this.nickname === '' ? this.username : this.nickname;
         }
-        this.refresh_user();
+        this.refreshUser();
         this.editing = !this.editing;
       });
     },
-    refresh_user() {
+    refreshUser() {
       if (this.username === null) this.username = this.currentUsername;
       const { username, currentUsername } = this;
+      const setUser = (data) => {
+        this.follows = data.follows;
+        this.fans = data.fans;
+        this.followed = data.is_follow;
+        this.nickname = data.nickname;
+        this.newname = this.nickname === '' ? this.username : this.nickname;
+        this.setAvatarImage(data.avatar);
+      };
       if (currentUsername !== null) {
-        oldgetUser({ username }, (error, response, body) => {
-          console.log(body);
-          this.follows = body.follows;
-          this.fans = body.fans;
-          this.followed = body.is_follow;
-          this.nickname = body.nickname;
-          this.newname = this.nickname === '' ? this.username : this.nickname;
-          this.getAvatarImage(body.avatar);
+        oldgetUser({ username }, ({ error, response }) => {
+          console.log(response);
+          const { data } = response;
+          setUser(data);
         });
       } else {
-        getUser({ username })
-          .then((response) => {
-            const { data } = response;
-            console.log(data);
-            this.follows = data.follows;
-            this.fans = data.fans;
-            this.followed = data.is_follow;
-            this.nickname = data.nickname;
-            this.newname = this.nickname === '' ? this.username : this.nickname;
-            this.getAvatarImage(data.avatar);
-          });
+        getUser({ username }).then((response) => {
+          console.log(response);
+          const { data } = response;
+          setUser(data);
+        });
       }
     },
     follow_user() {
@@ -233,68 +231,56 @@ export default {
       }
       Follow({
         followed: username, username: currentUsername,
-      // eslint-disable-next-line no-unused-vars
-      }, (error, response, body) => { // body 未使用
-        console.log(response);
+      }, ({ error, response }) => {
+        console.log(error);
         if (!error) {
-          this.$Notice.success({
-            title: '关注成功',
-          });
+          this.$Notice.success({ title: '关注成功', });
           this.followed = true;
         } else {
           this.$Notice.error({
             title: '关注失败',
           });
         }
-        this.refresh_user();
+        this.refreshUser();
       });
     },
     unfollow_user() {
       const { username, currentUsername } = this;
       if (!currentUsername || !username) {
-        this.$Notice.error({
-          title: '账号信息无效，取消关注失败',
-        });
+        this.$Notice.error({ title: '账号信息无效，取消关注失败', });
         return;
       }
       Unfollow({
         followed: username, username: currentUsername,
-      // eslint-disable-next-line no-unused-vars
-      }, (error, response, body) => { // response body 未使用
+      }, ({ error, response }) => {
         if (!error) {
-          this.$Notice.success({
-            title: '已取消关注',
-          });
+          this.$Notice.success({ title: '已取消关注', });
           this.followed = false;
         } else {
-          this.$Notice.error({
-            title: '取消关注失败',
-          });
+          this.$Notice.error({ title: '取消关注失败', });
         }
-        this.refresh_user();
+        this.refreshUser();
       });
     },
     // 获取历史总收入
     async getAssets() {
-      await getAssets(this.username, 1)
-        .then((res) => {
-          if (res.status === 200) {
-            this.playerincome = (res.data.totalSignIncome + res.data.totalShareIncome) / 10000;
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          this.$Message.error('获取历史收入错误请重试');
-        });
+      await getAssets(this.username, 1).then((res) => {
+        if (res.status === 200) {
+          this.playerincome = (res.data.totalSignIncome + res.data.totalShareIncome) / 10000;
+        }
+      }).catch((err) => {
+        console.log(err);
+        this.$Message.error('获取历史收入错误请重试');
+      });
     },
-    async getAvatarImage(hash) {
-      const response = await getAvatarImage(hash)
-      try{
+    async setAvatarImage(hash) {
+      const response = await getAvatarImage(hash);
+      console.log(response);
+      try {
         this.avatar = `data:image/png;base64,${btoa(
           new Uint8Array(response.data).reduce((data, byte) => data + String.fromCharCode(byte), ''),
         )}`;
-        console.log(response);
-      }catch(e){
+      } catch(err) {
         console.log(err);
         this.avatar = require('../../assets/logo.png');
       }
@@ -303,12 +289,13 @@ export default {
     setDone(status) {
       console.log(status);
       this.editingavatar = status;
-      this.refresh_user();
+      this.refreshUser();
     },
   },
   created() {
-    this.getAssets();
-    this.refresh_user();
+    const { getAssets, refreshUser } = this;
+    getAssets();
+    refreshUser();
     const user = this.isMe ? '我' : this.username;
     document.title = `${user}的个人主页 - SmartSignature`;
   },
