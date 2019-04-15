@@ -3,11 +3,12 @@
     <div class="my-stat">
       <div class="logined" v-if="isLogined">
         <img :src="avatar" class="round_icon">
-        <Button class="my-user-page" ghost type="text" @click="toUserPage(currentUsername)">我的主页</Button>
-        <p class="username">{{newname}}</p>
+        <Button class="my-user-page"
+          ghost type="text" @click="toUserPage(currentUserInfo.name)">我的主页</Button>
+        <p class="username">{{displayName}}</p>
         <p class="my-balance">
-          {{eosBalance}}
-          <span class="coin-symbol">EOS</span>
+          {{displayBalance}}
+          <span class="coin-symbol">{{displayTokenSymbol}}</span>
         </p>
       </div>
       <div class="not-login-yet" v-else>
@@ -36,11 +37,8 @@
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
 import {
-  Follow,
-  Unfollow,
   getUser,
   oldgetUser,
-  setUserName,
   getAssets,
   getAvatarImage,
 } from '@/api';
@@ -48,28 +46,36 @@ import {
 export default {
   name: 'My-Banner',
   computed: {
-    ...mapState(['scatterAccount', 'balances', 'isScatterConnected']),
-    ...mapGetters(['currentUsername']),
-    eosBalance() {
-      return this.balances.eos.slice(0, -4);
+    ...mapState(['isScatterConnected']),
+    ...mapGetters(['currentUserInfo', 'isLogined']),
+    displayBalance() {
+      return this.currentUserInfo.balance.slice(0, -4);
     },
-    isLogined() {
-      return this.scatterAccount !== null;
+    displayName() {
+      const { currentUserInfo, nickname } = this;
+        return nickname !== '' ? nickname 
+          : ( currentUserInfo.name.length <= 12 ) ? currentUserInfo.name
+          : currentUserInfo.name.slice(0, 12);
+    },
+    displayTokenSymbol() {
+      return this.currentUserInfo.balance.slice(-4);
     },
   },
   data() {
     return {
       avatar: require('../../assets/logo.png'),
-      newname: '',
+      nickname: '',
     };
   },
-  created() {},
+  created() {
+    const { isLogined, refresh_user } = this;
+    if (isLogined) { refresh_user(); }
+  },
   methods: {
     ...mapActions([
       'connectScatterAsync',
       'suggestNetworkAsync',
       'loginScatterAsync',
-      'logoutScatterAsync',
     ]),
     toUserPage(username) {
       this.$router.push({ name: 'User', params: { username } });
@@ -116,24 +122,21 @@ export default {
         });
     },
     refresh_user() {
-      const username = this.currentUsername;
+      const { name: username } = this.currentUserInfo;
       console.log(username);
       getUser({ username }).then((response) => {
         const { data } = response;
         console.log(data);
-        this.newname = data.nickname === '' ? username : data.nickname;
+        this.nickname = data.nickname;
         this.getAvatarImage(data.avatar);
       });
     },
   },
   mounted() {
-    if (this.currentUsername) {
-      this.refresh_user();
-    }
   },
   watch: {
-    currentUsername() {
-      if (this.currentUsername) {
+    isLogined() {
+      if (this.isLogined) {
         this.refresh_user();
       }
     },

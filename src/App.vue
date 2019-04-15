@@ -70,12 +70,10 @@ export default {
       this.$Message.error('钱包连接失败，钱包需打开并解锁');
     }
 
-    cyanobridgegetAccount()
-      .then((address) => {
-        console.info('ONT address :', address);
-        this.$Message.success(`ONT address : ${address} ，登陸成功`);
-      })
-      .catch(result => console.warn('Failed to get ONT account :', result));
+    cyanobridgegetAccount().then((address) => {
+      console.info('ONT address :', address);
+      this.$Message.success(`ONT address : ${address} ，登陸成功`);
+    }).catch(result => console.warn('Failed to get ONT account :', result));
   },
 };
 </script>
