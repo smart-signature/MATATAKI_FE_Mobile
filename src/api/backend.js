@@ -1,5 +1,5 @@
 import axios from 'axios';
-import request from 'request';
+import https from 'https';
 import API from '@/api/scatter';
 import { Base64 } from 'js-base64';
 import { currentEOSAccount as currentAccount } from './scatter';
@@ -7,6 +7,7 @@ import { currentEOSAccount as currentAccount } from './scatter';
 // https://github.com/axios/axios
 
 export const apiServer = process.env.VUE_APP_API;
+const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
 const publishArticle = ({
   author, title, hash, fissionFactor,
@@ -86,28 +87,23 @@ const getAssets = (user, page) => axios.get(`${apiServer}/assets`, { params: { u
 */
 const getSharesbysignid = (signid, page) => axios.get(`${apiServer}/shares?signid=${signid}&page=${page}`);
 
-const getCurrentAccessToken = () => {
-  const accessToken = localStorage.getItem('ACCESS_TOKEN');
-  return accessToken;
-};
+const getCurrentAccessToken = () => localStorage.getItem('ACCESS_TOKEN');
 const setAccessToken = token => localStorage.setItem('ACCESS_TOKEN', token);
-// localStorage.setItem('ACCESS_TOKEN', accessToken);
 
 // /<summary>
 // /根据用户名，公钥，客户端签名请求access_token
 // /</summary>
-const auth = ({ username, publicKey, sign }, callback) => request.post({
-  uri: `${apiServer}/auth`,
-  rejectUnauthorized: false,
-  json: true,
-  headers: { Accept: '*/*', Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==' },
-  dataType: 'json',
-  form: {
-    username,
-    publickey: publicKey,
-    sign,
-  },
-}, callback);
+const auth = ({ username, publicKey, sign }) => axios.post(`${apiServer}/auth`,
+  { username, publickey: publicKey, sign },
+  {
+    headers: {
+      Accept: '*/*',
+      Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==',
+    },
+    // https://github.com/axios/axios/issues/535
+    httpsAgent,
+  });
+
 // /<summary>
 // /拆token，返回json对象
 // /</summary>
@@ -121,166 +117,162 @@ const disassembleToken = (token) => {
 // /<summary>
 // /装载access_token
 // /</summary>
-const getAuth = async (cb) => {
+const getAuth = () => new Promise((resolve, reject) => {
   const currentToken = getCurrentAccessToken();
-  const decodedData = disassembleToken(currentToken); // 拆掉了
+  const decodedData = disassembleToken(currentToken); // 拆包
   const username = currentToken != null ? decodedData.iss : null;
-  if ((currentAccount() !== null && username !== currentAccount().name)
-    || decodedData === null || (decodedData.exp < new Date().getTime())) {
+  if (currentAccount() !== null && ( currentToken === null
+    || decodedData === null || decodedData.exp < new Date().getTime()
+    || username !== currentAccount().name )) {
     console.log('Retake authtoken...');
     API.authSignature().then(({ username, publicKey, signature }) => {
       console.info('API.authSignature :', username, publicKey, signature);
-      // 2. 将取得的签名和用户名和公钥post到服务端 获得accessToken并保存
-      auth({ username, publicKey, sign: signature }, (error, response, body) => {
-        if (!error) {
-          // 3. save accessToken
-          const accessToken = body;
-          console.info('got the access token :', accessToken);
-          setAccessToken(accessToken);
-        }
-        // 有沒有成功取得都得 cb()
-        cb();
-      });
-    }, (err) => {
-      console.warn('取得用戶簽名出錯', err);
-      cb();
+      // 2. 将取得的签名和用户名和公钥post到服务端 获得accessToken
+      return auth({ username, publicKey, sign: signature });
+    }).then((response) => {
+      if (response.status === 200) {
+        // 3. save accessToken
+        const accessToken = response.data;
+        console.info('got the access token :', accessToken);
+        setAccessToken(accessToken);
+        resolve(accessToken);
+      } else {
+        throw new Error('auth 出錯');
+      }
+    }).catch((err) => {
+      console.warn('取得用戶新簽名出錯', err);
+      reject();
     });
-  } else cb();
-};
+  } else resolve(currentToken);
+});
 
 /*
  * /<summary>
  * /后端访问入口，当遇到401的时候直接重新拿token
  * /</summary>
 */
-const accessBackend = async (options, callback = () => {}) => {
+const accessBackend = (options, callback = () => {}) => {
   // 更新 Auth
-  getAuth(() => { // 爱的魔力转圈圈，回调回调到你不分黑夜白天
-    // 在这里套了7层callback，callback里面的async语法是无效的，所以一层一层套出来
+  getAuth().then((accessToken) => {
+    options.headers['x-access-token'] = accessToken;
+  }).catch(() => {
+    console.warn('將使用 access token 存檔');
     options.headers['x-access-token'] = getCurrentAccessToken();
+  }).then(() => { // Do this whatever happened before
     console.info(
       'b4 request send, options :', options,
       ', x-access-token :', options.headers['x-access-token'],
     );
-    request(options, callback); // 都是 request 害的，改用 axios 沒這些破事
+    axios(options).then((response) => callback({ response }))
+      .catch((error) => {
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+          callback({ error, response: error.response });
+          return ;
+        } else if (error.request) {
+          // The request was made but no response was received
+          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+          // http.ClientRequest in node.js
+          console.log(error.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log('Error', error.message);
+        }
+        console.log(error.config);
+        callback({ error });
+      });
   });
 };
-
-// dataType 不知道哪來的參數，只有 jQuery ajax() 才有 datatype lol
 
 // Be used in User page.
 const Follow = ({ username, followed }, callback) => accessBackend({
   method: 'POST',
-  uri: `${apiServer}/follow`,
-  rejectUnauthorized: false,
-  json: true,
+  url: `${apiServer}/follow`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
-  form: { username, followed },
+  httpsAgent,
+  data: { username, followed },
 }, callback);
 
 // Be used in User page.
 const Unfollow = ({ username, followed }, callback) => accessBackend({
   method: 'POST',
-  uri: `${apiServer}/unfollow`,
-  rejectUnauthorized: false,
-  json: true,
+  url: `${apiServer}/unfollow`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
-  form: { username, followed },
+  httpsAgent,
+  data: { username, followed },
 }, callback);
 
 // Be used in User page.
 const getUser = ({ username }) => axios.get(`${apiServer}/user/${username}`);
 const oldgetUser = ({ username }, callback) => accessBackend({
   method: 'GET',
-  uri: `${apiServer}/user/${username}`,
-  rejectUnauthorized: false,
-  json: true,
+  url: `${apiServer}/user/${username}`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
-  form: {},
+  httpsAgent,
+  data: {},
 }, callback);
 
 // Be used in User page.
 const setUserName = ({ newname }, callback) => accessBackend({
   method: 'POST',
-  uri: `${apiServer}/user/setNickname`,
-  rejectUnauthorized: false,
-  json: true,
+  url: `${apiServer}/user/setNickname`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
-  form: {
-    nickname: newname,
-  },
+  httpsAgent,
+  data: { nickname: newname },
 }, callback);
 
 // Be used in User page.
 const getFansList = ({ username }, callback) => accessBackend({
   method: 'GET',
-  uri: `${apiServer}/fans?user=${username}`,
-  rejectUnauthorized: false,
-  json: true,
+  url: `${apiServer}/fans?user=${username}`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
-  form: {
-  },
+  httpsAgent,
 }, callback);
 
 // Be used in User page.
 const getFollowList = ({ username }, callback) => accessBackend({
   method: 'GET',
-  uri: `${apiServer}/follows?user=${username}`,
-  rejectUnauthorized: false,
-  json: true,
+  url: `${apiServer}/follows?user=${username}`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
-  form: {
-  },
+  httpsAgent,
 }, callback);
 
 const sendComment = ({ comment, signId }, callback) => accessBackend({
   method: 'POST',
-  uri: `${apiServer}/post/comment`,
-  rejectUnauthorized: false,
-  json: true,
+  url: `${apiServer}/post/comment`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
+  httpsAgent,
   // eslint-disable-next-line camelcase
-  form: { comment, sign_id: signId },
+  data: { comment, sign_id: signId },
 }, callback);
 
 // be Used in Article Page
 const addReadAmount = ({ articlehash }, callback) => accessBackend({
   method: 'POST',
-  uri: `${apiServer}/post/show/${articlehash}`,
-  rejectUnauthorized: false,
-  json: true,
+  url: `${apiServer}/post/show/${articlehash}`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
-  form: {},
+  httpsAgent,
 }, callback);
 
 // 删除文章
 const delArticle = ({ id }, callback) => accessBackend({
   method: 'DELETE',
-  uri: `${apiServer}/post/${id}`,
-  rejectUnauthorized: false,
-  json: true,
+  url: `${apiServer}/post/${id}`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
-  form: {},
+  httpsAgent,
 }, callback);
 
 // 设置头像
 const uploadAvatar = ({ avatar }, callback) => accessBackend({
   method: 'POST',
-  uri: `${apiServer}/user/setAvatar`,
-  rejectUnauthorized: false,
-  json: true,
+  url: `${apiServer}/user/setAvatar`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
-  form: { avatar },
+  httpsAgent,
+  data: { avatar },
 }, callback);
 
 // 获取头像
