@@ -98,7 +98,7 @@ export default {
           return;
         }
       }
-      if (this.currentUsername === null) {
+      if (this.currentUsername === null || this.currentUsername.length > 12) {
         try {
           await this.loginScatterAsync();
         } catch (error) {

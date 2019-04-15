@@ -38,7 +38,7 @@ export default {
   name: 'BaseHeader',
   props: ['pageinfo'],
   computed: {
-    ...mapState(['currentUsername', 'isScatterConnected', 'isScatterLoggingIn']),
+    ...mapState(['isScatterConnected', 'isScatterLoggingIn']),
   },
   // 依據 https://blog.csdn.net/m0_37728716/article/details/81289317
   // 從 crearted 改成 mounted
@@ -60,7 +60,7 @@ export default {
   },
   watch: {
     isScatterConnected(newState) {
-      const { pageinfo, currentUsername, isScatterLoggingIn } = this;
+      const { pageinfo, isScatterLoggingIn } = this;
       if (pageinfo.needLogin !== undefined && pageinfo.needLogin) {
         if (newState && !isScatterLoggingIn) {
           console.log('auto log in');
