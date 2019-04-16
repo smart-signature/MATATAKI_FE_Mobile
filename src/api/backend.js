@@ -31,12 +31,18 @@ const getArticleInfo = hash => axios.get(`${apiServer}/post/${hash}`);
 // 获取单篇文章的信息 （短链接 issues）
 const getArticleInHash = id => axios.get(`${apiServer}/p/${id}`);
 
+// 获取支持过的文章列表 page user
+const getArticleSupports = params => axios.get(
+  `${apiServer}/supports`, { params },
+);
+
 /**
  * 获取按照发表时间文章排行榜 https://github.com/smart-signature/smart-signature-backend/blob/master/doc.md#获取文章列表
  * @param {number} page： 第 {page} 页
+ * @param {string} author 作者
  */
-const getArticlesList = ({ page = 1 }) => axios.get(
-  `${apiServer}/posts`, { params: { page } },
+const getArticlesList = params => axios.get(
+  `${apiServer}/posts`, { params },
 );
 
 /**
@@ -286,5 +292,5 @@ export {
   Follow, Unfollow, getUser, setUserName, getFansList, getFollowList, oldgetUser,
   getSharesbysignid, addReadAmount, sendComment,
   getArticles, getArticlesBySupportAmountRanking, getArticlesBySupportTimesRanking, getAssets,
-  disassembleToken, delArticle, uploadAvatar, getAvatarImage,
+  disassembleToken, delArticle, uploadAvatar, getAvatarImage, getArticleSupports,
 };
