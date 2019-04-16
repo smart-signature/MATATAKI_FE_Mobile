@@ -22,7 +22,7 @@
             {{ fissionNum }}
           </div>
           <div class="fission-num-slider">
-            <vue-slider class="fission-num-slider2" :min="1" :max="5" :interval="0.1" v-model="fissionNum"></vue-slider>
+            <vue-slider class="fission-num-slider2" :min="1" :max="2" :interval="0.1" v-model="fissionNum"></vue-slider>
           </div>
         </FormItem>
       </Form>
