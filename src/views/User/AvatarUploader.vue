@@ -97,9 +97,10 @@ export default {
       });
     },
     async uploadAvatar(avatar) {
-      await uploadAvatar({ avatar }, (err, res) => {
-        if (res.statusCode !== 201 || err) {
-          console.log(err);
+      await uploadAvatar({ avatar }, ({ error, response }) => {
+        console.log(error, response);
+        if (response.status !== 201 || error) {
+          console.log(error);
           this.$Message.error('设置头像错误请重试');
           return;
         }
@@ -127,6 +128,11 @@ export default {
       }
     },
     inputFilter(newFile, oldFile, prevent) {
+      // 限定最大字节
+      if (newFile.size >= 0 && newFile.size > 1024 * 1024 * 2) {
+        this.$Message.error('图片太大请换一张');
+        return prevent();
+      }
       if (newFile && !oldFile) {
         if (!/\.(gif|jpg|jpeg|png|webp)$/i.test(newFile.name)) {
           this.alert('Your choice is not a picture');
@@ -178,5 +184,9 @@ export default {
   font-size: 40px;
   color: #fff;
   padding: 0;
+}
+/* modal 层级太高 */
+.za-modal {
+  z-index: 99;
 }
 </style>
