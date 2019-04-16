@@ -110,9 +110,10 @@ export default {
       this.refreshing = true;
       this.loading = true;
       if (this.activeNameSwipe == '关注') {
-        getFollowList({ username: this.username }, async (error, response, body) => {
-          const list = body.list || [];
-          if (response.statusCode != 200) {
+        getFollowList({ username: this.username }, async ({ error, response }) => {
+          console.log(error, response);
+          const list = response.data.list || [];
+          if (response.status !== 200) {
             this.$Notice.error({
               title: '获取失败',
             });
@@ -128,9 +129,9 @@ export default {
           this.loading = false;
         });
       } else {
-        getFansList({ username: this.username }, async (error, response, body) => {
-          const list = body.list || [];
-          if (response.statusCode != 200) {
+        getFansList({ username: this.username }, async ({ error, response }) => {
+          const list = response.data.list || [];
+          if (response.status !== 200) {
             this.$Notice.error({
               title: '获取失败',
             });
