@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <router-view/>
+    <BackTop :bottom="80"></BackTop>
   </div>
 </template>
 
@@ -89,15 +90,7 @@ body {
   text-align: center;
   font-family: PingFang SC, STHeitiSC-Light, Helvetica-Light, arial, sans-serif;
 }
-.card {
-  margin: 10px;
-  text-align: left;
-  /* max-width: 335px; */
-  background: rgba(255, 255, 255, 1);
-  box-shadow: 0px 2px 5px 3px rgba(233, 233, 233, 0.5);
-  border-radius: 8px;
-  padding: 18px;
-}
+
 /* #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

@@ -117,12 +117,4 @@ export default {
 .article {
   text-align: left;
 }
-.card {
-  margin: 5px;
-}
-.loading-stat {
-  margin: 10px;
-  color: #999;
-  font-size: 13px;
-}
 </style>
