@@ -145,11 +145,11 @@ export default {
         if (code !== 200) failed('1st step : send post to ipfs failed');
         editArticle({
           signId, author, title, hash, fissionFactor, signature,
-        })
-          .then((response) => {
-            if (response.data.msg !== 'success') failed('失败请重试');
-            success(hash);
-          }, (error) => { failed(error); });
+        }, (res) => {
+          const { response } = res;
+          if (response.data.msg !== 'success') failed('失败请重试');
+          success(hash);
+        });
       } catch (error) {
         failed(error);
       }
