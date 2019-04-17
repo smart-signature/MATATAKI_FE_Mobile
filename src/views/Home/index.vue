@@ -10,8 +10,8 @@
       <!-- <Button class='publish' @click='$router.push({name: 'Publish'})'>
         <za-icon class='publish-icon' type='add'/>1
       </Button>-->
-      <div class='add' @click.stop='addShow=!addShow'>
-        <Button class='publish'>
+      <div class='add'>
+        <Button class='publish' @click.stop='addShow=!addShow'>
           <za-icon class='publish-icon' type='add' />
         </Button>
         <div v-show='addShow' class='add-menu'>
@@ -41,7 +41,7 @@
         <h1 class='title'>-SmartSignature-</h1>
         <h2 class='subtitle'>赞赏好文，分享有收益！</h2>
         <Button class="title-button" @click="$router.push({name: 'About'})">投资攻略</Button>
-        <a href="https://t.me/smartsignature_io">
+        <a href="https://t.me/smartsignature_io" target="_blank">
           <Button class="title-button">加入电报</Button>
         </a>
       </div>

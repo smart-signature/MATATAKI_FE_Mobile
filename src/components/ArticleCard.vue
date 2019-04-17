@@ -2,7 +2,7 @@
   <div class="card">
     <router-link :to="{ name: 'Article', params: { hash }}">
         <h2 class="title">{{article.title}}</h2>
-        <p class="avatar">{{article.author}}</p>
+        <p class="avatar">{{article.nickname || article.author}}</p>
         <p class="date">
           {{friendlyDate}} · <img src="../assets/img/icon_amount.png" alt="eos" />
           {{article.value/ 10000}}
@@ -58,6 +58,10 @@ export default {
   color: #4D4D4D;
   font-size:16px;
   font-family:PingFangSC-Regular;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 18px;
   font-weight:400;
   letter-spacing:1px;
 }
