@@ -70,7 +70,7 @@ const getContractActions = () => {
   // };
   // const aaa = await axios.post(options)
   //  .then('response', (response) => {
-  //    console.log(response.statusCode); // 200
+  //    console.log(response.statusCode); // 200    // 如果还需要用这段代码 请给statusCode 替换为 status
   //  }) {
   //
   // return JSON.parse(response.data) ;

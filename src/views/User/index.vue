@@ -173,9 +173,8 @@ export default {
         return;
       }
       setUserName({ newname: this.newname }, ({ error, response }) => {
-        console.log(error);
         if (!error) {
-          if (response.statusCode === 500) {
+          if (response.status === 500) {
             this.$Notice.error({
               title: '昵称已存在，请重新设置',
             });
@@ -186,7 +185,7 @@ export default {
           }
           this.nickname = this.newname;
         } else {
-          console.log(response.statusCode);
+          console.log(response.status);
           this.$Notice.error({
             title: '保存失败',
           });
