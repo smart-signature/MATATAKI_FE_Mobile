@@ -25,9 +25,6 @@ export default {
       return this.article.hash;
     },
   },
-  created() {
-    console.log(this.article);
-  },
 };
 </script>
 
