@@ -40,10 +40,16 @@
       <div class='titles'>
         <h1 class='title'>-SmartSignature-</h1>
         <h2 class='subtitle'>赞赏好文，分享有收益！</h2>
-        <Button @click="$router.push({name: 'About'})" style='margin-top: 17px;'>投资攻略</Button>
+        <Button class="title-button" @click="$router.push({name: 'About'})">投资攻略</Button>
+        <a href="https://t.me/smartsignature_io">
+          <Button class="title-button">加入电报</Button>
+        </a>
       </div>
+
+      <MyBanner/>
+      <div class="head-bc"></div>
+
     </div>
-    <MyBanner/>
     <ArticleRankings ref='ArticleRankings'/>
   </div>
 </template>
@@ -119,19 +125,26 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="less">
 .head {
-  background: #478970;
   color: #fff;
   padding-top: 10px;
-  height: 205px;
   text-align: center;
   align-items: center;
   vertical-align: middle;
-  margin-bottom: 28px;
+  position: relative;
+  &-bc{
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 55px;
+    left: 0;
+    z-index: -1;
+    background: #478970;
+  }
 }
 .titles {
-  margin: 63px auto;
+  margin: 40px auto 24px;
 }
 h1.title {
   font-size: 32px;
@@ -151,6 +164,10 @@ h2.subtitle {
   line-height: 18px;
   letter-spacing: 1px;
   margin-top: 6px;
+  margin: 6px 0 18px;
+}
+.title-button {
+  margin: 0 4px;
 }
 button.publish {
   background: #478970;
