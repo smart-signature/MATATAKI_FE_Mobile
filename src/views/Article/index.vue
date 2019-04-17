@@ -11,7 +11,7 @@
         </router-link>
       </div>
       <div slot="title">Smart Signature</div>
-      <div slot="right" @click="opr = !opr">
+      <div slot="right" @click="opr = !opr" v-if="isMe">
         <img src="@/assets/more.svg" alt="more">
       </div>
     </za-nav-bar>
@@ -559,6 +559,7 @@ export default {
   text-align: left;
   max-width: 750px;
   margin: 0 auto;
+  position: relative;
 }
 .ta .tac .iframe_wrap,
 .ta .tac iframe,
@@ -743,6 +744,18 @@ export default {
 }
 .dropdown-item:hover {
     background-color: #2f2f2f;
+}
+a:link {
+    color: black;
+}
+a:visited {
+    color: black;
+}
+a:hover a:active {
+    color: black;
+}
+a:active {
+    color: black;
 }
 </style>
 <style src="./index.css" scoped></style>

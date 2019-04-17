@@ -4,7 +4,7 @@
       <div slot="left">
         <za-icon theme="primary" type="arrow-left" @click="$router.go(-1)"></za-icon>
       </div>
-      <div slot="title">发布文章</div>
+      <div slot="title">编辑文章</div>
       <div slot="right">
         <Button type="text" size="large" @click="sendThePost">确认修改</Button>
       </div>
@@ -92,14 +92,14 @@ export default {
       this.signature = d2.sign;
     },
     async sendThePost() {
-      /*if (!this.isScatterConnected) {
+      if (!this.isScatterConnected) {
         try {
           await this.connectScatterAsync();
         } catch (error) {
           this.$Message.error('钱包需打开并解锁');
           return;
         }
-      }*/
+      }
       if (this.currentUsername === null) {
         try {
           await this.loginScatterAsync();
@@ -131,7 +131,7 @@ export default {
       const success = async (hash) => {
         this.$Notice.success({
           title: '发送成功',
-          desc: '3秒后跳转到你发表的文章',
+          desc: '3秒后跳转到你编辑的文章',
         });
 
         setTimeout(() => { jumpToArticle(hash); }, 3 * 1000);
