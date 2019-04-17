@@ -17,7 +17,7 @@
         </Col>
         <Col span="14">
           <div class="texts">
-            <p v-if="!editing" class="username">{{nickname == "" ? username : nickname}}<br /></p>
+            <p v-if="!editing" class="username">{{nickname == "" ? username : nickname}}</p>
             <za-input v-if="editing" class="userinput" ref='inputFirst'
               v-model='newname'></za-input>
             <p class="userstatus">
@@ -327,6 +327,9 @@ a {
   font-size: 22px;
   font-weight: bolder;
   text-align: left;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 .userinput{
   font-size: 22px;
@@ -340,7 +343,6 @@ a {
   text-align: left;
 }
 .texts{
-  float: left;
   padding-left: 11px;
 }
 .rightbutton{
