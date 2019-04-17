@@ -95,5 +95,11 @@ export default new Router({
       props: true,
       component: () => import(/* webpackChunkName: "easter-egg" */ './views/EasterEgg.vue'),
     },
+    {
+      path: '/edit/:id',
+      name: 'Edit',
+      props: true,
+      component: () => import(/* webpackChunkName: "easter-egg" */ './views/Article/Edit.vue'),
+    },
   ],
 });
