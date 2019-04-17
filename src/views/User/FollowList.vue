@@ -73,12 +73,12 @@ export default {
       avatarloading: true,
       tabs: [
         {
-          label: '粉丝',
-          listname: 'fanslist',
-        },
-        {
           label: '关注',
           listname: 'followlist',
+        },
+        {
+          label: '粉丝',
+          listname: 'fanslist',
         },
       ],
     };
