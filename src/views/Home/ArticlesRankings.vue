@@ -53,8 +53,7 @@ export default {
 <style scoped>
 .articles {
   /* background: rgba(240, 240, 240, 1); */
-  margin-top: -100px;
-  padding-top: 100px;
+  margin-top: 10px;
   font-weight: bold;
 }
 .article {

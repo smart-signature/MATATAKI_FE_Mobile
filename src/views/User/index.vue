@@ -316,9 +316,9 @@ a {
   box-shadow: 0px 2px 5px 3px rgba(233, 233, 233, 0.5);
   background-color: #ffffff;
   padding: 20px;
-  margin: 20px;
+  margin: 16px 20px;
   /* display: inline-block; */
-  border-radius: 8px;
+  border-radius: 3px;
   height: 99px;
 }
 .userpic{
@@ -353,19 +353,16 @@ a {
 }
 .topcard{
   background-color: #ffffff;
-  margin-left: 20px;
-  margin-right: 20px;
-  margin-bottom: 20px;
+  margin: 16px 20px;
   padding: 10px;
   background: rgba(255, 255, 255, 1);
   box-shadow: 0px 2px 5px 3px rgba(233, 233, 233, 0.5);
-  border-radius: 8px;
+  border-radius: 3px;
 }
 .centercard{
   background-color: #ffffff;
-  margin-left: 20px;
-  margin-right: 20px;
-  margin-bottom: 20px;
+   margin: 16px 20px;
+
   background: rgba(255, 255, 255, 1);
   box-shadow: 0px 2px 5px 3px rgba(233, 233, 233, 0.5);
   border-radius: 8px;

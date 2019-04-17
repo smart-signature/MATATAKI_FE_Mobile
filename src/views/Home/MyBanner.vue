@@ -142,16 +142,13 @@ export default {
 
 <style scoped>
 .my-banner {
-  margin: auto;
-  margin-top: -32px;
+  margin: 0 auto;
   text-align: center;
   max-width: 335px;
-  max-height: 76px;
-  /* margin: -32px 20px 0 20px; */
   padding: 8px;
   background: rgba(255, 255, 255, 1);
-  box-shadow: 0px 5px 5px 0px rgba(213, 213, 213, 0.5);
-  border-radius: 4px;
+  box-shadow: 0px 0 10px 0px rgba(0,0,0, 0.1);
+  border-radius: 3px;
 }
 
 .my-stat {
@@ -164,8 +161,8 @@ export default {
 .round_icon {
   float: left;
 
-  width: 38px;
-  height: 38px;
+  width: 46px;
+  height: 46px;
   display: flex;
   border-radius: 50%;
   align-items: center;
@@ -181,12 +178,15 @@ button.my-user-page {
   color: #999999;
 }
 .username {
-  margin-left: 12px;
-  font-size: 12px;
+  margin-left: 54px;
+  font-size: 14px;
   font-weight: bold;
+  font-family:PingFangSC-Regular;
+  color:rgba(0,0,0,1);
+  letter-spacing:1px;
 }
 .my-balance {
-  margin-left: 12px;
+  margin-left: 54px;
   font-size: 16px;
   font-family: PingFang SC, STHeitiSC-Light, Helvetica-Light, arial, sans-serif;
   font-weight: 600;
