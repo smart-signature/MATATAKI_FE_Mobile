@@ -286,11 +286,55 @@ const getAvatarImage = hash => axios.get(`${apiServer}/image/${hash}`, {
   responseType: 'arraybuffer',
 });
 
+// 编辑
+const editArticle = ({
+  signId, author, title, hash, fissionFactor,
+}) => API.getSignature(author, hash).then(({ publicKey, signature, username }) => accessBackend({
+  method: 'POST',
+  url: `${apiServer}/edit`,
+  headers: { Accept: '*/*' },
+  httpsAgent,
+  data: {
+    signId,
+    author,
+    fissionFactor,
+    hash,
+    publickey: publicKey,
+    sign: signature,
+    title,
+    username,
+  },
+}));
+
+/* const editArticle = ({
+  signId, author, title, hash, publicKey, signature, username, fissionFactor,
+}, callback) => {
+  // const url = `http://localhost:7001/publish`;
+  const accessToken = localStorage.getItem('ACCESS_TOKEN');
+  request.post({
+    uri: `${apiServer}/edit`,
+    rejectUnauthorized: false,
+    json: true,
+    headers: { Accept: '*!/!*', 'x-access-token': accessToken },
+    dataType: 'json',
+    form: {
+      signId,
+      author,
+      fissionFactor,
+      hash,
+      publickey: publicKey,
+      username,
+      title,
+      sign: signature,
+    },
+  }, callback);
+}; */
+
 export {
   publishArticle, auth, getAuth,
   getArticleData, getArticlesList, getArticleInfo, getArticleInHash,
   Follow, Unfollow, getUser, setUserName, getFansList, getFollowList, oldgetUser,
   getSharesbysignid, addReadAmount, sendComment,
   getArticles, getArticlesBySupportAmountRanking, getArticlesBySupportTimesRanking, getAssets,
-  disassembleToken, delArticle, uploadAvatar, getAvatarImage, getArticleSupports,
+  disassembleToken, delArticle, uploadAvatar, getAvatarImage, getArticleSupports, editArticle,
 };

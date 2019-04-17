@@ -1,9 +1,26 @@
 /* eslint-disable no-shadow */
 <template>
   <div class="article">
-    <BaseHeader
+    <!--<BaseHeader
       :pageinfo="{ left:'notback', title: 'Smart Signature', rightPage: 'home',
-      needLogin: true, }"/>
+      needLogin: true, }"/>-->
+    <za-nav-bar>
+      <div slot="left">
+        <router-link :to="{ name: 'home' }">
+            <Icon type="ios-home" :size="24" />
+        </router-link>
+      </div>
+      <div slot="title">Smart Signature</div>
+      <div slot="right" @click="opr = !opr">
+        <img src="@/assets/more.svg" alt="more">
+      </div>
+    </za-nav-bar>
+    <transition name="fade" mode="out-in">
+      <div class="dropdown" v-show="opr">
+        <div class="dropdown-item" @click="$router.push({name: 'Edit', params: { id: article.id }, query: { hash: hash }})">编辑</div>
+        <div class="dropdown-item" @click="delArticleButton">删除</div>
+      </div>
+    </transition>
     <header class="ta_header">
       <h1 dir="auto">{{post.title}}</h1>
       <p>
@@ -15,9 +32,9 @@
         {{articleCreateTime}} | {{article.read || 0}}阅读
       </p>
       <p class="break_all">IPFS Hash: {{article.hash}}</p>
-      <Button v-if="isMe"
+      <!--<Button v-if="isMe"
         @click="delArticleButton" class="del-acticle" type="error"
-        icon="md-close" size="small">删除</Button>
+        icon="md-close" size="small">删除</Button>-->
       <p><br/><a data-pocket-label="pocket" data-pocket-count="horizontal" class="pocket-btn" data-lang="en"></a></p>
     </header>
     <mavon-editor v-show="false" style="display: none;"/>
@@ -228,6 +245,7 @@ export default {
     visible3: false,
     clipboard: null,
     articleCreateTime: ' 月 日',
+    opr: false
   }),
   head: {
     title() {
@@ -710,6 +728,21 @@ export default {
     color: #fff;
     line-height: 46px;
     border-radius: 3px;
+}
+.dropdown {
+    position: absolute;
+    background-color: #434343;
+    color: #fff;
+    top: 40px;
+    right: 16px;
+    cursor: pointer;
+}
+.dropdown-item {
+    padding: 8px 20px;
+    font-size: 14px;
+}
+.dropdown-item:hover {
+    background-color: #2f2f2f;
 }
 </style>
 <style src="./index.css" scoped></style>
