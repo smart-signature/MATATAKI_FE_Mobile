@@ -289,7 +289,7 @@ const getAvatarImage = hash => axios.get(`${apiServer}/image/${hash}`, {
 // 编辑
 const editArticle = ({
   signId, author, title, hash, fissionFactor,
-}) => API.getSignature(author, hash).then(({ publicKey, signature, username }) => accessBackend({
+}, callback) => API.getSignature(author, hash).then(({ publicKey, signature, username }) => accessBackend({
   method: 'POST',
   url: `${apiServer}/edit`,
   headers: { Accept: '*/*' },
@@ -304,7 +304,7 @@ const editArticle = ({
     title,
     username,
   },
-}));
+}, callback));
 
 /* const editArticle = ({
   signId, author, title, hash, publicKey, signature, username, fissionFactor,
