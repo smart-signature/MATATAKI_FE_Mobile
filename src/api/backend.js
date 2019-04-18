@@ -46,13 +46,13 @@ const getArticlesList = params => axios.get(
 );
 
 /**
- * 转移到了组建内
+ * 转移到了组件内
  * 获取打赏金额文章排行榜 https://github.com/smart-signature/smart-signature-backend/blob/master/doc.md#获取打赏金额排行榜
  * @param {number} page： 第 {page} 页
  */
 
 /**
- * 转移到了组建内
+ * 转移到了组件内
  * 获取打赏次数文章排行榜 https://github.com/smart-signature/smart-signature-backend/blob/master/doc.md#获取打赏次数排行榜
  * @param {number} page： 第 {page} 页
  */
