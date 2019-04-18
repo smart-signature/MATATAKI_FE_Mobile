@@ -1,5 +1,5 @@
 import axios from 'axios';
-import request from 'request';
+import https from 'https';
 import API from '@/api/scatter';
 import { Base64 } from 'js-base64';
 import { currentEOSAccount as currentAccount } from './scatter';
@@ -7,93 +7,59 @@ import { currentEOSAccount as currentAccount } from './scatter';
 // https://github.com/axios/axios
 
 export const apiServer = process.env.VUE_APP_API;
-
-// eslint-disable-next-line no-unused-vars
-const oldpublishArticle = ({
-  author, title, hash, publicKey, signature, username, fissionFactor,
-}, callback) => request.post({
-  uri: `${apiServer}/publish`,
-  rejectUnauthorized: false,
-  json: true,
-  headers: { Accept: '*/*' },
-  dataType: 'json',
-  form: {
-    author,
-    fissionFactor,
-    hash,
-    publickey: publicKey,
-    username,
-    title,
-    sign: signature,
-  },
-}, callback);
+const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
 const publishArticle = ({
-  author, title, hash, publicKey, signature, username, fissionFactor,
-}) => axios.post(
-  `${apiServer}/publish`,
-  {
-    author,
-    fissionFactor,
-    hash,
-    publickey: publicKey,
-    username,
-    title,
-    sign: signature,
-  },
-);
+  author, title, hash, fissionFactor,
+}) => API.getSignature(author, hash).then(({ publicKey, signature, username }) => {
+  console.log('签名成功后调', publicKey, signature, username);
+  // if (err) failed('2nd step failed');
+  return axios.post(`${apiServer}/publish`,
+    {
+      author,
+      fissionFactor,
+      hash,
+      publickey: publicKey,
+      sign: signature,
+      title,
+      username,
+    });
+});
 
 const getArticleData = hash => axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
 const getArticleInfo = hash => axios.get(`${apiServer}/post/${hash}`);
 // 获取单篇文章的信息 （短链接 issues）
 const getArticleInHash = id => axios.get(`${apiServer}/p/${id}`);
 
+// 获取支持过的文章列表 page user
+const getArticleSupports = params => axios.get(
+  `${apiServer}/supports`, { params },
+);
+
 /**
  * 获取按照发表时间文章排行榜 https://github.com/smart-signature/smart-signature-backend/blob/master/doc.md#获取文章列表
  * @param {number} page： 第 {page} 页
+ * @param {string} author 作者
  */
-const getArticlesList = ({ page = 1 }) => axios.get(
-  `${apiServer}/posts`, { params: { page } },
+const getArticlesList = params => axios.get(
+  `${apiServer}/posts`, { params },
 );
 
 /**
+ * 转移到了组件内
  * 获取打赏金额文章排行榜 https://github.com/smart-signature/smart-signature-backend/blob/master/doc.md#获取打赏金额排行榜
  * @param {number} page： 第 {page} 页
  */
-const getArticlesBySupportAmountRanking = ({ page = 1 }) => axios.get(
-  `${apiServer}/getSupportAmountRanking`, { params: { page } },
-);
-
 
 /**
+ * 转移到了组件内
  * 获取打赏次数文章排行榜 https://github.com/smart-signature/smart-signature-backend/blob/master/doc.md#获取打赏次数排行榜
  * @param {number} page： 第 {page} 页
  */
-const getArticlesBySupportTimesRanking = ({ page = 1 }) => axios.get(
-  `${apiServer}/getSupportTimesRanking`, { params: { page } },
-);
-
-export const OrderBy = {
-  TimeLine: '最新发布',
-  SupportAmount: '最多赞赏金额',
-  RecentSupport: '最新赞赏',
-  SupportTimes: '最多赞赏次数',
-};
-
-const getArticles = ({ page = 1, orderBy = OrderBy.TimeLine }) => {
-  switch (orderBy) {
-    case OrderBy.SupportAmount:
-      return getArticlesBySupportAmountRanking({ page });
-    case OrderBy.SupportTimes:
-      return getArticlesBySupportTimesRanking({ page });
-    default:
-      return getArticlesList({ page }); // orderBy 不符合以上 0case 就默认就给你按照时间排序了
-  }
-};
 
 
 // 获取资产明细
-const getAssets = (user, page) => axios.get(`${apiServer}/assets`, { params: { user,page } });
+const getAssets = (user, page) => axios.get(`${apiServer}/assets`, { params: { user, page } });
 
 /*
   amount: 2000
@@ -104,179 +70,247 @@ const getAssets = (user, page) => axios.get(`${apiServer}/assets`, { params: { u
 */
 const getSharesbysignid = (signid, page) => axios.get(`${apiServer}/shares?signid=${signid}&page=${page}`);
 
-const getCurrentAccessToken = () => {
-  const accessToken = localStorage.getItem('ACCESS_TOKEN');
-  return accessToken;
-};
+const getCurrentAccessToken = () => localStorage.getItem('ACCESS_TOKEN');
 const setAccessToken = token => localStorage.setItem('ACCESS_TOKEN', token);
-// localStorage.setItem('ACCESS_TOKEN', accessToken);
 
 // /<summary>
 // /根据用户名，公钥，客户端签名请求access_token
 // /</summary>
-const auth = ({ username, publicKey, sign }, callback) => request.post({
-  uri: `${apiServer}/auth`,
-  rejectUnauthorized: false,
-  json: true,
-  headers: { Accept: '*/*', Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==' },
-  dataType: 'json',
-  form: {
-    username,
-    publickey: publicKey,
-    sign,
-  },
-}, callback);
+const auth = ({ username, publicKey, sign }) => axios.post(`${apiServer}/auth`,
+  { username, publickey: publicKey, sign },
+  {
+    headers: {
+      Accept: '*/*',
+      Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==',
+    },
+    // https://github.com/axios/axios/issues/535
+    httpsAgent,
+  });
 
+// /<summary>
+// /拆token，返回json对象
+// /</summary>
+const disassembleToken = (token) => {
+  if (token === undefined || token === null) { return { iss: null, exp: 0 }; }
+  let tokenPayload = token.substring(token.indexOf('.') + 1);
+  tokenPayload = tokenPayload.substring(0, tokenPayload.indexOf('.'));
+  return JSON.parse(Base64.decode(tokenPayload));
+  // {iss:用户名，exp：token的过期时间，用ticks的形式表示}
+};
 // /<summary>
 // /装载access_token
 // /</summary>
-const getAuth = async (cb) => {
+const getAuth = () => new Promise((resolve, reject) => {
   const currentToken = getCurrentAccessToken();
-  let decodedData = null;
-  if (currentToken != null) {
-    let tokenPayload = currentToken.substring(currentToken.indexOf('.') + 1);
-    tokenPayload = tokenPayload.substring(0, tokenPayload.indexOf('.'));
-    decodedData = JSON.parse(Base64.decode(tokenPayload));
-  }
+  const decodedData = disassembleToken(currentToken); // 拆包
   const username = currentToken != null ? decodedData.iss : null;
-  // iss:用户名,exp:token过期时间。
-  // 1. 拆包token抓出时间,和用户并判断这个时间和系统时间，用户和当前登录用户的差异
-  if (username !== currentAccount().name
-    || decodedData === null || (decodedData.exp < new Date().getTime())) {
+  if (currentAccount() !== null && (currentToken === null
+    || decodedData === null || decodedData.exp < new Date().getTime()
+    || username !== currentAccount().name)) {
     console.log('Retake authtoken...');
-    API.authSignature(({ username, publicKey, signature }) => {
+    API.authSignature().then(({ username, publicKey, signature }) => {
       console.info('API.authSignature :', username, publicKey, signature);
-      // 2. 将取得的签名和用户名和公钥post到服务端 获得accessToken并保存
-      auth({ username, publicKey, sign: signature }, (error, response, body) => {
-        if (!error) {
-          // 3. save accessToken
-          const accessToken = body;
-          console.info('got the access token :', accessToken);
-          setAccessToken(accessToken);
-          cb();
-        }
-      });
+      // 2. 将取得的签名和用户名和公钥post到服务端 获得accessToken
+      return auth({ username, publicKey, sign: signature });
+    }).then((response) => {
+      if (response.status === 200) {
+        // 3. save accessToken
+        const accessToken = response.data;
+        console.info('got the access token :', accessToken);
+        setAccessToken(accessToken);
+        resolve(accessToken);
+      } else {
+        throw new Error('auth 出錯');
+      }
+    }).catch((err) => {
+      console.warn('取得用戶新簽名出錯', err);
+      reject();
     });
-  } else cb();
-};
+  } else resolve(currentToken);
+});
 
 /*
  * /<summary>
  * /后端访问入口，当遇到401的时候直接重新拿token
  * /</summary>
 */
-const accessBackend = async (options, callback = () => {}) => {
+const accessBackend = (options, callback = () => {}) => {
   // 更新 Auth
-  getAuth(() => { // 爱的魔力转圈圈，回调回调到你不分黑夜白天
-    // 在这里套了7层callback，callback里面的async语法是无效的，所以一层一层套出来
+  getAuth().then((accessToken) => {
+    options.headers['x-access-token'] = accessToken;
+  }).catch(() => {
+    console.warn('將使用 access token 存檔');
     options.headers['x-access-token'] = getCurrentAccessToken();
-    console.info('b4 request send, Options :', options);
-    console.info('b4 request send, x-access-token :', options.headers['x-access-token']);
-    request(options, callback); // 都是 request 害的，改用 axios 沒這些破事
+  }).then(() => { // Do this whatever happened before
+    console.info(
+      'b4 request send, options :', options,
+      ', x-access-token :', options.headers['x-access-token'],
+    );
+    axios(options).then(response => callback({ response }))
+      .catch((error) => {
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+          callback({ error, response: error.response });
+          return;
+        } if (error.request) {
+          // The request was made but no response was received
+          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+          // http.ClientRequest in node.js
+          console.log(error.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log('Error', error.message);
+        }
+        console.log(error.config);
+        callback({ error });
+      });
   });
 };
-
-// dataType 不知道哪來的參數，只有 jQuery ajax() 才有 datatype lol
 
 // Be used in User page.
 const Follow = ({ username, followed }, callback) => accessBackend({
   method: 'POST',
-  uri: `${apiServer}/follow`,
-  rejectUnauthorized: false,
-  json: true,
+  url: `${apiServer}/follow`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
-  form: { username, followed },
+  httpsAgent,
+  data: { username, followed },
 }, callback);
 
 // Be used in User page.
 const Unfollow = ({ username, followed }, callback) => accessBackend({
   method: 'POST',
-  uri: `${apiServer}/unfollow`,
-  rejectUnauthorized: false,
-  json: true,
+  url: `${apiServer}/unfollow`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
-  form: { username, followed },
+  httpsAgent,
+  data: { username, followed },
 }, callback);
 
 // Be used in User page.
 const getUser = ({ username }) => axios.get(`${apiServer}/user/${username}`);
 const oldgetUser = ({ username }, callback) => accessBackend({
   method: 'GET',
-  uri: `${apiServer}/user/${username}`,
-  rejectUnauthorized: false,
-  json: true,
+  url: `${apiServer}/user/${username}`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
-  form: {},
+  httpsAgent,
+  data: {},
 }, callback);
 
 // Be used in User page.
 const setUserName = ({ newname }, callback) => accessBackend({
   method: 'POST',
-  uri: `${apiServer}/user/setNickname`,
-  rejectUnauthorized: false,
-  json: true,
+  url: `${apiServer}/user/setNickname`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
-  form: {
-    nickname: newname,
-  },
+  httpsAgent,
+  data: { nickname: newname },
 }, callback);
 
 // Be used in User page.
 const getFansList = ({ username }, callback) => accessBackend({
-  method: 'POST',
-  uri: `${apiServer}/follows`,
-  rejectUnauthorized: false,
-  json: true,
+  method: 'GET',
+  url: `${apiServer}/fans?user=${username}`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
-  form: {
-    username,
-  },
+  httpsAgent,
 }, callback);
 
 // Be used in User page.
 const getFollowList = ({ username }, callback) => accessBackend({
-  method: 'POST',
-  uri: `${apiServer}/fans`,
-  rejectUnauthorized: false,
-  json: true,
+  method: 'GET',
+  url: `${apiServer}/follows?user=${username}`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
-  form: {
-    username,
-  },
+  httpsAgent,
 }, callback);
 
-// eslint-disable-next-line camelcase
-const sendComment = ({ comment, sign_id }, callback) => accessBackend({
+const sendComment = ({ comment, signId }, callback) => accessBackend({
   method: 'POST',
-  uri: `${apiServer}/post/comment`,
-  rejectUnauthorized: false,
-  json: true,
+  url: `${apiServer}/post/comment`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
-  form: { comment, sign_id },
+  httpsAgent,
+  // eslint-disable-next-line camelcase
+  data: { comment, sign_id: signId },
 }, callback);
 
 // be Used in Article Page
 const addReadAmount = ({ articlehash }, callback) => accessBackend({
   method: 'POST',
-  uri: `${apiServer}/post/show/${articlehash}`,
-  rejectUnauthorized: false,
-  json: true,
+  url: `${apiServer}/post/show/${articlehash}`,
   headers: { Accept: '*/*' },
-  dataType: 'json',
-  form: {},
+  httpsAgent,
 }, callback);
+
+// 删除文章
+const delArticle = ({ id }, callback) => accessBackend({
+  method: 'DELETE',
+  url: `${apiServer}/post/${id}`,
+  headers: { Accept: '*/*' },
+  httpsAgent,
+}, callback);
+
+// 设置头像
+const uploadAvatar = ({ avatar }, callback) => accessBackend({
+  method: 'POST',
+  url: `${apiServer}/user/setAvatar`,
+  headers: { Accept: '*/*' },
+  httpsAgent,
+  data: { avatar },
+}, callback);
+
+// 获取头像
+const getAvatarImage = hash => axios.get(`${apiServer}/image/${hash}`, {
+  responseType: 'arraybuffer',
+});
+
+// 编辑
+const editArticle = ({
+  signId, author, title, hash, fissionFactor,
+}, callback) => API.getSignature(author, hash).then(({ publicKey, signature, username }) => accessBackend({
+  method: 'POST',
+  url: `${apiServer}/edit`,
+  headers: { Accept: '*/*' },
+  httpsAgent,
+  data: {
+    signId,
+    author,
+    fissionFactor,
+    hash,
+    publickey: publicKey,
+    sign: signature,
+    title,
+    username,
+  },
+}, callback));
+
+/* const editArticle = ({
+  signId, author, title, hash, publicKey, signature, username, fissionFactor,
+}, callback) => {
+  // const url = `http://localhost:7001/publish`;
+  const accessToken = localStorage.getItem('ACCESS_TOKEN');
+  request.post({
+    uri: `${apiServer}/edit`,
+    rejectUnauthorized: false,
+    json: true,
+    headers: { Accept: '*!/!*', 'x-access-token': accessToken },
+    dataType: 'json',
+    form: {
+      signId,
+      author,
+      fissionFactor,
+      hash,
+      publickey: publicKey,
+      username,
+      title,
+      sign: signature,
+    },
+  }, callback);
+}; */
 
 export {
   publishArticle, auth, getAuth,
   getArticleData, getArticlesList, getArticleInfo, getArticleInHash,
   Follow, Unfollow, getUser, setUserName, getFansList, getFollowList, oldgetUser,
-  getSharesbysignid, addReadAmount, sendComment,
-  getArticles, getArticlesBySupportAmountRanking, getArticlesBySupportTimesRanking,getAssets
+  getSharesbysignid, addReadAmount, sendComment, getAssets,
+  disassembleToken, delArticle, uploadAvatar, getAvatarImage, getArticleSupports, editArticle,
 };

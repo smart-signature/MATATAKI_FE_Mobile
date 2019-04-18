@@ -1,47 +1,39 @@
 <template>
   <div>
-    <div v-if="tabs.length >= 2">
-      <div class="articles">
-        <za-tabs v-model="activeNameSwipe" @change="handleClick">
-          <za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label">
-            <za-pull :on-refresh="refresh" :refreshing="refreshing" :loading="loading">
-              <div class="content">
-                <ArticleCard :article="a" v-for="a in articles" :key="a.id"/>
-              </div>
-            </za-pull>
-          </za-tab-pane>
-        </za-tabs>
-      </div>
+    <div v-if="tabsData.length >= 2">
+      <za-tabs v-model="activeIndex" @change="changeTabs">
+        <za-tab-pane :label="item.label" :name="index" v-for="(item, index) in tabsData" :key="index">
+          <PullComponents
+            :params="item.params"
+            :apiUrl="item.apiUrl"
+            :activeIndex="activeIndex"
+            :nowIndex="index"
+            @getListData="getListDataTab"
+            >
+              <ArticleCard :article="item" v-for="(item, index) in item.articles" :key="index"/>
+          </PullComponents>
+        </za-tab-pane>
+      </za-tabs>
     </div>
     <div v-else>
-      <div class="articles">
-        <div :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label">
-          <za-pull :on-refresh="refresh" :refreshing="refreshing" :loading="loading">
-            <div class="content">
-              <div v-if="articles.length == 0" style="padding: 20px">
-                无文章
-              </div>
-              <ArticleCard :article="a" v-for="a in articles" :key="a.id"/>
-            </div>
-          </za-pull>
-        </div>
+        <PullComponents
+        :params="params"
+        :apiUrl="apiUrl"
+        @getListData="getListData"
+        >
+          <ArticleCard :article="item" v-for="(item, index) in articles" :key="index"/>
+      </PullComponents>
       </div>
-    </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
+import PullComponents from '@/components/PullComponents.vue';
 import { ArticleCard } from '@/components/';
-import { apiServer } from '@/api/backend';
-import { mapGetters } from 'vuex';
 
 export const TimeLine = '最新发布';
 export default {
-  name: 'home',
-  computed: {
-    ...mapGetters(['currentUsername']),
-  },
+  name: 'ArticlesList',
   props: {
     listtype: {
       type: String,
@@ -51,100 +43,61 @@ export default {
       type: String,
     },
   },
-  components: { ArticleCard },
+  components: {
+    ArticleCard,
+    PullComponents,
+  },
   created() {
-    // alert("this is " + this.listtype + " list")
-    this.getArticlesList();
     if (this.listtype === 'others') {
-      this.tabs = [
-        { label: '文章列表' },
-        { label: '他赞赏的' },
+      this.tabsData = [
+        {
+          label: '文章列表',
+          params: {
+            author: this.username,
+          },
+          apiUrl: 'posts',
+          articles: [],
+        },
+        {
+          label: '他赞赏的',
+          params: {
+            user: this.username,
+          },
+          apiUrl: 'supports',
+          articles: [],
+        },
       ];
-      this.activeNameSwipe = '文章列表';
     } else if (this.listtype === 'original') {
-      this.activeNameSwipe = TimeLine;
+      this.apiUrl = 'posts';
+      this.params = {
+        author: this.username,
+      };
     } else if (this.listtype === 'reward') {
-      this.activeNameSwipe = TimeLine;
+      this.apiUrl = 'supports';
+      this.params = {
+        user: this.username,
+      };
     }
   },
   methods: {
-    async getArticlesList() {
-      // const articles = 'https://smartsignature.azurewebsites.net/api/article';
-      // const articles = 'http://localhost:7001/posts';
-      if (this.listtype === 'original') {
-        const articles = `${apiServer}/posts?author=${this.username}`; // new backend api url
-        const { data } = await axios.get(articles);
-        this.articles = data;
-        // do something...
-      } else if (this.listtype === 'reward') {
-        const articles = `${apiServer}/supports?user=${this.username}`; // new backend api url
-        const { data } = await axios.get(articles);
-        this.articles = data;
-      } else if (this.listtype === 'others') {
-        if (this.tabid === 0) {
-          const articles = `${apiServer}/posts?author=${this.username}`; // new backend api url
-          const { data } = await axios.get(articles);
-          this.articles = data;
-        } else {
-          const articles = `${apiServer}/supports?user=${this.username}`; // new backend api url
-          const { data } = await axios.get(articles);
-          this.articles = data;
-        }
-      }
-      this.loading = false;
+    changeTabs(tab) {
+      this.activeIndex = tab.name;
     },
-    // eslint-disable-next-line no-unused-vars
-    handleClick(tab, event) { // event 未使用
-      if (this.listtype === 'others') {
-        // eslint-disable-next-line no-plusplus
-        for (let index = 0; index < this.tabs.length; index++) { // eslint 不允许一元运算符++ --
-          if (this.tabs[index].label === tab.name) {
-            this.tabid = index;
-            break;
-          }
-        }
-      }
-      this.articles = [];
-      this.refresh();
+    getListData(res) {
+      this.articles = res.data;
     },
-    async refresh() {
-      this.refreshing = true;
-      this.loading = true;
-      await this.getArticlesList();
-      this.refreshing = false;
-      this.loading = false;
+    getListDataTab(res) {
+      this.tabsData[res.index].articles = res.data;
     },
   },
   data() {
     return {
-      refreshing: false,
-      loading: false,
+      tabsData: [],
+      params: {},
+      apiUrl: '',
       articles: [],
-      activeNameSwipe: TimeLine,
-      selectedLabelDefault: TimeLine,
-      tabs: [
-        {
-          label: TimeLine,
-        },
-      ],
-      tabid: 0,
+      activeIndex: 0,
     };
   },
 };
 </script>
-
-<style scoped>
-.articles {
-  /* background: rgba(240, 240, 240, 1); */
-  font-weight: bold;
-}
-.userarticles{
-  margin-top: -45px;
-}
-.article {
-  text-align: left;
-}
-.card {
-  margin: 5px;
-}
-</style>

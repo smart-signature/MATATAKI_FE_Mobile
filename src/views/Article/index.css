@@ -10,6 +10,7 @@
   color:#4E4E4E;
   letter-spacing:1px;
   margin: 16px 0 18px;
+  word-break: break-all;
 }
 .ta_header p {
   font-size:14px;
@@ -34,6 +35,15 @@
   padding: 0;
   margin: 0 6px 0 0;
 }
+
+.del-acticle {
+  position: fixed;
+  top: 8px;
+  right: 8px;
+}
+
+
+/* markdown */
 .markdown-body {
   margin: 8px 24px;
   padding: 0 0 38px 0;

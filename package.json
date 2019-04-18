@@ -11,8 +11,10 @@
     "fix-netlify-cs-routing": "echo '/*    /index.html   200' >> ./dist/_redirects"
   },
   "dependencies": {
+    "@clampy-js/vue-clampy": "^1.0.6",
     "axios": "^0.18.0",
     "clipboard": "^2.0.4",
+    "cropperjs": "^1.5.1",
     "cyanobridge": "0.0.9",
     "eosjs": "16.0.9",
     "iview": "^3.3.0",
@@ -23,12 +25,14 @@
     "moment": "^2.24.0",
     "qs": "^6.6.0",
     "register-service-worker": "^1.5.2",
-    "request": "^2.88.0",
     "scatterjs-core": "^2.7.16",
     "scatterjs-plugin-eosjs": "^1.5.1",
     "vue": "^2.6.6",
+    "vue-head": "^2.1.1",
     "vue-infinite-scroll": "^2.0.2",
     "vue-router": "^3.0.1",
+    "vue-slider-component": "^3.0.26",
+    "vue-upload-component": "^2.8.20",
     "vuex": "^3.0.1",
     "wangeditor": "^3.1.1",
     "zarm-vue": "2.0.0-alpha.8"
@@ -43,6 +47,8 @@
     "babel-plugin-component": "^1.1.1",
     "eslint": "^5.8.0",
     "eslint-plugin-vue": "^5.0.0",
+    "less": "^3.9.0",
+    "less-loader": "^4.1.0",
     "vue-cli-plugin-iview": "^1.0.6",
     "vue-template-compiler": "^2.5.21"
   }

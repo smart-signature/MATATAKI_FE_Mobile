@@ -1,7 +1,7 @@
 <template>
   <div class="assetpage">
     <BaseHeader
-      :pageinfo="{ left: 'back', title: `${username}的资产明细`, rightPage: 'home',
+      :pageinfo="{ left: 'back', title: `${newName.length >= 12 ?  `${newName.substring(0,12)}...` : newName}的资产明细`, rightPage: 'home',
                    needLogin: false, }"/>
     <div class="topcard">
       <div class="toptext1">待提现</div><br/>
@@ -61,12 +61,9 @@
 
 <script>
 import { AssetCard } from '@/components/';
-import { getAssets } from '@/api';
+import { getAssets, getUser } from '@/api';
 import {
-  CONTRACT_ACCOUNT,
-  getPlayerBills, getPlayerIncome,
-  getSignInfo,
-  withdraw,
+  CONTRACT_ACCOUNT, getPlayerIncome, withdraw,
 } from '@/api/signature';
 import { isEmptyArray } from '@/common/methods';
 
@@ -76,6 +73,7 @@ export default {
   components: { AssetCard },
   created() {
     this.getPlayerTotalIncome(this.username);
+    this.getUser(this.username);
     // this.sharecost = this.getPlayerTotalCost();
   },
   data() {
@@ -99,6 +97,7 @@ export default {
       visible: false,
       isTheEndOfTheScroll: false,
       busy: false,
+      newName: '',
     };
   },
   computed: {
@@ -187,7 +186,7 @@ export default {
             this.assetsRewards.totalSignIncome = data.totalSignIncome > 0 ? `+${data.totalSignIncome / 10000}` : data.totalSignIncome / 10000;
             this.assetsRewards.totalShareIncome = data.totalShareIncome > 0 ? `+${data.totalShareIncome / 10000}` : data.totalShareIncome / 10000;
             this.assetsRewards.totalShareExpenses = data.totalShareExpenses > 0 ? `+${data.totalShareExpenses / 10000}` : data.totalShareExpenses / 10000;
-            if (data.history.length >= 0 && data.history.length < 20) this.isTheEndOfTheScroll = true; // 数据请求完
+            if (data.history.length >= 0 && data.history.length < 20) { this.isTheEndOfTheScroll = true; } // 数据请求完
             else this.page += 1;
             const historyFilter = data.history.filter(i => i.amount !== 0); // 过滤金额为0
             if (isEmptyArr) this.assets.length = 0; // 清空数组
@@ -201,6 +200,14 @@ export default {
           this.busy = false;
           this.isTheEndOfTheScroll = true;
         });
+    },
+    async getUser(username) {
+      await getUser({ username }).then(({ data }) => {
+        this.newName = data.nickname || data.username;
+      }).catch((err) => {
+        this.newName = this.username;
+        console.log(err);
+      });
     },
   },
 };

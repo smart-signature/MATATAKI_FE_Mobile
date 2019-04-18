@@ -1,18 +1,18 @@
 <template>
   <div class="new-post">
-    <BaseHeader :pageinfo="{ title: `发布文章`, rightPage: 'home',
+    <BaseHeader :pageinfo="{ title: `编辑文章`, rightPage: 'home',
                    needLogin: false, }">
       <div slot="right">
-        <Button type="text" size="large" @click="sendThePost">确认发布</Button>
+        <Button type="text" size="large" @click="sendThePost">确认修改</Button>
       </div>
     </BaseHeader>
     <!--<za-nav-bar>
       <div slot="left">
         <za-icon theme="primary" type="arrow-left" @click="$router.go(-1)"></za-icon>
       </div>
-      <div slot="title">发布文章</div>
+      <div slot="title">编辑文章</div>
       <div slot="right">
-        <Button type="text" size="large" @click="sendThePost">确认发布</Button>
+        <Button type="text" size="large" @click="sendThePost">确认修改</Button>
       </div>
     </za-nav-bar>-->
     <div class="edit-content">
@@ -20,16 +20,8 @@
         <FormItem label="标题">
           <Input v-model="title" placeholder="请输入你的文章标题..." size="large" clearable />
         </FormItem>
-        <!-- <FormItem label="署名">
-          <Input v-model="author" placeholder="写上你的大名..." clearable />
-        </FormItem> -->
         <FormItem label="裂变系数">
-          <div class="fission-num-Input">
-            {{ fissionNum }}
-          </div>
-          <div class="fission-num-slider">
-            <vue-slider class="fission-num-slider2" :min="1" :max="2" :interval="0.1" v-model="fissionNum"></vue-slider>
-          </div>
+          <Input v-model="fissionNum" placeholder="" size="large" clearable disabled/>
         </FormItem>
       </Form>
     </div>
@@ -44,18 +36,15 @@ import { mapGetters, mapActions, mapState } from 'vuex';
 import { sendPost } from '@/api/ipfs';
 import { mavonEditor } from 'mavon-editor';
 import {
-  defaultImagesUploader, publishArticle,
-} from '../api';
+  defaultImagesUploader, editArticle, getArticleInfo, getArticleData,
+} from '@/api';
 
 import 'mavon-editor/dist/css/index.css'; // editor css
-import VueSlider from 'vue-slider-component';
-import 'vue-slider-component/theme/default.css';
 
 export default {
-  name: 'NewPost',
+  name: 'Edit',
   components: {
     'mavon-editor': mavonEditor,
-    VueSlider,
   },
   created() {
     if (this.currentUsername) {
@@ -67,9 +56,12 @@ export default {
         this.loginScatterAsync();
       });
   },
-  mounted() {
+  async mounted() {
     this.resize();
     this.setToolBar(this.screenWidth);
+    this.signId = this.$route.params.id;
+    this.hash = this.$route.query.hash;
+    this.setArticleData();
   },
   data: () => ({
     title: '',
@@ -79,16 +71,32 @@ export default {
     toolbars: {},
     screenWidth: document.body.clientWidth,
     fissionNum: 2,
+    signId: null,
+    signature: '',
   }),
   computed: {
     ...mapGetters(['currentUsername']),
     ...mapState(['isScatterConnected', 'scatterAccount']),
+    isMe() {
+      return this.author === this.currentUsername;
+    },
   },
   methods: {
     ...mapActions([
       'suggestNetworkAsync',
       'loginScatterAsync',
     ]),
+    async setArticleData() {
+      const articleData = await getArticleData(this.hash);
+      const articleInfo = await getArticleInfo(this.hash);
+      const d1 = articleData.data.data;
+      const d2 = articleInfo.data;
+      this.title = d1.title;
+      this.markdownData = d1.content;
+      this.author = d1.author;
+      this.fissionNum = d2.fission_factor / 1000;
+      this.signature = d2.sign;
+    },
     async sendThePost() {
       if (!this.isScatterConnected) {
         try {
@@ -115,7 +123,7 @@ export default {
       if (this.fissionFactor === '') this.fissionFactor = 2;
 
       const {
-        title, markdownData, currentUsername, fissionFactor,
+        title, markdownData, currentUsername, fissionFactor, signature, signId,
       } = this;
       const author = currentUsername;
       const content = markdownData;
@@ -129,7 +137,7 @@ export default {
       const success = async (hash) => {
         this.$Notice.success({
           title: '发送成功',
-          desc: '3秒后跳转到你发表的文章',
+          desc: '3秒后跳转到你编辑的文章',
         });
 
         setTimeout(() => { jumpToArticle(hash); }, 3 * 1000);
@@ -141,13 +149,13 @@ export default {
         });
         const { code, hash } = data;
         if (code !== 200) failed('1st step : send post to ipfs failed');
-        publishArticle({
-          author, title, hash, fissionFactor,
-        })
-          .then((response) => {
-            if (response.data.msg !== 'success') failed('失败请重试');
-            success(hash);
-          }, (error) => { failed(error); });
+        editArticle({
+          signId, author, title, hash, fissionFactor, signature,
+        }, (res) => {
+          const { response } = res;
+          if (response.data.msg !== 'success') failed('失败请重试');
+          success(hash);
+        });
       } catch (error) {
         failed(error);
       }

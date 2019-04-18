@@ -2,21 +2,26 @@
   <div class="BaseHeader">
     <za-nav-bar>
       <div slot="left">
-          <za-icon v-if="pageinfo.left==='back'"
+        <img src="@/assets/back.svg" alt="home" @click="goBack" class="back-icon">
+        <router-link :to="{ name: 'home' }">
+          <img src="@/assets/home.svg" alt="home" class="home-icon">
+        </router-link>
+          <!--<za-icon v-if="pageinfo.left==='back'"
             theme="primary" type="arrow-left" @click="goBack"/>
           <router-link v-else :to="{ name: 'home' }">
             <Icon type="ios-home" :size="24" />
-          </router-link>
+          </router-link>-->
       </div>
-      <div slot="title">
+      <div slot="title" style="font-size: 16px;">
         <!--<router-link tag="my-Header" :to="{ name: 'home' }">-->
           {{pageinfo.title}}
         <!--</router-link>-->
       </div>
       <div slot="right">
-        <router-link :to="{ name: pageinfo.rightPage }">
-          <!--<Icon type="ios-share-alt" :size="24" />-->
-        </router-link>
+        <slot name="right"></slot>
+        <!--<router-link :to="{ name: pageinfo.rightPage }">
+          &lt;!&ndash;<Icon type="ios-share-alt" :size="24" />&ndash;&gt;
+        </router-link>-->
       </div>
     </za-nav-bar>
 </div>
@@ -86,5 +91,12 @@ a:hover a:active {
 }
 a:active {
   color: black;
+}
+.back-icon {
+  width: 16px;
+}
+.home-icon {
+  width: 22px;
+  margin-left: 14px;
 }
 </style>

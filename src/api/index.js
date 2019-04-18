@@ -11,6 +11,7 @@ export {
   getArticleData, getArticleInfo, getArticleInHash,
   Follow, Unfollow, getUser, oldgetUser,
   setUserName, getFansList, getFollowList,
-  getSharesbysignid, sendComment, addReadAmount,getAssets
+  getSharesbysignid, sendComment, addReadAmount, getAssets,
+  delArticle, uploadAvatar, getAvatarImage, getArticleSupports, editArticle,
 } from './backend';
 export { defaultImagesUploader };

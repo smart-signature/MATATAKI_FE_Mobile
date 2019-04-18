@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import VueHead from 'vue-head';
 import upperFirst from 'lodash/upperFirst';
 import camelCase from 'lodash/camelCase';
 import clipboard from 'clipboard';
@@ -14,8 +15,11 @@ import './registerServiceWorker';
 // eslint-disable-next-line import/extensions
 import './plugins/iview.js';
 
+// global css
+import '@/assets/css/index.css';
+
 [
-  infiniteScroll,
+  VueHead, infiniteScroll,
 ].map(c => Vue.use(c));
 
 // 基础组件的自动化全局注册
