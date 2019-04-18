@@ -46,39 +46,16 @@ const getArticlesList = params => axios.get(
 );
 
 /**
+ * 转移到了组件内
  * 获取打赏金额文章排行榜 https://github.com/smart-signature/smart-signature-backend/blob/master/doc.md#获取打赏金额排行榜
  * @param {number} page： 第 {page} 页
  */
-const getArticlesBySupportAmountRanking = ({ page = 1 }) => axios.get(
-  `${apiServer}/getSupportAmountRanking`, { params: { page } },
-);
-
 
 /**
+ * 转移到了组件内
  * 获取打赏次数文章排行榜 https://github.com/smart-signature/smart-signature-backend/blob/master/doc.md#获取打赏次数排行榜
  * @param {number} page： 第 {page} 页
  */
-const getArticlesBySupportTimesRanking = ({ page = 1 }) => axios.get(
-  `${apiServer}/getSupportTimesRanking`, { params: { page } },
-);
-
-export const OrderBy = {
-  TimeLine: '最新发布',
-  SupportAmount: '最多赞赏金额',
-  RecentSupport: '最新赞赏',
-  SupportTimes: '最多赞赏次数',
-};
-
-const getArticles = ({ page = 1, orderBy = OrderBy.TimeLine }) => {
-  switch (orderBy) {
-    case OrderBy.SupportAmount:
-      return getArticlesBySupportAmountRanking({ page });
-    case OrderBy.SupportTimes:
-      return getArticlesBySupportTimesRanking({ page });
-    default:
-      return getArticlesList({ page }); // orderBy 不符合以上 0case 就默认就给你按照时间排序了
-  }
-};
 
 
 // 获取资产明细
@@ -334,7 +311,6 @@ export {
   publishArticle, auth, getAuth,
   getArticleData, getArticlesList, getArticleInfo, getArticleInHash,
   Follow, Unfollow, getUser, setUserName, getFansList, getFollowList, oldgetUser,
-  getSharesbysignid, addReadAmount, sendComment,
-  getArticles, getArticlesBySupportAmountRanking, getArticlesBySupportTimesRanking, getAssets,
+  getSharesbysignid, addReadAmount, sendComment, getAssets,
   disassembleToken, delArticle, uploadAvatar, getAvatarImage, getArticleSupports, editArticle,
 };
