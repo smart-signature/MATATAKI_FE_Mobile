@@ -1,11 +1,14 @@
 <template>
   <div class="original">
-    <za-nav-bar>
+    <BaseHeader
+            :pageinfo="{ left: 'back', title: userTitle, rightPage: 'home',
+                   needLogin: false, }"/>
+    <!--<za-nav-bar>
       <div slot="left">
         <za-icon theme="primary" type="arrow-left" @click="goBack"></za-icon>
       </div>
       <div slot="title">{{userTitle}}</div>
-    </za-nav-bar>
+    </za-nav-bar>-->
     <ArticlesList :listtype="'original'" :username='username' ref='ArticlesList'/>
   </div>
 </template>

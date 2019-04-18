@@ -1,6 +1,12 @@
 <template>
   <div class="new-post">
-    <za-nav-bar>
+    <BaseHeader :pageinfo="{ title: `编辑文章`, rightPage: 'home',
+                   needLogin: false, }">
+      <div slot="right">
+        <Button type="text" size="large" @click="sendThePost">确认修改</Button>
+      </div>
+    </BaseHeader>
+    <!--<za-nav-bar>
       <div slot="left">
         <za-icon theme="primary" type="arrow-left" @click="$router.go(-1)"></za-icon>
       </div>
@@ -8,7 +14,7 @@
       <div slot="right">
         <Button type="text" size="large" @click="sendThePost">确认修改</Button>
       </div>
-    </za-nav-bar>
+    </za-nav-bar>-->
     <div class="edit-content">
       <Form label-position="left" :label-width="100">
         <FormItem label="标题">

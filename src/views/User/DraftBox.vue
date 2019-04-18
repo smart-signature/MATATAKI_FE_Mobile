@@ -1,11 +1,14 @@
 <template>
   <div class="draftbox">
-    <za-nav-bar>
+    <BaseHeader
+            :pageinfo="{ left: 'back', title: '草稿箱', rightPage: 'home',
+                   needLogin: false, }"/>
+    <!--<za-nav-bar>
       <div slot="left">
         <za-icon theme="primary" type="arrow-left" @click="goBack"></za-icon>
       </div>
       <div slot="title">草稿箱</div>
-    </za-nav-bar>
+    </za-nav-bar>-->
     <div v-if="draftlist.length == 0" style="margin-top:20px;">
       无记录
     </div>
