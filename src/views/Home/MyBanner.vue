@@ -184,6 +184,9 @@ button.my-user-page {
   font-family:PingFangSC-Regular;
   color:rgba(0,0,0,1);
   letter-spacing:1px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 .my-balance {
   margin-left: 54px;

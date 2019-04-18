@@ -17,7 +17,7 @@
         </Col>
         <Col span="14">
           <div class="texts">
-            <p v-if="!editing" class="username">{{nickname == "" ? username : nickname}}<br /></p>
+            <p v-if="!editing" class="username">{{nickname == "" ? username : nickname}}</p>
             <za-input v-if="editing" class="userinput" ref='inputFirst'
               v-model='newname'></za-input>
             <p class="userstatus">
@@ -173,9 +173,8 @@ export default {
         return;
       }
       setUserName({ newname: this.newname }, ({ error, response }) => {
-        console.log(error);
         if (!error) {
-          if (response.statusCode === 500) {
+          if (response.status === 500) {
             this.$Notice.error({
               title: '昵称已存在，请重新设置',
             });
@@ -186,7 +185,7 @@ export default {
           }
           this.nickname = this.newname;
         } else {
-          console.log(response.statusCode);
+          console.log(response.status);
           this.$Notice.error({
             title: '保存失败',
           });
@@ -328,6 +327,9 @@ a {
   font-size: 22px;
   font-weight: bolder;
   text-align: left;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 .userinput{
   font-size: 22px;
@@ -341,7 +343,6 @@ a {
   text-align: left;
 }
 .texts{
-  float: left;
   padding-left: 11px;
 }
 .rightbutton{

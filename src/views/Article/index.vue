@@ -245,7 +245,7 @@ export default {
     visible3: false,
     clipboard: null,
     articleCreateTime: ' 月 日',
-    opr: false
+    opr: false,
   }),
   head: {
     title() {
@@ -401,17 +401,17 @@ export default {
         try {
           console.log('Send comment...');
           await sendComment({ comment, signId },
-            (error, response) => {
-              console.log(response.statusCode);
-              if (response.statusCode !== 200 || error) throw new Error(error); // wrong way
+            ({ error, response }) => {
+              console.log(error, response);
+              if (response.status !== 200 || error) throw new Error(error); // wrong way
             });
         } catch (error) { // wrong way
           console.error(error);
           console.log('Resend comment...');
           await sendComment({ comment, signId },
-            (error, response) => {
-              console.log(response.statusCode);
-              if (response.statusCode !== 200 || error) throw new Error(error); // wrong way
+            ({ error, response }) => {
+              console.log(error, response);
+              if (response.status !== 200 || error) throw new Error(error); // wrong way
             });
         }
         this.isSupported = RewardStatus.REWARDED;
@@ -530,8 +530,9 @@ export default {
       const delArticleFunc = async (id) => {
         if (!id) return fail('没有id');
         await delArticle({ id },
-          (err, res) => {
-            if (res.statusCode !== 200 || err || !res) return fail(err);
+          ({ error, response }) => {
+            console.log(error, response);
+            if (response.status !== 200 || error || !response) return fail(error);
             delSuccess();
           });
       };

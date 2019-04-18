@@ -1,7 +1,7 @@
 <template>
   <div class="assetpage">
     <BaseHeader
-      :pageinfo="{ left: 'back', title: `${username}的资产明细`, rightPage: 'home',
+      :pageinfo="{ left: 'back', title: `${newName.length >= 12 ?  `${newName.substring(0,12)}...` : newName}的资产明细`, rightPage: 'home',
                    needLogin: false, }"/>
     <div class="topcard">
       <div class="toptext1">待提现</div><br/>
@@ -61,7 +61,7 @@
 
 <script>
 import { AssetCard } from '@/components/';
-import { getAssets } from '@/api';
+import { getAssets, getUser } from '@/api';
 import {
   CONTRACT_ACCOUNT, getPlayerIncome, withdraw,
 } from '@/api/signature';
@@ -73,6 +73,7 @@ export default {
   components: { AssetCard },
   created() {
     this.getPlayerTotalIncome(this.username);
+    this.getUser(this.username);
     // this.sharecost = this.getPlayerTotalCost();
   },
   data() {
@@ -96,6 +97,7 @@ export default {
       visible: false,
       isTheEndOfTheScroll: false,
       busy: false,
+      newName: '',
     };
   },
   computed: {
@@ -198,6 +200,14 @@ export default {
           this.busy = false;
           this.isTheEndOfTheScroll = true;
         });
+    },
+    async getUser(username) {
+      await getUser({ username }).then(({ data }) => {
+        this.newName = data.nickname || data.username;
+      }).catch((err) => {
+        this.newName = this.username;
+        console.log(err);
+      });
     },
   },
 };
