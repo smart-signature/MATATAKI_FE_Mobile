@@ -97,6 +97,6 @@ a:active {
 }
 .home-icon {
   width: 22px;
-  margin-left: 5px;
+  margin-left: 14px;
 }
 </style>
