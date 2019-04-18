@@ -99,6 +99,7 @@ export default {
       console.log(tab, event);
     },
     async getAvatarImage(hash) {
+      if (!hash) return this.avatar = require('../../assets/logo.png');
       await getAvatarImage(hash)
         .then((response) => {
           this.avatar = `data:image/png;base64,${btoa(
