@@ -10,6 +10,7 @@
   color:#4E4E4E;
   letter-spacing:1px;
   margin: 16px 0 18px;
+  word-break: break-all;
 }
 .ta_header p {
   font-size:14px;
