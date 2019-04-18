@@ -5,7 +5,8 @@
         <div v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
           <slot></slot>
         </div>
-        <p class="loading-stat">{{displayAboutScroll}}</p>
+        <p v-if="articles.length !== 0" class="loading-stat">{{displayAboutScroll}}</p>
+        <p v-else class="loading-stat">{{loadingText.noArticles}}</p>
     </za-pull>
 </template>
 
@@ -22,6 +23,7 @@ export default {
       default: () => ({
         start: '😄 勤奋地加载更多精彩内容 😄',
         end: '🎉 哇，你真勤奋，所有文章已经加载完了～ 🎉',
+        noArticles: '无文章',
       }),
     },
     // 传进来的params
@@ -36,12 +38,12 @@ export default {
     // 当前聚焦索引
     activeIndex: {
       type: Number,
-      required: true,
+      default: 0,
     },
     // 当前索引
     nowIndex: {
       type: Number,
-      required: true,
+      default: 0,
     },
   },
   computed: {
@@ -100,7 +102,6 @@ export default {
       page: 1, // 分页
       busy: false, // 是否加载完成
       articles: [],
-      list: [],
       isTheEndOfTheScroll: false,
       activeIndexCopy: this.activeIndex,
     };
