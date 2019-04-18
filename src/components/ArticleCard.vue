@@ -19,7 +19,7 @@ export default {
   props: ['article'],
   computed: {
     friendlyDate() {
-      return moment(this.article.create_time).format('MMMDo h:mm');
+      return moment(this.article.create_time).format('MMMDo HH:mm');
     },
     hash() {
       return this.article.hash;
