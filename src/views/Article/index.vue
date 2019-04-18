@@ -1,10 +1,13 @@
 /* eslint-disable no-shadow */
 <template>
   <div class="article">
-    <!--<BaseHeader
-      :pageinfo="{ left:'notback', title: 'Smart Signature', rightPage: 'home',
-      needLogin: true, }"/>-->
-    <za-nav-bar>
+    <BaseHeader :pageinfo="{ title: `Smart Signature`, rightPage: 'home',
+                   needLogin: false, }">
+      <div slot="right" @click="opr = !opr" v-if="isMe">
+        <img src="@/assets/more.svg" alt="more">
+      </div>
+    </BaseHeader>
+    <!--<za-nav-bar>
       <div slot="left">
         <router-link :to="{ name: 'home' }">
             <Icon type="ios-home" :size="24" />
@@ -14,7 +17,7 @@
       <div slot="right" @click="opr = !opr" v-if="isMe">
         <img src="@/assets/more.svg" alt="more">
       </div>
-    </za-nav-bar>
+    </za-nav-bar>-->
     <transition name="fade" mode="out-in">
       <div class="dropdown" v-show="opr">
         <div class="dropdown-item" @click="$router.push({name: 'Edit', params: { id: article.id }, query: { hash: hash }})">编辑</div>

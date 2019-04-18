@@ -1,11 +1,13 @@
 <template>
   <div class="user">
-    <za-nav-bar>
+    <BaseHeader :pageinfo="{ title: `个人主页`, rightPage: 'home',
+                   needLogin: false, }" />
+    <!--<za-nav-bar>
       <div slot="left">
         <za-icon theme="primary" type="arrow-left" @click="goBack"></za-icon>
       </div>
       <div slot="title" v-if="isMe">个人主页</div>
-    </za-nav-bar>
+    </za-nav-bar>-->
     <div class="usercard" >
       <!-- /img/camera.png -->
       <img style="position:absolute; z-index:1;left:40px;" width="50px"

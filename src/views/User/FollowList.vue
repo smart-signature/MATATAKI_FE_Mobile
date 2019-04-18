@@ -1,11 +1,14 @@
 <template>
   <div class="draftbox">
-    <za-nav-bar>
+    <BaseHeader
+            :pageinfo="{ left: 'back', title: '关注列表', rightPage: 'home',
+                   needLogin: false, }"/>
+    <!--<za-nav-bar>
       <div slot="left">
         <za-icon theme="primary" type="arrow-left" @click="goBack"></za-icon>
       </div>
       <div slot="title">关注列表</div>
-    </za-nav-bar>
+    </za-nav-bar>-->
     <za-tabs v-model="activeNameSwipe" @change="handleClick">
       <za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label">
         <div v-if="lists[tab.listname].length == 0" style="margin-top:20px;">无记录</div>

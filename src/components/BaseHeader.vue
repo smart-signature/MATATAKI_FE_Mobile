@@ -12,15 +12,16 @@
             <Icon type="ios-home" :size="24" />
           </router-link>-->
       </div>
-      <div slot="title">
+      <div slot="title" style="font-size: 16px;">
         <!--<router-link tag="my-Header" :to="{ name: 'home' }">-->
           {{pageinfo.title}}
         <!--</router-link>-->
       </div>
       <div slot="right">
-        <router-link :to="{ name: pageinfo.rightPage }">
-          <!--<Icon type="ios-share-alt" :size="24" />-->
-        </router-link>
+        <slot name="right"></slot>
+        <!--<router-link :to="{ name: pageinfo.rightPage }">
+          &lt;!&ndash;<Icon type="ios-share-alt" :size="24" />&ndash;&gt;
+        </router-link>-->
       </div>
     </za-nav-bar>
 </div>
