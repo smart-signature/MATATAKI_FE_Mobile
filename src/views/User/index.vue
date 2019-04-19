@@ -14,8 +14,7 @@
         src="/img/camera.png" @click="editingavatar = true" v-if="editing"/>
       <Row type="flex" justify="center" class="code-row-bg">
         <Col span="4" class="user-avatar">
-        <!-- ../../assets/logo.png -->
-          <img width="50px" class="userpic" :src="avatar" />
+          <img width="50px" class="userpic" :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png'); }" />
         </Col>
         <Col span="14">
           <div class="texts">
@@ -274,19 +273,11 @@ export default {
         this.$Message.error('获取历史收入错误请重试');
       });
     },
-    async setAvatarImage(hash) {
-      // 空hash 不去查询 显示默认Logo头像
-      if (!hash) return this.avatar = require('../../assets/logo.png');
-      const response = await getAvatarImage(hash);
-      // console.log(response);
-      try {
-        this.avatar = `data:image/png;base64,${btoa(
-          new Uint8Array(response.data).reduce((data, byte) => data + String.fromCharCode(byte), ''),
-        )}`;
-      } catch (err) {
-        console.log(err);
-        this.avatar = require('../../assets/logo.png');
-      }
+    setAvatarImage(hash) {
+      // 空hash 显示默认Logo头像
+      // eslint-disable-next-line global-require
+      if (!hash) this.avatar = require('../../assets/logo.png');
+      else this.avatar = getAvatarImage(hash);
     },
     // 设置头像完成 子组件与夫组件通信
     setDone(status) {

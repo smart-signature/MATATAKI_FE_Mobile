@@ -2,7 +2,7 @@
   <div class="my-banner">
     <div class="my-stat">
       <div class="logined" v-if="isLogined">
-        <img :src="avatar" class="round_icon">
+        <img :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png'); }" class="round_icon">
         <Button class="my-user-page" ghost type="text" @click="toUserPage(currentUsername)">我的主页</Button>
         <p class="username">{{newname}}</p>
         <p class="my-balance">
@@ -99,21 +99,10 @@ export default {
       console.log(tab, event);
     },
     async getAvatarImage(hash) {
-      if (!hash) return this.avatar = require('../../assets/logo.png');
-      await getAvatarImage(hash)
-        .then((response) => {
-          this.avatar = `data:image/png;base64,${btoa(
-            new Uint8Array(response.data).reduce(
-              (data, byte) => data + String.fromCharCode(byte),
-              '',
-            ),
-          )}`;
-          console.log(response);
-        })
-        .catch((err) => {
-          console.log(err);
-          this.avatar = require('../../assets/logo.png');
-        });
+      // 空hash 显示默认Logo头像
+      // eslint-disable-next-line global-require
+      if (!hash) this.avatar = require('../../assets/logo.png');
+      else this.avatar = getAvatarImage(hash);
     },
     refresh_user() {
       const username = this.currentUsername;
