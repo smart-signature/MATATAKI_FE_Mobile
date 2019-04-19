@@ -43,14 +43,9 @@
     <mavon-editor v-show="false" style="display: none;"/>
     <div class="markdown-body" v-html="compiledMarkdown"></div>
     <div class="commentslist-title">赞赏队列 ({{article.ups || 0}})</div>
-    <div class="comments">
-    <!-- <za-pull :on-refresh="refresh" :refreshing="refreshing"> -->
-      <div class="content" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
-        <CommentCard :comment="a" v-for="a in sortedComments" :key="a.timestamp"/>
-      </div>
-      <p class="loading-stat">{{displayAboutScroll}}</p>
-    <!-- </za-pull> -->
-    </div>
+
+    <CommentsList class="comments" :signId="signId" />
+
 
     <footer class="footer">
       <div class="footer-block">
@@ -121,8 +116,7 @@ import {
 import { support } from '@/api/signature';
 import 'mavon-editor/dist/css/index.css';
 import moment from 'moment';
-// import CommentsList from './CommentsList.vue';
-import { CommentCard } from '@/components/';
+import CommentsList from './CommentsList.vue';
 import { sleep } from '@/common/methods';
 
 // MarkdownIt 实例
@@ -138,7 +132,7 @@ const RewardStatus = { // 0=加载中,1=未打赏 2=已打赏, -1未登录
 export default {
   name: 'Article',
   props: ['hash'],
-  components: { mavonEditor, CommentCard },
+  components: { mavonEditor, CommentsList },
   computed: {
     ...mapGetters(['currentUsername']),
     ...mapState(['isScatterConnected', 'isScatterLoggingIn', 'scatterAccount']),
@@ -186,11 +180,6 @@ export default {
       const { invite } = this.$route.query;
       return !invite ? null : invite;
     },
-    displayAboutScroll() {
-      return this.isTheEndOfTheScroll
-        ? '🎉 哇，你真勤奋，所有 comments 已经加载完了～ 🎉'
-        : '😄 勤奋地加载更多精彩内容 😄';
-    },
     sortedComments() {
       // if need change to asc, swap a & b
       return this.comments.slice(0) // 使用slice创建数组副本 消除副作用
@@ -223,12 +212,9 @@ export default {
     this.clipboard.destroy(); // 组件销毁之前 销毁clipboard
   },
   data: () => ({
-    isTheEndOfTheScroll: false,
     signId: null,
     comments: [],
     // refreshing: false,
-    busy: false,
-    page: 1,
     post: {
       author: 'Loading...',
       title: 'Loading...',
@@ -352,7 +338,6 @@ export default {
       this.signId = article.id;
       // console.debug(this.signId);
       await this.getArticlesList(article.id, page);
-      this.page += 1;
     },
     handleClose() {
       this.visible3 = false;
@@ -467,48 +452,14 @@ export default {
         throw errMeg; // 歡喜的 throw
       }
     },
-    async getArticlesList(signId, page) {
-      this.busy = true;
-      await getSharesbysignid(signId, page)
+    async getArticlesList(signId) {
+      await getSharesbysignid(signId, 1)
         .then((response) => {
           console.log('shares : ', response.data);
           const { data } = response;
           this.shares = data;
-          if (data.length === 0) {
-            this.busy = true;
-            this.isTheEndOfTheScroll = true;
-          } else {
-            data.map((a) => {
-              this.comments.push({
-                author: a.author,
-                timestamp: a.create_time,
-                quantity: `${parseFloat(a.amount) / 10000} EOS`,
-                message: a.comment,
-              });
-              return true;
-            });
-            // 列表最后一列小于二十显示加载完
-            if (data.length > 0 && data.length < 20) this.isTheEndOfTheScroll = true;
-            this.busy = false;
-            this.page += 1;
-          }
         });
     },
-    async loadMore() {
-      const {
-        getArticlesList, isTheEndOfTheScroll, page, signId,
-      } = this;
-      // 默认会加载一次 如果没有id 后面不执行， 由上面的方法调用一次
-      if (!signId) return;
-      if (isTheEndOfTheScroll) return;
-      await getArticlesList(signId, page);
-    },
-    // async refresh() {
-    //   this.refreshing = true;
-    //   this.comments.length = 0;
-    //   await this.getArticlesList(this.signId, 1);
-    //   this.refreshing = false;
-    // },
     // 删除文章
     delArticleButton() {
       if (this.article.author !== this.currentUsername) {

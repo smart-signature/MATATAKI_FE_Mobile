@@ -1,13 +1,23 @@
 <template>
+  <div>
+    <!-- 复制了一份 来区别是否支持刷新 目前没有想到别的好办法 -->
     <!-- 负责刷新 -->
-    <za-pull :on-refresh="refresh" :refreshing="refreshing">
+    <za-pull :on-refresh="refresh" :refreshing="refreshing" v-if="isRefresh">
       <!-- 负责滚动 -->
-        <div v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
-          <slot></slot>
-        </div>
-        <p v-if="articles.length !== 0" class="loading-stat">{{displayAboutScroll}}</p>
-        <p v-else class="loading-stat">{{loadingText.noArticles}}</p>
+      <div v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
+        <slot></slot>
+      </div>
+      <p v-if="articles.length !== 0" class="loading-stat">{{displayAboutScroll}}</p>
+      <p v-else class="loading-stat">{{loadingText.noArticles}}</p>
     </za-pull>
+    <template v-else>
+      <div v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
+        <slot></slot>
+      </div>
+      <p v-if="articles.length !== 0" class="loading-stat">{{displayAboutScroll}}</p>
+      <p v-else class="loading-stat">{{loadingText.noArticles}}</p>
+    </template>
+  </div>
 </template>
 
 <script>
@@ -53,6 +63,11 @@ export default {
         key: '',
       }),
     },
+    // 是否支持刷新
+    isRefresh: {
+      type: Boolean,
+      default: true,
+    },
   },
   computed: {
     displayAboutScroll() {
@@ -60,15 +75,28 @@ export default {
     },
   },
   watch: {
-    activeIndex(nweVal) {
-      this.activeIndexCopy = nweVal;
+    activeIndex(newVal) {
+      this.activeIndexCopy = newVal;
       if (this.articles.length === 0) this.loadMore();
     },
+    params() {
+      // 父级请求完参数 刷新滚动分页
+      this.loadMore();
+    },
   },
-  created() { },
+  created() {
+  },
   methods: {
     // 滚动 isEmptyArray 是否清空数组
     async loadMore(isEmptyArray = false) {
+      // 如果传了参数但是为null 阻止请求 场景发生在文章获取分享列表处
+      // eslint-disable-next-line no-restricted-syntax
+      for (const key in this.params) {
+        // eslint-disable-next-line no-prototype-builtins
+        if (this.params.hasOwnProperty(key)) {
+          if (!this.params[key]) return;
+        }
+      }
       if (this.nowIndex !== this.activeIndexCopy || this.isTheEndOfTheScroll) return;
       this.busy = true;
       const params = this.params || {};
