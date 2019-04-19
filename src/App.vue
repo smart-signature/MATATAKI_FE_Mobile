@@ -9,6 +9,7 @@
 import Konami from 'konami';
 import { mapActions, mapState } from 'vuex';
 import { version } from '../package.json';
+// import { getSign } from '@/api/signatureOntology';
 
 export default {
   data: () => ({}),
@@ -73,6 +74,7 @@ export default {
     cyanobridgegetAccount().then((address) => {
       console.info('ONT address :', address);
       this.$Message.success(`ONT address : ${address} ，登陸成功`);
+      // getSign(999);
     }).catch(result => console.warn('Failed to get ONT account :', result));
   },
 };

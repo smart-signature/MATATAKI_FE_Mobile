@@ -58,7 +58,8 @@ export default new Vuex.Store({
         console.log('Connecting to wallet ...');
         cyanobridgeAPI.getAccount()
           .then((result) => {
-            const { result: address } = result;
+            // const { result: address } = result;
+            const address = result;
             commit('setCyanobridgeAccount', address);
             console.log('1.');
             resolve(address);
