@@ -150,7 +150,10 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['logoutScatterAsync']),
+    ...mapActions('scatter', [
+      'logout',
+    ]),
+    logoutScatterAsync() { return this.logout() },
     goBack() {
       this.$router.go(-1);
     },
@@ -205,7 +208,7 @@ export default {
         this.newname = this.nickname === '' ? this.username : this.nickname;
         this.setAvatarImage(data.avatar);
       };
-      if ( currentUsername.length > 12 ) return ;
+      if ( currentUsername.length > 12 ) return;
       if (currentUsername !== null) {
         oldgetUser({ username }, ({ error, response }) => {
           console.log(response);

@@ -46,7 +46,9 @@ import {
 export default {
   name: 'My-Banner',
   computed: {
-    ...mapState(['isScatterConnected']),
+    ...mapState('scatter', {
+      isScatterConnected: state => state.isConnected,
+    }),
     ...mapGetters(['currentUserInfo', 'isLogined']),
     displayBalance() {
       return this.currentUserInfo.balance.slice(0, -4);
@@ -54,7 +56,7 @@ export default {
     displayName() {
       const { currentUserInfo, nickname } = this;
         return nickname !== '' ? nickname 
-          : ( currentUserInfo.name.length <= 12 ) ? currentUserInfo.name
+          : currentUserInfo.name.length <= 12 ? currentUserInfo.name
           : currentUserInfo.name.slice(0, 12);
     },
     displayTokenSymbol() {
@@ -72,11 +74,12 @@ export default {
     if (isLogined) { refresh_user(); }
   },
   methods: {
-    ...mapActions([
-      'connectScatterAsync',
-      'suggestNetworkAsync',
-      'loginScatterAsync',
+    ...mapActions('scatter', [
+      'connect',
+      'login',
     ]),
+    connectScatterAsync() { return this.connect() },
+    loginScatterAsync() { return this.login() },
     toUserPage(username) {
       this.$router.push({ name: 'User', params: { username } });
     },
@@ -90,8 +93,6 @@ export default {
       }
       try {
         // await this.connectScatterAsync();
-        // Scatter 10.0 need to suggestNetwork, if not, scatter is not working on login
-        await this.suggestNetworkAsync();
         await this.loginScatterAsync();
       } catch (e) {
         console.warn('Unable to connect wallets');

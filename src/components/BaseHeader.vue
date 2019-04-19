@@ -38,7 +38,10 @@ export default {
   name: 'BaseHeader',
   props: ['pageinfo'],
   computed: {
-    ...mapState(['isScatterConnected', 'isScatterLoggingIn']),
+    ...mapState('scatter', {
+      isScatterConnected: state => state.isConnected,
+      isScatterLoggingIn: state => state.isLoggingIn,
+    }),
   },
   // 依據 https://blog.csdn.net/m0_37728716/article/details/81289317
   // 從 crearted 改成 mounted
@@ -49,11 +52,12 @@ export default {
     console.log('Does this page need to log in?:', this.pageinfo.needLogin);
   },
   methods: {
-    ...mapActions([
-      'connectScatterAsync',
-      'suggestNetworkAsync',
-      'loginScatterAsync',
+    ...mapActions('scatter', [
+      'connect',
+      'login',
     ]),
+    connectScatterAsync() { return this.connect() },
+    loginScatterAsync() { return this.login() },
     goBack() {
       this.$router.go(-1);
     },

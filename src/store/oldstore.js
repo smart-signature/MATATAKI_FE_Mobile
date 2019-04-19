@@ -20,7 +20,6 @@ export default new Vuex.Store({
       eos: '... EOS',
     },
     isScatterLoggingIn: false,
-    isLoadingData: false,
   },
   getters: {
     currentUserInfo: (state, { currentUsername, currentBalance }) => ({

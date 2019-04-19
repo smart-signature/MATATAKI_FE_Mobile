@@ -140,8 +140,12 @@ export default {
   props: ['hash'],
   components: { mavonEditor, CommentCard },
   computed: {
+    ...mapState('scatter', {
+      isScatterConnected: state => state.isConnected,
+      isScatterLoggingIn: state => state.isLoggingIn,
+      scatterAccount: state => state.account,
+    }),
     ...mapGetters(['currentUsername']),
-    ...mapState(['isScatterConnected', 'isScatterLoggingIn', 'scatterAccount']),
     isLogined() {
       return this.scatterAccount !== null;
     },
@@ -290,11 +294,12 @@ export default {
     },
   },
   methods: {
-    ...mapActions([
-      'connectScatterAsync',
-      'suggestNetworkAsync',
-      'loginScatterAsync',
+    ...mapActions('scatter', [
+      'connect',
+      'login',
     ]),
+    connectScatterAsync() { return this.connect() },
+    loginScatterAsync() { return this.login() },
     initClipboard() {
       this.clipboard = new Clipboard('.button-share');
       this.clipboard.on('success', (e) => {

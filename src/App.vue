@@ -14,11 +14,12 @@ import { version } from '../package.json';
 export default {
   data: () => ({}),
   methods: {
-    ...mapActions([
-      'cyanobridgegetAccount',
-      'connectScatterAsync',
-      'suggestNetworkAsync',
-      'loginScatterAsync',
+    ...mapActions('ontology', [
+      'getAccount',
+    ]),
+    ...mapActions('scatter', [
+      'connect',
+      'login',
     ]),
     updateNotify(desc) {
       const btnCommonStyle = {
@@ -52,26 +53,20 @@ export default {
     const easterEgg = new Konami(() => { this.triggerEasterEgg(); });
   },
   computed: {
-    ...mapState(['scatterAccount']),
   },
   created() { // https://juejin.im/post/5bfa4bb951882558ae3c171e
     window.updateNotify = this.updateNotify;
     console.info('Smart Signature version :', version);
-    const { cyanobridgegetAccount } = this;
+    const { getAccount: getOntologyAccount, connect: connectScatter } = this;
     try {
-      // Scatter 10.0 need to suggestNetwork, if not, scatter is not working on login
-      this.connectScatterAsync()
-        .then(() => (
-          this.suggestNetworkAsync()
-            .then(added => (console.log('Suggest network result: ', added)))
-        ));
+      connectScatter();
       // if (!this.scatterAccount) await this.loginScatterAsync();
     } catch (e) {
       console.warn('Unable to connect wallets');
       this.$Message.error('钱包连接失败，钱包需打开并解锁');
     }
-
-    cyanobridgegetAccount().then((address) => {
+    
+    getOntologyAccount().then((address) => {
       console.info('ONT address :', address);
       this.$Message.success(`ONT address : ${address} ，登陸成功`);
       // getSign(999);

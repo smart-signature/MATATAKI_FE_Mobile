@@ -48,7 +48,6 @@ export default {
     document.title = '首页 - SmartSignature';
   },
   computed: {
-    ...mapState(['scatterAccount']),
   },
   data() {
     return {
@@ -76,20 +75,18 @@ export default {
     };
   },
   methods: {
-    ...mapActions([
-      'connectScatterAsync',
-      'suggestNetworkAsync',
-      'loginScatterAsync',
-      'logoutScatterAsync',
+    ...mapActions('scatter', [
+      'connect',
+      'login',
     ]),
+    connectScatterAsync() { return this.connect() },
+    loginScatterAsync() { return this.login() },
     cancelCb(reason, event) {
       console.log(reason, event);
     },
     async loginWithWallet() {
       try {
         // await this.connectScatterAsync();
-        // Scatter 10.0 need to suggestNetwork, if not, scatter is not working on login
-        await this.suggestNetworkAsync();
         await this.loginScatterAsync();
       } catch (e) {
         console.warn('Unable to connect wallets');

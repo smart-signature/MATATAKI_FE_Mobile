@@ -50,11 +50,7 @@ export default {
     if (this.currentUsername) {
       return;
     }
-    this.suggestNetworkAsync()
-      .then((added) => {
-        console.log('Suggest network result: ', added);
-        this.loginScatterAsync();
-      });
+    this.loginScatterAsync();
   },
   async mounted() {
     this.resize();
@@ -75,17 +71,20 @@ export default {
     signature: '',
   }),
   computed: {
+    ...mapState('scatter', {
+      isScatterConnected: state => state.isConnected,
+      scatterAccount: state => state.account,
+    }),
     ...mapGetters(['currentUsername']),
-    ...mapState(['isScatterConnected', 'scatterAccount']),
     isMe() {
       return this.author === this.currentUsername;
     },
   },
   methods: {
-    ...mapActions([
-      'suggestNetworkAsync',
-      'loginScatterAsync',
+    ...mapActions('scatter', [
+      'login',
     ]),
+    loginScatterAsync() { return this.login() },
     async setArticleData() {
       const articleData = await getArticleData(this.hash);
       const articleInfo = await getArticleInfo(this.hash);
