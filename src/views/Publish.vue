@@ -61,11 +61,7 @@ export default {
     if (this.currentUsername) {
       return;
     }
-    this.suggestNetworkAsync()
-      .then((added) => {
-        console.log('Suggest network result: ', added);
-        this.loginScatterAsync();
-      });
+    this.loginScatterAsync();
   },
   mounted() {
     this.resize();
@@ -81,14 +77,16 @@ export default {
     fissionNum: 2,
   }),
   computed: {
+    ...mapState('scatter', {
+      isScatterConnected: state => state.isConnected,
+    }),
     ...mapGetters(['currentUsername']),
-    ...mapState(['isScatterConnected', 'scatterAccount']),
   },
   methods: {
-    ...mapActions([
-      'suggestNetworkAsync',
-      'loginScatterAsync',
+    ...mapActions('scatter', [
+      'login',
     ]),
+    loginScatterAsync() { return this.login() },
     async sendThePost() {
       if (!this.isScatterConnected) {
         try {
@@ -98,7 +96,7 @@ export default {
           return;
         }
       }
-      if (this.currentUsername === null) {
+      if (this.currentUsername === null || this.currentUsername.length > 12) {
         try {
           await this.loginScatterAsync();
         } catch (error) {

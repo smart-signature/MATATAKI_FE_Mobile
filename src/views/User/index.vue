@@ -143,16 +143,16 @@ export default {
   },
   computed: {
     ...mapGetters(['currentUsername']),
-    ifLogined() {
-      return this.currentUsername !== null;
-    },
     isMe() {
       const { username, currentUsername } = this;
       return username === currentUsername;
     },
   },
   methods: {
-    ...mapActions(['logoutScatterAsync']),
+    ...mapActions('scatter', [
+      'logout',
+    ]),
+    logoutScatterAsync() { return this.logout() },
     goBack() {
       this.$router.go(-1);
     },
@@ -207,6 +207,7 @@ export default {
         this.newname = this.nickname === '' ? this.username : this.nickname;
         this.setAvatarImage(data.avatar);
       };
+      if ( currentUsername.length > 12 ) return;
       if (currentUsername !== null) {
         oldgetUser({ username }, ({ error, response }) => {
           console.log(response);
@@ -223,7 +224,7 @@ export default {
     },
     follow_user() {
       const { username, currentUsername } = this;
-      if (!currentUsername || !username) {
+      if (!currentUsername || !username || currentUsername.length > 12 ) {
         this.$Notice.error({
           title: '账号信息无效，关注失败',
         });
@@ -246,8 +247,8 @@ export default {
     },
     unfollow_user() {
       const { username, currentUsername } = this;
-      if (!currentUsername || !username) {
-        this.$Notice.error({ title: '账号信息无效，取消关注失败' });
+      if (!currentUsername || !username || currentUsername.length > 12) {
+        this.$Notice.error({ title: '账号信息无效，取消关注失败', });
         return;
       }
       Unfollow({

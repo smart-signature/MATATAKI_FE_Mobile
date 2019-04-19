@@ -46,10 +46,9 @@ export default new Router({
       props: true,
       component: () => import(/* webpackChunkName: "user-asset" */ './views/User/Asset/Asset.vue'),
       beforeEnter: (to, from, next) => {
-        const currentUserName = to.params.username;
         const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
         // eslint-disable-next-line eqeqeq
-        if (tokenUserName != currentUserName) next(`/user/${tokenUserName}/asset`);
+        if (to.params.username != tokenUserName) next(`/user/${tokenUserName}/asset`);
         else { next(); }
       }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
     },

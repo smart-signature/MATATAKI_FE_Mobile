@@ -19,24 +19,6 @@
           <a href='javascript:void(0);' @click="$router.push({name: 'Publish'})">创作</a>
         </div>
       </div>
-
-      <!-- <div class='logined' v-if='isLogined'>
-          <p
-            @click='$router.push({ name: 'User', params: {username: currentUsername } })'
-            class='username'
-          >{{currentUsername}}</p>
-      </div>-->
-      <!-- <div class='not-login-yet' style='float:right' v-else>
-          <za-button
-            size='xs'
-            @click='loginWithWallet'>登录
-          </za-button>
-          <za-button size='xs' slot='description' @click='visible1 = true'>En</za-button>
-          <za-actionsheet
-            :visible.sync='visible1' :actions='actions1'
-            :showCancel='false' @cancel='cancelCb'>
-          </za-actionsheet>
-      </div>-->
       <div class='titles'>
         <h1 class='title'>-SmartSignature-</h1>
         <h2 class='subtitle'>赞赏好文，分享有收益！</h2>
@@ -66,11 +48,6 @@ export default {
     document.title = '首页 - SmartSignature';
   },
   computed: {
-    ...mapState(['scatterAccount']),
-    ...mapGetters(['currentUsername']),
-    isLogined() {
-      return this.scatterAccount !== null;
-    },
   },
   data() {
     return {
@@ -98,20 +75,18 @@ export default {
     };
   },
   methods: {
-    ...mapActions([
-      'connectScatterAsync',
-      'suggestNetworkAsync',
-      'loginScatterAsync',
-      'logoutScatterAsync',
+    ...mapActions('scatter', [
+      'connect',
+      'login',
     ]),
+    connectScatterAsync() { return this.connect() },
+    loginScatterAsync() { return this.login() },
     cancelCb(reason, event) {
       console.log(reason, event);
     },
     async loginWithWallet() {
       try {
         // await this.connectScatterAsync();
-        // Scatter 10.0 need to suggestNetwork, if not, scatter is not working on login
-        await this.suggestNetworkAsync();
         await this.loginScatterAsync();
       } catch (e) {
         console.warn('Unable to connect wallets');

@@ -12,6 +12,7 @@ export default new Vuex.Store({
   state: {
     cyanobridge: {
       account: null,
+      balance: '... ONT',
     },
     isScatterConnected: false,
     scatterAccount: null,
@@ -19,10 +20,19 @@ export default new Vuex.Store({
       eos: '... EOS',
     },
     isScatterLoggingIn: false,
-    isLoadingData: false,
   },
   getters: {
-    currentUsername: ({ scatterAccount }) => (scatterAccount ? scatterAccount.name : null),
+    currentUserInfo: (state, { currentUsername, currentBalance }) => ({
+      name: currentUsername,
+      balance: currentBalance,
+    }),
+    currentUsername: ({ scatterAccount, cyanobridge }) => (
+      scatterAccount ? scatterAccount.name : ( cyanobridge.account ? cyanobridge.account : null ) 
+    ),
+    currentBalance: ({ scatterAccount, balances, cyanobridge }) => (
+      scatterAccount ? balances.eos : ( cyanobridge.account ? cyanobridge.balance : null ) 
+    ),
+    isLogined: (state, { currentUserInfo }) => currentUserInfo.name !== null,
   },
   mutations: {
     setIsScatterLoggingIn(state, isScatterLoggingIn) {
@@ -47,7 +57,8 @@ export default new Vuex.Store({
         console.log('Connecting to wallet ...');
         cyanobridgeAPI.getAccount()
           .then((result) => {
-            const { result: address } = result;
+            // const { result: address } = result;
+            const address = result;
             commit('setCyanobridgeAccount', address);
             console.log('1.');
             resolve(address);
