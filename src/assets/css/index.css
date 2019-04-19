@@ -1,3 +1,6 @@
+body {
+  background: #F0F0F0;
+}
 
 /* 加载更多提示 */
 .loading-stat {
