@@ -116,6 +116,7 @@ export default new Vuex.Store({
     async logoutScatterAsync({ commit }) {
       try {
         await api.logoutScatterAsync();
+        localStorage.removeItem('ACCESS_TOKEN');
       } catch (err) {
         console.error('Failed to logout Scatter', err);
       }
