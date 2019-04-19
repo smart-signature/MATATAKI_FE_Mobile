@@ -43,14 +43,8 @@
     <mavon-editor v-show="false" style="display: none;"/>
     <div class="markdown-body" v-html="compiledMarkdown"></div>
     <div class="commentslist-title">赞赏队列 ({{article.ups || 0}})</div>
-    <div class="comments">
-    <!-- <za-pull :on-refresh="refresh" :refreshing="refreshing"> -->
-      <div class="content" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
-        <CommentCard :comment="a" v-for="a in sortedComments" :key="a.timestamp"/>
-      </div>
-      <p class="loading-stat">{{displayAboutScroll}}</p>
-    <!-- </za-pull> -->
-    </div>
+
+    <CommentsList class="comments" :signId="signId" />
 
     <footer class="footer">
       <div class="footer-block">
@@ -121,8 +115,7 @@ import {
 import { support } from '@/api/signature';
 import 'mavon-editor/dist/css/index.css';
 import moment from 'moment';
-// import CommentsList from './CommentsList.vue';
-import { CommentCard } from '@/components/';
+import CommentsList from './CommentsList.vue';
 import { sleep } from '@/common/methods';
 
 // MarkdownIt 实例
@@ -138,7 +131,7 @@ const RewardStatus = { // 0=加载中,1=未打赏 2=已打赏, -1未登录
 export default {
   name: 'Article',
   props: ['hash'],
-  components: { mavonEditor, CommentCard },
+  components: { mavonEditor, CommentsList },
   computed: {
     ...mapGetters(['currentUsername']),
     ...mapState(['isScatterConnected', 'isScatterLoggingIn', 'scatterAccount']),
@@ -186,11 +179,6 @@ export default {
       const { invite } = this.$route.query;
       return !invite ? null : invite;
     },
-    displayAboutScroll() {
-      return this.isTheEndOfTheScroll
-        ? '🎉 哇，你真勤奋，所有 comments 已经加载完了～ 🎉'
-        : '😄 勤奋地加载更多精彩内容 😄';
-    },
     sortedComments() {
       // if need change to asc, swap a & b
       return this.comments.slice(0) // 使用slice创建数组副本 消除副作用
@@ -223,12 +211,9 @@ export default {
     this.clipboard.destroy(); // 组件销毁之前 销毁clipboard
   },
   data: () => ({
-    isTheEndOfTheScroll: false,
     signId: null,
     comments: [],
     // refreshing: false,
-    busy: false,
-    page: 1,
     post: {
       author: 'Loading...',
       title: 'Loading...',
@@ -352,7 +337,6 @@ export default {
       this.signId = article.id;
       // console.debug(this.signId);
       await this.getArticlesList(article.id, page);
-      this.page += 1;
     },
     handleClose() {
       this.visible3 = false;
@@ -467,48 +451,14 @@ export default {
         throw errMeg; // 歡喜的 throw
       }
     },
-    async getArticlesList(signId, page) {
-      this.busy = true;
-      await getSharesbysignid(signId, page)
+    async getArticlesList(signId) {
+      await getSharesbysignid(signId, 1)
         .then((response) => {
           console.log('shares : ', response.data);
           const { data } = response;
           this.shares = data;
-          if (data.length === 0) {
-            this.busy = true;
-            this.isTheEndOfTheScroll = true;
-          } else {
-            data.map((a) => {
-              this.comments.push({
-                author: a.author,
-                timestamp: a.create_time,
-                quantity: `${parseFloat(a.amount) / 10000} EOS`,
-                message: a.comment,
-              });
-              return true;
-            });
-            // 列表最后一列小于二十显示加载完
-            if (data.length > 0 && data.length < 20) this.isTheEndOfTheScroll = true;
-            this.busy = false;
-            this.page += 1;
-          }
         });
     },
-    async loadMore() {
-      const {
-        getArticlesList, isTheEndOfTheScroll, page, signId,
-      } = this;
-      // 默认会加载一次 如果没有id 后面不执行， 由上面的方法调用一次
-      if (!signId) return;
-      if (isTheEndOfTheScroll) return;
-      await getArticlesList(signId, page);
-    },
-    // async refresh() {
-    //   this.refreshing = true;
-    //   this.comments.length = 0;
-    //   await this.getArticlesList(this.signId, 1);
-    //   this.refreshing = false;
-    // },
     // 删除文章
     delArticleButton() {
       if (this.article.author !== this.currentUsername) {
@@ -552,214 +502,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.break_all {
-  word-break: break-all;
-}
-.footer-article {
-  margin-bottom: 20px;
-}
-.article {
-  text-align: left;
-  max-width: 750px;
-  margin: 0 auto;
-  position: relative;
-}
-.ta .tac .iframe_wrap,
-.ta .tac iframe,
-.ta .tac img,
-.ta .tac video {
-  max-width: 100%;
-  vertical-align: top;
-}
-.tl_message {
-  font-family: CustomSansSerif, "Lucida Grande", Arial, sans-serif;
-  padding: 70px 0;
-  color: #79828b;
-  text-align: center;
-}
-.tl_message h1 {
-  font-size: 120px;
-  margin: 0;
-}
-.ta .ql-container {
-  height: auto;
-}
-.prompt {
-  left: 0;
-  top: 0;
-  bottom: 0;
-}
-.prompt .prompt_input_wrap {
-  overflow: hidden;
-}
-.prompt .prompt_input {
-  width: 100%;
-  margin: 0;
-  border: none;
-  background-color: transparent;
-  box-sizing: border-box;
-}
-.tl_blocks {
-  text-align: right;
-  left: 0;
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-.tl_blocks.shown {
-  visibility: visible;
-  opacity: 1;
-}
-@media (max-width: 960px) {
-  .tl_blocks {
-    text-align: center;
-  }
-}
-.ta ::selection {
-  background: #dbdbdb;
-}
-.ta ::-moz-selection {
-  background: #dbdbdb;
-}
-.ta .cursor_wrapper {
-  display: none;
-  position: absolute;
-  font-size: 1px;
-  left: 50%;
-  z-index: -1;
-}
-.ta .tac,
-.ta .tac .ql-editor {
-  font-family: "Open Sans",sans-serif;
-  font-weight: 400;
-  font-style: normal;
-  font-size: 18px;
-  padding: 0;
-  margin: 0;
-  color: rgba(0, 0, 0, 0.8);
-}
-.ta h1,
-.ta h2 {
-  font-family: CustomSansSerif, "Lucida Grande", Arial, sans-serif;
-  font-style: normal;
-}
-.ta .ql-editor {
-  height: 100%;
-  overflow: visible;
-  text-align: inherit;
-}
-.ta .tac,
-.ta .tac .ql-editor * {
-  white-space: pre-wrap;
-}
-.ta .tac.ql-container {
-  white-space: normal;
-}
-.ta h1,
-.ta h2 {
-  font-weight: 700;
-  font-size: 32px;
-  margin: 21px 21px 12px;
-}
-
-.ta h2 {
-  font-size: 24px;
-  margin: -6px 21px 12px;
-  color: rgba(0, 0, 0, 0.44);
-}
-
-.ta a[href] {
-  color: inherit;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.44);
-  text-decoration: none;
-  border-bottom: 0.1em solid rgba(0, 0, 0, 0.7);
-}
-.footer-article {
-  font-size: 12px;
-  font-family: PingFangSC-Regular, "Open Sans", sans-serif;
-  font-weight: 400;
-  color: rgba(0,0,0,1);
-  text-align: center;
-  letter-spacing: 1px;
-}
-
-#button {
-  font-family: CustomSansSerif, "Lucida Grande", Arial, sans-serif;
-  font-weight: 600;
-  font-style: normal;
-  font-size: 17px;
-  color: #000;
-  text-decoration: none;
-  border: 2px solid #333;
-  border-radius: 16px;
-  text-transform: uppercase;
-  padding: 4px 12px;
-  margin: 0 0 15px;
-  background-color: #fff;
-  cursor: pointer;
-}
-
-.markdown-body.tac {
-    margin: 20px;
-}
-
-
-/* dialog */
-/* 改变层级 但高于普通元素的层级 */
-.za-modal {
-  z-index: 99;
-}
-.za-modal .za-modal-dialog{
-  background-color: #000!important;
-}
-.support-input {
-    margin: 16px 0;
-    border: 1px solid #dadada;
-    padding: 8px;
-    border-radius: 3px;
-}
-.support-input__amount {
-    width: 100%;
-    border: none;
-    outline: none;
-}
-.support-button {
-    display: block;
-    width: 100%;
-    border: none;
-    outline: none;
-    background: #478970;
-    color: #fff;
-    line-height: 46px;
-    border-radius: 3px;
-}
-.dropdown {
-    position: absolute;
-    background-color: #434343;
-    color: #fff;
-    top: 40px;
-    right: 16px;
-    cursor: pointer;
-}
-.dropdown-item {
-    padding: 8px 20px;
-    font-size: 14px;
-}
-.dropdown-item:hover {
-    background-color: #2f2f2f;
-}
-a:link {
-    color: black;
-}
-a:visited {
-    color: black;
-}
-a:hover a:active {
-    color: black;
-}
-a:active {
-    color: black;
-}
-</style>
 <style src="./index.css" scoped></style>

@@ -44,7 +44,7 @@ export default new Router({
       path: '/user/:username/asset',
       name: 'Asset',
       props: true,
-      component: () => import(/* webpackChunkName: "user-asset" */ './views/User/Asset.vue'),
+      component: () => import(/* webpackChunkName: "user-asset" */ './views/User/Asset/Asset.vue'),
       beforeEnter: (to, from, next) => {
         const currentUserName = to.params.username;
         const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;

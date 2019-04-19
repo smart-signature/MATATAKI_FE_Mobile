@@ -259,9 +259,7 @@ const uploadAvatar = ({ avatar }, callback) => accessBackend({
 }, callback);
 
 // 获取头像
-const getAvatarImage = hash => axios.get(`${apiServer}/image/${hash}`, {
-  responseType: 'arraybuffer',
-});
+const getAvatarImage = hash => `${apiServer}/image/${hash}`;
 
 // 编辑
 const editArticle = ({
@@ -311,6 +309,6 @@ export {
   publishArticle, auth, getAuth,
   getArticleData, getArticlesList, getArticleInfo, getArticleInHash,
   Follow, Unfollow, getUser, setUserName, getFansList, getFollowList, oldgetUser,
-  getSharesbysignid, addReadAmount, sendComment, getAssets,
-  disassembleToken, delArticle, uploadAvatar, getAvatarImage, getArticleSupports, editArticle,
+  getSharesbysignid, addReadAmount, sendComment, getAssets, getAvatarImage,
+  disassembleToken, delArticle, uploadAvatar, getArticleSupports, editArticle,
 };
