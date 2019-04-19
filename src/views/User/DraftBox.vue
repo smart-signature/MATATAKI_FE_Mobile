@@ -64,7 +64,7 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped>
 a {
   color: #000;
   text-decoration: none; /* no underline */

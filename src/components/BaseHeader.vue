@@ -103,4 +103,9 @@ a:active {
   width: 22px;
   margin-left: 14px;
 }
+.BaseHeader {
+  border-bottom: 1px solid #eaeaea;
+  box-sizing: border-box;
+}
+
 </style>

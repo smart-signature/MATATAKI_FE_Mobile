@@ -1,13 +1,23 @@
 <template>
+  <div>
+    <!-- 复制了一份 来区别是否支持刷新 目前没有想到别的好办法 -->
     <!-- 负责刷新 -->
-    <za-pull :on-refresh="refresh" :refreshing="refreshing">
+    <za-pull :on-refresh="refresh" :refreshing="refreshing" v-if="isRefresh">
       <!-- 负责滚动 -->
-        <div v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
-          <slot></slot>
-        </div>
-        <p v-if="articles.length !== 0" class="loading-stat">{{displayAboutScroll}}</p>
-        <p v-else class="loading-stat">{{loadingText.noArticles}}</p>
+      <div v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
+        <slot></slot>
+      </div>
+      <p v-if="articles.length !== 0" class="loading-stat">{{displayAboutScroll}}</p>
+      <p v-else class="loading-stat">{{loadingText.noArticles}}</p>
     </za-pull>
+    <template v-else>
+      <div v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
+        <slot></slot>
+      </div>
+      <p v-if="articles.length !== 0" class="loading-stat">{{displayAboutScroll}}</p>
+      <p v-else class="loading-stat">{{loadingText.noArticles}}</p>
+    </template>
+  </div>
 </template>
 
 <script>
@@ -45,6 +55,19 @@ export default {
       type: Number,
       default: 0,
     },
+    // 返回的数据是对象还是数组
+    isObj: {
+      type: Object,
+      default: () => ({
+        type: 'Array',
+        key: '',
+      }),
+    },
+    // 是否支持刷新
+    isRefresh: {
+      type: Boolean,
+      default: true,
+    },
   },
   computed: {
     displayAboutScroll() {
@@ -52,34 +75,55 @@ export default {
     },
   },
   watch: {
-    activeIndex(nweVal) {
-      this.activeIndexCopy = nweVal;
+    activeIndex(newVal) {
+      this.activeIndexCopy = newVal;
       if (this.articles.length === 0) this.loadMore();
     },
+    params() {
+      // 父级请求完参数 刷新滚动分页
+      this.loadMore();
+    },
   },
-  created() { },
+  created() {
+  },
   methods: {
     // 滚动 isEmptyArray 是否清空数组
     async loadMore(isEmptyArray = false) {
+      // 如果传了参数但是为null 阻止请求 场景发生在文章获取分享列表处
+      // eslint-disable-next-line no-restricted-syntax
+      for (const key in this.params) {
+        // eslint-disable-next-line no-prototype-builtins
+        if (this.params.hasOwnProperty(key)) {
+          if (!this.params[key]) return;
+        }
+      }
       if (this.nowIndex !== this.activeIndexCopy || this.isTheEndOfTheScroll) return;
       this.busy = true;
       const params = this.params || {};
       params.page = this.page;
       axios.get(`${apiServer}/${this.apiUrl}`, { params }).then(({ data }) => {
-        // 清空数组 ps: 如果在 refresh 里面清空数组
-        // 1.点击的时会先执行触摸刷新的方法 导致无法正常单击切换页面
-        // 2.因为先执行触摸方法 清空了数组 会给页面造成影响
         if (isEmptyArray) this.articles.length = 0;
-        // Merge arrays with destruction
-        this.articles = [...this.articles, ...data];
-        this.$emit('getListData', {
-          data: this.articles,
-          index: this.nowIndex,
-        });
-        if (data.length >= 0 && data.length < 20) this.isTheEndOfTheScroll = true;
-        else this.page += 1;
+        if (this.isObj.type === 'Array') {
+          // 如果返回的数据是 Array 返回整个 data
+          this.articles = [...this.articles, ...data];
+          this.$emit('getListData', {
+            data: this.articles,
+            index: this.nowIndex,
+          });
+          if (data.length >= 0 && data.length < 20) this.isTheEndOfTheScroll = true;
+        } else if (this.isObj.type === 'Object') {
+          // 如果返回的是 Object 根据传进来的字段获取相应的 list
+          const resData = data[this.isObj.key];
+          this.articles = [...this.articles, ...resData];
+          this.$emit('getListData', {
+            data,
+            list: this.articles,
+            index: this.nowIndex,
+          });
+          if (resData.length >= 0 && resData.length < 20) this.isTheEndOfTheScroll = true;
+        }
+        this.page += 1;
         this.busy = false;
-        // 列表最后一列小于二十显示加载完
       }).catch((err) => {
         console.log(err);
         this.$Message.error('获取文章发生错误');
@@ -112,8 +156,9 @@ export default {
 <style scoped>
 /* 加载更多提示 */
 .loading-stat {
-  margin: 10px;
+  margin: 20px 0;
   color: #999;
-  font-size: 13px;
+  font-size: 14px;
+  text-align: center;
 }
 </style>

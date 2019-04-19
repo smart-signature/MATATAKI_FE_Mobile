@@ -4,10 +4,10 @@
       <Avatar icon="ios-person" class="comment-avatar" />
         <div class="comment-head">
           <router-link class="comment-author" :to="{ name: 'User', params: { username: comment.author }}">
-            {{comment.author}}
+            {{comment.nickname || comment.author }}
           </router-link>
           赞赏了
-          <span class="comment-quantity">{{comment.quantity}}</span>
+          <span class="comment-quantity">{{`${parseFloat(comment.amount) / 10000} EOS`}}</span>
           <p class="comment-timestamp">{{friendlyDate}}</p>
         </div>
       </div>
@@ -24,18 +24,14 @@ export default {
   props: ['comment'],
   computed: {
     displayMessage() {
-      return this.comment.message !== '' ? this.comment.message : '用户没有留下评论';
+      return this.comment.comment !== '' ? this.comment.comment : '用户没有留下评论';
     },
     friendlyDate() {
       // const isAppleSlave = navigator.platform.includes('iPhone');
-      const time = new Date(this.comment.timestamp);
+      const time = new Date(this.comment.create_time);
       return moment(time.getTime() - time.getTimezoneOffset()
                    * 60000).fromNow();// 返回的数据带了时区
-      // moment(this.asset.timestamp).fromNow();
     },
-  },
-  created() {
-    // console.log(this.comment);
   },
 };
 </script>
@@ -93,6 +89,7 @@ export default {
   line-height: 20px;
   letter-spacing: 1px;
   margin: 8px 0 14px 44px;
+  word-break: break-all;
 }
 .comment-line {
   height: 1px;

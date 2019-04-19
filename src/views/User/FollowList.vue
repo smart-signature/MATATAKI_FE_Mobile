@@ -19,7 +19,7 @@
                 class="onecard" @click="jumpToUser( item.username )">
                 <Row>
                   <Col span="3">
-                    <img width="33px" class="onecard_pic" :src="item.avatar">
+                    <img width="33px" class="onecard_pic" :src="item.avatar" @error="() => { item.avatar = require('../../assets/logo.png'); }">
                   </Col>
                   <Col span="21">
                     <Col span="18">
@@ -149,25 +149,10 @@ export default {
       }
     },
     async getAvatarImage(hash, list, index) {
-      if (hash && hash !== '') {
-        try {
-          const response = await getAvatarImage(hash);
-          // .then(response => {
-          // this.avatarloading = false;
-          list[index].avatar = `data:image/png;base64,${btoa(
-            new Uint8Array(response.data).reduce(
-              (data, byte) => data + String.fromCharCode(byte),
-              '',
-            ),
-          )}`;
-          // this.avatarloading = true;
-        } catch (e) {
-          console.log(e);
-          list[index].avatar = require('../../assets/logo.png');
-        }
-      } else {
-        list[index].avatar = require('../../assets/logo.png');
-      }
+      // 空hash 显示默认Logo头像
+      // eslint-disable-next-line global-require
+      if (!hash) list[index].avatar = require('../../assets/logo.png');
+      else list[index].avatar = getAvatarImage(hash);
     },
     async getUserData(list, index) {
       const { username } = list[index];
