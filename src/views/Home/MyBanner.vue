@@ -4,14 +4,14 @@
       <div class="banner-text">
          <img :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png'); }" class="round_icon">
          <div>
-            <p class="username">{{newname}}</p>
+            <p class="username">{{nickname}}</p>
             <p class="my-balance">
-              {{eosBalance}}
+              {{displayBalance}}
               <span class="coin-symbol">EOS</span>
             </p>
          </div>
       </div>
-      <a class="my-user-page" href="javascript:;" @click="toUserPage(currentUsername)">我的主页</a>
+      <a class="my-user-page" href="javascript:;" @click="toUserPage(currentUserInfo.name)">我的主页</a>
     </template>
     <template v-else>
       <div>
