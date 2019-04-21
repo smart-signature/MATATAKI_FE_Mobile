@@ -14,7 +14,11 @@
         src="/img/camera.png" @click="editingavatar = true" v-if="editing"/>
       <Row type="flex" justify="center" class="code-row-bg">
         <Col span="4" class="user-avatar">
-          <img width="50px" class="userpic" :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png'); }" />
+          <img width="50px" class="userpic" :src="avatar"
+            @error="() => {
+              this.avatar = require('../../assets/logo.png');
+            }"
+          />
         </Col>
         <Col span="14">
           <div class="texts">
@@ -25,7 +29,13 @@
               <a @click="jumpTo({ name: 'FollowList', params: { listtype: '关注' }})">
                 关注：{{follows}}
               </a>
-              <a style="margin-left:14px;" @click="jumpTo({ name: 'FollowList', params: { listtype: '粉丝' }})">
+              <a style="margin-left:14px;" 
+                @click="jumpTo({
+                  name: 'FollowList', 
+                  params: { 
+                    listtype: '粉丝' 
+                  }
+                })">
                 粉丝：{{fans}}
               </a>
             </p>

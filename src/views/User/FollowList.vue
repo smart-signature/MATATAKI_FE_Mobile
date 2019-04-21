@@ -109,7 +109,7 @@ export default {
     async RefreshList() {
       this.refreshing = true;
       this.loading = true;
-      if (this.activeNameSwipe == '关注') {
+      if (this.activeNameSwipe === '关注') {
         getFollowList({ username: this.username }, async ({ error, response }) => {
           console.log(error, response);
           const list = response.data.list || [];
