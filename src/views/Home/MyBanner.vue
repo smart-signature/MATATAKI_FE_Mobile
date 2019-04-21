@@ -4,7 +4,7 @@
       <div class="banner-text">
          <img :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png'); }" class="round_icon">
          <div>
-            <p class="username">{{nickname}}</p>
+            <p class="username">{{displayName}}</p>
             <p class="my-balance">
               {{displayBalance}}
               <span class="coin-symbol">EOS</span>
