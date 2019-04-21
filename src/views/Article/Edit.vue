@@ -84,7 +84,7 @@ export default {
     ...mapActions('scatter', [
       'login',
     ]),
-    loginScatterAsync() { return this.login() },
+    loginScatterAsync() { return this.login(); },
     async setArticleData() {
       const articleData = await getArticleData(this.hash);
       const articleInfo = await getArticleInfo(this.hash);

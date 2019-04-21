@@ -16,7 +16,7 @@ const state = {
 // getters
 const getters = {
   currentBalance: ({ balances }) => (balances.ont),
-  currentUsername: ({ account }) => (account ? account : null),
+  currentUsername: ({ account }) => (account || null),
 };
 
 // actions

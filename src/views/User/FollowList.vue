@@ -90,7 +90,7 @@ export default {
 
   },
   computed: {
-    ...mapGetters(["currentUsername"]),
+    ...mapGetters(['currentUsername']),
     isMe() {
       const { username, currentUsername } = this;
       return username === currentUsername;

@@ -56,8 +56,8 @@ export default {
       'connect',
       'login',
     ]),
-    connectScatterAsync() { return this.connect() },
-    loginScatterAsync() { return this.login() },
+    connectScatterAsync() { return this.connect(); },
+    loginScatterAsync() { return this.login(); },
     goBack() {
       this.$router.go(-1);
     },

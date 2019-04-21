@@ -79,8 +79,8 @@ export default {
       'connect',
       'login',
     ]),
-    connectScatterAsync() { return this.connect() },
-    loginScatterAsync() { return this.login() },
+    connectScatterAsync() { return this.connect(); },
+    loginScatterAsync() { return this.login(); },
     cancelCb(reason, event) {
       console.log(reason, event);
     },
