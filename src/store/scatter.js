@@ -11,12 +11,12 @@ const state = {
   },
   isLoggingIn: false,
   isLoadingData: false,
-}
+};
 
 // getters
 const getters = {
   currentBalance: ({ balances }) => balances.eos,
-  currentUsername: ({ account }) => ( account ? account.name : null ),
+  currentUsername: ({ account }) => (account ? account.name : null),
 };
 
 // mutations
@@ -38,7 +38,7 @@ const actions = {
   async connect({ commit, dispatch }) {
     console.log('Connecting to Scatter wallet or Scatter desktop...');
     const connected = await api.connectScatterAsync();
-      
+
     console.log('🛸Scatter🛸 connect result: ', connected);
     // 不論有沒有連上都應該設定狀態，要是連上後登陸前把錢包關了(或是錢包當了)
     // 就會造成狀態不合
@@ -53,9 +53,9 @@ const actions = {
         await api.suggestNetworkAsync().then(added => (
           console.log('🛸Scatter🛸 suggest network result: ', added)
         ));
-     }
+      }
     } else throw 'failed to connect wallet';
-    
+
     return connected;
   },
   async setBalances({ commit, state }) {

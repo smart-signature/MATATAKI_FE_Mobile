@@ -86,7 +86,7 @@ export default {
     ...mapActions('scatter', [
       'login',
     ]),
-    loginScatterAsync() { return this.login() },
+    loginScatterAsync() { return this.login(); },
     async sendThePost() {
       if (!this.isScatterConnected) {
         try {

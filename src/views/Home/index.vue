@@ -4,12 +4,6 @@
     <div class='head'>
       <link rel='icon' type='image/png' sizes='32x32' href='./img/Andoromeda logo@2x.png'>
       <link rel='icon' type='image/png' sizes='16x16' href='./img/Andoromeda logo.png'>
-      <!-- <div style='float:left'>
-        <img src='/img/Andoromeda logo.png' alt='Andoromeda logo'>
-      Andoromeda</div>-->
-      <!-- <Button class='publish' @click='$router.push({name: 'Publish'})'>
-        <za-icon class='publish-icon' type='add'/>1
-      </Button>-->
       <div class='add'>
         <Button class='publish' @click.stop='addShow=!addShow'>
           <za-icon class='publish-icon' type='add' />
@@ -79,8 +73,8 @@ export default {
       'connect',
       'login',
     ]),
-    connectScatterAsync() { return this.connect() },
-    loginScatterAsync() { return this.login() },
+    connectScatterAsync() { return this.connect(); },
+    loginScatterAsync() { return this.login(); },
     cancelCb(reason, event) {
       console.log(reason, event);
     },

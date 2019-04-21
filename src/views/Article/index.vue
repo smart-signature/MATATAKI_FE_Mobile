@@ -283,8 +283,8 @@ export default {
       'connect',
       'login',
     ]),
-    connectScatterAsync() { return this.connect() },
-    loginScatterAsync() { return this.login() },
+    connectScatterAsync() { return this.connect(); },
+    loginScatterAsync() { return this.login(); },
     initClipboard() {
       this.clipboard = new Clipboard('.button-share');
       this.clipboard.on('success', (e) => {

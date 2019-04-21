@@ -27,10 +27,10 @@ export default new Vuex.Store({
       balance: currentBalance,
     }),
     currentUsername: ({ scatterAccount, cyanobridge }) => (
-      scatterAccount ? scatterAccount.name : ( cyanobridge.account ? cyanobridge.account : null ) 
+      scatterAccount ? scatterAccount.name : (cyanobridge.account ? cyanobridge.account : null)
     ),
     currentBalance: ({ scatterAccount, balances, cyanobridge }) => (
-      scatterAccount ? balances.eos : ( cyanobridge.account ? cyanobridge.balance : null ) 
+      scatterAccount ? balances.eos : (cyanobridge.account ? cyanobridge.balance : null)
     ),
     isLogined: (state, { currentUserInfo }) => currentUserInfo.name !== null,
   },

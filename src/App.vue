@@ -65,7 +65,7 @@ export default {
       console.warn('Unable to connect wallets');
       this.$Message.error('钱包连接失败，钱包需打开并解锁');
     }
-    
+
     getOntologyAccount().then((address) => {
       console.info('ONT address :', address);
       this.$Message.success(`ONT address : ${address} ，登陸成功`);

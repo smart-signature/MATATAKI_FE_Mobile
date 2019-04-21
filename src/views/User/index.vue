@@ -2,19 +2,17 @@
   <div class="user">
     <BaseHeader :pageinfo="{ title: `个人主页`, rightPage: 'home',
                    needLogin: false, }" />
-    <!--<za-nav-bar>
-      <div slot="left">
-        <za-icon theme="primary" type="arrow-left" @click="goBack"></za-icon>
-      </div>
-      <div slot="title" v-if="isMe">个人主页</div>
-    </za-nav-bar>-->
     <div class="usercard" >
       <!-- /img/camera.png -->
       <img style="position:absolute; z-index:1;left:40px;" width="50px"
         src="/img/camera.png" @click="editingavatar = true" v-if="editing"/>
       <Row type="flex" justify="center" class="code-row-bg">
         <Col span="4" class="user-avatar">
-          <img width="50px" class="userpic" :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png'); }" />
+          <img width="50px" class="userpic" :src="avatar"
+            @error="() => {
+              this.avatar = require('../../assets/logo.png');
+            }"
+          />
         </Col>
         <Col span="14">
           <div class="texts">
@@ -25,7 +23,13 @@
               <a @click="jumpTo({ name: 'FollowList', params: { listtype: '关注' }})">
                 关注：{{follows}}
               </a>
-              <a style="margin-left:14px;" @click="jumpTo({ name: 'FollowList', params: { listtype: '粉丝' }})">
+              <a style="margin-left:14px;" 
+                @click="jumpTo({
+                  name: 'FollowList', 
+                  params: { 
+                    listtype: '粉丝' 
+                  }
+                })">
                 粉丝：{{fans}}
               </a>
             </p>
@@ -152,7 +156,7 @@ export default {
     ...mapActions('scatter', [
       'logout',
     ]),
-    logoutScatterAsync() { return this.logout() },
+    logoutScatterAsync() { return this.logout(); },
     goBack() {
       this.$router.go(-1);
     },
@@ -207,7 +211,7 @@ export default {
         this.newname = this.nickname === '' ? this.username : this.nickname;
         this.setAvatarImage(data.avatar);
       };
-      if ( currentUsername.length > 12 ) return;
+      if (currentUsername.length > 12) return;
       if (currentUsername !== null) {
         oldgetUser({ username }, ({ error, response }) => {
           console.log(response);
@@ -224,7 +228,7 @@ export default {
     },
     follow_user() {
       const { username, currentUsername } = this;
-      if (!currentUsername || !username || currentUsername.length > 12 ) {
+      if (!currentUsername || !username || currentUsername.length > 12) {
         this.$Notice.error({
           title: '账号信息无效，关注失败',
         });
@@ -248,7 +252,7 @@ export default {
     unfollow_user() {
       const { username, currentUsername } = this;
       if (!currentUsername || !username || currentUsername.length > 12) {
-        this.$Notice.error({ title: '账号信息无效，取消关注失败', });
+        this.$Notice.error({ title: '账号信息无效，取消关注失败' });
         return;
       }
       Unfollow({

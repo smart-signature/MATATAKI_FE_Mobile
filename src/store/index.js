@@ -3,7 +3,7 @@ import Vuex from 'vuex';
 import ontology from './ontology';
 import scatter from './scatter';
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 // That's vuex's need, sorry eslint
 /* eslint-disable no-param-reassign */
@@ -19,22 +19,22 @@ export default new Vuex.Store({
       balance: currentBalance,
     }),
     currentUsername: (state, { 'scatter/currentUsername': scatter, 'ontology/currentUsername': ontology }) => (
-      scatter ? scatter : ( ontology ? ontology : null ) 
+      scatter || (ontology || null)
     ),
-    currentBalance: (state, { 
+    currentBalance: (state, {
       'scatter/currentUsername': scatterUsername,
       'ontology/currentUsername': ontologyUsername,
       'scatter/currentBalance': scatterBalance,
-      'ontology/currentBalance': ontologyBalance
+      'ontology/currentBalance': ontologyBalance,
     }) => (
       scatterUsername
-      ? scatterBalance
-      : ( ontologyUsername ? ontologyBalance : '... XXX' ) 
+        ? scatterBalance
+        : (ontologyUsername ? ontologyBalance : '... XXX')
     ),
     isLogined: (state, { currentUserInfo }) => currentUserInfo.name !== null,
   },
   actions: {
     async walletConnectionSetup() {
-    }
+    },
   },
 });

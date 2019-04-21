@@ -44,8 +44,8 @@ export default {
     },
     displayName() {
       const { currentUserInfo, nickname } = this;
-        return nickname !== '' ? nickname 
-          : currentUserInfo.name.length <= 12 ? currentUserInfo.name
+      return nickname !== '' ? nickname
+        : currentUserInfo.name.length <= 12 ? currentUserInfo.name
           : currentUserInfo.name.slice(0, 12);
     },
     displayTokenSymbol() {
@@ -67,8 +67,8 @@ export default {
       'connect',
       'login',
     ]),
-    connectScatterAsync() { return this.connect() },
-    loginScatterAsync() { return this.login() },
+    connectScatterAsync() { return this.connect(); },
+    loginScatterAsync() { return this.login(); },
     toUserPage(username) {
       this.$router.push({ name: 'User', params: { username } });
     },
