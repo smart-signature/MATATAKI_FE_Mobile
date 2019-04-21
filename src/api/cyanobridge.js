@@ -1,21 +1,22 @@
 /* eslint-disable */
-import { client } from 'cyanobridge';
-import { client as ontologyClient, ParameterType } from 'ontology-dapi';
 import * as config from '@/config';
 
-client.registerClient();
-ontologyClient.registerClient({});
-
-const isAPP = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+const isAPP = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
 // try...catch 放在 npm 包的使用入口的位置
 
+const getClient = async () => {
+  if (isAPP) {
+    const { client } = await import('cyanobridge');
+    client.registerClient();
+    return client;
+  } else {
+    const { client } = await import('ontology-dapi');
+    client.registerClient({});
+    return client;
+  }
+};
 
-// import { client as clientApp } from 'cyanobridge'
-// import countryPointsJson from '@/util/countryPoints.json';
-// import ui from './ui';
-
-// console.log(countryPointsJson, 'countryPointsJson')
 const toolkit = {
   ab2str: (buf) => String.fromCharCode.apply(null, new Uint8Array(buf)),
   hexstring2ab:  (str) => {
@@ -41,13 +42,15 @@ const toolkit = {
 };
 
 const cyanobridgeAPI = {
-  getAccount: () => {
+  getAccount: async (client = null) => {
+    let _client = client;
+    if ( _client === null ) _client = await getClient();
     const params = {
       dappName: config.dappName,
       dappIcon: '' // some url points to the dapp icon
     };
     try {
-      return ontologyClient.api.asset.getAccount();
+      return isAPP ? _client.api.asset.getAccount(params) : _client.api.asset.getAccount();
     } catch(err) {
       console.error('cyanobridge.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', err);
     }
@@ -57,4 +60,4 @@ const cyanobridgeAPI = {
 
 
 export default cyanobridgeAPI;
-export { client, ontologyClient, isAPP, toolkit };
+export { toolkit };
