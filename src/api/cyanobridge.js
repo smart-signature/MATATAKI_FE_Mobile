@@ -1,8 +1,8 @@
 /* eslint-disable */
 import * as config from '@/config';
 
-const isAPP = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
+const isAPP = /Firefox|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+// const isAPP = !/Chrome/i.test(navigator.userAgent);
 // try...catch 放在 npm 包的使用入口的位置
 
 const getClient = async () => {
