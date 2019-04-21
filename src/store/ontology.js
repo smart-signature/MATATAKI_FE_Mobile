@@ -26,8 +26,8 @@ const actions = {
     return new Promise((resolve, reject) => {
       cyanobridgeAPI.getAccount()
         .then((result) => {
-          // const { result: address } = result;
-          const address = result;
+          // const { result: address } = result; // o
+          const address = result; // c
           commit('setAccount', address);
           console.log('1.');
           resolve(address);
