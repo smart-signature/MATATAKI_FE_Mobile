@@ -1,5 +1,6 @@
 import axios from 'axios';
 import https from 'https';
+import store from '@/store';
 import { Base64 } from 'js-base64';
 import API, { currentEOSAccount as currentAccount } from './scatter';
 
@@ -7,6 +8,23 @@ import API, { currentEOSAccount as currentAccount } from './scatter';
 
 export const apiServer = process.env.VUE_APP_API;
 const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+
+const newpublishArticle = ({
+  author, title, hash, fissionFactor,
+}) => store.dispatch('getSignature', { author, hash }).then(({ publicKey, signature, username }) => {
+  console.log('签名成功后调', publicKey, signature, username);
+  // if (err) failed('2nd step failed');
+  return axios.post(`${apiServer}/publish`,
+    {
+      author,
+      fissionFactor,
+      hash,
+      publickey: publicKey,
+      sign: signature,
+      title,
+      username,
+    });
+});
 
 const publishArticle = ({
   author, title, hash, fissionFactor,
@@ -325,4 +343,5 @@ export {
   getSharesbysignid, addReadAmount, sendComment, getAssets, getAvatarImage,
   disassembleToken, delArticle, uploadAvatar, getArticleSupports, editArticle,
   getBackendData,
+  newpublishArticle,
 };

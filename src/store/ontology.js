@@ -14,7 +14,7 @@ const state = {
 
 const getters = {
   currentBalance: ({ balances }) => (balances.ont),
-  currentUsername: ({ account }) => (account || null),
+  // currentUsername: ({ account }) => (account || null),
 };
 
 const actions = {
@@ -22,11 +22,8 @@ const actions = {
     console.log('Connecting to ont wallet ...');
     return new Promise((resolve, reject) => {
       cyanobridgeAPI.getAccount()
-        .then((result) => {
-          // const { result: address } = result; // o
-          const address = result; // c
+        .then((address) => {
           commit('setAccount', address);
-          // console.debug('1.');
           resolve(address);
         })
         .catch(result => reject(result));
@@ -53,7 +50,7 @@ const actions = {
 };
 
 const mutations = {
-  setAccount(state, { account }) {
+  setAccount(state, account) {
     state.account = account;
   },
 };

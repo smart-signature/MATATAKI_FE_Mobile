@@ -19,8 +19,8 @@ export default new Vuex.Store({
       balance: currentBalance,
       blockchain: null,
     }),
-    currentUsername: (state, { 'scatter/currentUsername': scatter, 'ontology/currentUsername': ontology }) => (
-      scatter || (ontology || null)
+    currentUsername: (state, { 'scatter/currentUsername': scatter }) => (
+      scatter || (state.ontology.account || null)
     ),
     currentBalance: (state, {
       'scatter/currentUsername': scatterUsername,
@@ -35,13 +35,13 @@ export default new Vuex.Store({
     isLogined: (state, { currentUserInfo }) => currentUserInfo.name !== null,
   },
   actions: {
-    async getSignature({ commit, dispatch, state, getters }) {
+    async getSignature({ commit, dispatch, state, getters }, { author, hash }) {
       const { blockchain } = getters.currentUserInfo;
       let actionName = null;
       if (blockchain === 'ONT') actionName = 'ontology/getSignature';
       // todo:
       // else if (blockchain === 'EOS') actionName = 'ontology/getSignature';
-      await dispatch(actionName);
+      await dispatch(actionName, { author, hash });
     },
     async idCheck({ commit, dispatch, state, getters }) {
       await new Promise(async (resolve, reject) => {
@@ -61,8 +61,8 @@ export default new Vuex.Store({
 
         console.log('Start id check ...');
         if (getters.currentUserInfo.name) {
-          console.log('Id check pass');
-          resolve();
+          console.log('Id check pass, id :', getters.currentUserInfo.name);
+          resolve(true);
           return;
         }
         console.info('Ontology status :', isOntologyConnected);
