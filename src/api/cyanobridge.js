@@ -7,11 +7,11 @@ const isAPP = /Firefox|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera 
 
 const getClient = async () => {
   if (isAPP) {
-    const { client } = await import('cyanobridge');
+    const { client } = await import(/* webpackChunkName: "cyanobridge" */ 'cyanobridge');
     client.registerClient();
     return client;
   } else {
-    const { client } = await import('ontology-dapi');
+    const { client } = await import(/* webpackChunkName: "cyanobridge" */ 'ontology-dapi');
     client.registerClient({});
     return client;
   }
