@@ -13,13 +13,15 @@
 
 <script>
 import moment from 'moment';
+import { isNDaysAgo } from '@/common/methods';
 
 export default {
   name: 'ArticleCard',
   props: ['article'],
   computed: {
     friendlyDate() {
-      return moment(this.article.create_time).format('MMMDo HH:mm');
+      const time = moment(this.article.create_time);
+      return isNDaysAgo(2, time) ? time.format('MMMDo HH:mm') : time.fromNow();
     },
     hash() {
       return this.article.hash;
