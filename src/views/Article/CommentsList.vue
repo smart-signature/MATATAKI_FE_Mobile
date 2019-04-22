@@ -1,5 +1,5 @@
 <template>
-  <PullComponents
+  <BasePull
     :loadingText="{
       start: '😄 勤奋地加载更多精彩内容 😄',
       end: '🎉 哇，你真勤奋，所有评论已经加载完了～ 🎉',
@@ -11,17 +11,15 @@
     @getListData="getListData"
     >
       <CommentCard :comment="item" v-for="(item, index) in articles" :key="index"/>
-  </PullComponents>
+  </BasePull>
 </template>
 
 <script>
-import PullComponents from '@/components/PullComponents.vue';
 import { CommentCard } from '@/components/';
 
 export default {
   props: ['signId'],
   components: {
-    PullComponents,
     CommentCard,
   },
   watch: {

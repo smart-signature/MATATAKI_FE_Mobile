@@ -18,8 +18,8 @@
         <Col span="6">
           <p class="toptext2">创作历史收益</p>
           <p class="toptext3"
-            :style='assetsRewards.totalSignIncome > 0 ? { color: "#f50" }
-                    : (assetsRewards.totalSignIncome < 0 ? { color: "#87d068" } : {color: "#a7aab7"})'>
+            :style='assetsRewards.totalSignIncome > 0 ? { color: "#D95E5E" }
+                    : (assetsRewards.totalSignIncome < 0 ? { color: "#519552" } : {color: "#a7aab7"})'>
             {{assetsRewards.totalSignIncome}}
           </p>
         </Col>
@@ -29,8 +29,8 @@
         <Col span="6">
           <p class="toptext2">赞赏历史收益</p>
           <p class="toptext3"
-             :style='assetsRewards.totalShareIncome > 0 ? { color: "#f50" }
-                     : (assetsRewards.totalShareIncome < 0 ? { color: "#87d068" } : {color: "#a7aab7"})'>
+             :style='assetsRewards.totalShareIncome > 0 ? { color: "#D95E5E" }
+                     : (assetsRewards.totalShareIncome < 0 ? { color: "#519552" } : {color: "#a7aab7"})'>
             {{assetsRewards.totalShareIncome}}
           </p>
         </Col>
@@ -40,15 +40,15 @@
         <Col span="6">
           <p class="toptext2">赞赏历史支出</p>
           <p class="toptext3"
-            :style='assetsRewards.totalShareExpenses > 0 ? { color: "#f50" }
-                    : (assetsRewards.totalShareExpenses < 0 ? { color: "#87d068" } : {color: "#a7aab7"})'>
+            :style='assetsRewards.totalShareExpenses > 0 ? { color: "#D95E5E" }
+                    : (assetsRewards.totalShareExpenses < 0 ? { color: "#519552" } : {color: "#a7aab7"})'>
             {{assetsRewards.totalShareExpenses}}
           </p>
         </Col>
       </Row>
     </div>
     <div class="detailtext">明细</div>
-    <AssetList :username="username" @getOtherAsset="getOtherAsset" />
+    <AssetList class="asset-list" :username="username" @getOtherAsset="getOtherAsset" />
   </div>
 </template>
 
