@@ -1,7 +1,7 @@
 <template>
   <za-tabs v-model="activeIndex" @change="changeTabs">
     <za-tab-pane :label="item.label" :name="index" v-for="(item, index) in tabsData" :key="index">
-      <PullComponents
+      <BasePull
         :params="item.params"
         :apiUrl="item.apiUrl"
         :activeIndex="activeIndex"
@@ -9,18 +9,17 @@
         @getListData="getListData"
         >
           <ArticleCard :article="item" v-for="(item, index) in item.articles" :key="index"/>
-      </PullComponents>
+      </BasePull>
     </za-tab-pane>
   </za-tabs>
 </template>
 
 <script>
-import PullComponents from '@/components/PullComponents.vue';
 import { ArticleCard } from '@/components/';
 
 export default {
   name: 'ArticlesRankings',
-  components: { PullComponents, ArticleCard },
+  components: { ArticleCard },
   created() {},
   methods: {
     changeTabs(tab) {
