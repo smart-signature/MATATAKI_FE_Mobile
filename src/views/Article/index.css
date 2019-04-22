@@ -7,8 +7,10 @@
 .article {
   text-align: left;
   max-width: 750px;
+  padding: 0 0 10px;
   margin: 0 auto;
   position: relative;
+  background-color: #fff;
 }
 .ta .tac .iframe_wrap,
 .ta .tac iframe,
