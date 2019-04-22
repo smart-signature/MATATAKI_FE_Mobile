@@ -3,7 +3,6 @@ import cyanobridgeAPI from '@/api/cyanobridge';
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-shadow */
 
-
 // initial state
 const state = {
   account: null,
@@ -13,13 +12,11 @@ const state = {
   },
 };
 
-// getters
 const getters = {
   currentBalance: ({ balances }) => (balances.ont),
   currentUsername: ({ account }) => (account || null),
 };
 
-// actions
 const actions = {
   getAccount({ commit }) {
     console.log('Connecting to ont wallet ...');
@@ -29,7 +26,7 @@ const actions = {
           // const { result: address } = result; // o
           const address = result; // c
           commit('setAccount', address);
-          console.log('1.');
+          // console.debug('1.');
           resolve(address);
         })
         .catch(result => reject(result));
@@ -37,7 +34,6 @@ const actions = {
   },
 };
 
-// mutations
 const mutations = {
   setAccount(state, { account }) {
     state.account = account;
