@@ -1,25 +1,24 @@
 import api, { currentEOSAccount } from '@/api/scatter';
 
 /* eslint-disable no-param-reassign */
+/* eslint-disable no-shadow */
 
 // initial state
 const state = {
-  isConnected: false,
   account: null,
   balances: {
     eos: '... EOS',
   },
+  isConnected: false,
   isLoggingIn: false,
   isLoadingData: false,
 };
 
-// getters
 const getters = {
   currentBalance: ({ balances }) => balances.eos,
   currentUsername: ({ account }) => (account ? account.name : null),
 };
 
-// mutations
 const mutations = {
   setIsLoggingIn(state, isLoggingIn) {
     state.isLoggingIn = isLoggingIn;
@@ -34,11 +33,11 @@ const mutations = {
     state.balances[symbol] = balance;
   },
 };
+
 const actions = {
   async connect({ commit, dispatch }) {
     console.log('Connecting to Scatter wallet or Scatter desktop...');
     const connected = await api.connectScatterAsync();
-
     console.log('🛸Scatter🛸 connect result: ', connected);
     // 不論有沒有連上都應該設定狀態，要是連上後登陸前把錢包關了(或是錢包當了)
     // 就會造成狀態不合
@@ -54,7 +53,7 @@ const actions = {
           console.log('🛸Scatter🛸 suggest network result: ', added)
         ));
       }
-    } else throw 'failed to connect wallet';
+    } else throw new Error('failed to connect wallet');
 
     return connected;
   },
@@ -77,18 +76,19 @@ const actions = {
         const identity = await api.loginScatterAsync();
         if (!identity) { // 失敗若是走了 catch ，這條也不會 run
           commit('setAccount', null);
-          reject(null);
+          commit('setIsLoggingIn', false);
+          reject(new Error('Failed to get identity in Scatter'));
         }
         const account = identity.accounts.find(({ blockchain }) => blockchain === 'eos');
         commit('setAccount', account);
         console.log(account, 'log in successful.');
         dispatch('setBalances');
         commit('setIsLoggingIn', false);
-        resolve(this.account);
+        resolve(account);
       } catch (err) {
         commit('setIsLoggingIn', false);
         console.error('Failed to log in Scatter :', err);
-        reject(null);
+        reject(err);
       }
     });
   },
