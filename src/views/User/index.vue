@@ -16,7 +16,8 @@
         </Col>
         <Col span="14">
           <div class="texts">
-            <p v-if="!editing" class="username">{{nickname == "" ? username : nickname}}</p>
+            <p v-if="!editing" class="username">{{nickname === "" ? username : nickname}}</p>
+            <p v-if="!editing" class="email">Email: {{email === "" ? "empty" : email}}</p>
             <za-input v-if="editing" class="userinput" ref='inputFirst'
               v-model='newname'></za-input>
             <p class="userstatus">
@@ -141,6 +142,7 @@ export default {
       fans: 0,
       nickname: '',
       newname: '',
+      email: '',      
       avatar: require('../../assets/logo.png'),
       editingavatar: false,
     };
@@ -204,14 +206,16 @@ export default {
       if (this.username === null) this.username = this.currentUsername;
       const { username, currentUsername } = this;
       const setUser = (data) => {
+        this.nickname = data.nickname;
+        this.email = data.email;
+        this.newname = this.nickname === '' ? this.username : this.nickname;
+        this.setAvatarImage(data.avatar);        
         this.follows = data.follows;
         this.fans = data.fans;
-        this.followed = data.is_follow;
-        this.nickname = data.nickname;
-        this.newname = this.nickname === '' ? this.username : this.nickname;
-        this.setAvatarImage(data.avatar);
+        this.followed = data.is_follow;        
       };
       if (currentUsername.length > 12) return;
+      // todo(minakokojima): deprecate oldgetUser
       if (currentUsername !== null) {
         oldgetUser({ username }, ({ error, response }) => {
           console.log(response);
