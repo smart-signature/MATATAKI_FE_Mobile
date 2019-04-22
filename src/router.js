@@ -44,7 +44,7 @@ export default new Router({
       path: '/user/:username/asset',
       name: 'Asset',
       props: true,
-      component: () => import(/* webpackChunkName: "user-asset" */ './views/User/Asset/Asset.vue'),
+      component: () => import(/* webpackChunkName: "user" */ './views/User/Asset/Asset.vue'),
       beforeEnter: (to, from, next) => {
         const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
         // eslint-disable-next-line eqeqeq
@@ -56,37 +56,37 @@ export default new Router({
       path: '/user/:username/original',
       name: 'Original',
       props: true,
-      component: () => import(/* webpackChunkName: "user-original" */ './views/User/Original.vue'),
+      component: () => import(/* webpackChunkName: "user" */ './views/User/Original.vue'),
     },
     {
       path: '/user/:username/reward',
       name: 'Reward',
       props: true,
-      component: () => import(/* webpackChunkName: "user-reward" */ './views/User/Reward.vue'),
+      component: () => import(/* webpackChunkName: "user" */ './views/User/Reward.vue'),
     },
     {
       path: '/publish',
       name: 'Publish',
       props: true,
-      component: () => import(/* webpackChunkName: "new-post" */ './views/Publish.vue'),
+      component: () => import(/* webpackChunkName: "article-edit" */ './views/Publish.vue'),
     },
     {
       path: '/followlist/:username',
       name: 'FollowList',
       props: true,
-      component: () => import(/* webpackChunkName: "new-post" */ './views/User/FollowList.vue'),
+      component: () => import(/* webpackChunkName: "user" */ './views/User/FollowList.vue'),
     },
     {
       path: '/draftbox',
       name: 'DraftBox',
       props: true,
-      component: () => import(/* webpackChunkName: "new-post" */ './views/User/DraftBox.vue'),
+      component: () => import(/* webpackChunkName: "user" */ './views/User/DraftBox.vue'),
     },
     {
       path: '/avatar',
       name: 'AvatarUploader',
       props: true,
-      component: () => import(/* webpackChunkName: "new-post" */ './views/User/AvatarUploader.vue'),
+      component: () => import(/* webpackChunkName: "user" */ './views/User/AvatarUploader.vue'),
     },
     {
       path: '/_easter-egg',
@@ -98,7 +98,7 @@ export default new Router({
       path: '/edit/:id',
       name: 'Edit',
       props: true,
-      component: () => import(/* webpackChunkName: "easter-egg" */ './views/Article/Edit.vue'),
+      component: () => import(/* webpackChunkName: "article-edit" */ './views/Article/Edit.vue'),
     },
   ],
 });
