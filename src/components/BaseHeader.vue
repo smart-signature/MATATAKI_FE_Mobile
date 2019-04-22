@@ -52,17 +52,20 @@ export default {
     console.log('Does this page need to log in?:', this.pageinfo.needLogin);
   },
   methods: {
+    ...mapGetters(['isLogined']),
     ...mapActions('scatter', [
       'connect',
       'login',
     ]),
-    connectScatterAsync() { return this.connect(); },
     loginScatterAsync() { return this.login(); },
     goBack() {
       this.$router.go(-1);
     },
   },
   watch: {
+    isLogined(newState) {
+      if (newState) this.$Message.success('自动登录成功');
+    },
     isScatterConnected(newState) {
       const { pageinfo, isScatterLoggingIn } = this;
       if (pageinfo.needLogin !== undefined && pageinfo.needLogin) {
