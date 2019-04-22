@@ -66,13 +66,13 @@
       <div class="footer-block">
           <button class="button-support"
             v-if="isSupported===-1"
-            @click="share">赞赏<img src="@/assets/img/icon_support.png"/></button>
+            @click="b4support">赞赏<img src="@/assets/img/icon_support.png"/></button>
           <button class="button-support"
             v-if="isSupported===0"
             disabled>赞赏中<img src="@/assets/img/icon_support.png"/></button>
           <button class="button-support"
             v-else-if="isSupported===1"
-            @click="visible3=true">赞赏<img src="@/assets/img/icon_support.png"/></button>
+            @click="b4support">赞赏<img src="@/assets/img/icon_support.png"/></button>
           <button class="button-support"
             v-else-if="isSupported===2"
             disabled>已赞赏<img src="@/assets/img/icon_support.png"/></button>
@@ -279,12 +279,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('scatter', [
-      'connect',
-      'login',
-    ]),
-    connectScatterAsync() { return this.connect(); },
-    loginScatterAsync() { return this.login(); },
+    ...mapActions(['idCheck']),
     initClipboard() {
       this.clipboard = new Clipboard('.button-share');
       this.clipboard.on('success', (e) => {
@@ -365,6 +360,20 @@ export default {
         this.isSupported = RewardStatus.NOT_LOGGINED;
       }
     },
+    async b4support() {
+      this.$Message.info('帐号检测中...');
+      await this.idCheck().then(() => {
+        this.$Message.success('检测通过');
+        this.visible3 = true;
+      }).catch(() => {
+        this.$Message.error('本功能需登录');
+        /*
+        this.$Modal.error({
+            title: '无法与你的钱包建立链接並登录',
+            content: '请检查钱包是否打开并解锁',
+        });*/
+      });
+    },
     async support() {
       const { article, comment } = this;
       // amount
@@ -376,12 +385,7 @@ export default {
       console.info('final amount :', amount, ', comment :', comment);
 
       this.visible3 = false;
-      try {
-        await this.loginCheck();
-      } catch (error) {
-        this.$Message.error('本功能需登录');
-        return;
-      }
+      await this.b4support();
 
       const signId = article.id;
       const referrer = this.getInvite;
@@ -429,31 +433,10 @@ export default {
     },
     share() {
       try {
-        this.loginCheck();
+        this.idCheck();
       } catch (error) {
         // console.log(error);
         // this.$Message.error('失败');
-      }
-    },
-    async loginCheck() { // https://juejin.im/post/5a2df151f265da4304068fc1
-      const { isScatterConnected, isScatterLoggingIn, loginScatterAsync } = this;
-      try { // 錢包登录
-        // 開了網頁之後，才開 Scatter ，這時候沒有做 connectScatterAsync 就登录不能
-        console.log('scatter status', isScatterConnected);
-        if (!isScatterConnected) { await this.connectScatterAsync(); }
-        if (isScatterConnected && !isScatterLoggingIn) {
-          await loginScatterAsync().then(() => {
-            this.$Message.success('自动登录成功');
-          });
-        }
-      } catch (error) {
-        const errMeg = 'Unable to log-in to wallet,';
-        console.warn(errMeg, 'reason :', error); // 一份可愛的錯誤報告
-        this.$Modal.error({ // 親切的用戶提示
-          title: '无法与你的钱包建立链接並登录',
-          content: '请检查钱包是否打开并解锁',
-        });
-        throw errMeg; // 歡喜的 throw
       }
     },
     async getArticlesList(signId) {

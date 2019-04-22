@@ -52,10 +52,9 @@ const actions = {
         await api.suggestNetworkAsync().then(added => (
           console.log('🛸Scatter🛸 suggest network result: ', added)
         ));
+        return true;
       }
-    } else throw new Error('failed to connect wallet');
-
-    return connected;
+    } else return false;
   },
   async setBalances({ commit, state }) {
     const { name } = state.account;
