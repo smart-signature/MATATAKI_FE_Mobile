@@ -63,13 +63,17 @@ const cyanobridgeAPI = {
     if (!this.client) await this.setClient();
     const { client } = this;
     const params = {
-      dappName: config.dappName,
-      dappIcon: '' // some url points to the dapp icon
+      type: 'account', // account or identity that will sign the message
+      dappName: config.dappName, // dapp's name
+      dappIcon: '', // some url that points to the dapp's icon
+      message, // message sent from dapp that will be signed by native client
+      expired: new Date('2019-01-01').getTime(), // expired date of login
+      callback: '' // callback url of dapp
     };
     try {
       return isAPP
-        ? null // todo
-        : client.api.asset.signMessage({ message });
+        ? client.api.message.login(params) // todo: expired
+        : client.api.message.signMessage({ message });
     } catch(err) {
       console.error('cyanobridge.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', err);
     }
