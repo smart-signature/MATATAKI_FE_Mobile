@@ -1,21 +1,11 @@
 /* eslint-disable */
 import * as config from '@/config';
 
+// https://github.com/backslash47/OEPs/blob/oep-dapp-api/OEP-6/OEP-6.mediawiki
+
 const isAPP = /Firefox|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 // const isAPP = !/Chrome/i.test(navigator.userAgent);
 // try...catch 放在 npm 包的使用入口的位置
-
-const getClient = async () => {
-  if (isAPP) {
-    const { client } = await import(/* webpackChunkName: "cyanobridge" */ 'cyanobridge');
-    client.registerClient();
-    return client;
-  } else {
-    const { client } = await import(/* webpackChunkName: "cyanobridge" */ 'ontology-dapi');
-    client.registerClient({});
-    return client;
-  }
-};
 
 const toolkit = {
   ab2str: (buf) => String.fromCharCode.apply(null, new Uint8Array(buf)),
@@ -42,15 +32,44 @@ const toolkit = {
 };
 
 const cyanobridgeAPI = {
-  getAccount: async (client = null) => {
-    let _client = client;
-    if ( _client === null ) _client = await getClient();
+  client: null,
+  async setClient() {
+    if (isAPP) {
+      const { client } = await import(/* webpackChunkName: "cyanobridge" */ 'cyanobridge');
+      client.registerClient();
+      this.client = client;
+    } else {
+      const { client } = await import(/* webpackChunkName: "cyanobridge" */ 'ontology-dapi');
+      client.registerClient({});
+      this.client = client;
+    }
+  },
+  async getAccount() {
+    if (!this.client) await this.setClient();
+    const { client } = this;
     const params = {
       dappName: config.dappName,
       dappIcon: '' // some url points to the dapp icon
     };
     try {
-      return isAPP ? _client.api.asset.getAccount(params) : _client.api.asset.getAccount();
+      return isAPP 
+        ? client.api.asset.getAccount(params)
+        : client.api.asset.getAccount();
+    } catch(err) {
+      console.error('cyanobridge.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', err);
+    }
+  },
+  async signMessage(message) {
+    if (!this.client) await this.setClient();
+    const { client } = this;
+    const params = {
+      dappName: config.dappName,
+      dappIcon: '' // some url points to the dapp icon
+    };
+    try {
+      return isAPP
+        ? null // todo
+        : client.api.asset.signMessage({ message });
     } catch(err) {
       console.error('cyanobridge.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', err);
     }
