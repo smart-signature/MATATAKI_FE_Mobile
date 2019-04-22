@@ -35,6 +35,14 @@ export default new Vuex.Store({
     isLogined: (state, { currentUserInfo }) => currentUserInfo.name !== null,
   },
   actions: {
+    async getSignature({ commit, dispatch, state, getters }) {
+      const { blockchain } = getters.currentUserInfo;
+      let actionName = null;
+      if (blockchain === 'ONT') actionName = 'ontology/getSignature';
+      // todo:
+      // else if (blockchain === 'EOS') actionName = 'ontology/getSignature';
+      await dispatch(actionName);
+    },
     async idCheck({ commit, dispatch, state, getters }) {
       await new Promise(async (resolve, reject) => {
         const { ontology, scatter } = state;
