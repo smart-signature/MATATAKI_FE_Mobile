@@ -1,5 +1,5 @@
 <template>
-  <PullComponents
+  <BasePull
     :loadingText="{ start: '😄 勤奋地加载更多精彩内容 😄',
         end: '🎉 哇，你真勤奋，所有明细已经加载完了～ 🎉',
         noArticles: '无明细', }"
@@ -8,17 +8,16 @@
     :isObj="{ type: 'Object', key: 'history' }"
     @getListData="getListData">
       <AssetCard :asset="item" v-for="(item, index) in asset" :key="index" />
-  </PullComponents>
+  </BasePull>
 </template>
 
 <script>
-import PullComponents from '@/components/PullComponents.vue';
 import { AssetCard } from '@/components/';
 
 export default {
   name: 'AssetList',
   props: ['username'],
-  components: { PullComponents, AssetCard },
+  components: { AssetCard },
   created() {
   },
   data() {

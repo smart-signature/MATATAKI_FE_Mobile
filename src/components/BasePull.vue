@@ -25,7 +25,7 @@ import { apiServer } from '@/api/backend';
 import axios from 'axios';
 
 export default {
-  name: 'PullComponents',
+  name: 'BasePull',
   props: {
     // 加载完的文字提示
     loadingText: {
