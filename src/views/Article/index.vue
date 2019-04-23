@@ -130,14 +130,9 @@ export default {
   props: ['hash'],
   components: { mavonEditor, CommentsList },
   computed: {
-    ...mapState('scatter', {
-      isScatterConnected: state => state.isConnected,
-      isScatterLoggingIn: state => state.isLoggingIn,
-      scatterAccount: state => state.account,
-    }),
     ...mapGetters(['currentUsername']),
     isLogined() {
-      return this.scatterAccount !== null;
+      return this.currentUsername !== null;
     },
     compiledMarkdown() {
       return markdownIt.render(this.post.content);
@@ -345,7 +340,7 @@ export default {
     },
     setisSupported() {
       const { shares } = this;
-      if (this.scatterAccount !== null && shares !== []) {
+      if (this.currentUsername !== null && shares !== []) {
         const share = shares.find(element => element.author === this.currentUsername);
         if (share !== undefined) {
           console.log('Current user\'s share :', share);
@@ -417,7 +412,7 @@ export default {
                    * 60000;
 
         this.comments.push({
-          author: this.scatterAccount.name,
+          author: this.currentUsername,
           timestamp: timeNow,
           quantity: `${amount} EOS`,
           message: comment,
