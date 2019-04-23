@@ -3,61 +3,43 @@
     <BaseHeader :pageinfo="{ title: `个人主页`, rightPage: 'home',
                    needLogin: false, }" />
     <div class="usercard" >
-      <!-- /img/camera.png -->
-      <img style="position:absolute; z-index:1;left:40px;" width="50px"
-        src="/img/camera.png" @click="editingavatar = true" v-if="editing"/>
-      <Row type="flex" justify="center" class="code-row-bg">
-        <Col span="4" class="user-avatar">
-          <img width="50px" class="userpic" :src="avatar"
-            @error="() => {
-              this.avatar = require('../../assets/logo.png');
-            }"
-          />
-        </Col>
-        <Col span="14">
-          <div class="texts">
-            <p v-if="!editing" class="username">{{nickname == "" ? username : nickname}}</p>
-            <za-input v-if="editing" class="userinput" ref='inputFirst'
-              v-model='newname'></za-input>
-            <p class="userstatus">
-              <a @click="jumpTo({ name: 'FollowList', params: { listtype: '关注' }})">
-                关注：{{follows}}
-              </a>
-              <a style="margin-left:14px;" @click="jumpTo({ name: 'FollowList', params: {  listtype: '粉丝'  }})">
-                粉丝：{{fans}}
-              </a>
-            </p>
-          </div>
-        </Col>
-        <Col span="6">
-          <div v-if="editing">
-            <Button class="rightbutton" size="small" type="success"
-                    ghost @click="save">
-              <div>完成</div>
-            </Button>
-          </div>
-          <div v-else>
-            <div v-if="isMe">
-              <Button class="rightbutton" size="small" type="success" ghost @click="edit">
-                <div>编辑</div>
-              </Button>
-            </div>
-            <div v-else>
-              <div v-if="!followed">
-                <Button class="rightbutton" size="small" type="success" ghost @click="follow_user">
-                  <div>关注</div>
-                </Button>
-              </div>
-              <div v-else>
-                <Button class="rightbutton"
-                  size="small" type="success" ghost @click="unfollow_user">
-                  <div>取消关注</div>
-                </Button>
-              </div>
-            </div>
-          </div>
-        </Col>
-      </Row>
+      <div class="user-avatar">
+        <img class="userpic" :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png');}" />
+        <img class="camera" src="/img/camera.png" @click="editingavatar = true" v-if="editing"/>
+      </div>
+
+      <div class="texts">
+        <p v-if="!editing" class="username" :class="[!email ? 'username-email' : '']">{{nickname === "" ? username : nickname}}</p>
+        <p v-if="email" class="email">{{email}}</p>
+        <input class="userinput" :class="[!email ? 'username-email' : '']" v-if="editing" v-model='newname' />
+        <p class="userstatus">
+          <a @click="jumpTo({ name: 'FollowList', params: { listtype: '关注' }})">
+            关注：{{follows}}
+          </a>
+          <a @click="jumpTo({ name: 'FollowList', params: {  listtype: '粉丝'  }})">
+            粉丝：{{fans}}
+          </a>
+        </p>
+      </div>
+      <div class="user-button">
+        <template v-if="editing">
+          <a href="javascript:;" class="rightbutton" :class="[editing ? 'editing-button' : '']" @click="save">完成</a>
+        </template>
+      <template v-else>
+        <template v-if="isMe">
+          <a href="javascript:;" class="rightbutton" @click="edit">编辑</a>
+        </template>
+        <template v-else>
+          <template v-if="!followed">
+            <a href="javascript:;" class="rightbutton" @click="follow_user">关注</a>
+          </template>
+          <template v-else>
+            <a href="javascript:;" class="rightbutton" @click="unfollow_user">取消关注</a>
+          </template>
+        </template>
+      </template>
+    </div>
+
     </div>
     <div class="topcard" v-if="isMe">
       <Row type="flex" justify="center" class="code-row-bg">
@@ -135,6 +117,7 @@ export default {
       fans: 0,
       nickname: '',
       newname: '',
+      email: '',
       avatar: require('../../assets/logo.png'),
       editingavatar: false,
     };
@@ -198,14 +181,16 @@ export default {
       if (this.username === null) this.username = this.currentUsername;
       const { username, currentUsername } = this;
       const setUser = (data) => {
+        this.nickname = data.nickname;
+        this.email = data.email;
+        this.newname = this.nickname === '' ? this.username : this.nickname;
+        this.setAvatarImage(data.avatar);
         this.follows = data.follows;
         this.fans = data.fans;
         this.followed = data.is_follow;
-        this.nickname = data.nickname;
-        this.newname = this.nickname === '' ? this.username : this.nickname;
-        this.setAvatarImage(data.avatar);
       };
       if (currentUsername.length > 12) return;
+      // todo(minakokojima): deprecate oldgetUser
       if (currentUsername !== null) {
         oldgetUser({ username }, ({ error, response }) => {
           console.log(response);
@@ -294,116 +279,5 @@ export default {
   },
 };
 </script>
-<style>
-a {
-  color: #000;
-  text-decoration: none; /* no underline */
-}
-.user{
-  background-color: #F7F7F7;
-  padding-bottom: 20px;
-}
-.usercard{
-  box-shadow: 0px 2px 5px 3px rgba(233, 233, 233, 0.5);
-  background-color: #ffffff;
-  padding: 20px;
-  margin: 16px 20px;
-  /* display: inline-block; */
-  border-radius: 3px;
-  height: 99px;
-}
-.userpic{
-  float: left;
-}
-.username{
-  font-size: 22px;
-  font-weight: bolder;
-  text-align: left;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-}
-.userinput{
-  font-size: 22px;
-  font-weight: bolder;
-  margin-top: -12px;
-  height: 45px;
-}
-.userstatus{
-  font-size: 14px;
-  opacity: 0.4;
-  text-align: left;
-}
-.texts{
-  padding-left: 11px;
-}
-.rightbutton{
-  float: right;
-  margin-top: 6px;
-  width: 62px;
-  height: 19px;
-  vertical-align: middle;
-}
-.topcard{
-  background-color: #ffffff;
-  margin: 16px 20px;
-  padding: 10px;
-  background: rgba(255, 255, 255, 1);
-  box-shadow: 0px 2px 5px 3px rgba(233, 233, 233, 0.5);
-  border-radius: 3px;
-}
-.centercard{
-  background-color: #ffffff;
-   margin: 16px 20px;
 
-  background: rgba(255, 255, 255, 1);
-  box-shadow: 0px 2px 5px 3px rgba(233, 233, 233, 0.5);
-  border-radius: 8px;
-}
-.bottomcard{
-  background-color: #ffffff;
-  margin-left: 20px;
-  margin-right: 20px;
-  background: rgba(255, 255, 255, 1);
-  box-shadow: 0px 2px 5px 3px rgba(233, 233, 233, 0.5);
-  border-radius: 8px;
-}
-.bottombutton{
-  height: 55px;
-  font-size: 14px;
-}
-.centervalue{
-  font-size: 22px;
-  font-weight: bolder;
-}
-.centertext{
-  font-size: 14px;
-  font-weight: bold;
-  opacity: 0.4;
-}
-Button.detail, Button.detail:focus, Button.detail:hover {
-  background-color: rgba(0, 0, 0, 1);
-  border-radius: 2px;
-  color: rgba(255,255,255,1);
-  /* float: right; */
-  font-size: 12px;
-  margin-top: 12px;
-  width: 80px;
-  height: 25px;
-  letter-spacing: 2px;
-  max-width: 94px;
-  max-height: 35px;
-  text-align: center;
-  padding-left: 12px;
-  /* margin-right: 0px; */
-}
-
-.user-avatar {
-  overflow: hidden;
-  border-radius: 3px;
-}
-.user-avatar img {
-  height: 100%;
-  object-fit: cover;
-}
-</style>
+<style lang="less" scoped src="./index.less"></style>
