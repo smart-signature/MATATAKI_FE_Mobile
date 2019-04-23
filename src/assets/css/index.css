@@ -1,3 +1,6 @@
+html,body{
+  height: 100%;
+}
 body {
   background: #F0F0F0;
 }
@@ -7,4 +10,10 @@ body {
   margin: 10px;
   color: #999;
   font-size: 13px;
+}
+
+/* max width 最大宽度 */
+.mw {
+  max-width: 750px;
+  margin: 0 auto;
 }

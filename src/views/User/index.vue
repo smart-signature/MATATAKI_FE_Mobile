@@ -24,13 +24,7 @@
               <a @click="jumpTo({ name: 'FollowList', params: { listtype: '关注' }})">
                 关注：{{follows}}
               </a>
-              <a style="margin-left:14px;" 
-                @click="jumpTo({
-                  name: 'FollowList', 
-                  params: { 
-                    listtype: '粉丝' 
-                  }
-                })">
+              <a style="margin-left:14px;" @click="jumpTo({ name: 'FollowList', params: {  listtype: '粉丝'  }})">
                 粉丝：{{fans}}
               </a>
             </p>
