@@ -36,7 +36,9 @@ export default new Vuex.Store({
   },
   actions: {
     // outpu: { publicKey, signature, username }
-    async getSignature({ commit, dispatch, state, getters }, { author, hash }) {
+    async getSignature({
+      commit, dispatch, state, getters,
+    }, { author, hash }) {
       const { blockchain } = getters.currentUserInfo;
       let actionName = null;
       if (blockchain === 'ONT') actionName = 'ontology/getSignature';
@@ -44,7 +46,9 @@ export default new Vuex.Store({
       // else if (blockchain === 'EOS') actionName = 'ontology/getSignature';
       return dispatch(actionName, { author, hash });
     },
-    async idCheck({ commit, dispatch, state, getters }) {
+    async idCheck({
+      commit, dispatch, state, getters,
+    }) {
       await new Promise(async (resolve, reject) => {
         const { ontology, scatter } = state;
         const {
@@ -75,7 +79,7 @@ export default new Vuex.Store({
           if (!result) noId(new Error('faild connect to scatter'));
         }
         if (isScatterConnected && !isScatterLoggingIn) {
-          await dispatch('scatter/login').catch((error) => noId(error));
+          await dispatch('scatter/login').catch(error => noId(error));
         }
       });
     },

@@ -3,7 +3,6 @@ import https from 'https';
 import store from '@/store';
 import { Base64 } from 'js-base64';
 import API, { currentEOSAccount as currentAccount } from './scatter';
-import { async } from 'q';
 
 // https://github.com/axios/axios
 

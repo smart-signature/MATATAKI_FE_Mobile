@@ -44,7 +44,7 @@ import { mapGetters, mapActions, mapState } from 'vuex';
 import { sendPost } from '@/api/ipfs';
 import { mavonEditor } from 'mavon-editor';
 import {
-  defaultImagesUploader, publishArticle, oldpublishArticle
+  defaultImagesUploader, publishArticle, oldpublishArticle,
 } from '../api';
 
 import 'mavon-editor/dist/css/index.css'; // editor css

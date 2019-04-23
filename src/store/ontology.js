@@ -30,16 +30,16 @@ const actions = {
     });
   },
   async getSignature({ dispatch, state }, { author, hash }) {
-      let { account } = state;
-      if (!account) {
-        await dispatch('getAccount');
-        account = state.account;
-      }
-      // 需要签名的数据
-      const signData = `${author} ${hash}`;
-      // 申请签名
-      const signature = await cyanobridgeAPI.signMessage(signData);
-      return ({ publicKey: signature.publicKey, signature: signature.data, username: account });
+    let { account } = state;
+    if (!account) {
+      await dispatch('getAccount');
+      account = state.account;
+    }
+    // 需要签名的数据
+    const signData = `${author} ${hash}`;
+    // 申请签名
+    const signature = await cyanobridgeAPI.signMessage(signData);
+    return ({ publicKey: signature.publicKey, signature: signature.data, username: account });
   },
 };
 
