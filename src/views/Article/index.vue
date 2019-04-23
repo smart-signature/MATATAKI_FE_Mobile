@@ -30,22 +30,22 @@
         <Avatar icon="ios-person" class="avatar-size" size="small" />
         <router-link class="author"
           :to="{ name: 'User', params: { username:post.author }}">
-          Author: {{post.author}}
+          {{post.author}}
         </router-link>
-        {{articleCreateTime}} | {{article.read || 0}}阅读
+        {{articleCreateTimeComputed}} | {{article.read || 0}}阅读
       </p>
       <p class="break_all">IPFS Hash: {{article.hash}}</p>
+    <p><br/><a data-pocket-label="pocket" data-pocket-count="horizontal" class="pocket-btn" data-lang="en"></a></p>
+
       <!--<Button v-if="isMe"
         @click="delArticleButton" class="del-acticle" type="error"
         icon="md-close" size="small">删除</Button>-->
-      <p><br/><a data-pocket-label="pocket" data-pocket-count="horizontal" class="pocket-btn" data-lang="en"></a></p>
     </header>
     <mavon-editor v-show="false" style="display: none;"/>
     <div class="markdown-body" v-html="compiledMarkdown"></div>
+
     <div class="commentslist-title">赞赏队列 ({{article.ups || 0}})</div>
-
     <CommentsList class="comments" :signId="signId" />
-
     <footer class="footer">
       <div class="footer-block">
         <div class="amount">
@@ -114,9 +114,9 @@ import {
 } from '@/api';
 import { support } from '@/api/signature';
 import 'mavon-editor/dist/css/index.css';
-import moment from 'moment';
 import CommentsList from './CommentsList.vue';
-import { sleep } from '@/common/methods';
+import moment from 'moment';
+import { sleep, isNDaysAgo } from '@/common/methods';
 
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
@@ -183,10 +183,10 @@ export default {
       const { invite } = this.$route.query;
       return !invite ? null : invite;
     },
-    sortedComments() {
-      // if need change to asc, swap a & b
-      return this.comments.slice(0) // 使用slice创建数组副本 消除副作用
-        .sort((a, b) => (new Date(b.timestamp)).getTime() - (new Date(a.timestamp)).getTime());
+    articleCreateTimeComputed() {
+      if (!this.articleCreateTime) return '';
+      const time = moment(this.articleCreateTime);
+      return isNDaysAgo(2, time) ? time.format('MMMDo HH:mm') : time.fromNow();
     },
     isMe() {
       console.log('isme', this.article, this.currentUsername);
@@ -236,7 +236,7 @@ export default {
     totalSupportedAmount: 0,
     visible3: false,
     clipboard: null,
-    articleCreateTime: ' 月 日',
+    articleCreateTime: '',
     opr: false,
   }),
   head: {
@@ -332,7 +332,7 @@ export default {
       this.article = data;
       console.info('Article info :', this.article);
       const { article, page } = this;
-      this.articleCreateTime = moment(article.create_time).format('MMMDo');
+      this.articleCreateTime = article.create_time;
       this.totalSupportedAmount = article.value;
       this.signId = article.id;
       // console.debug(this.signId);
@@ -371,7 +371,7 @@ export default {
         this.$Modal.error({
             title: '无法与你的钱包建立链接並登录',
             content: '请检查钱包是否打开并解锁',
-        });*/
+        }); */
       });
     },
     async support() {

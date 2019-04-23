@@ -7,7 +7,7 @@
 .article {
   text-align: left;
   max-width: 750px;
-  height: 100%;
+  min-height: 100%;
   margin: 0 auto;
   padding: 0 0 10px;
   position: relative;
