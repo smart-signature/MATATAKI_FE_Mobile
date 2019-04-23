@@ -40,11 +40,11 @@ const actions = {
       const signData = `${author} ${hash}`;
       // 申请签名
       cyanobridgeAPI.signMessage(signData)
-        .then(Signature => {
+        .then((Signature) => {
           console.log(Signature);
           resolve({ publicKey: Signature.publicKey, signature: Signature, username: account }); 
         })
-        .catch(error => { reject(error); });
+        .catch((error) => { reject(error); });
     });
   },
 };
