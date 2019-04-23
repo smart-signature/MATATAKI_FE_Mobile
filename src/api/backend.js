@@ -136,15 +136,15 @@ const getAuth = () => new Promise(async (resolve, reject) => {
         const accessToken = response.data;
         console.info('got the access token :', accessToken);
         setAccessToken(accessToken);
-        resolve(accessToken);
-      } else {
-        throw new Error('auth 出錯');
+        return resolve(accessToken);
       }
+
+      throw new Error('auth 出錯');
     } catch (error) {
       console.warn('取得用戶新簽名出錯', error);
-      reject(error);
+      return reject(error);
     }
-  } else resolve(currentToken);
+  } else return resolve(currentToken);
 });
 
 /*
