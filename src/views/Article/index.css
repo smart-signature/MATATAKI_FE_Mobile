@@ -7,8 +7,9 @@
 .article {
   text-align: left;
   max-width: 750px;
-  padding: 0 0 10px;
+  height: 100%;
   margin: 0 auto;
+  padding: 0 0 10px;
   position: relative;
   background-color: #fff;
 }
