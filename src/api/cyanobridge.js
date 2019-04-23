@@ -34,7 +34,7 @@ const toolkit = {
 const cyanobridgeAPI = {
   client: null,
   async setClient() {
-    if (client) return;
+    if (this.client) return;
     if (isAPP) {
       const { client } = await import(/* webpackChunkName: "cyanobridge" */ 'cyanobridge');
       client.registerClient();
