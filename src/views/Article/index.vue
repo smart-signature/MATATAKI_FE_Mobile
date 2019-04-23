@@ -107,7 +107,7 @@ import { mavonEditor } from 'mavon-editor';
 import {
   getArticleData, getArticleInfo, getSharesbysignid,
   addReadAmount, sendComment, getArticleInHash,
-  delArticle,
+  delArticle, getAuth,
 } from '@/api';
 import { support } from '@/api/signature';
 import 'mavon-editor/dist/css/index.css';
@@ -130,14 +130,9 @@ export default {
   props: ['hash'],
   components: { mavonEditor, CommentsList },
   computed: {
-    ...mapState('scatter', {
-      isScatterConnected: state => state.isConnected,
-      isScatterLoggingIn: state => state.isLoggingIn,
-      scatterAccount: state => state.account,
-    }),
     ...mapGetters(['currentUsername']),
     isLogined() {
-      return this.scatterAccount !== null;
+      return this.currentUsername !== null;
     },
     compiledMarkdown() {
       return markdownIt.render(this.post.content);
@@ -345,7 +340,7 @@ export default {
     },
     setisSupported() {
       const { shares } = this;
-      if (this.scatterAccount !== null && shares !== []) {
+      if (this.currentUsername !== null && shares !== []) {
         const share = shares.find(element => element.author === this.currentUsername);
         if (share !== undefined) {
           console.log('Current user\'s share :', share);
@@ -373,7 +368,7 @@ export default {
     },
     async support() {
       const { article, comment } = this;
-      // amount
+      // 檢查 amount
       const amount = parseFloat(this.amount);
       if (Number.isNaN(amount) || amount < 0.01) {
         this.$Message.warning('请输入正确的金额 最小赞赏金额为 0.01 EOS');
@@ -382,6 +377,7 @@ export default {
       console.info('final amount :', amount, ', comment :', comment);
 
       this.visible3 = false;
+      // 檢查 log in
       await this.b4support();
 
       const signId = article.id;
@@ -390,8 +386,12 @@ export default {
 
       try {
         this.isSupported = RewardStatus.LOADING;
+        // 問用戶要 acceess token
+        await getAuth();
+        // 發轉帳 action 到合約
         await support({ amount, signId, referrer });
         try {
+          // 發 comment 到後端
           console.log('Send comment...');
           await sendComment({ comment, signId },
             ({ error, response }) => {
@@ -417,7 +417,7 @@ export default {
                    * 60000;
 
         this.comments.push({
-          author: this.scatterAccount.name,
+          author: this.currentUsername,
           timestamp: timeNow,
           quantity: `${amount} EOS`,
           message: comment,
