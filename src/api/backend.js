@@ -117,19 +117,20 @@ const disassembleToken = (token) => {
 // /<summary>
 // /装载access_token
 // /</summary>
-const getAuth = () => new Promise((resolve, reject) => {
+const getAuth = () => new Promise(async (resolve, reject) => {
   const currentToken = getCurrentAccessToken();
   const decodedData = disassembleToken(currentToken); // 拆包
   const username = currentToken != null ? decodedData.iss : null;
   if (currentAccount() !== null && (currentToken === null
     || decodedData === null || decodedData.exp < new Date().getTime()
     || username !== currentAccount().name)) {
-    console.log('Retake authtoken...');
-    API.authSignature().then(({ username, publicKey, signature }) => {
-      console.info('API.authSignature :', username, publicKey, signature);
-      // 2. 将取得的签名和用户名和公钥post到服务端 获得accessToken
-      return auth({ username, publicKey, sign: signature });
-    }).then((response) => {
+    try {
+      console.log('Retake authtoken...');
+      const signature = await API.authSignature();
+      console.info('API.authSignature :', signature);
+      // 将取得的签名和用户名和公钥post到服务端 获得accessToken
+      const { username: _username, publicKey, signature: sign } = signature;
+      const response = await auth({ username: _username, publicKey, sign });
       if (response.status === 200) {
         // 3. save accessToken
         const accessToken = response.data;
@@ -139,10 +140,10 @@ const getAuth = () => new Promise((resolve, reject) => {
       } else {
         throw new Error('auth 出錯');
       }
-    }).catch((err) => {
-      console.warn('取得用戶新簽名出錯', err);
-      reject();
-    });
+    } catch (error) {
+      console.warn('取得用戶新簽名出錯', error);
+      reject(error);
+    }
   } else resolve(currentToken);
 });
 
