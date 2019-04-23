@@ -43,10 +43,8 @@
       overflow: hidden;
       white-space: nowrap;
       padding: 0;
+      margin: 0;
       line-height: 1;
-      &-email {
-        margin: 0 0 8px;
-      }
     }
     .email {
       text-align: left;
@@ -61,12 +59,16 @@
       margin: 2px 0;
     }
     .userinput{
+      width: 100%;
       font-size:20px;
       font-family:PingFangSC-Semibold;
-      font-weight:600;
       color:#C5C5C5;
       padding: 0;
       margin: 0;
+      border: none;
+      font-weight: bolder;
+      text-align: left;
+      line-height: 1;
     }
     .userstatus{
       font-size: 14px;
@@ -84,6 +86,9 @@
           margin-left: 13px;
         }
       }
+    }
+    .username-email {
+      margin: 0 0 8px;
     }
   }
 }
@@ -107,7 +112,11 @@
   padding: 2px 0;
   text-decoration: none;
 }
-
+.editing-button {
+  background-color: #D8D8D8;
+  color: #fff;
+  border: 1px solid #D8D8D8;
+}
 
 .topcard{
   background-color: #ffffff;

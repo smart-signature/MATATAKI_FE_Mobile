@@ -11,7 +11,7 @@
       <div class="texts">
         <p v-if="!editing" class="username" :class="[!email ? 'username-email' : '']">{{nickname === "" ? username : nickname}}</p>
         <p v-if="email" class="email">{{email}}</p>
-        <za-input v-if="editing" class="userinput" ref='inputFirst' v-model='newname'></za-input>
+        <input class="userinput" :class="[!email ? 'username-email' : '']" v-if="editing" v-model='newname' />
         <p class="userstatus">
           <a @click="jumpTo({ name: 'FollowList', params: { listtype: '关注' }})">
             关注：{{follows}}
@@ -23,18 +23,18 @@
       </div>
       <div class="user-button">
         <template v-if="editing">
-          <a href="javascript:;" class="rightbutton" size="small" type="success" ghost @click="save">完成</a>
+          <a href="javascript:;" class="rightbutton" :class="[editing ? 'editing-button' : '']" @click="save">完成</a>
         </template>
       <template v-else>
         <template v-if="isMe">
-          <a href="javascript:;" class="rightbutton" size="small" type="success" ghost @click="edit">编辑</a>
+          <a href="javascript:;" class="rightbutton" @click="edit">编辑</a>
         </template>
         <template v-else>
           <template v-if="!followed">
-            <a href="javascript:;" class="rightbutton" size="small" type="success" ghost @click="follow_user">关注</a>
+            <a href="javascript:;" class="rightbutton" @click="follow_user">关注</a>
           </template>
           <template v-else>
-            <a href="javascript:;" class="rightbutton" size="small" type="success" ghost @click="unfollow_user">取消关注</a>
+            <a href="javascript:;" class="rightbutton" @click="unfollow_user">取消关注</a>
           </template>
         </template>
       </template>
