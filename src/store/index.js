@@ -48,7 +48,7 @@ export default new Vuex.Store({
         const { ontology, scatter } = state;
         const {
           isConnected: isScatterConnected,
-          isLoggingIn: isScatterLoggingIn
+          isLoggingIn: isScatterLoggingIn,
         } = scatter;
         const {
           account: isOntologyConnected,
@@ -69,12 +69,12 @@ export default new Vuex.Store({
         console.info('Scatter status :', isScatterConnected);
         // 場景：開了網頁之後才解鎖 Scatter
         // 這時候沒有執行 connectScatter 就登录不能
-        if (!isScatterConnected) { 
+        if (!isScatterConnected) {
           const result = await dispatch('scatter/connect');
           if (!result) noId(new Error('faild connect to scatter'));
         }
         if (isScatterConnected && !isScatterLoggingIn) {
-          await dispatch('scatter/login').catch((error) => { noId(error) });
+          await dispatch('scatter/login').catch((error) => noId(error));
         }
       });
     },
