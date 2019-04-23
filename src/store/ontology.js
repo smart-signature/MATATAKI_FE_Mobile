@@ -39,12 +39,8 @@ const actions = {
       // 需要签名的数据
       const signData = `${author} ${hash}`;
       // 申请签名
-      cyanobridgeAPI.signMessage(signData)
-        .then((Signature) => {
-          console.log(Signature);
-          resolve({ publicKey: Signature.publicKey, signature: Signature, username: account }); 
-        })
-        .catch((error) => { reject(error); });
+      const signature = await cyanobridgeAPI.signMessage(signData);
+      return resolve({ publicKey: signature.publicKey, signature: signature.data, username: account });
     });
   },
 };

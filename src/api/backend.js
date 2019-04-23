@@ -3,30 +3,32 @@ import https from 'https';
 import store from '@/store';
 import { Base64 } from 'js-base64';
 import API, { currentEOSAccount as currentAccount } from './scatter';
+import { async } from 'q';
 
 // https://github.com/axios/axios
 
 export const apiServer = process.env.VUE_APP_API;
 const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
-const newpublishArticle = ({
+const publishArticle = async ({
   author, title, hash, fissionFactor,
-}) => store.dispatch('getSignature', { author, hash }).then(({ publicKey, signature, username }) => {
-  console.log('签名成功后调', publicKey, signature, username);
-  // if (err) failed('2nd step failed');
+}) => {
+  const signature = await store.dispatch('getSignature', { author, hash });
+  console.log('签名成功后调', signature);
+  const { publicKey, signature: sign, username } = signature;
   return axios.post(`${apiServer}/publish`,
     {
       author,
       fissionFactor,
       hash,
       publickey: publicKey,
-      sign: signature,
+      sign,
       title,
       username,
     });
-});
+};
 
-const publishArticle = ({
+const oldpublishArticle = ({
   author, title, hash, fissionFactor,
 }) => API.getSignature(author, hash).then(({ publicKey, signature, username }) => {
   console.log('签名成功后调', publicKey, signature, username);
@@ -344,5 +346,5 @@ export {
   getSharesbysignid, addReadAmount, sendComment, getAssets, getAvatarImage,
   disassembleToken, delArticle, uploadAvatar, getArticleSupports, editArticle,
   getBackendData,
-  newpublishArticle,
+  oldpublishArticle,
 };
