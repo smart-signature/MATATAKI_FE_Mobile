@@ -21,8 +21,7 @@
 </template>
 
 <script>
-import { apiServer } from '@/api/backend';
-import axios from 'axios';
+import { getBackendData } from '@/api/backend';
 
 export default {
   name: 'BasePull',
@@ -101,7 +100,23 @@ export default {
       this.busy = true;
       const params = this.params || {};
       params.page = this.page;
-      axios.get(`${apiServer}/${this.apiUrl}`, { params }).then(({ data }) => {
+      await this.getApiData({
+        url: this.apiUrl,
+        params,
+      }, isEmptyArray);
+    },
+    async getApiData({ url, params }, isEmptyArray) {
+      await getBackendData({ url, params }, ({ error, response }) => {
+        // console.log(error, response);
+        if (error) {
+          console.log(error);
+          this.$Message.error('获取数据失败');
+          this.busy = true;
+          this.isTheEndOfTheScroll = true;
+          return;
+        }
+        const { data } = response;
+
         if (isEmptyArray) this.articles.length = 0;
         if (this.isObj.type === 'Array') {
           // 如果返回的数据是 Array 返回整个 data
@@ -124,11 +139,6 @@ export default {
         }
         this.page += 1;
         this.busy = false;
-      }).catch((err) => {
-        console.log(err);
-        this.$Message.error('获取文章发生错误');
-        this.busy = true;
-        this.isTheEndOfTheScroll = true;
       });
     },
     // 刷新

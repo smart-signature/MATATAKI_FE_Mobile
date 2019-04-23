@@ -1,8 +1,7 @@
 import axios from 'axios';
 import https from 'https';
-import API from '@/api/scatter';
 import { Base64 } from 'js-base64';
-import { currentEOSAccount as currentAccount } from './scatter';
+import API, { currentEOSAccount as currentAccount } from './scatter';
 
 // https://github.com/axios/axios
 
@@ -305,10 +304,25 @@ const editArticle = ({
   }, callback);
 }; */
 
+
+// 基础组件 BasePull 使用的方法
+// 因为目前只需要GET查询 所以不把 GET POST 等调用封装到一起，
+// 区别 GET 用 params， POST 等用 data
+// 所有用 BasePull 调用的接口 都带了 token 修改了 header，所以会请求两次 后续可以升级此方法来根据传进来的参数判断是否需要token
+const getBackendData = ({ url, params }, callback) => accessBackend({
+  method: 'GET',
+  url: `${apiServer}/${url}`,
+  params,
+  headers: { Accept: '*/*' },
+  httpsAgent,
+}, callback);
+
+
 export {
   publishArticle, auth, getAuth,
   getArticleData, getArticlesList, getArticleInfo, getArticleInHash,
   Follow, Unfollow, getUser, setUserName, getFansList, getFollowList, oldgetUser,
   getSharesbysignid, addReadAmount, sendComment, getAssets, getAvatarImage,
   disassembleToken, delArticle, uploadAvatar, getArticleSupports, editArticle,
+  getBackendData,
 };
