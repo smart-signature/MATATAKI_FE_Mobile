@@ -30,7 +30,6 @@ const actions = {
     });
   },
   async getSignature({ dispatch, state }, { author, hash }) {
-    return new Promise(async (resolve, reject) => {
       let { account } = state;
       if (!account) {
         await dispatch('getAccount');
@@ -40,8 +39,7 @@ const actions = {
       const signData = `${author} ${hash}`;
       // 申请签名
       const signature = await cyanobridgeAPI.signMessage(signData);
-      return resolve({ publicKey: signature.publicKey, signature: signature.data, username: account });
-    });
+      return ({ publicKey: signature.publicKey, signature: signature.data, username: account });
   },
 };
 

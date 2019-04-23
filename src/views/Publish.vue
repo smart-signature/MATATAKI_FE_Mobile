@@ -120,13 +120,12 @@ export default {
         });
         const { code, hash } = data;
         if (code !== 200) failed('1st step : send post to ipfs failed');
-        oldpublishArticle({
+        await oldpublishArticle({
           author, title, hash, fissionFactor,
-        })
-          .then((response) => {
-            if (response.data.msg !== 'success') failed('失败请重试');
-            success(hash);
-          }, (error) => { failed(error); });
+        }).then((response) => {
+          if (response.data.msg !== 'success') failed('失败请重试');
+          success(hash);
+        });
       } catch (error) {
         failed(error);
       }

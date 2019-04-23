@@ -36,7 +36,7 @@ export default new Vuex.Store({
   },
   actions: {
     // outpu: { publicKey, signature, username }
-    getSignature({ commit, dispatch, state, getters }, { author, hash }) {
+    async getSignature({ commit, dispatch, state, getters }, { author, hash }) {
       const { blockchain } = getters.currentUserInfo;
       let actionName = null;
       if (blockchain === 'ONT') actionName = 'ontology/getSignature';
