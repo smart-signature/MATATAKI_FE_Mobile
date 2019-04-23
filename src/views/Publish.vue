@@ -44,9 +44,8 @@ import { mapGetters, mapActions, mapState } from 'vuex';
 import { sendPost } from '@/api/ipfs';
 import { mavonEditor } from 'mavon-editor';
 import {
-  defaultImagesUploader, publishArticle,
+  defaultImagesUploader, publishArticle, oldpublishArticle
 } from '../api';
-import { newpublishArticle } from '@/api/backend';
 
 import 'mavon-editor/dist/css/index.css'; // editor css
 import VueSlider from 'vue-slider-component';
@@ -121,7 +120,7 @@ export default {
         });
         const { code, hash } = data;
         if (code !== 200) failed('1st step : send post to ipfs failed');
-        publishArticle({
+        oldpublishArticle({
           author, title, hash, fissionFactor,
         })
           .then((response) => {
