@@ -107,7 +107,7 @@ import { mavonEditor } from 'mavon-editor';
 import {
   getArticleData, getArticleInfo, getSharesbysignid,
   addReadAmount, sendComment, getArticleInHash,
-  delArticle,
+  delArticle, getAuth,
 } from '@/api';
 import { support } from '@/api/signature';
 import 'mavon-editor/dist/css/index.css';
@@ -368,7 +368,7 @@ export default {
     },
     async support() {
       const { article, comment } = this;
-      // amount
+      // 檢查 amount
       const amount = parseFloat(this.amount);
       if (Number.isNaN(amount) || amount < 0.01) {
         this.$Message.warning('请输入正确的金额 最小赞赏金额为 0.01 EOS');
@@ -377,6 +377,7 @@ export default {
       console.info('final amount :', amount, ', comment :', comment);
 
       this.visible3 = false;
+      // 檢查 log in
       await this.b4support();
 
       const signId = article.id;
@@ -385,8 +386,12 @@ export default {
 
       try {
         this.isSupported = RewardStatus.LOADING;
+        // 問用戶要 acceess token
+        await getAuth();
+        // 發轉帳 action 到合約
         await support({ amount, signId, referrer });
         try {
+          // 發 comment 到後端
           console.log('Send comment...');
           await sendComment({ comment, signId },
             ({ error, response }) => {
