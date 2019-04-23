@@ -79,6 +79,7 @@ export default {
 <style scoped>
 #app {
   margin: auto;
+  height: 100%;
   text-align: center;
   font-family: PingFang SC, STHeitiSC-Light, Helvetica-Light, arial, sans-serif;
 }
