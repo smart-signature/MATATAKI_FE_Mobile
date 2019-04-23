@@ -35,15 +35,12 @@
         {{articleCreateTimeComputed}} | {{article.read || 0}}阅读
       </p>
       <p class="break_all">IPFS Hash: {{article.hash}}</p>
-    <p><br/><a data-pocket-label="pocket" data-pocket-count="horizontal" class="pocket-btn" data-lang="en"></a></p>
-
-      <!--<Button v-if="isMe"
-        @click="delArticleButton" class="del-acticle" type="error"
-        icon="md-close" size="small">删除</Button>-->
     </header>
     <mavon-editor v-show="false" style="display: none;"/>
     <div class="markdown-body" v-html="compiledMarkdown"></div>
-
+    <div class="pocket">
+      <a data-pocket-label="pocket" data-pocket-count="horizontal" class="pocket-btn" data-lang="en"></a>
+    </div>
     <div class="commentslist-title">赞赏队列 ({{article.ups || 0}})</div>
     <CommentsList class="comments" :signId="signId" />
     <footer class="footer">
