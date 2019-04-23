@@ -176,6 +176,7 @@ export default {
     font-family:PingFangSC-Regular;
     font-weight:400;
     letter-spacing:1px;
+    min-width: 100px;
 }
 
 .login-notification {
