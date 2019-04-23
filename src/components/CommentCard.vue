@@ -18,6 +18,7 @@
 
 <script>
 import moment from 'moment';
+import { isNDaysAgo } from '@/common/methods';
 
 export default {
   name: 'CommentCard',
@@ -28,9 +29,10 @@ export default {
     },
     friendlyDate() {
       // const isAppleSlave = navigator.platform.includes('iPhone');
-      const time = new Date(this.comment.create_time);
-      return moment(time.getTime() - time.getTimezoneOffset()
-                   * 60000).fromNow();// 返回的数据带了时区
+      const newTime = new Date(this.comment.create_time);
+      const time = moment(newTime.getTime() - newTime.getTimezoneOffset()
+                   * 60000);// 返回的数据带了时区
+      return isNDaysAgo(2, time) ? time.format('MMMDo HH:mm') : time.fromNow();
     },
   },
 };
