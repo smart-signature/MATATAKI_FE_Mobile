@@ -79,7 +79,9 @@ export default new Vuex.Store({
           if (!result) noId(new Error('faild connect to scatter'));
         }
         if (isScatterConnected && !isScatterLoggingIn) {
-          await dispatch('scatter/login').catch(error => noId(error));
+          const result = await dispatch('scatter/login');
+          if (!result) noId(new Error('scatter login faild'));
+          else resolve(true);
         }
       });
     },

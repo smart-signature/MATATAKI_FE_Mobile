@@ -44,10 +44,6 @@ const oldpublishArticle = ({
     });
 });
 
-const getArticleData = hash => axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
-const getArticleInfo = hash => axios.get(`${apiServer}/post/${hash}`);
-// 获取单篇文章的信息 （短链接 issues）
-const getArticleInHash = id => axios.get(`${apiServer}/p/${id}`);
 
 // 获取支持过的文章列表 page user
 const getArticleSupports = params => axios.get(
@@ -189,6 +185,29 @@ const accessBackend = (options, callback = () => {}) => {
       });
   });
 };
+
+
+const getArticleData = hash => axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
+// 获取单篇文章的信息 hash
+// const getArticleInfo = hash => axios.get(`${apiServer}/post/${hash}`);
+const getArticleInfo = (hash, callback) => accessBackend({
+  method: 'GET',
+  url: `${apiServer}/post/${hash}`,
+  headers: { Accept: '*/*' },
+  httpsAgent,
+  data: {},
+}, callback);
+
+// 获取单篇文章的信息 （短链接 issues）
+// const getArticleInHash = id => axios.get(`${apiServer}/p/${id}`);
+const getArticleInHash = (id, callback) => accessBackend({
+  method: 'GET',
+  url: `${apiServer}/p/${id}`,
+  headers: { Accept: '*/*' },
+  httpsAgent,
+  data: {},
+}, callback);
+
 
 // Be used in User page.
 const Follow = ({ username, followed }, callback) => accessBackend({

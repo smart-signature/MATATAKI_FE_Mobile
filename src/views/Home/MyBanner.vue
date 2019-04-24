@@ -139,6 +139,9 @@ export default {
 .banner-text {
   display: flex;
   align-items: center;
+  overflow: hidden;
+  flex: 1;
+  margin-right: 10px;
   .round_icon {
     width: 50px;
     height: 50px;
