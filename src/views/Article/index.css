@@ -423,6 +423,7 @@ a:active {
   .footer-block .amount,
   .footer-block .fission {
     font-size:14px;
+    cursor: pointer;
   }
   .footer-block .amount-img {
     width: 16px;
@@ -437,4 +438,10 @@ a:active {
 
 .pocket {
   margin-left: 20px;
+}
+.information {
+  width: 18px;
+  height: 18px;
+  margin-right: 20px;
+  cursor: pointer;
 }

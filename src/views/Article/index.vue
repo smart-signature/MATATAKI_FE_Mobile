@@ -6,6 +6,7 @@
       <div slot="right" @click="opr = !opr" v-if="isMe">
         <img src="@/assets/more.svg" alt="more">
       </div>
+      <img class="information" slot="info" src="@/assets/information.svg" alt="information" @click="infoModa = true">
     </BaseHeader>
     <!--<za-nav-bar>
       <div slot="left">
@@ -30,7 +31,7 @@
         <Avatar icon="ios-person" class="avatar-size" size="small" />
         <router-link class="author"
           :to="{ name: 'User', params: { username:post.author }}">
-          {{post.author}}
+          {{article.nickname || post.author}}
         </router-link>
         {{articleCreateTimeComputed}} | {{article.read || 0}}阅读
       </p>
@@ -45,38 +46,35 @@
     <CommentsList class="comments" :signId="signId" />
     <footer class="footer">
       <div class="footer-block">
-        <div class="amount">
-          <div>
-            <img class="amount-img" src="@/assets/img/icon_amount.png" />
-            {{computedTotalSupportedAmount}}
+        <Tooltip content="本文收到的赞赏总额" placement="top-start">
+          <div class="amount">
+            <div>
+              <img class="amount-img" src="@/assets/img/icon_amount.png" />
+              {{computedTotalSupportedAmount}}
+            </div>
+            <div class="amount-text">赞赏总额</div>
           </div>
-          <div class="amount-text">赞赏总额</div>
-        </div>
-        <div class="fission">
-          <div>
-            <img class="amount-img" src="@/assets/img/icon_fission.png" />
-            {{getDisplayedFissionFactor}}
+        </Tooltip>
+        <Tooltip content="你可得到的最高回报=赞赏额*裂变系数">
+          <div class="fission">
+            <div>
+              <img class="amount-img" src="@/assets/img/icon_fission.png" />
+              {{getDisplayedFissionFactor}}
+            </div>
+            <div class="amount-text">裂变系数</div>
           </div>
-          <div class="amount-text">裂变系数</div>
-        </div>
+        </Tooltip>
       </div>
       <div class="footer-block">
-          <button class="button-support"
-            v-if="isSupported===-1"
-            @click="b4support">赞赏<img src="@/assets/img/icon_support.png"/></button>
-          <button class="button-support"
-            v-if="isSupported===0"
-            disabled>赞赏中<img src="@/assets/img/icon_support.png"/></button>
-          <button class="button-support"
-            v-else-if="isSupported===1"
-            @click="b4support">赞赏<img src="@/assets/img/icon_support.png"/></button>
-          <button class="button-support"
-            v-else-if="isSupported===2"
-            disabled>已赞赏<img src="@/assets/img/icon_support.png"/></button>
-
-          <button class="button-share"
-            :data-clipboard-text="getClipboard"
-            @click="share">分享<img src="@/assets/img/icon_share.png" /></button>
+        <Tooltip content="赞赏的文章可以在赞赏列表中查看">
+          <button class="button-support" v-if="isSupported===-1" @click="b4support">赞赏<img src="@/assets/img/icon_support.png"/></button>
+          <button class="button-support" v-if="isSupported===0" disabled>赞赏中<img src="@/assets/img/icon_support.png"/></button>
+          <button class="button-support" v-else-if="isSupported===1" @click="b4support">赞赏<img src="@/assets/img/icon_support.png"/></button>
+          <button class="button-support" v-else-if="isSupported===2" disabled>已赞赏<img src="@/assets/img/icon_support.png"/></button>
+        </Tooltip>
+        <Tooltip content="先赞赏后分享，好友赞赏你可得更多" placement="top-end">
+          <button class="button-share" :data-clipboard-text="getClipboard" @click="share">分享<img src="@/assets/img/icon_share.png" /></button>
+        </Tooltip>
       </div>
     </footer>
     <!-- 赞赏对话框 zarm -->
@@ -97,6 +95,9 @@
         </div>
         <button class="support-button" @click="support">赞赏</button>
     </za-modal>
+
+    <ArticleInfo :infoModa="infoModa" @changeInfo="(status) => infoModa = status" />
+
   </div>
 </template>
 
@@ -111,9 +112,10 @@ import {
 } from '@/api';
 import { support } from '@/api/signature';
 import 'mavon-editor/dist/css/index.css';
-import CommentsList from './CommentsList.vue';
 import moment from 'moment';
+import CommentsList from './CommentsList.vue';
 import { sleep, isNDaysAgo } from '@/common/methods';
+import ArticleInfo from './ArticleInfo.vue';
 
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
@@ -128,7 +130,7 @@ const RewardStatus = { // 0=加载中,1=未打赏 2=已打赏, -1未登录
 export default {
   name: 'Article',
   props: ['hash'],
-  components: { mavonEditor, CommentsList },
+  components: { mavonEditor, CommentsList, ArticleInfo },
   computed: {
     ...mapGetters(['currentUsername']),
     isLogined() {
@@ -230,6 +232,7 @@ export default {
     clipboard: null,
     articleCreateTime: '',
     opr: false,
+    infoModa: false,
   }),
   head: {
     title() {
