@@ -1,13 +1,14 @@
 <template>
   <BasePull
     :loadingText="{
-      start: '😄 勤奋地加载更多精彩内容 😄',
-      end: '🎉 哇，你真勤奋，所有评论已经加载完了～ 🎉',
-      noArticles: '无评论',
+      start: '更多...',
+      end: '',
+      noArticles: '暂无赞赏评论',
     }"
     :params="params"
     :apiUrl="apiUrl"
     :isRefresh="false"
+    :autoRequestTime="autoRequestTime"
     @getListData="getListData"
     >
       <CommentCard :comment="item" v-for="(item, index) in articles" :key="index"/>
@@ -16,9 +17,10 @@
 
 <script>
 import { CommentCard } from '@/components/';
+import { mapGetters } from 'vuex';
 
 export default {
-  props: ['signId'],
+  props: ['signId', 'isRequest'],
   components: {
     CommentCard,
   },
@@ -28,8 +30,26 @@ export default {
         signid: newVal,
       };
     },
+    isRequest(newVal) {
+      if (newVal) {
+        this.timer = setInterval(() => {
+          console.log(this.isRequest, newVal, this.timer);
+          if (this.autoRequestTime >= 30) {
+            clearInterval(this.timer);
+            this.$emit('stopAutoRequest', false);
+          }
+          this.autoRequestTime += 1;
+        }, 500);
+      } else {
+        clearInterval(this.timer);
+      }
+    },
   },
-  created() {},
+  created() {
+  },
+  computed: {
+    ...mapGetters(['currentUserInfo']),
+  },
   data() {
     return {
       params: {
@@ -37,11 +57,18 @@ export default {
       },
       apiUrl: 'shares',
       articles: [],
+      autoRequestTime: 0,
+      timer: null,
     };
   },
   methods: {
     getListData(res) {
       console.log(res);
+      console.log(this.currentUserInfo);
+
+      if (this.isRequest && res.data.length !== 0 && res.data[0].author === this.currentUserInfo.name) {
+        this.$emit('stopAutoRequest', false);
+      }
       this.articles = res.data;
     },
   },

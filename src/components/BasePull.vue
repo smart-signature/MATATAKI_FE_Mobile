@@ -67,6 +67,11 @@ export default {
       type: Boolean,
       default: true,
     },
+    // 自动请求时间
+    autoRequestTime: {
+      type: Number,
+      default: 0,
+    },
   },
   computed: {
     displayAboutScroll() {
@@ -81,6 +86,9 @@ export default {
     params() {
       // 父级请求完参数 刷新滚动分页
       this.loadMore();
+    },
+    autoRequestTime() {
+      this.refresh();
     },
   },
   created() {

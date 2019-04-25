@@ -43,7 +43,7 @@
       <a data-pocket-label="pocket" data-pocket-count="horizontal" class="pocket-btn" data-lang="en"></a>
     </div>
     <div class="commentslist-title">赞赏队列 ({{article.ups || 0}})</div>
-    <CommentsList class="comments" :signId="signId" />
+    <CommentsList class="comments" :signId="signId" :isRequest="isRequest" @stopAutoRequest="(status) => isRequest = status" />
     <footer class="footer">
       <div class="footer-block">
         <Tooltip content="本文收到的赞赏总额" placement="top-start">
@@ -96,6 +96,7 @@
         <button class="support-button" @click="support">赞赏</button>
     </za-modal>
 
+    <!-- 文章 Info -->
     <ArticleInfo :infoModa="infoModa" @changeInfo="(status) => infoModa = status" />
 
   </div>
@@ -231,6 +232,7 @@ export default {
     articleCreateTime: '',
     opr: false,
     infoModa: false,
+    isRequest: false,
   }),
   head: {
     title() {
@@ -268,6 +270,12 @@ export default {
     currentUsername() {
       this.setisSupported();
     },
+    isRequest(newVal) {
+      // 监听是否请求默认为false被改变为true下面不执行，请求完毕又被改变为false执行下列方法
+      if (!newVal) {
+        this.updateArticle();
+      }
+    },
   },
   methods: {
     ...mapActions(['idCheck']),
@@ -291,7 +299,6 @@ export default {
     setArticle(hash) {
       this.setArticleData(hash);
       addReadAmount({ articlehash: hash }); // 增加文章阅读量
-      console.log('line 294');
     },
     // 获取文章
     async getArticle(hashOrId) {
@@ -371,13 +378,7 @@ export default {
     async b4support() {
       this.$Message.info('帐号检测中...');
       await this.idCheck().then(() => {
-        // 有hash用hash查询， 没有hash用id, 多做一层处理
-        const { hash, id } = this.article;
-        if (hash) {
-          this.setArticleInfo(hash, true);
-        } else if (id) {
-          this.getArticleInId(id, true);
-        }
+        this.updateArticle(true);
         this.$Message.success('检测通过');
       }).catch((err) => {
         console.log(err);
@@ -425,11 +426,10 @@ export default {
               if (response.status !== 200 || error) throw new Error(error); // wrong way
             });
         }
-        this.isSupported = RewardStatus.REWARDED;
+        this.isSupported = RewardStatus.REWARDED; // 按钮状态
         this.$Message.success('赞赏成功！');
-        // tricky speed up, 前端手动加一下钱 立马调接口获取不到 value 值
-        this.totalSupportedAmount += parseFloat(amount * 10000);
-        this.visible3 = false;
+        this.isRequest = true; // 自动请求
+        this.visible3 = false; // 关闭dialog
       } catch (error) {
         console.log(JSON.stringify(error));
         this.$Message.error('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额');
@@ -482,6 +482,16 @@ export default {
           delArticleFunc(this.article.id);
         },
       });
+    },
+    // 更新文章
+    updateArticle(supportDialog = false) {
+      // 有hash用hash查询， 没有hash用id, 多做一层处理
+      const { hash, id } = this.article;
+      if (hash) {
+        this.setArticleInfo(hash, supportDialog);
+      } else if (id) {
+        this.getArticleInId(id, supportDialog);
+      }
     },
   },
 };
