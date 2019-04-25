@@ -1,11 +1,11 @@
+/* eslint-disable no-shadow */
 <template>
   <div class="user">
-    <BaseHeader :pageinfo="{ title: `个人主页`, rightPage: 'home',
-                   needLogin: false, }" />
+    <BaseHeader :pageinfo="{ title: `个人主页`, rightPage: 'home', needLogin: false, }" />
     <div class="usercard" >
       <div class="user-avatar">
         <img class="userpic" :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png');}" />
-        <img class="camera" src="/img/camera.png" @click="editingavatar = true" v-if="editing"/>
+        <img class="camera" src="/img/camera.png" @click="editingavatar = true" v-if="editing" />
       </div>
 
       <div class="texts">
@@ -154,6 +154,12 @@ export default {
         this.editing = !this.editing;
         return;
       }
+      // 中文 字母 数字 1-12
+      const reg = /^[\u4E00-\u9FA5A-Za-z0-9]{1,12}$/;
+      if (!reg.test(this.newname)) {
+        this.$Message.error('昵称长度为1-12位，中文、英文、数字但不包括下划线等符号');
+        return;
+      }
       setUserName({ newname: this.newname }, ({ error, response }) => {
         if (!error) {
           if (response.status === 500) {
@@ -167,10 +173,11 @@ export default {
           }
           this.nickname = this.newname;
         } else {
-          console.log(response.status);
           this.$Notice.error({
             title: '保存失败',
+            desc: '昵称长度为1-12位，中文、英文、数字但不包括下划线等符号',
           });
+          console.log(response.data);
           this.newname = this.nickname === '' ? this.username : this.nickname;
         }
         this.refreshUser();
