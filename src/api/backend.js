@@ -9,7 +9,7 @@ export const apiServer = process.env.VUE_APP_API;
 const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
 const publishArticle = ({
-  author, title, hash, fissionFactor,
+  author, title, hash, fissionFactor, cover,
 }) => API.getSignature(author, hash).then(({ publicKey, signature, username }) => {
   console.log('签名成功后调', publicKey, signature, username);
   // if (err) failed('2nd step failed');
@@ -22,6 +22,7 @@ const publishArticle = ({
       sign: signature,
       title,
       username,
+      cover,
     });
 });
 
@@ -262,7 +263,7 @@ const getAvatarImage = hash => `${apiServer}/image/${hash}`;
 
 // 编辑
 const editArticle = ({
-  signId, author, title, hash, fissionFactor,
+  signId, author, title, hash, fissionFactor, cover,
 }, callback) => API.getSignature(author, hash).then(({ publicKey, signature, username }) => accessBackend({
   method: 'POST',
   url: `${apiServer}/edit`,
@@ -277,6 +278,7 @@ const editArticle = ({
     sign: signature,
     title,
     username,
+    cover,
   },
 }, callback));
 
