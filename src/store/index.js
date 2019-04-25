@@ -17,10 +17,10 @@ export default new Vuex.Store({
     currentUserInfo: (state, { currentUsername, currentBalance }) => ({
       name: currentUsername,
       balance: currentBalance,
-      blockchain: null,
+      blockchain: 'ONT', // null,
     }),
-    currentUsername: (state, { 'scatter/currentUsername': scatter, 'ontology/currentUsername': ontology }) => (
-      scatter || (ontology || null)
+    currentUsername: (state, { 'scatter/currentUsername': scatter }) => (
+      scatter || (state.ontology.account || null)
     ),
     currentBalance: (state, {
       'scatter/currentUsername': scatterUsername,
@@ -35,12 +35,25 @@ export default new Vuex.Store({
     isLogined: (state, { currentUserInfo }) => currentUserInfo.name !== null,
   },
   actions: {
-    async idCheck({ commit, dispatch, state, getters }) {
+    // outpu: { publicKey, signature, username }
+    async getSignature({
+      commit, dispatch, state, getters,
+    }, { author, hash }) {
+      const { blockchain } = getters.currentUserInfo;
+      let actionName = null;
+      if (blockchain === 'ONT') actionName = 'ontology/getSignature';
+      // todo:
+      // else if (blockchain === 'EOS') actionName = 'ontology/getSignature';
+      return dispatch(actionName, { author, hash });
+    },
+    async idCheck({
+      commit, dispatch, state, getters,
+    }) {
       await new Promise(async (resolve, reject) => {
         const { ontology, scatter } = state;
         const {
           isConnected: isScatterConnected,
-          isLoggingIn: isScatterLoggingIn
+          isLoggingIn: isScatterLoggingIn,
         } = scatter;
         const {
           account: isOntologyConnected,
@@ -53,20 +66,22 @@ export default new Vuex.Store({
 
         console.log('Start id check ...');
         if (getters.currentUserInfo.name) {
-          console.log('Id check pass');
-          resolve();
+          console.log('Id check pass, id :', getters.currentUserInfo.name);
+          resolve(true);
           return;
         }
         console.info('Ontology status :', isOntologyConnected);
         console.info('Scatter status :', isScatterConnected);
         // 場景：開了網頁之後才解鎖 Scatter
         // 這時候沒有執行 connectScatter 就登录不能
-        if (!isScatterConnected) { 
+        if (!isScatterConnected) {
           const result = await dispatch('scatter/connect');
           if (!result) noId(new Error('faild connect to scatter'));
         }
         if (isScatterConnected && !isScatterLoggingIn) {
-          await dispatch('scatter/login').catch((error) => { noId(error) });
+          const result = await dispatch('scatter/login');
+          if (!result) noId(new Error('scatter login faild'));
+          else resolve(true);
         }
       });
     },

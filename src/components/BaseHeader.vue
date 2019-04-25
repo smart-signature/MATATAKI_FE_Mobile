@@ -17,7 +17,8 @@
           {{pageinfo.title}}
         <!--</router-link>-->
       </div>
-      <div slot="right">
+      <div class="right-slot" slot="right">
+        <slot name='info'></slot>
         <slot name="right"></slot>
         <!--<router-link :to="{ name: pageinfo.rightPage }">
           &lt;!&ndash;<Icon type="ios-share-alt" :size="24" />&ndash;&gt;
@@ -110,5 +111,8 @@ a:active {
   border-bottom: 1px solid #eaeaea;
   box-sizing: border-box;
 }
-
+.right-slot{
+  display: flex;
+  align-items: center;
+}
 </style>

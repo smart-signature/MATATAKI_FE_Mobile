@@ -49,7 +49,7 @@ import { mapGetters, mapActions, mapState } from 'vuex';
 import { sendPost } from '@/api/ipfs';
 import { mavonEditor } from 'mavon-editor';
 import {
-  defaultImagesUploader, publishArticle,
+  defaultImagesUploader, publishArticle, oldpublishArticle,
 } from '../api';
 
 import 'mavon-editor/dist/css/index.css'; // editor css
@@ -65,10 +65,6 @@ export default {
     ImgUpload,
   },
   created() {
-    if (this.currentUsername) {
-      return;
-    }
-    this.loginScatterAsync();
   },
   mounted() {
     this.resize();
@@ -98,36 +94,25 @@ export default {
     setDone(fileHash) {
       this.cover = fileHash;
     },
+    ...mapActions(['idCheck']),
     async sendThePost() {
-      if (!this.isScatterConnected) {
-        try {
-          await this.connectScatterAsync();
-        } catch (error) {
-          this.$Message.error('钱包需打开并解锁');
-          return;
-        }
-      }
-      if (this.currentUsername === null || this.currentUsername.length > 12) {
-        try {
-          await this.loginScatterAsync();
-        } catch (error) {
-          this.$Message.error('登录失败，钱包需打开并解锁');
-          return;
-        }
-      }
-      if (this.title === '' || this.markdownData === '') { // 标题或内容为空时
-        this.$Message.error('标题或正文不能为空');
-        // async 函数返回一个 Promise 对象。
+      try {
+        this.$Message.info('帐号检测中...');
+        await this.idCheck().then(() => { this.$Message.success('检测通过'); });
+      } catch (err) {
+        this.$Message.error('本功能需登录');
         return;
       }
-      // 用户不填写裂变系数则默认为2
-      if (this.fissionFactor === '') this.fissionFactor = 2;
+
+      if (this.title === '' || this.markdownData === '') { // 标题或内容为空时
+        this.$Message.error('标题或正文不能为空');
+        return;
+      }
+      if (this.fissionFactor === '') this.fissionFactor = 2; // 用户不填写裂变系数则默认为2
 
       const {
-        title, markdownData, currentUsername, fissionFactor, cover,
+        title, markdownData: content, currentUsername: author, fissionFactor, cover,
       } = this;
-      const author = currentUsername;
-      const content = markdownData;
       const failed = (error) => {
         console.error('发送失败', error);
         this.$Notice.error({ title: '发送失败', desc: error });
@@ -140,6 +125,7 @@ export default {
           title: '发送成功',
           desc: '3秒后跳转到你发表的文章',
         });
+
         setTimeout(() => { jumpToArticle(hash); }, 3 * 1000);
       };
 
@@ -149,13 +135,12 @@ export default {
         });
         const { code, hash } = data;
         if (code !== 200) failed('1st step : send post to ipfs failed');
-        publishArticle({
+        await oldpublishArticle({
           author, title, hash, fissionFactor, cover,
-        })
-          .then((response) => {
-            if (response.data.msg !== 'success') failed('失败请重试');
-            success(hash);
-          }, (error) => { failed(error); });
+        }).then((response) => {
+          if (response.data.msg !== 'success') failed('失败请重试');
+          success(hash);
+        });
       } catch (error) {
         failed(error);
       }
@@ -274,8 +259,9 @@ export default {
   .fission-num-Input{
     width: 16%;
     margin-bottom: 10px;
-    border: 1px solid #dcdcdc;
+    border: 1px solid;
     border-radius: 5px;
+    border-color: #dcdcdc;
     display: inline-table;
   }
   .fission-num-slider{

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import https from 'https';
+import store from '@/store';
 import { Base64 } from 'js-base64';
 import API, { currentEOSAccount as currentAccount } from './scatter';
 
@@ -8,7 +9,26 @@ import API, { currentEOSAccount as currentAccount } from './scatter';
 export const apiServer = process.env.VUE_APP_API;
 const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
-const publishArticle = ({
+const publishArticle = async ({
+    author, title, hash, fissionFactor, cover,
+}) => {
+  const signature = await store.dispatch('getSignature', { author, hash });
+  console.log('签名成功后调', signature);
+  const { publicKey, signature: sign, username } = signature;
+  return axios.post(`${apiServer}/publish`,
+    {
+      author,
+      fissionFactor,
+      hash,
+      publickey: publicKey,
+      sign,
+      title,
+      username,
+      cover,
+    });
+};
+
+const oldpublishArticle = ({
   author, title, hash, fissionFactor, cover,
 }) => API.getSignature(author, hash).then(({ publicKey, signature, username }) => {
   console.log('签名成功后调', publicKey, signature, username);
@@ -26,10 +46,6 @@ const publishArticle = ({
     });
 });
 
-const getArticleData = hash => axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
-const getArticleInfo = hash => axios.get(`${apiServer}/post/${hash}`);
-// 获取单篇文章的信息 （短链接 issues）
-const getArticleInHash = id => axios.get(`${apiServer}/p/${id}`);
 
 // 获取支持过的文章列表 page user
 const getArticleSupports = params => axios.get(
@@ -100,33 +116,34 @@ const disassembleToken = (token) => {
 // /<summary>
 // /装载access_token
 // /</summary>
-const getAuth = () => new Promise((resolve, reject) => {
+const getAuth = () => new Promise(async (resolve, reject) => {
   const currentToken = getCurrentAccessToken();
   const decodedData = disassembleToken(currentToken); // 拆包
   const username = currentToken != null ? decodedData.iss : null;
   if (currentAccount() !== null && (currentToken === null
     || decodedData === null || decodedData.exp < new Date().getTime()
     || username !== currentAccount().name)) {
-    console.log('Retake authtoken...');
-    API.authSignature().then(({ username, publicKey, signature }) => {
-      console.info('API.authSignature :', username, publicKey, signature);
-      // 2. 将取得的签名和用户名和公钥post到服务端 获得accessToken
-      return auth({ username, publicKey, sign: signature });
-    }).then((response) => {
+    try {
+      console.log('Retake authtoken...');
+      const signature = await API.authSignature();
+      console.info('API.authSignature :', signature);
+      // 将取得的签名和用户名和公钥post到服务端 获得accessToken
+      const { username: _username, publicKey, signature: sign } = signature;
+      const response = await auth({ username: _username, publicKey, sign });
       if (response.status === 200) {
         // 3. save accessToken
         const accessToken = response.data;
         console.info('got the access token :', accessToken);
         setAccessToken(accessToken);
-        resolve(accessToken);
-      } else {
-        throw new Error('auth 出錯');
+        return resolve(accessToken);
       }
-    }).catch((err) => {
-      console.warn('取得用戶新簽名出錯', err);
-      reject();
-    });
-  } else resolve(currentToken);
+
+      throw new Error('auth 出錯');
+    } catch (error) {
+      console.warn('取得用戶新簽名出錯', error);
+      return reject(error);
+    }
+  } else return resolve(currentToken);
 });
 
 /*
@@ -170,6 +187,29 @@ const accessBackend = (options, callback = () => {}) => {
       });
   });
 };
+
+
+const getArticleData = hash => axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
+// 获取单篇文章的信息 hash
+// const getArticleInfo = hash => axios.get(`${apiServer}/post/${hash}`);
+const getArticleInfo = (hash, callback) => accessBackend({
+  method: 'GET',
+  url: `${apiServer}/post/${hash}`,
+  headers: { Accept: '*/*' },
+  httpsAgent,
+  data: {},
+}, callback);
+
+// 获取单篇文章的信息 （短链接 issues）
+// const getArticleInHash = id => axios.get(`${apiServer}/p/${id}`);
+const getArticleInHash = (id, callback) => accessBackend({
+  method: 'GET',
+  url: `${apiServer}/p/${id}`,
+  headers: { Accept: '*/*' },
+  httpsAgent,
+  data: {},
+}, callback);
+
 
 // Be used in User page.
 const Follow = ({ username, followed }, callback) => accessBackend({
@@ -263,7 +303,7 @@ const getAvatarImage = hash => `${apiServer}/image/${hash}`;
 
 // 编辑
 const editArticle = ({
-  signId, author, title, hash, fissionFactor, cover,
+  signId, author, title, hash, fissionFactor,
 }, callback) => API.getSignature(author, hash).then(({ publicKey, signature, username }) => accessBackend({
   method: 'POST',
   url: `${apiServer}/edit`,
@@ -278,7 +318,6 @@ const editArticle = ({
     sign: signature,
     title,
     username,
-    cover,
   },
 }, callback));
 
@@ -327,4 +366,5 @@ export {
   getSharesbysignid, addReadAmount, sendComment, getAssets, getAvatarImage,
   disassembleToken, delArticle, uploadAvatar, getArticleSupports, editArticle,
   getBackendData,
+  oldpublishArticle,
 };

@@ -98,17 +98,24 @@ export default {
     },
     loginScatterAsync() { return this.login(); },
     async setArticleData() {
+      await getArticleInfo(this.hash, ({ error, response }) => {
+        if (error) {
+          this.$Message.error('获取文章信息发生错误');
+          console.log(error);
+        } else {
+          const d2 = response.data;
+          this.fissionNum = d2.fission_factor / 1000;
+          this.signature = d2.sign;
+          this.cover = d2.cover;
+          this.originalCover = d2.cover;
+          console.log('data', d2);
+        }
+      });
       const articleData = await getArticleData(this.hash);
-      const articleInfo = await getArticleInfo(this.hash);
       const d1 = articleData.data.data;
-      const d2 = articleInfo.data;
       this.title = d1.title;
       this.markdownData = d1.content;
       this.author = d1.author;
-      this.fissionNum = d2.fission_factor / 1000;
-      this.signature = d2.sign;
-      this.cover = d2.cover;
-      this.originalCover = d2.cover;
     },
     async sendThePost() {
       if (!this.isScatterConnected) {

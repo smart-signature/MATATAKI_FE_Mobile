@@ -6,6 +6,7 @@
       <div slot="right" @click="opr = !opr" v-if="isMe">
         <img src="@/assets/more.svg" alt="more">
       </div>
+      <img class="information" slot="info" src="@/assets/information.svg" alt="information" @click="infoModa = true">
     </BaseHeader>
     <!--<za-nav-bar>
       <div slot="left">
@@ -30,7 +31,7 @@
         <Avatar icon="ios-person" class="avatar-size" size="small" />
         <router-link class="author"
           :to="{ name: 'User', params: { username:post.author }}">
-          {{post.author}}
+          {{article.nickname || post.author}}
         </router-link>
         {{articleCreateTimeComputed}} | {{article.read || 0}}阅读
       </p>
@@ -45,38 +46,35 @@
     <CommentsList class="comments" :signId="signId" />
     <footer class="footer">
       <div class="footer-block">
-        <div class="amount">
-          <div>
-            <img class="amount-img" src="@/assets/img/icon_amount.png" />
-            {{computedTotalSupportedAmount}}
+        <Tooltip content="本文收到的赞赏总额" placement="top-start">
+          <div class="amount">
+            <div>
+              <img class="amount-img" src="@/assets/img/icon_amount.png" />
+              {{computedTotalSupportedAmount}}
+            </div>
+            <div class="amount-text">赞赏总额</div>
           </div>
-          <div class="amount-text">赞赏总额</div>
-        </div>
-        <div class="fission">
-          <div>
-            <img class="amount-img" src="@/assets/img/icon_fission.png" />
-            {{getDisplayedFissionFactor}}
+        </Tooltip>
+        <Tooltip content="你可得到的最高回报=赞赏额*裂变系数">
+          <div class="fission">
+            <div>
+              <img class="amount-img" src="@/assets/img/icon_fission.png" />
+              {{getDisplayedFissionFactor}}
+            </div>
+            <div class="amount-text">裂变系数</div>
           </div>
-          <div class="amount-text">裂变系数</div>
-        </div>
+        </Tooltip>
       </div>
       <div class="footer-block">
-          <button class="button-support"
-            v-if="isSupported===-1"
-            @click="b4support">赞赏<img src="@/assets/img/icon_support.png"/></button>
-          <button class="button-support"
-            v-if="isSupported===0"
-            disabled>赞赏中<img src="@/assets/img/icon_support.png"/></button>
-          <button class="button-support"
-            v-else-if="isSupported===1"
-            @click="b4support">赞赏<img src="@/assets/img/icon_support.png"/></button>
-          <button class="button-support"
-            v-else-if="isSupported===2"
-            disabled>已赞赏<img src="@/assets/img/icon_support.png"/></button>
-
-          <button class="button-share"
-            :data-clipboard-text="getClipboard"
-            @click="share">分享<img src="@/assets/img/icon_share.png" /></button>
+        <Tooltip content="赞赏的文章可以在赞赏列表中查看">
+          <button class="button-support" v-if="isSupported===-1" @click="b4support">赞赏<img src="@/assets/img/icon_support.png"/></button>
+          <button class="button-support" v-if="isSupported===0" disabled>赞赏中<img src="@/assets/img/icon_support.png"/></button>
+          <button class="button-support" v-else-if="isSupported===1" @click="visible3 = true">赞赏<img src="@/assets/img/icon_support.png"/></button>
+          <button class="button-support" v-else-if="isSupported===2" disabled>已赞赏<img src="@/assets/img/icon_support.png"/></button>
+        </Tooltip>
+        <Tooltip content="先赞赏后分享，好友赞赏你可得更多" placement="top-end">
+          <button class="button-share" :data-clipboard-text="getClipboard" @click="share">分享<img src="@/assets/img/icon_share.png" /></button>
+        </Tooltip>
       </div>
     </footer>
     <!-- 赞赏对话框 zarm -->
@@ -97,6 +95,9 @@
         </div>
         <button class="support-button" @click="support">赞赏</button>
     </za-modal>
+
+    <ArticleInfo :infoModa="infoModa" @changeInfo="(status) => infoModa = status" />
+
   </div>
 </template>
 
@@ -105,15 +106,16 @@ import { mapActions, mapGetters, mapState } from 'vuex';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
 import {
-  getArticleData, getArticleInfo, getSharesbysignid,
+  getArticleData, getArticleInfo,
   addReadAmount, sendComment, getArticleInHash,
-  delArticle,
+  delArticle, getAuth,
 } from '@/api';
 import { support } from '@/api/signature';
 import 'mavon-editor/dist/css/index.css';
-import CommentsList from './CommentsList.vue';
 import moment from 'moment';
+import CommentsList from './CommentsList.vue';
 import { sleep, isNDaysAgo } from '@/common/methods';
+import ArticleInfo from './ArticleInfo.vue';
 
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
@@ -128,16 +130,11 @@ const RewardStatus = { // 0=加载中,1=未打赏 2=已打赏, -1未登录
 export default {
   name: 'Article',
   props: ['hash'],
-  components: { mavonEditor, CommentsList },
+  components: { mavonEditor, CommentsList, ArticleInfo },
   computed: {
-    ...mapState('scatter', {
-      isScatterConnected: state => state.isConnected,
-      isScatterLoggingIn: state => state.isLoggingIn,
-      scatterAccount: state => state.account,
-    }),
     ...mapGetters(['currentUsername']),
     isLogined() {
-      return this.scatterAccount !== null;
+      return this.currentUsername !== null;
     },
     compiledMarkdown() {
       return markdownIt.render(this.post.content);
@@ -225,16 +222,15 @@ export default {
       create_time: '',
       fission_factor: 0,
     },
-    shares: [],
     amount: '',
     comment: '',
-    isSupported: RewardStatus.LOADING,
-    isTotalSupportAmountVisible: false, // 正在加载和加载完毕的文本切换
+    isSupported: RewardStatus.NOT_LOGGINED,
     totalSupportedAmount: 0,
     visible3: false,
     clipboard: null,
     articleCreateTime: '',
     opr: false,
+    infoModa: false,
   }),
   head: {
     title() {
@@ -258,20 +254,23 @@ export default {
         { p: 'article:author', c: post.author },
         { p: 'article:published_time', c: article.create_time },
         { p: 'og:image', c: 'https://example.com/image.jpg' },
+        //  Twitter
+        { n: 'twitter:card', c: post.desc },
+        // { n: 'twitter:site', c: '@Smart Signature' },
+        // { n: 'twitter:creator', c: '@article' }, // @username for the content creator / author.
+        // 未來支持推特連接後， 可以顯示其推特帳號在推特 card 預覽裡
       ];
     },
   },
   watch: {
     article() {
       this.$emit('updateHead');
+      this.setisSupported();
     },
     post() {
       this.$emit('updateHead');
     },
     currentUsername() {
-      this.setisSupported();
-    },
-    shares() {
       this.setisSupported();
     },
   },
@@ -293,47 +292,66 @@ export default {
         });
       });
     },
-    // 通过id 获取hash值
+    // 设置文章
+    setArticle(hash) {
+      this.setArticleData(hash);
+      addReadAmount({ articlehash: hash }); // 增加文章阅读量
+      console.log('line 294');
+    },
+    // 获取文章
     async getArticle(hashOrId) {
-      const { setArticleData, setArticleInfo } = this;
-      const setArticle = (hash) => {
-        setArticleData(hash);
-        setArticleInfo(hash);
-        addReadAmount({ articlehash: hash }); // 增加文章阅读量
-        this.isTotalSupportAmountVisible = true;
-      };
-
-      // 如果是id查询查询hash然后查询文章 否则直接用hash查询文章
       const reg = /^[0-9]*$/;
+      // 如果是id查询查询hash然后查询文章 否则直接用hash查询文章
       if (reg.test(hashOrId)) {
-        await getArticleInHash(hashOrId).then((res) => {
-          if (res.status === 200) {
-            const { hash } = res.data;
-            setArticle(hash);
-          }
-        }).catch((err) => {
-          console.log(err);
-          this.$Message.error('发生错误请重试');
-        });
+        this.getArticleInId(hashOrId);
       } else {
-        setArticle(hashOrId);
+        this.setArticleInfo(hashOrId);
+        this.setArticle(hashOrId);
       }
     },
+    // 从ipfs查询文章内容
     async setArticleData(hash) {
-      const { data } = await getArticleData(hash);
-      this.post = data.data;
-      console.info('post :', this.post);
+      await getArticleData(hash)
+        .then(({ data }) => {
+          this.post = data.data;
+          // console.info('post :', data.data);
+        }).catch((error) => {
+          this.$Message.error('从ipfs获取文章信息失败');
+          console.log(error);
+        });
     },
-    async setArticleInfo(hash) {
-      const { data } = await getArticleInfo(hash);
+    // 设置文章信息方法
+    setArticleInfoFunc(data, supportDialog = false) {
       this.article = data;
-      console.info('Article info :', this.article);
-      const { article, page } = this;
-      this.articleCreateTime = article.create_time;
-      this.totalSupportedAmount = article.value;
-      this.signId = article.id;
-      // console.debug(this.signId);
-      await this.getArticlesList(article.id, page);
+      this.articleCreateTime = data.create_time;
+      this.totalSupportedAmount = data.value;
+      this.signId = data.id;
+      // console.info('Article info :', data);
+      // 如果没有打赏 并且是点击赞赏 则显示赞赏框
+      if (!data.support && supportDialog) {
+        this.visible3 = true;
+      }
+    },
+    // 通过 hash 请求文章信息
+    async setArticleInfo(hash, supportDialog) {
+      await getArticleInfo(hash, ({ error, response }) => {
+        if (error) {
+          this.$Message.error('获取文章信息发生错误');
+          console.log(error);
+        } else this.setArticleInfoFunc(response.data, supportDialog);
+      });
+    },
+    // 通过id请求文章信息
+    async getArticleInId(hashOrId, supportDialog) {
+      await getArticleInHash(hashOrId, ({ error, response }) => {
+        if (error) {
+          console.log(error);
+          this.$Message.error('获取文章信息发生错误');
+        } else {
+          this.setArticle(response.data.hash);
+          this.setArticleInfoFunc(response.data, supportDialog);
+        }
+      });
     },
     handleClose() {
       this.visible3 = false;
@@ -344,11 +362,9 @@ export default {
       this.amount = e.target.value;
     },
     setisSupported() {
-      const { shares } = this;
-      if (this.scatterAccount !== null && shares !== []) {
-        const share = shares.find(element => element.author === this.currentUsername);
-        if (share !== undefined) {
-          console.log('Current user\'s share :', share);
+      const { article } = this;
+      if (this.currentUsername !== null) {
+        if (article.support) {
           this.isSupported = RewardStatus.REWARDED;
         } else {
           this.isSupported = RewardStatus.NOT_REWARD_YET;
@@ -360,9 +376,16 @@ export default {
     async b4support() {
       this.$Message.info('帐号检测中...');
       await this.idCheck().then(() => {
+        // 有hash用hash查询， 没有hash用id, 多做一层处理
+        const { hash, id } = this.article;
+        if (hash) {
+          this.setArticleInfo(hash, true);
+        } else if (id) {
+          this.getArticleInId(id, true);
+        }
         this.$Message.success('检测通过');
-        this.visible3 = true;
-      }).catch(() => {
+      }).catch((err) => {
+        console.log(err);
         this.$Message.error('本功能需登录');
         /*
         this.$Modal.error({
@@ -373,16 +396,12 @@ export default {
     },
     async support() {
       const { article, comment } = this;
-      // amount
+      // 檢查 amount
       const amount = parseFloat(this.amount);
       if (Number.isNaN(amount) || amount < 0.01) {
         this.$Message.warning('请输入正确的金额 最小赞赏金额为 0.01 EOS');
         return;
       }
-      console.info('final amount :', amount, ', comment :', comment);
-
-      this.visible3 = false;
-      await this.b4support();
 
       const signId = article.id;
       const referrer = this.getInvite;
@@ -390,8 +409,12 @@ export default {
 
       try {
         this.isSupported = RewardStatus.LOADING;
+        // 問用戶要 acceess token
+        await getAuth();
+        // 發轉帳 action 到合約
         await support({ amount, signId, referrer });
         try {
+          // 發 comment 到後端
           console.log('Send comment...');
           await sendComment({ comment, signId },
             ({ error, response }) => {
@@ -411,17 +434,7 @@ export default {
         this.$Message.success('赞赏成功！');
         // tricky speed up, 前端手动加一下钱 立马调接口获取不到 value 值
         this.totalSupportedAmount += parseFloat(amount * 10000);
-        // 手动添加一个赞赏
-        const time = new Date(Date.now());
-        const timeNow = time.getTime() + time.getTimezoneOffset()
-                   * 60000;
-
-        this.comments.push({
-          author: this.scatterAccount.name,
-          timestamp: timeNow,
-          quantity: `${amount} EOS`,
-          message: comment,
-        });
+        this.visible3 = false;
       } catch (error) {
         console.log(JSON.stringify(error));
         this.$Message.error('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额');
@@ -435,14 +448,6 @@ export default {
         // console.log(error);
         // this.$Message.error('失败');
       }
-    },
-    async getArticlesList(signId) {
-      await getSharesbysignid(signId, 1)
-        .then((response) => {
-          console.log('shares : ', response.data);
-          const { data } = response;
-          this.shares = data;
-        });
     },
     // 删除文章
     delArticleButton() {

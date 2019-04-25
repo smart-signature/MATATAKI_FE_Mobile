@@ -14,7 +14,7 @@ const state = {
 
 const getters = {
   currentBalance: ({ balances }) => (balances.ont),
-  currentUsername: ({ account }) => (account || null),
+  // currentUsername: ({ account }) => (account || null),
 };
 
 const actions = {
@@ -22,20 +22,29 @@ const actions = {
     console.log('Connecting to ont wallet ...');
     return new Promise((resolve, reject) => {
       cyanobridgeAPI.getAccount()
-        .then((result) => {
-          // const { result: address } = result; // o
-          const address = result; // c
+        .then((address) => {
           commit('setAccount', address);
-          // console.debug('1.');
           resolve(address);
         })
         .catch(result => reject(result));
     });
   },
+  async getSignature({ dispatch, state }, { author, hash }) {
+    let { account } = state;
+    if (!account) {
+      await dispatch('getAccount');
+      account = state.account;
+    }
+    // 需要签名的数据
+    const signData = `${author} ${hash}`;
+    // 申请签名
+    const signature = await cyanobridgeAPI.signMessage(signData);
+    return ({ publicKey: signature.publicKey, signature: signature.data, username: account });
+  },
 };
 
 const mutations = {
-  setAccount(state, { account }) {
+  setAccount(state, account) {
     state.account = account;
   },
 };

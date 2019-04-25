@@ -139,6 +139,9 @@ export default {
 .banner-text {
   display: flex;
   align-items: center;
+  overflow: hidden;
+  flex: 1;
+  margin-right: 10px;
   .round_icon {
     width: 50px;
     height: 50px;
@@ -176,6 +179,7 @@ export default {
     font-family:PingFangSC-Regular;
     font-weight:400;
     letter-spacing:1px;
+    min-width: 100px;
 }
 
 .login-notification {
