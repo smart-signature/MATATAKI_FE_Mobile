@@ -256,6 +256,11 @@ export default {
         { p: 'article:author', c: post.author },
         { p: 'article:published_time', c: article.create_time },
         { p: 'og:image', c: 'https://example.com/image.jpg' },
+        //  Twitter
+        { n: 'twitter:card', c: post.desc },
+        // { n: 'twitter:site', c: '@Smart Signature' },
+        // { n: 'twitter:creator', c: '@article' }, // @username for the content creator / author.
+        // 未來支持推特連接後， 可以顯示其推特帳號在推特 card 預覽裡
       ];
     },
   },
