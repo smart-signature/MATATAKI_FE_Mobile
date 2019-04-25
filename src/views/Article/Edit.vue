@@ -36,7 +36,7 @@ import { mapGetters, mapActions, mapState } from 'vuex';
 import { sendPost } from '@/api/ipfs';
 import { mavonEditor } from 'mavon-editor';
 import {
-  defaultImagesUploader, editArticle, getArticleInfo, getArticleData,
+  defaultImagesUploader, editArticle, getArticleInfoCB, getArticleDatafromIPFS,
 } from '@/api';
 
 import 'mavon-editor/dist/css/index.css'; // editor css
@@ -86,8 +86,8 @@ export default {
     ]),
     loginScatterAsync() { return this.login(); },
     async setArticleData() {
-      const articleData = await getArticleData(this.hash);
-      const articleInfo = await getArticleInfo(this.hash);
+      const articleData = await getArticleDatafromIPFS(this.hash);
+      const articleInfo = await getArticleInfoCB(this.hash);
       const d1 = articleData.data.data;
       const d2 = articleInfo.data;
       this.title = d1.title;
