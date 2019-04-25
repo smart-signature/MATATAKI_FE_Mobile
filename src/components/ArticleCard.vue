@@ -1,19 +1,25 @@
 <template>
   <div class="card">
-    <router-link :to="{ name: 'Article', params: { hash }}">
+    <div class="article-text">
+      <router-link :to="{ name: 'Article', params: { hash }}">
         <h2 class="title">{{article.title}}</h2>
         <p class="avatar">{{article.nickname || article.author}}</p>
         <p class="date">
           {{friendlyDate}} · <img src="../assets/img/icon_amount.png" alt="eos" />
           {{article.value/ 10000}}
         </p>
-    </router-link>
+      </router-link>
+    </div>
+    <div class="img-outer" v-if="cover">
+      <img :src="cover" alt="" class="img-inner">
+    </div>
   </div>
 </template>
 
 <script>
 import moment from 'moment';
 import { isNDaysAgo } from '@/common/methods';
+import { getAvatarImage } from '@/api';
 
 export default {
   name: 'ArticleCard',
@@ -26,11 +32,32 @@ export default {
     hash() {
       return this.article.hash;
     },
+    cover() {
+      if (this.article.cover) {
+        return getAvatarImage(this.article.cover);
+      }
+      return null;
+    },
   },
 };
 </script>
 
 <style scoped>
+.article-text {
+  width: 70%;
+  min-width: 70%;
+}
+.img-outer {
+  width: 80px;
+  height: 70px;
+}
+.img-inner {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 5px;
+  object-fit: cover;
+}
 /* 文章card */
 .card {
   margin: 10px 20px;
@@ -41,6 +68,11 @@ export default {
   box-sizing: border-box;
   background-color: #fff;
   padding: 18px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
 }
 .card a {
   color: #000;

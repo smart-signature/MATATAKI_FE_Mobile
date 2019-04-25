@@ -10,7 +10,7 @@ export const apiServer = process.env.VUE_APP_API;
 const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
 const publishArticle = async ({
-  author, title, hash, fissionFactor,
+    author, title, hash, fissionFactor, cover,
 }) => {
   const signature = await store.dispatch('getSignature', { author, hash });
   console.log('签名成功后调', signature);
@@ -24,11 +24,12 @@ const publishArticle = async ({
       sign,
       title,
       username,
+      cover,
     });
 };
 
 const oldpublishArticle = ({
-  author, title, hash, fissionFactor,
+  author, title, hash, fissionFactor, cover,
 }) => API.getSignature(author, hash).then(({ publicKey, signature, username }) => {
   console.log('签名成功后调', publicKey, signature, username);
   // if (err) failed('2nd step failed');
@@ -41,6 +42,7 @@ const oldpublishArticle = ({
       sign: signature,
       title,
       username,
+      cover,
     });
 });
 

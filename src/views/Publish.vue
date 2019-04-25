@@ -31,11 +31,28 @@
             <vue-slider class="fission-num-slider2" :min="1" :max="2" :interval="0.1" v-model="fissionNum"></vue-slider>
           </div>
         </FormItem>
+        <FormItem label="上传头图">
+          <div style="text-align: left">
+            <ImgUpload @setDone="setDone"></ImgUpload>
+          </div>
+        </FormItem>
       </Form>
     </div>
-    <mavon-editor ref=md v-model="markdownData"
+    <mavon-editor ref=md v-model="markdownData" style="max-height: 300px;z-index: 2;"
       @imgAdd="$imgAdd" :toolbars="toolbars" :subfield="false" :boxShadow="false"
       placeholder="请输入 Markdown 格式的文字开始编辑"/>
+    <div class="radio">
+      <div class="radio-item">
+        <input type="radio" id="public"
+               name="contact" value="public" v-model="saveType">
+        <label for="public" class="radio-label">公开发布</label>
+      </div>
+      <div class="radio-item">
+        <input type="radio" id="draft"
+               name="contact" value="draft" v-model="saveType">
+        <label for="draft" class="radio-label">保存到草稿箱</label>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -50,12 +67,14 @@ import {
 import 'mavon-editor/dist/css/index.css'; // editor css
 import VueSlider from 'vue-slider-component';
 import 'vue-slider-component/theme/default.css';
+import ImgUpload from '@/components/ImgUpload';
 
 export default {
   name: 'NewPost',
   components: {
     'mavon-editor': mavonEditor,
     VueSlider,
+    ImgUpload,
   },
   created() {
   },
@@ -71,6 +90,8 @@ export default {
     toolbars: {},
     screenWidth: document.body.clientWidth,
     fissionNum: 2,
+    cover: '',
+    saveType: 'public',
   }),
   computed: {
     ...mapState('scatter', {
@@ -79,6 +100,13 @@ export default {
     ...mapGetters(['currentUsername']),
   },
   methods: {
+    ...mapActions('scatter', [
+      'login',
+    ]),
+    loginScatterAsync() { return this.login(); },
+    setDone(fileHash) {
+      this.cover = fileHash;
+    },
     ...mapActions(['idCheck']),
     async sendThePost() {
       try {
@@ -96,7 +124,7 @@ export default {
       if (this.fissionFactor === '') this.fissionFactor = 2; // 用户不填写裂变系数则默认为2
 
       const {
-        title, markdownData: content, currentUsername: author, fissionFactor,
+        title, markdownData: content, currentUsername: author, fissionFactor, cover,
       } = this;
       const failed = (error) => {
         console.error('发送失败', error);
@@ -121,7 +149,7 @@ export default {
         const { code, hash } = data;
         if (code !== 200) failed('1st step : send post to ipfs failed');
         await oldpublishArticle({
-          author, title, hash, fissionFactor,
+          author, title, hash, fissionFactor, cover,
         }).then((response) => {
           if (response.data.msg !== 'success') failed('失败请重试');
           success(hash);
@@ -208,6 +236,21 @@ export default {
 </script>
 
 <style scoped>
+  .radio-label {
+    margin-left: 5px;
+  }
+  .radio-item {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+  }
+  .radio {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px;
+  }
   .edit-content {
     margin: 10px;
   }
