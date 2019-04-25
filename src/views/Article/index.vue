@@ -106,8 +106,10 @@ import { mapActions, mapGetters, mapState } from 'vuex';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
 import {
-  getArticleData, getArticleInfo,
-  addReadAmount, sendComment, getArticleInHash,
+  getArticleDatafromIPFS, 
+  getArticleInfo, getArticleInfoCB,
+  getArticleInHash, getArticleInHashCB,
+  addReadAmount, sendComment, 
   delArticle, getAuth,
 } from '@/api';
 import { support } from '@/api/signature';
@@ -128,6 +130,25 @@ const RewardStatus = { // 0=加载中,1=未打赏 2=已打赏, -1未登录
 };
 
 export default {
+  async beforeRouteEnter(to, from, next) {
+    const { hash: hashOrId } = to.params;
+    const { data: article } = await getArticleInfo(hashOrId).catch((error) => {
+      console.error(error);
+      // this.$Message.error('获取文章信息发生错误');
+    });
+    const { data } = await getArticleDatafromIPFS(article.hash).catch((error) => {
+      console.error(error);
+      // this.$Message.error('从ipfs获取文章信息失败');
+    });
+    const { data: post } = data;
+    console.info('article :', article, 'post :', post);
+        
+    next(vm => { // 通过 `vm` 访问组件实例
+      // console.log('run next');
+      vm.setArticle({ article, post }); // 设置文章
+      vm.$emit('updateHead');
+    });
+  },
   name: 'Article',
   props: ['hash'],
   components: { mavonEditor, CommentsList, ArticleInfo },
@@ -191,8 +212,6 @@ export default {
     const { getArticle, hash, initClipboard } = this;
     document.title = '正在加载文章 - Smart Signature';
     initClipboard(); // 分享按钮功能需要放在前面 保证功能的正常执行
-
-    getArticle(hash);
   },
   mounted() {
     !(function (d, i) {
@@ -264,11 +283,7 @@ export default {
   },
   watch: {
     article() {
-      this.$emit('updateHead');
       this.setisSupported();
-    },
-    post() {
-      this.$emit('updateHead');
     },
     currentUsername() {
       this.setisSupported();
@@ -292,66 +307,19 @@ export default {
         });
       });
     },
-    // 设置文章
-    setArticle(hash) {
-      this.setArticleData(hash);
-      addReadAmount({ articlehash: hash }); // 增加文章阅读量
-      console.log('line 294');
-    },
-    // 获取文章
-    async getArticle(hashOrId) {
-      const reg = /^[0-9]*$/;
-      // 如果是id查询查询hash然后查询文章 否则直接用hash查询文章
-      if (reg.test(hashOrId)) {
-        this.getArticleInId(hashOrId);
-      } else {
-        this.setArticleInfo(hashOrId);
-        this.setArticle(hashOrId);
-      }
-    },
-    // 从ipfs查询文章内容
-    async setArticleData(hash) {
-      await getArticleData(hash)
-        .then(({ data }) => {
-          this.post = data.data;
-          // console.info('post :', data.data);
-        }).catch((error) => {
-          this.$Message.error('从ipfs获取文章信息失败');
-          console.log(error);
-        });
-    },
-    // 设置文章信息方法
-    setArticleInfoFunc(data, supportDialog = false) {
-      this.article = data;
-      this.articleCreateTime = data.create_time;
-      this.totalSupportedAmount = data.value;
-      this.signId = data.id;
+    setArticle({article, post}) {
+      addReadAmount({ articlehash: article.hash }); // 增加文章阅读量
+      const supportDialog = false;
+      this.post = post;
+      this.article = article;
+      this.articleCreateTime = article.create_time;
+      this.totalSupportedAmount = article.value;
+      this.signId = article.id;
       // console.info('Article info :', data);
       // 如果没有打赏 并且是点击赞赏 则显示赞赏框
-      if (!data.support && supportDialog) {
+      if (!article.support && supportDialog) {
         this.visible3 = true;
       }
-    },
-    // 通过 hash 请求文章信息
-    async setArticleInfo(hash, supportDialog) {
-      await getArticleInfo(hash, ({ error, response }) => {
-        if (error) {
-          this.$Message.error('获取文章信息发生错误');
-          console.log(error);
-        } else this.setArticleInfoFunc(response.data, supportDialog);
-      });
-    },
-    // 通过id请求文章信息
-    async getArticleInId(hashOrId, supportDialog) {
-      await getArticleInHash(hashOrId, ({ error, response }) => {
-        if (error) {
-          console.log(error);
-          this.$Message.error('获取文章信息发生错误');
-        } else {
-          this.setArticle(response.data.hash);
-          this.setArticleInfoFunc(response.data, supportDialog);
-        }
-      });
     },
     handleClose() {
       this.visible3 = false;
@@ -362,13 +330,9 @@ export default {
       this.amount = e.target.value;
     },
     setisSupported() {
-      const { article } = this;
-      if (this.currentUsername !== null) {
-        if (article.support) {
-          this.isSupported = RewardStatus.REWARDED;
-        } else {
-          this.isSupported = RewardStatus.NOT_REWARD_YET;
-        }
+      const { article, currentUsername } = this;
+      if (currentUsername) {
+        this.isSupported = article.support ? RewardStatus.REWARDED : RewardStatus.NOT_REWARD_YET;
       } else {
         this.isSupported = RewardStatus.NOT_LOGGINED;
       }
