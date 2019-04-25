@@ -33,7 +33,6 @@ export default {
     isRequest(newVal) {
       if (newVal) {
         this.timer = setInterval(() => {
-          console.log(this.isRequest, newVal, this.timer);
           if (this.autoRequestTime >= 30) {
             clearInterval(this.timer);
             this.$emit('stopAutoRequest', false);
@@ -63,9 +62,6 @@ export default {
   },
   methods: {
     getListData(res) {
-      console.log(res);
-      console.log(this.currentUserInfo);
-
       if (this.isRequest && res.data.length !== 0 && res.data[0].author === this.currentUserInfo.name) {
         this.$emit('stopAutoRequest', false);
       }
