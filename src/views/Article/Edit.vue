@@ -41,7 +41,7 @@ import { mapGetters, mapActions, mapState } from 'vuex';
 import { sendPost } from '@/api/ipfs';
 import { mavonEditor } from 'mavon-editor';
 import {
-  defaultImagesUploader, editArticle, getArticleInfo, getArticleData,
+  defaultImagesUploader, editArticle, getArticleInfoCB, getArticleDatafromIPFS,
 } from '@/api';
 
 import 'mavon-editor/dist/css/index.css'; // editor css
@@ -98,7 +98,8 @@ export default {
     },
     loginScatterAsync() { return this.login(); },
     async setArticleData() {
-      await getArticleInfo(this.hash, ({ error, response }) => {
+      const articleData = await getArticleDatafromIPFS(this.hash);
+      getArticleInfoCB(this.hash, ({ error, response }) => {
         if (error) {
           this.$Message.error('获取文章信息发生错误');
           console.log(error);
@@ -111,11 +112,9 @@ export default {
           console.log('data', d2);
         }
       });
-      const articleData = await getArticleData(this.hash);
       const d1 = articleData.data.data;
       this.title = d1.title;
       this.markdownData = d1.content;
-      this.author = d1.author;
     },
     async sendThePost() {
       if (!this.isScatterConnected) {

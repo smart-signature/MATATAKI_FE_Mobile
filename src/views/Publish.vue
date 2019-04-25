@@ -41,6 +41,18 @@
     <mavon-editor ref=md v-model="markdownData" style="max-height: 300px;z-index: 2;"
       @imgAdd="$imgAdd" :toolbars="toolbars" :subfield="false" :boxShadow="false"
       placeholder="请输入 Markdown 格式的文字开始编辑"/>
+    <div class="radio">
+      <div class="radio-item">
+        <input type="radio" id="public"
+               name="contact" value="public" v-model="saveType">
+        <label for="public" class="radio-label">公开发布</label>
+      </div>
+      <div class="radio-item">
+        <input type="radio" id="draft"
+               name="contact" value="draft" v-model="saveType">
+        <label for="draft" class="radio-label">保存到草稿箱</label>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -79,6 +91,7 @@ export default {
     screenWidth: document.body.clientWidth,
     fissionNum: 2,
     cover: '',
+    saveType: 'public',
   }),
   computed: {
     ...mapState('scatter', {
@@ -223,6 +236,21 @@ export default {
 </script>
 
 <style scoped>
+  .radio-label {
+    margin-left: 5px;
+  }
+  .radio-item {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+  }
+  .radio {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px;
+  }
   .edit-content {
     margin: 10px;
   }

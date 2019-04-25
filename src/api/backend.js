@@ -189,10 +189,17 @@ const accessBackend = (options, callback = () => {}) => {
 };
 
 
-const getArticleData = hash => axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
-// 获取单篇文章的信息 hash
-// const getArticleInfo = hash => axios.get(`${apiServer}/post/${hash}`);
-const getArticleInfo = (hash, callback) => accessBackend({
+const getArticleDatafromIPFS = hash => axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
+
+// 获取单篇文章的信息 by hash or id
+const getArticleInfo = (hashOrId) => {
+  const reg = /^[0-9]*$/;
+  const url = reg.test(hashOrId) ? `${apiServer}/p/${id}` : `${apiServer}/post/${hashOrId}`;
+  return axios.get(url, { httpsAgent });
+}
+
+// 該被廢棄
+const getArticleInfoCB = (hash, callback) => accessBackend({
   method: 'GET',
   url: `${apiServer}/post/${hash}`,
   headers: { Accept: '*/*' },
@@ -200,9 +207,10 @@ const getArticleInfo = (hash, callback) => accessBackend({
   data: {},
 }, callback);
 
+// 該被廢棄
 // 获取单篇文章的信息 （短链接 issues）
-// const getArticleInHash = id => axios.get(`${apiServer}/p/${id}`);
-const getArticleInHash = (id, callback) => accessBackend({
+const getArticleInHash = (id) => axios.get(`${apiServer}/p/${id}`, { httpsAgent });
+const getArticleInHashCB = (id, callback) => accessBackend({
   method: 'GET',
   url: `${apiServer}/p/${id}`,
   headers: { Accept: '*/*' },
@@ -358,10 +366,12 @@ const getBackendData = ({ url, params }, callback) => accessBackend({
   httpsAgent,
 }, callback);
 
-
+// 每天浪費時間寫這個，不對吧，像隔壁用 API 一起輸出呀
 export {
   publishArticle, auth, getAuth,
-  getArticleData, getArticlesList, getArticleInfo, getArticleInHash,
+  getArticleDatafromIPFS, getArticlesList,
+  getArticleInfo, getArticleInfoCB,
+  getArticleInHash, getArticleInHashCB,
   Follow, Unfollow, getUser, setUserName, getFansList, getFollowList, oldgetUser,
   getSharesbysignid, addReadAmount, sendComment, getAssets, getAvatarImage,
   disassembleToken, delArticle, uploadAvatar, getArticleSupports, editArticle,
