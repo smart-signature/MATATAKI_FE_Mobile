@@ -31,7 +31,7 @@
             <vue-slider class="fission-num-slider2" :min="1" :max="2" :interval="0.1" v-model="fissionNum"></vue-slider>
           </div>
         </FormItem>
-        <FormItem label="上传头图">
+        <FormItem label="图文封面">
           <div style="text-align: left">
             <ImgUpload @setDone="setDone"></ImgUpload>
           </div>
