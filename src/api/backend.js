@@ -311,7 +311,7 @@ const getAvatarImage = hash => `${apiServer}/image/${hash}`;
 
 // 编辑
 const editArticle = ({
-  signId, author, title, hash, fissionFactor,
+  signId, author, title, hash, fissionFactor, cover,
 }, callback) => API.getSignature(author, hash).then(({ publicKey, signature, username }) => accessBackend({
   method: 'POST',
   url: `${apiServer}/edit`,
@@ -326,6 +326,7 @@ const editArticle = ({
     sign: signature,
     title,
     username,
+    cover,
   },
 }, callback));
 
