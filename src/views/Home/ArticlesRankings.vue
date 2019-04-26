@@ -57,4 +57,11 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style>
+  .za-tab-header {
+    position: sticky;
+    top: 0;
+    z-index: 22;
+    background: #F0F0F0;
+  }
+</style>

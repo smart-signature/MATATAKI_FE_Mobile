@@ -1,8 +1,8 @@
 /* eslint-disable no-shadow */
 <template>
   <div class="article">
-    <BaseHeader :pageinfo="{ title: `Smart Signature`, rightPage: 'home',
-                   needLogin: false, }">
+    <BaseHeader style="position: fixed; top: 0; left: 0; right: 0;"
+                :pageinfo="{ title: `Smart Signature`, rightPage: 'home', needLogin: false, }">
       <div slot="right" @click="opr = !opr" v-if="isMe">
         <img src="@/assets/more.svg" alt="more">
       </div>
@@ -25,7 +25,7 @@
         <div class="dropdown-item" @click="delArticleButton">删除</div>
       </div>
     </transition>
-    <header class="ta_header">
+    <header class="ta_header" style="padding-top: 44px;">
       <h1 dir="auto">{{post.title}}</h1>
       <p>
         <Avatar icon="ios-person" class="avatar-size" size="small" />

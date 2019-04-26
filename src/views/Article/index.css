@@ -183,7 +183,7 @@
     border-radius: 3px;
 }
 .dropdown {
-    position: absolute;
+    position: fixed;
     background-color: #434343;
     color: #fff;
     top: 40px;
