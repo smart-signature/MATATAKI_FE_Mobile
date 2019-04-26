@@ -1,19 +1,19 @@
 <template>
-  <div class="card">
-    <div class="article-text">
-      <router-link :to="{ name: 'Article', params: { hash }}">
+  <router-link :to="{ name: 'Article', params: { hash }}">
+    <div class="card">
+      <div class="article-text">
         <h2 class="title">{{article.title}}</h2>
         <p class="avatar">{{article.nickname || article.author}}</p>
         <p class="date">
           {{friendlyDate}} · <img src="../assets/img/icon_amount.png" alt="eos" />
           {{article.value/ 10000}}
         </p>
-      </router-link>
+      </div>
+      <div class="img-outer" v-if="cover">
+        <img :src="cover" alt="" class="img-inner">
+      </div>
     </div>
-    <div class="img-outer" v-if="cover">
-      <img :src="cover" alt="" class="img-inner">
-    </div>
-  </div>
+  </router-link>
 </template>
 
 <script>
