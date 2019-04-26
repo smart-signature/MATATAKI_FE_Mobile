@@ -23,7 +23,7 @@
         <FormItem label="裂变系数">
           <Input v-model="fissionNum" placeholder="" size="large" clearable disabled/>
         </FormItem>
-        <FormItem label="上传头图">
+        <FormItem label="图文封面">
           <div style="text-align: left">
             <ImgUpload @setDone="setDone" :cover="cover"></ImgUpload>
           </div>

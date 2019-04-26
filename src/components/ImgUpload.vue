@@ -14,10 +14,12 @@
     >
       <img src="@/assets/plus.png" alt="">
     </file-upload>
-    <za-modal :visible.sync='show' title="上传头图" :show-close='true'>
+    <za-modal :visible.sync='show' title="上传图文封面" :show-close='true'>
       <div class="modal-inner-wrapper">
-        <img v-for="file in files" :src="file.blob" />
-        <za-button @click.prevent="$refs.upload.active = true;loading = true;"
+        <div v-if="files.length" style="max-width: 100%">
+          <img ref="editImage" :src="files[0].blob" />
+        </div>
+        <za-button @click.prevent="editSave"
                    theme="primary">
           确定上传
         </za-button>
@@ -31,7 +33,8 @@
 <script>
 import FileUpload from 'vue-upload-component';
 import { apiServer, getAvatarImage } from '@/api/backend';
-
+import Cropper from 'cropperjs';
+import '../views/User/css/cropper.css';
 
 export default {
   name: 'imgUpload',
@@ -58,8 +61,41 @@ export default {
         };
       }
     },
+    show(value) {
+      if (value) {
+        this.$nextTick(function () {
+          if (!this.$refs.editImage) {
+            return;
+          }
+          const cropper = new Cropper(this.$refs.editImage, {
+            aspectRatio: 1 / 1,
+            viewMode: 1,
+          });
+          this.cropper = cropper;
+        });
+      } else if (this.cropper) {
+        this.cropper.destroy();
+        this.cropper = false;
+      }
+    },
   },
   methods: {
+    async editSave() {
+      this.loading = true;
+      const oldFile = this.files[0];
+      const binStr = atob(this.cropper.getCroppedCanvas().toDataURL(oldFile.type).split(',')[1]);
+      const arr = new Uint8Array(binStr.length);
+      for (let i = 0; i < binStr.length; i += 1) {
+        arr[i] = binStr.charCodeAt(i);
+      }
+      const file = new File([arr], oldFile.name, { type: oldFile.type });
+      await this.$refs.upload.update(oldFile.id, {
+        file,
+        type: file.type,
+        size: file.size,
+        active: true,
+      });
+    },
     _toast(toastText) {
       this.toastShow = true;
       this.toastText = toastText;
