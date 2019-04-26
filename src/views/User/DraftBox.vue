@@ -12,14 +12,20 @@
     <div v-if="draftlist.length == 0" style="margin-top:20px;">
       无记录
     </div>
-    <div v-for="(item, index) in draftlist" :key="index">
-      <za-swipe-action
+    <div v-for="(item, index) in draftlist" :key="index" class="draft-outer">
+
+      <div class="onecard">
+        <div class="onecard_title">{{item.title}}</div>
+        <div class="onecard_date">{{item.date}}</div>
+      </div>
+      <za-icon theme="default" type="wrong-round-fill" style="color: #515a6e;font-size: 24px;"></za-icon>
+      <!--<za-swipe-action
         :right="action1">
         <div class="onecard">
           <div class="onecard_title">{{item.title}}</div>
           <div class="onecard_date">{{item.date}}</div>
         </div>
-      </za-swipe-action>
+      </za-swipe-action>-->
     </div>
   </div>
 </template>
@@ -65,20 +71,23 @@ export default {
 };
 </script>
 <style scoped>
+.draft-outer {
+  margin: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0px 2px 5px 3px rgba(233, 233, 233, 0.5);
+  border-radius: 8px;
+  padding:15px;
+  height: 80px;
+}
 a {
   color: #000;
   text-decoration: none; /* no underline */
 }
 .onecard{
-  background-color: #ffffff;
   text-align: left;
-  margin: 20px;
-  padding-top:15px;
-  padding-left: 24px;
-  background: rgba(255, 255, 255, 1);
-  box-shadow: 0px 2px 5px 3px rgba(233, 233, 233, 0.5);
-  border-radius: 8px;
-  height: 80px;
 }
 .onecard_title{
   font-size: 18px;

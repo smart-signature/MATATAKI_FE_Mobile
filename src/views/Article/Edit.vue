@@ -23,9 +23,14 @@
         <FormItem label="裂变系数">
           <Input v-model="fissionNum" placeholder="" size="large" clearable disabled/>
         </FormItem>
+        <FormItem label="上传头图">
+          <div style="text-align: left">
+            <ImgUpload @setDone="setDone" :cover="cover"></ImgUpload>
+          </div>
+        </FormItem>
       </Form>
     </div>
-    <mavon-editor ref=md v-model="markdownData"
+    <mavon-editor ref=md v-model="markdownData" style="max-height: 300px;z-index: 2;"
       @imgAdd="$imgAdd" :toolbars="toolbars" :subfield="false" :boxShadow="false"
       placeholder="请输入 Markdown 格式的文字开始编辑"/>
   </div>
@@ -40,11 +45,13 @@ import {
 } from '@/api';
 
 import 'mavon-editor/dist/css/index.css'; // editor css
+import ImgUpload from '@/components/ImgUpload';
 
 export default {
   name: 'Edit',
   components: {
     'mavon-editor': mavonEditor,
+    ImgUpload,
   },
   created() {
     if (this.currentUsername) {
@@ -69,6 +76,8 @@ export default {
     fissionNum: 2,
     signId: null,
     signature: '',
+    cover: '',
+    originalCover: '',
   }),
   computed: {
     ...mapState('scatter', {
@@ -84,17 +93,28 @@ export default {
     ...mapActions('scatter', [
       'login',
     ]),
+    setDone(fileHash) {
+      this.cover = fileHash;
+    },
     loginScatterAsync() { return this.login(); },
     async setArticleData() {
       const articleData = await getArticleDatafromIPFS(this.hash);
-      const articleInfo = await getArticleInfoCB(this.hash);
+      getArticleInfoCB(this.hash, ({ error, response }) => {
+        if (error) {
+          this.$Message.error('获取文章信息发生错误');
+          console.log(error);
+        } else {
+          const d2 = response.data;
+          this.fissionNum = d2.fission_factor / 1000;
+          this.signature = d2.sign;
+          this.cover = d2.cover;
+          this.originalCover = d2.cover;
+          console.log('data', d2);
+        }
+      });
       const d1 = articleData.data.data;
-      const d2 = articleInfo.data;
       this.title = d1.title;
       this.markdownData = d1.content;
-      this.author = d1.author;
-      this.fissionNum = d2.fission_factor / 1000;
-      this.signature = d2.sign;
     },
     async sendThePost() {
       if (!this.isScatterConnected) {
@@ -122,7 +142,7 @@ export default {
       if (this.fissionFactor === '') this.fissionFactor = 2;
 
       const {
-        title, markdownData, currentUsername, fissionFactor, signature, signId,
+        title, markdownData, currentUsername, fissionFactor, signature, signId, cover,
       } = this;
       const author = currentUsername;
       const content = markdownData;
@@ -141,7 +161,6 @@ export default {
 
         setTimeout(() => { jumpToArticle(hash); }, 3 * 1000);
       };
-
       try {
         const { data } = await sendPost({
           title, author, content, desc: 'whatever',
@@ -149,7 +168,7 @@ export default {
         const { code, hash } = data;
         if (code !== 200) failed('1st step : send post to ipfs failed');
         editArticle({
-          signId, author, title, hash, fissionFactor, signature,
+          signId, author, title, hash, fissionFactor, signature, cover,
         }, (res) => {
           const { response } = res;
           if (response.data.msg !== 'success') failed('失败请重试');

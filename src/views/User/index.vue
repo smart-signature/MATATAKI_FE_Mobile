@@ -61,7 +61,7 @@
     <!-- todo(minakokojima): 顯示該作者發表的文章。-->
     <!-- <ArticlesList ref="ArticlesList"/> -->
     <div class="centercard" v-if="isMe">
-      <za-cell is-link has-arrow>
+      <za-cell is-link has-arrow @click='jumpTo({ name: "DraftBox", params: { username }})'>
         草稿箱
         <!-- <za-icon type='right' slot='icon'/> @click='jumpTo({ name: "DraftBox" })'-->
       </za-cell>

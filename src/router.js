@@ -77,7 +77,7 @@ export default new Router({
       component: () => import(/* webpackChunkName: "user" */ './views/User/FollowList/FollowList.vue'),
     },
     {
-      path: '/draftbox',
+      path: '/draftbox/:username',
       name: 'DraftBox',
       props: true,
       component: () => import(/* webpackChunkName: "user" */ './views/User/DraftBox.vue'),
