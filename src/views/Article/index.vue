@@ -1,28 +1,14 @@
 /* eslint-disable no-shadow */
 <template>
   <div class="article">
-    <BaseHeader style="position: fixed; top: 0; left: 0; right: 0;"
-                :pageinfo="{ title: `Smart Signature`, rightPage: 'home', needLogin: false, }">
-      <div slot="right" @click="opr = !opr" v-if="isMe">
-        <img src="@/assets/more.svg" alt="more">
-      </div>
+    <BaseHeader :pageinfo="{ title: `Smart Signature`, rightPage: 'home', needLogin: false, }">
+      <img class="more" src="@/assets/more.svg" alt="more" slot="right" @click="opr = !opr" v-if="isMe">
       <div class="information" slot="info" @click="infoModa = true">
         <img src="@/assets/information.svg" alt="information">
         <span>攻略</span>
       </div>
 
     </BaseHeader>
-    <!--<za-nav-bar>
-      <div slot="left">
-        <router-link :to="{ name: 'home' }">
-            <Icon type="ios-home" :size="24" />
-        </router-link>
-      </div>
-      <div slot="title">Smart Signature</div>
-      <div slot="right" @click="opr = !opr" v-if="isMe">
-        <img src="@/assets/more.svg" alt="more">
-      </div>
-    </za-nav-bar>-->
     <transition name="fade" mode="out-in">
       <div class="dropdown" v-show="opr">
         <div class="dropdown-item" @click="$router.push({name: 'Edit', params: { id: article.id }, query: { hash: hash }})">编辑</div>
