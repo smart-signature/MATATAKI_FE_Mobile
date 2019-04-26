@@ -6,7 +6,11 @@
       <div slot="right" @click="opr = !opr" v-if="isMe">
         <img src="@/assets/more.svg" alt="more">
       </div>
-      <img class="information" slot="info" src="@/assets/information.svg" alt="information" @click="infoModa = true">
+      <div class="information" slot="info" @click="infoModa = true">
+        <img src="@/assets/information.svg" alt="information">
+        <span>攻略</span>
+      </div>
+
     </BaseHeader>
     <!--<za-nav-bar>
       <div slot="left">
@@ -500,4 +504,4 @@ export default {
 };
 </script>
 
-<style src="./index.css" scoped></style>
+<style src="./index.less" scoped lang="less"></style>
