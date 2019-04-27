@@ -49,7 +49,7 @@ export default {
 }
 .img-outer {
   width: 80px;
-  height: 70px;
+  height: 80px;
 }
 .img-inner {
   width: 100%;

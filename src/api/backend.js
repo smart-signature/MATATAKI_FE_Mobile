@@ -10,7 +10,7 @@ export const apiServer = process.env.VUE_APP_API;
 const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
 const publishArticle = async ({
-    author, title, hash, fissionFactor, cover,
+  author, title, hash, fissionFactor, cover,
 }) => {
   const signature = await store.dispatch('getSignature', { author, hash });
   console.log('签名成功后调', signature);
@@ -196,7 +196,7 @@ const getArticleInfo = (hashOrId) => {
   const reg = /^[0-9]*$/;
   const url = reg.test(hashOrId) ? `${apiServer}/p/${id}` : `${apiServer}/post/${hashOrId}`;
   return axios.get(url, { httpsAgent });
-}
+};
 
 // 該被廢棄
 const getArticleInfoCB = (hash, callback) => accessBackend({
@@ -209,7 +209,7 @@ const getArticleInfoCB = (hash, callback) => accessBackend({
 
 // 該被廢棄
 // 获取单篇文章的信息 （短链接 issues）
-const getArticleInHash = (id) => axios.get(`${apiServer}/p/${id}`, { httpsAgent });
+const getArticleInHash = id => axios.get(`${apiServer}/p/${id}`, { httpsAgent });
 const getArticleInHashCB = (id, callback) => accessBackend({
   method: 'GET',
   url: `${apiServer}/p/${id}`,
@@ -367,6 +367,54 @@ const getBackendData = ({ url, params }, callback) => accessBackend({
   httpsAgent,
 }, callback);
 
+// 草稿箱api
+const draftList = ({ page }, callback) => accessBackend({
+  method: 'GET',
+  url: `${apiServer}/drafts`,
+  params: { page },
+  headers: { Accept: '*/*' },
+  httpsAgent,
+}, callback);
+
+const createDraft = ({
+  title, content, cover,
+}, callback) => accessBackend({
+  method: 'POST',
+  url: `${apiServer}/draft/save`,
+  data: {
+    title, content, cover,
+  },
+  headers: { Accept: '*/*' },
+  httpsAgent,
+}, callback);
+
+const updateDraft = ({
+  id, title, content, cover,
+}, callback) => accessBackend({
+  method: 'POST',
+  url: `${apiServer}/draft/save`,
+  data: {
+    id, title, content, cover,
+  },
+  headers: { Accept: '*/*' },
+  httpsAgent,
+}, callback);
+
+const delDraft = ({ id }, callback) => accessBackend({
+  method: 'DELETE',
+  url: `${apiServer}/draft/${id}`,
+  headers: { Accept: '*/*' },
+  httpsAgent,
+}, callback);
+
+const getDraft = ({ id }, callback) => accessBackend({
+  method: 'GET',
+  url: `${apiServer}/draft/${id}`,
+  headers: { Accept: '*/*' },
+  httpsAgent,
+}, callback);
+
+
 // 每天浪費時間寫這個，不對吧，像隔壁用 API 一起輸出呀
 export {
   publishArticle, auth, getAuth,
@@ -378,4 +426,5 @@ export {
   disassembleToken, delArticle, uploadAvatar, getArticleSupports, editArticle,
   getBackendData,
   oldpublishArticle,
+  draftList, createDraft, updateDraft, delDraft, getDraft,
 };
