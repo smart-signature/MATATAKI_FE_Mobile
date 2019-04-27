@@ -61,7 +61,7 @@ import { mapGetters, mapActions, mapState } from 'vuex';
 import { sendPost } from '@/api/ipfs';
 import { mavonEditor } from 'mavon-editor';
 import {
-  defaultImagesUploader, publishArticle, oldpublishArticle,
+  defaultImagesUploader, publishArticle, oldpublishArticle, createDraft,
 } from '../api';
 
 import 'mavon-editor/dist/css/index.css'; // editor css
@@ -222,6 +222,11 @@ export default {
       window.onresize = () => {
         this.screenWidth = document.body.clientWidth;
       };
+    },
+    async createDraft() {
+      createDraft({ title, content, cover }, (response) => {
+        console.log(response);
+      });
     },
   },
   watch: {

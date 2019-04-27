@@ -159,10 +159,10 @@ const accessBackend = (options, callback = () => {}) => {
     console.warn('將使用 access token 存檔');
     options.headers['x-access-token'] = getCurrentAccessToken();
   }).then(() => { // Do this whatever happened before
-    console.info(
-      'b4 request send, options :', options,
-      ', x-access-token :', options.headers['x-access-token'],
-    );
+    // console.info(
+    //   'b4 request send, options :', options,
+    //   ', x-access-token :', options.headers['x-access-token'],
+    // );
     axios(options).then(response => callback({ response }))
       .catch((error) => {
         if (error.response) {
@@ -191,28 +191,25 @@ const accessBackend = (options, callback = () => {}) => {
 
 const getArticleDatafromIPFS = hash => axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
 
-// 获取单篇文章的信息 by hash or id
-const getArticleInfo = (hashOrId) => {
+// 获取单篇文章的信息 by hash or id  需要 token 否则无法获取赞赏状态
+const getArticleInfo = (hashOrId, callback) => {
   const reg = /^[0-9]*$/;
-  const url = reg.test(hashOrId) ? `${apiServer}/p/${id}` : `${apiServer}/post/${hashOrId}`;
-  return axios.get(url, { httpsAgent });
+  // post hash获取  ， p id 短链接
+  const url = reg.test(hashOrId) ? 'p' : 'post';
+  const getArticleInfoAPI = (hashOrId, callback) => accessBackend({
+    method: 'GET',
+    url: `${apiServer}/${url}/${hashOrId}`,
+    headers: { Accept: '*/*' },
+    httpsAgent,
+  }, callback);
+  getArticleInfoAPI(hashOrId, callback);
 };
+
 
 // 該被廢棄
 const getArticleInfoCB = (hash, callback) => accessBackend({
   method: 'GET',
   url: `${apiServer}/post/${hash}`,
-  headers: { Accept: '*/*' },
-  httpsAgent,
-  data: {},
-}, callback);
-
-// 該被廢棄
-// 获取单篇文章的信息 （短链接 issues）
-const getArticleInHash = id => axios.get(`${apiServer}/p/${id}`, { httpsAgent });
-const getArticleInHashCB = (id, callback) => accessBackend({
-  method: 'GET',
-  url: `${apiServer}/p/${id}`,
   headers: { Accept: '*/*' },
   httpsAgent,
   data: {},
@@ -420,7 +417,6 @@ export {
   publishArticle, auth, getAuth,
   getArticleDatafromIPFS, getArticlesList,
   getArticleInfo, getArticleInfoCB,
-  getArticleInHash, getArticleInHashCB,
   Follow, Unfollow, getUser, setUserName, getFansList, getFollowList, oldgetUser,
   getSharesbysignid, addReadAmount, sendComment, getAssets, getAvatarImage,
   disassembleToken, delArticle, uploadAvatar, getArticleSupports, editArticle,

@@ -1,24 +1,14 @@
 /* eslint-disable no-shadow */
 <template>
   <div class="article">
-    <BaseHeader style="position: fixed; top: 0; left: 0; right: 0;"
-                :pageinfo="{ title: `Smart Signature`, rightPage: 'home', needLogin: false, }">
-      <div slot="right" @click="opr = !opr" v-if="isMe">
-        <img src="@/assets/more.svg" alt="more">
+    <BaseHeader :pageinfo="{ title: `Smart Signature`, rightPage: 'home', needLogin: false, }">
+      <img class="more" src="@/assets/more.svg" alt="more" slot="right" @click="opr = !opr" v-if="isMe">
+      <div class="information" slot="info" @click="infoModa = true">
+        <img src="@/assets/information.svg" alt="information">
+        <span>攻略</span>
       </div>
-      <img class="information" slot="info" src="@/assets/information.svg" alt="information" @click="infoModa = true">
+
     </BaseHeader>
-    <!--<za-nav-bar>
-      <div slot="left">
-        <router-link :to="{ name: 'home' }">
-            <Icon type="ios-home" :size="24" />
-        </router-link>
-      </div>
-      <div slot="title">Smart Signature</div>
-      <div slot="right" @click="opr = !opr" v-if="isMe">
-        <img src="@/assets/more.svg" alt="more">
-      </div>
-    </za-nav-bar>-->
     <transition name="fade" mode="out-in">
       <div class="dropdown" v-show="opr">
         <div class="dropdown-item" @click="$router.push({name: 'Edit', params: { id: article.id }, query: { hash: hash }})">编辑</div>
@@ -43,7 +33,7 @@
       <a data-pocket-label="pocket" data-pocket-count="horizontal" class="pocket-btn" data-lang="en"></a>
     </div>
     <div class="commentslist-title">赞赏队列 ({{article.ups || 0}})</div>
-    <CommentsList class="comments" :signId="signId" />
+    <CommentsList class="comments" :signId="signId" :isRequest="isRequest" @stopAutoRequest="(status) => isRequest = status" />
     <footer class="footer">
       <div class="footer-block">
         <Tooltip content="本文收到的赞赏总额" placement="top-start">
@@ -79,7 +69,7 @@
     </footer>
     <!-- 赞赏对话框 zarm -->
     <za-modal
-      :visible="visible3" @close="handleClose" radius=""
+      :visible="visible3" @close="() => visible3 = false" radius=""
       @maskClick="visible3 = false" :showClose="true">
         <div slot="title" style="textAlign: center;">赞赏此文章</div>
         <div class="support-input">
@@ -96,6 +86,7 @@
         <button class="support-button" @click="support">赞赏</button>
     </za-modal>
 
+    <!-- 文章 Info -->
     <ArticleInfo :infoModa="infoModa" @changeInfo="(status) => infoModa = status" />
 
   </div>
@@ -106,10 +97,9 @@ import { mapActions, mapGetters, mapState } from 'vuex';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
 import {
-  getArticleDatafromIPFS, 
-  getArticleInfo, getArticleInfoCB,
-  getArticleInHash, getArticleInHashCB,
-  addReadAmount, sendComment, 
+  getArticleDatafromIPFS,
+  getArticleInfo,
+  addReadAmount, sendComment,
   delArticle, getAuth,
 } from '@/api';
 import { support } from '@/api/signature';
@@ -131,27 +121,73 @@ const RewardStatus = { // 0=加载中,1=未打赏 2=已打赏, -1未登录
 
 export default {
   async beforeRouteEnter(to, from, next) {
-    const { hash: hashOrId } = to.params;
-    const { data: article } = await getArticleInfo(hashOrId).catch((error) => {
-      console.error(error);
-      // this.$Message.error('获取文章信息发生错误');
-    });
-    const { data } = await getArticleDatafromIPFS(article.hash).catch((error) => {
-      console.error(error);
-      // this.$Message.error('从ipfs获取文章信息失败');
-    });
-    const { data: post } = data;
-    console.info('article :', article, 'post :', post);
-        
-    next(vm => { // 通过 `vm` 访问组件实例
-      // console.log('run next');
-      vm.setArticle({ article, post }); // 设置文章
-      vm.$emit('updateHead');
-    });
+    const { hash } = to.params; // url 传进来的 hash 或者是 id
+    let article = null; // 文章信息
+    let post = null; // 文章内容
+
+    // 获取文章内容 from ipfs
+    const getArticleDatafromIPFSFunc = async (hash) => {
+      await getArticleDatafromIPFS(hash).then(({ data }) => {
+        post = data.data;
+        next((vm) => { // 通过 `vm` 访问组件实例
+          // console.info('article :', article, 'post :', post);
+          vm.setArticle(article);
+          vm.setPost(post);
+          vm.$emit('updateHead');
+        });
+      }).catch((err) => {
+        console.log(err, '获取文章内容失败请重试');
+        next((vm) => {
+          vm.$Message.error('获取文章内容失败请重试');
+        });
+      });
+    };
+    // 获取文章信息
+    const getArticleInfoFunc = async (hashOrId) => {
+      await getArticleInfo(hashOrId, ({ error, response }) => {
+        if (error) {
+          console.log(error, '获取文章信息失败请重试');
+          next((vm) => {
+            vm.$Message.error('获取文章信息失败请重试');
+          });
+        } else {
+          article = response.data;
+          getArticleDatafromIPFSFunc(response.data.hash);
+        }
+      });
+    };
+    getArticleInfoFunc(hash);
   },
   name: 'Article',
   props: ['hash'],
   components: { mavonEditor, CommentsList, ArticleInfo },
+  data() {
+    return {
+      signId: null,
+      comments: [],
+      // refreshing: false,
+      post: {
+        author: 'Loading...',
+        title: 'Loading...',
+        content: '**Please wait for the connection to IPFS**',
+      },
+      article: {
+        author: 'Loading...',
+        create_time: '',
+        fission_factor: 0,
+      },
+      amount: '',
+      comment: '',
+      isSupported: RewardStatus.NOT_LOGGINED,
+      totalSupportedAmount: 0,
+      visible3: false,
+      clipboard: null,
+      articleCreateTime: '',
+      opr: false,
+      infoModa: false,
+      isRequest: false,
+    };
+  },
   computed: {
     ...mapGetters(['currentUsername']),
     isLogined() {
@@ -209,9 +245,8 @@ export default {
     },
   },
   created() {
-    const { getArticle, hash, initClipboard } = this;
     document.title = '正在加载文章 - Smart Signature';
-    initClipboard(); // 分享按钮功能需要放在前面 保证功能的正常执行
+    this.initClipboard(); // 分享按钮功能需要放在前面 保证功能的正常执行
   },
   mounted() {
     !(function (d, i) {
@@ -227,30 +262,6 @@ export default {
   beforeDestroy() {
     this.clipboard.destroy(); // 组件销毁之前 销毁clipboard
   },
-  data: () => ({
-    signId: null,
-    comments: [],
-    // refreshing: false,
-    post: {
-      author: 'Loading...',
-      title: 'Loading...',
-      content: '**Please wait for the connection to IPFS**',
-    },
-    article: {
-      author: 'Loading...',
-      create_time: '',
-      fission_factor: 0,
-    },
-    amount: '',
-    comment: '',
-    isSupported: RewardStatus.NOT_LOGGINED,
-    totalSupportedAmount: 0,
-    visible3: false,
-    clipboard: null,
-    articleCreateTime: '',
-    opr: false,
-    infoModa: false,
-  }),
   head: {
     title() {
       const { post } = this;
@@ -284,13 +295,24 @@ export default {
   watch: {
     article() {
       this.setisSupported();
+      this.$emit('updateHead');
+    },
+    post() {
+      this.$emit('updateHead');
     },
     currentUsername() {
       this.setisSupported();
     },
+    isRequest(newVal) {
+      // 监听是否请求默认为false被改变为true下面不执行，请求完毕又被改变为false执行下列方法
+      if (!newVal) {
+        this.getArticleInfo(this.hash);
+      }
+    },
   },
   methods: {
     ...mapActions(['idCheck']),
+    // 分享功能
     initClipboard() {
       this.clipboard = new Clipboard('.button-share');
       this.clipboard.on('success', (e) => {
@@ -307,22 +329,46 @@ export default {
         });
       });
     },
-    setArticle({article, post}) {
-      addReadAmount({ articlehash: article.hash }); // 增加文章阅读量
-      const supportDialog = false;
-      this.post = post;
+    // 得到文章信息 hash id, supportDialog 为 true 则只更新文章信息
+    async getArticleInfo(hash, supportDialog = false) {
+      await getArticleInfo(hash, ({ error, response }) => {
+        if (error) {
+          this.$Message.error('获取文章信息失败请重试');
+          console.log(error);
+        } else {
+          this.setArticle(response.data, supportDialog);
+          // 默认会执行获取文章方法，更新文章调用则不需要获取内容
+          if (!supportDialog) {
+            this.getArticleDatafromIPFS(response.data.hash);
+          }
+        }
+      });
+    },
+    // 获取文章内容 from ipfs
+    async getArticleDatafromIPFS(hash) {
+      await getArticleDatafromIPFS(hash).then(({ data }) => {
+        this.setPost(data.data);
+      }).catch((err) => {
+        console.log(err);
+        this.$Message.error('获取文章内容失败请重试');
+      });
+    },
+    // 设置文章
+    async setArticle(article, supportDialog = false) {
+      // console.log(article);
+      await addReadAmount({ articlehash: article.hash }); // 增加文章阅读量
       this.article = article;
       this.articleCreateTime = article.create_time;
       this.totalSupportedAmount = article.value;
       this.signId = article.id;
-      // console.info('Article info :', data);
-      // 如果没有打赏 并且是点击赞赏 则显示赞赏框
+      // 未登录下点击赞赏会自动登陆并且重新获取文章信息 如果没有打赏并且是点击赞赏 则显示赞赏框
       if (!article.support && supportDialog) {
         this.visible3 = true;
       }
     },
-    handleClose() {
-      this.visible3 = false;
+    // 设置文章内容
+    setPost(post) {
+      this.post = post;
     },
     handleChange(e) {
       // 小数点后三位 如果后面需要解除限制修改正则  {0,3}
@@ -340,22 +386,11 @@ export default {
     async b4support() {
       this.$Message.info('帐号检测中...');
       await this.idCheck().then(() => {
-        // 有hash用hash查询， 没有hash用id, 多做一层处理
-        const { hash, id } = this.article;
-        if (hash) {
-          this.setArticleInfo(hash, true);
-        } else if (id) {
-          this.getArticleInId(id, true);
-        }
+        this.getArticleInfo(this.hash, true);
         this.$Message.success('检测通过');
       }).catch((err) => {
         console.log(err);
         this.$Message.error('本功能需登录');
-        /*
-        this.$Modal.error({
-            title: '无法与你的钱包建立链接並登录',
-            content: '请检查钱包是否打开并解锁',
-        }); */
       });
     },
     async support() {
@@ -394,11 +429,10 @@ export default {
               if (response.status !== 200 || error) throw new Error(error); // wrong way
             });
         }
-        this.isSupported = RewardStatus.REWARDED;
+        this.isSupported = RewardStatus.REWARDED; // 按钮状态
         this.$Message.success('赞赏成功！');
-        // tricky speed up, 前端手动加一下钱 立马调接口获取不到 value 值
-        this.totalSupportedAmount += parseFloat(amount * 10000);
-        this.visible3 = false;
+        this.isRequest = true; // 自动请求
+        this.visible3 = false; // 关闭dialog
       } catch (error) {
         console.log(JSON.stringify(error));
         this.$Message.error('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额');
@@ -456,4 +490,4 @@ export default {
 };
 </script>
 
-<style src="./index.css" scoped></style>
+<style src="./index.less" scoped lang="less"></style>
