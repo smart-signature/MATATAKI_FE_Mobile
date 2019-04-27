@@ -374,24 +374,24 @@ const draftList = ({ page }, callback) => accessBackend({
 }, callback);
 
 const createDraft = ({
-  title, content, cover,
+  title, content, cover, fissionFactor,
 }, callback) => accessBackend({
   method: 'POST',
   url: `${apiServer}/draft/save`,
   data: {
-    title, content, cover,
+    title, content, cover, fissionFactor,
   },
   headers: { Accept: '*/*' },
   httpsAgent,
 }, callback);
 
 const updateDraft = ({
-  id, title, content, cover,
+  id, title, content, cover, fissionFactor,
 }, callback) => accessBackend({
   method: 'POST',
   url: `${apiServer}/draft/save`,
   data: {
-    id, title, content, cover,
+    id, title, content, cover, fissionFactor,
   },
   headers: { Accept: '*/*' },
   httpsAgent,
