@@ -88,13 +88,6 @@ export default {
 </script>
 
 <style scoped>
-.BaseHeader {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 999;
-}
 a:link {
   color: black;
 }

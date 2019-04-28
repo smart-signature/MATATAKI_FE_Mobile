@@ -10,7 +10,7 @@ export const apiServer = process.env.VUE_APP_API;
 const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
 const publishArticle = async ({
-    author, title, hash, fissionFactor, cover,
+  author, title, hash, fissionFactor, cover,
 }) => {
   const signature = await store.dispatch('getSignature', { author, hash });
   console.log('签名成功后调', signature);
@@ -364,6 +364,54 @@ const getBackendData = ({ url, params }, callback) => accessBackend({
   httpsAgent,
 }, callback);
 
+// 草稿箱api
+const draftList = ({ page }, callback) => accessBackend({
+  method: 'GET',
+  url: `${apiServer}/drafts`,
+  params: { page },
+  headers: { Accept: '*/*' },
+  httpsAgent,
+}, callback);
+
+const createDraft = ({
+  title, content, cover, fissionFactor,
+}, callback) => accessBackend({
+  method: 'POST',
+  url: `${apiServer}/draft/save`,
+  data: {
+    title, content, cover, fissionFactor,
+  },
+  headers: { Accept: '*/*' },
+  httpsAgent,
+}, callback);
+
+const updateDraft = ({
+  id, title, content, cover, fissionFactor,
+}, callback) => accessBackend({
+  method: 'POST',
+  url: `${apiServer}/draft/save`,
+  data: {
+    id, title, content, cover, fissionFactor,
+  },
+  headers: { Accept: '*/*' },
+  httpsAgent,
+}, callback);
+
+const delDraft = ({ id }, callback) => accessBackend({
+  method: 'DELETE',
+  url: `${apiServer}/draft/${id}`,
+  headers: { Accept: '*/*' },
+  httpsAgent,
+}, callback);
+
+const getDraft = ({ id }, callback) => accessBackend({
+  method: 'GET',
+  url: `${apiServer}/draft/${id}`,
+  headers: { Accept: '*/*' },
+  httpsAgent,
+}, callback);
+
+
 // 每天浪費時間寫這個，不對吧，像隔壁用 API 一起輸出呀
 export {
   publishArticle, auth, getAuth,
@@ -374,4 +422,5 @@ export {
   disassembleToken, delArticle, uploadAvatar, getArticleSupports, editArticle,
   getBackendData,
   oldpublishArticle,
+  draftList, createDraft, updateDraft, delDraft, getDraft,
 };

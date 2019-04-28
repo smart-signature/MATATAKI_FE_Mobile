@@ -33,6 +33,18 @@
     <mavon-editor ref=md v-model="markdownData" style="max-height: 300px;z-index: 2;"
       @imgAdd="$imgAdd" :toolbars="toolbars" :subfield="false" :boxShadow="false"
       placeholder="请输入 Markdown 格式的文字开始编辑"/>
+    <div class="radio">
+      <div class="radio-item">
+        <input type="radio" id="public"
+               name="contact" value="public" v-model="saveType">
+        <label for="public" class="radio-label">公开发布</label>
+      </div>
+      <div class="radio-item">
+        <input type="radio" id="draft"
+               name="contact" value="draft" v-model="saveType">
+        <label for="draft" class="radio-label">保存到草稿箱</label>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -41,7 +53,7 @@ import { mapGetters, mapActions, mapState } from 'vuex';
 import { sendPost } from '@/api/ipfs';
 import { mavonEditor } from 'mavon-editor';
 import {
-  defaultImagesUploader, editArticle, getArticleInfoCB, getArticleDatafromIPFS,
+  defaultImagesUploader, editArticle, getArticleInfoCB, getArticleDatafromIPFS, getDraft, updateDraft,
 } from '@/api';
 
 import 'mavon-editor/dist/css/index.css'; // editor css
@@ -62,9 +74,14 @@ export default {
   async mounted() {
     this.resize();
     this.setToolBar(this.screenWidth);
-    this.signId = this.$route.params.id;
-    this.hash = this.$route.query.hash;
-    this.setArticleData();
+    const { from } = this.$route.query;
+    if (from === 'draft') {
+      this.signId = this.$route.params.id;
+      this.getDraft(this.signId);
+    } else {
+      this.hash = this.$route.query.hash;
+      this.setArticleData();
+    }
   },
   data: () => ({
     title: '',
@@ -78,6 +95,7 @@ export default {
     signature: '',
     cover: '',
     originalCover: '',
+    saveType: 'public',
   }),
   computed: {
     ...mapState('scatter', {
@@ -95,6 +113,16 @@ export default {
     ]),
     setDone(fileHash) {
       this.cover = fileHash;
+    },
+    getDraft(id) {
+      getDraft({ id }, (res) => {
+        const resData = res.response.data;
+        this.fissionNum = resData.fission_factor ? resData.fission_factor / 1000 : 2;
+        this.cover = resData.cover;
+        this.originalCover = resData.cover;
+        this.title = resData.title;
+        this.markdownData = resData.content;
+      });
     },
     loginScatterAsync() { return this.login(); },
     async setArticleData() {
@@ -162,18 +190,29 @@ export default {
         setTimeout(() => { jumpToArticle(hash); }, 3 * 1000);
       };
       try {
-        const { data } = await sendPost({
-          title, author, content, desc: 'whatever',
-        });
-        const { code, hash } = data;
-        if (code !== 200) failed('1st step : send post to ipfs failed');
-        editArticle({
-          signId, author, title, hash, fissionFactor, signature, cover,
-        }, (res) => {
-          const { response } = res;
-          if (response.data.msg !== 'success') failed('失败请重试');
-          success(hash);
-        });
+        if (this.saveType === 'public') {
+          const {data} = await sendPost({
+            title, author, content, desc: 'whatever',
+          });
+          const {code, hash} = data;
+          if (code !== 200) failed('1st step : send post to ipfs failed');
+          editArticle({
+            signId, author, title, hash, fissionFactor, signature, cover,
+          }, (res) => {
+            const {response} = res;
+            if (response.data.msg !== 'success') failed('失败请重试');
+            success(hash);
+          });
+        } else {
+          updateDraft({
+            id: this.signId, title, content, fissionFactor, cover,
+          }, (response) => {
+            if (response.response.data.msg !== 'success') failed('失败请重试');
+            this.$Notice.success({
+              title: '草稿更新成功',
+            });
+          });
+        }
       } catch (error) {
         failed(error);
       }
@@ -256,6 +295,21 @@ export default {
 </script>
 
 <style scoped>
+  .radio-label {
+    margin-left: 5px;
+  }
+  .radio-item {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+  }
+  .radio {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px;
+  }
   .edit-content {
     margin: 10px;
   }

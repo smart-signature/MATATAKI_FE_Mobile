@@ -12,13 +12,14 @@
     <div v-if="draftlist.length == 0" style="margin-top:20px;">
       无记录
     </div>
-    <div v-for="(item, index) in draftlist" :key="index" class="draft-outer">
-
-      <div class="onecard">
-        <div class="onecard_title">{{item.title}}</div>
-        <div class="onecard_date">{{item.date}}</div>
-      </div>
-      <za-icon theme="default" type="wrong-round-fill" style="color: #515a6e;font-size: 24px;"></za-icon>
+    <div v-for="(item, index) in draftlist" :key="index">
+      <router-link :to="{ name: 'Edit', params: { id: item.id }, query: { from: 'draft' } }" class="draft-outer">
+        <div class="onecard">
+          <div class="onecard_title">{{item.title}}</div>
+          <div class="onecard_date">{{item.create_time}}</div>
+        </div>
+        <za-icon theme="default" type="wrong-round-fill" style="color: #515a6e;font-size: 24px;" @click="delModal = true;delId = item.id;"></za-icon>
+      </router-link>
       <!--<za-swipe-action
         :right="action1">
         <div class="onecard">
@@ -27,11 +28,13 @@
         </div>
       </za-swipe-action>-->
     </div>
+    <za-confirm :visible="delModal" title="温馨提示" message="确定删除吗？" :ok="delDraft" :cancel="()=>{ delModal = false }"></za-confirm>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
+import { draftList, delDraft } from '@/api';
 
 export default {
   name: 'DeaftBox',
@@ -54,6 +57,8 @@ export default {
           onClick: () => console.log('右按钮1'),
         },
       ],
+      delModal: false,
+      delId: null,
     };
   },
   computed: {
@@ -64,9 +69,23 @@ export default {
     },
   },
   methods: {
+    delDraft() {
+      delDraft({ id: this.delId }, () => {
+        this.getDraftList();
+        this.delModal = false;
+      });
+    },
     goBack() {
       this.$router.go(-1);
     },
+    getDraftList() {
+      draftList({ page: 1 }, (res) => {
+        this.draftlist = res.response.data;
+      });
+    },
+  },
+  mounted() {
+    this.getDraftList();
   },
 };
 </script>

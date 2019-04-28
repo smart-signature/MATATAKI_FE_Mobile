@@ -61,7 +61,7 @@ import { mapGetters, mapActions, mapState } from 'vuex';
 import { sendPost } from '@/api/ipfs';
 import { mavonEditor } from 'mavon-editor';
 import {
-  defaultImagesUploader, publishArticle, oldpublishArticle,
+  defaultImagesUploader, publishArticle, oldpublishArticle, createDraft,
 } from '../api';
 
 import 'mavon-editor/dist/css/index.css'; // editor css
@@ -143,17 +143,28 @@ export default {
       };
 
       try {
-        const { data } = await sendPost({
-          title, author, content, desc: 'whatever',
-        });
-        const { code, hash } = data;
-        if (code !== 200) failed('1st step : send post to ipfs failed');
-        await oldpublishArticle({
-          author, title, hash, fissionFactor, cover,
-        }).then((response) => {
-          if (response.data.msg !== 'success') failed('失败请重试');
-          success(hash);
-        });
+        if (this.saveType === 'public') {
+          const { data } = await sendPost({
+            title, author, content, desc: 'whatever',
+          });
+          const { code, hash } = data;
+          if (code !== 200) failed('1st step : send post to ipfs failed');
+          await oldpublishArticle({
+            author, title, hash, fissionFactor, cover,
+          }).then((response) => {
+            if (response.data.msg !== 'success') failed('失败请重试');
+            success(hash);
+          });
+        } else if (this.saveType === 'draft') {
+          createDraft({
+            title, content, fissionFactor, cover,
+          }, (response) => {
+            if (response.response.data.msg !== 'success') failed('失败请重试');
+            this.$Notice.success({
+              title: '草稿保存成功',
+            });
+          });
+        }
       } catch (error) {
         failed(error);
       }
