@@ -191,15 +191,15 @@ export default {
       };
       try {
         if (this.saveType === 'public') {
-          const {data} = await sendPost({
+          const { data } = await sendPost({
             title, author, content, desc: 'whatever',
           });
-          const {code, hash} = data;
+          const { code, hash } = data;
           if (code !== 200) failed('1st step : send post to ipfs failed');
           editArticle({
             signId, author, title, hash, fissionFactor, signature, cover,
           }, (res) => {
-            const {response} = res;
+            const { response } = res;
             if (response.data.msg !== 'success') failed('失败请重试');
             success(hash);
           });
