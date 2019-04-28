@@ -101,6 +101,8 @@ a {
 .draftbox{
   background-color: #F7F7F7;
   padding-bottom: 20px;
+  padding-top: 45px;
+  min-height: 100%;
 }
 .za-swipeAction-actions-right {
   right: 0;
