@@ -247,6 +247,9 @@ export default {
 </script>
 
 <style scoped>
+  .new-post {
+    padding-top: 45px;
+  }
   .radio-label {
     margin-left: 5px;
   }

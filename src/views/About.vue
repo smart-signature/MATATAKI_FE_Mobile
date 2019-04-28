@@ -33,12 +33,13 @@ export default {
 <style scoped>
 .about {
   background: #f7f7f7;
-  margin: auto;
+  margin: 45px auto 0;
+  padding: 10px 0 0;
   text-align: center;
 }
 
 .about-card {
-  margin: 10px;
+  margin: 0 10px 10px 10px;
   text-align: center;
   /* max-width: 335px; */
   background: rgba(255, 255, 255, 1);
