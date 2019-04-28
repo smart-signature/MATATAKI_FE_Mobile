@@ -15,7 +15,7 @@
         <div class="dropdown-item" @click="delArticleButton">删除</div>
       </div>
     </transition>
-    <header class="ta_header" style="padding-top: 44px;">
+    <header class="ta_header">
       <h1 dir="auto">{{post.title}}</h1>
       <p>
         <Avatar icon="ios-person" class="avatar-size" size="small" />
