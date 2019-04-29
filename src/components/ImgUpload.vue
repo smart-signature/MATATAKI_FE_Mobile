@@ -1,7 +1,7 @@
 <template>
-  <div style="display: flex; align-items: center;justify-content: flex-start;">
+  <div class="imgUpload">
     <div v-if="file" style="margin-right: 10px;">
-      <img style="width: 50px;height: 50px;" :src="file.blob" />
+      <img style="width: 50px;height: 50px;" :src="file.blob" alt="cover" />
     </div>
     <file-upload
       ref="upload"
@@ -12,8 +12,10 @@
       @input-file="inputFile"
       @input-filter="inputFilter"
     >
-      <img src="@/assets/plus.png" alt="">
+      <img v-if="!file" src="@/assets/plus.png" alt="add">
     </file-upload>
+      <img v-if="file" @click.prevent="removeAvatar" class="remove" src="@/assets/img/icon_remove.svg" alt="remove">
+
     <za-modal :visible.sync='show' title="上传图文封面" :show-close='true'>
       <div class="modal-inner-wrapper">
         <div v-if="files.length" style="max-width: 100%">
@@ -133,6 +135,12 @@ export default {
         newFile.blob = URL.createObjectURL(newFile.file);
       }
     },
+    removeAvatar() {
+      console.log(11);
+      this.$refs.upload.remove(this.files);
+      this.file = '';
+      this.$emit('setDone', '');
+    },
   },
 };
 </script>
@@ -147,5 +155,14 @@ export default {
   .modal-inner-wrapper>img {
     width: 100%;
     margin-bottom: 10px;
+  }
+  .imgUpload {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .remove {
+    width: 20px;
+    cursor: pointer;
   }
 </style>

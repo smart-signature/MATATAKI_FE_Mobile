@@ -65,7 +65,12 @@ export default new Router({
       component: () => import(/* webpackChunkName: "user" */ './views/User/Reward.vue'),
     },
     {
-      path: '/publish',
+      // id 用于编辑文章或者草稿的时候动态传值使用
+      // 发布文章后面可以为  publish/create
+      // 编辑文章后面接id publish/id？from=”edit“ 通过query来区分
+      // 草稿箱编辑 publish/id？from=”draft“ 通过query来区分
+      // 统一发布、编辑、草稿箱，解决出现多套样式和重复代码的问题，并且减少工作量和不必要的错误
+      path: '/publish/:id',
       name: 'Publish',
       props: true,
       component: () => import(/* webpackChunkName: "article-edit" */ './views/Publish.vue'),
@@ -93,12 +98,6 @@ export default new Router({
       name: 'EasterEgg',
       props: true,
       component: () => import(/* webpackChunkName: "easter-egg" */ './views/EasterEgg.vue'),
-    },
-    {
-      path: '/edit/:id',
-      name: 'Edit',
-      props: true,
-      component: () => import(/* webpackChunkName: "article-edit" */ './views/Article/Edit.vue'),
     },
   ],
 });

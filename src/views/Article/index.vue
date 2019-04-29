@@ -11,7 +11,7 @@
     </BaseHeader>
     <transition name="fade" mode="out-in">
       <div class="dropdown" v-show="opr">
-        <div class="dropdown-item" @click="$router.push({name: 'Edit', params: { id: article.id }, query: { hash: hash }})">编辑</div>
+        <div class="dropdown-item" @click="$router.push({name: 'Publish', params: { id: article.id }, query: { from: 'edit', hash: hash }})">编辑</div>
         <div class="dropdown-item" @click="delArticleButton">删除</div>
       </div>
     </transition>
@@ -384,10 +384,10 @@ export default {
       }
     },
     async b4support() {
-      this.$Message.info('帐号检测中...');
+      // this.$Message.info('帐号检测中...');
       await this.idCheck().then(() => {
         this.getArticleInfo(this.hash, true);
-        this.$Message.success('检测通过');
+        // this.$Message.success('检测通过');
       }).catch((err) => {
         console.log(err);
         this.$Message.error('本功能需登录');
