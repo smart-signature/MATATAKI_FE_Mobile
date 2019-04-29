@@ -116,7 +116,7 @@ const disassembleToken = (token) => {
 // /<summary>
 // /装载access_token
 // /</summary>
-const getAuth = () => new Promise(async (resolve, reject) => {
+const getAuth = async () => {
   const currentToken = getCurrentAccessToken();
   const decodedData = disassembleToken(currentToken); // 拆包
   const username = currentToken != null ? decodedData.iss : null;
@@ -135,16 +135,16 @@ const getAuth = () => new Promise(async (resolve, reject) => {
         const accessToken = response.data;
         console.info('got the access token :', accessToken);
         setAccessToken(accessToken);
-        return resolve(accessToken);
+        return accessToken;
       }
 
       throw new Error('auth 出錯');
     } catch (error) {
       console.warn('取得用戶新簽名出錯', error);
-      return reject(error);
+      throw error;
     }
-  } else return resolve(currentToken);
-});
+  } else return currentToken;
+};
 
 /*
  * /<summary>
@@ -191,7 +191,6 @@ const accessBackend = (options, callback = () => {}) => {
   });
 };
 
-
 const getArticleDatafromIPFS = hash => axiosforApiServer.get(`/ipfs/catJSON/${hash}`);
 
 // 获取单篇文章的信息 by hash or id  需要 token 否则无法获取赞赏状态
@@ -222,6 +221,7 @@ const Unfollow = ({ username, followed }, callback) => accessBackend({
 
 // Be used in User page.
 const getUser = ({ username }) => axiosforApiServer.get(`/user/${username}`);
+// todo: rename
 const oldgetUser = ({ username }, callback) => accessBackend({
   method: 'GET',
   url: `/user/${username}`,
@@ -345,13 +345,12 @@ const getDraft = ({ id }, callback) => accessBackend({
 
 // 每天浪費時間寫這個，不對吧，像隔壁用 API 一起輸出呀
 export {
-  publishArticle, auth, getAuth,
-  getArticleDatafromIPFS, getArticlesList,
-  getArticleInfo,
+  auth, getAuth,
+  publishArticle, oldpublishArticle,
+  getArticleDatafromIPFS, getArticleInfo, getArticlesList,
   Follow, Unfollow, getUser, setUserName, getFansList, getFollowList, oldgetUser,
   getSharesbysignid, addReadAmount, sendComment, getAssets, getAvatarImage,
   disassembleToken, delArticle, uploadAvatar, getArticleSupports, editArticle,
   getBackendData,
-  oldpublishArticle,
   draftList, createDraft, updateDraft, delDraft, getDraft,
 };
