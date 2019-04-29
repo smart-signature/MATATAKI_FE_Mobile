@@ -304,10 +304,9 @@ export default {
         this.oldpublishArticle({
           author, title, hash, fissionFactor, cover,
         }).then(() => {
-          console.log(1);
           this.delDraft(this.id);
         }).catch(() => {
-          console.log(3);
+          console.log('发布错误');
         });
       } else if (this.editorMode === 'draft' && this.saveType === 'draft') { // 草稿箱编辑 更新
         await this.updateDraft({
