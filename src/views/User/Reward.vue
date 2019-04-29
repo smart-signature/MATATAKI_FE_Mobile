@@ -31,9 +31,6 @@ export default {
   },
   computed: {
     ...mapGetters(['currentUsername']),
-    ifLogined() {
-      return this.currentUsername !== null;
-    },
     isMe() {
       const { username, currentUsername } = this;
       return username === currentUsername;
@@ -51,7 +48,7 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped>
 a {
   color: #000;
   text-decoration: none; /* no underline */
@@ -59,5 +56,6 @@ a {
 .original{
   background-color: #F7F7F7;
   padding-bottom: 20px;
+  padding-top: 45px;
 }
 </style>

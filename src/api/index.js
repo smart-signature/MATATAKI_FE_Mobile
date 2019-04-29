@@ -7,11 +7,14 @@ import defaultImagesUploader from './imagesUploader';
 // This line below is exports
 
 export {
-  getArticlesList, publishArticle, auth, getAuth,
-  getArticleData, getArticleInfo, getArticleInHash,
+  getArticlesList, publishArticle, oldpublishArticle,
+  auth, getAuth,
+  getArticleDatafromIPFS,
+  getArticleInfo,
   Follow, Unfollow, getUser, oldgetUser,
   setUserName, getFansList, getFollowList,
   getSharesbysignid, sendComment, addReadAmount, getAssets,
   delArticle, uploadAvatar, getAvatarImage, getArticleSupports, editArticle,
+  draftList, createDraft, updateDraft, delDraft, getDraft,
 } from './backend';
 export { defaultImagesUploader };

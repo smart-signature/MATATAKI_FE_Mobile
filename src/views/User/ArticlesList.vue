@@ -3,7 +3,7 @@
     <div v-if="tabsData.length >= 2">
       <za-tabs v-model="activeIndex" @change="changeTabs">
         <za-tab-pane :label="item.label" :name="index" v-for="(item, index) in tabsData" :key="index">
-          <PullComponents
+          <BasePull
             :params="item.params"
             :apiUrl="item.apiUrl"
             :activeIndex="activeIndex"
@@ -11,24 +11,23 @@
             @getListData="getListDataTab"
             >
               <ArticleCard :article="item" v-for="(item, index) in item.articles" :key="index"/>
-          </PullComponents>
+          </BasePull>
         </za-tab-pane>
       </za-tabs>
     </div>
     <div v-else>
-        <PullComponents
+        <BasePull
         :params="params"
         :apiUrl="apiUrl"
         @getListData="getListData"
         >
           <ArticleCard :article="item" v-for="(item, index) in articles" :key="index"/>
-      </PullComponents>
+      </BasePull>
       </div>
   </div>
 </template>
 
 <script>
-import PullComponents from '@/components/PullComponents.vue';
 import { ArticleCard } from '@/components/';
 
 export const TimeLine = '最新发布';
@@ -45,7 +44,6 @@ export default {
   },
   components: {
     ArticleCard,
-    PullComponents,
   },
   created() {
     if (this.listtype === 'others') {

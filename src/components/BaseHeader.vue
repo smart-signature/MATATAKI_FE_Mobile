@@ -17,7 +17,8 @@
           {{pageinfo.title}}
         <!--</router-link>-->
       </div>
-      <div slot="right">
+      <div class="right-slot" slot="right">
+        <slot name='info'></slot>
         <slot name="right"></slot>
         <!--<router-link :to="{ name: pageinfo.rightPage }">
           &lt;!&ndash;<Icon type="ios-share-alt" :size="24" />&ndash;&gt;
@@ -38,7 +39,10 @@ export default {
   name: 'BaseHeader',
   props: ['pageinfo'],
   computed: {
-    ...mapState(['currentUsername', 'isScatterConnected', 'isScatterLoggingIn']),
+    ...mapState('scatter', {
+      isScatterConnected: state => state.isConnected,
+      isScatterLoggingIn: state => state.isLoggingIn,
+    }),
   },
   // 依據 https://blog.csdn.net/m0_37728716/article/details/81289317
   // 從 crearted 改成 mounted
@@ -49,18 +53,22 @@ export default {
     console.log('Does this page need to log in?:', this.pageinfo.needLogin);
   },
   methods: {
-    ...mapActions([
-      'connectScatterAsync',
-      'suggestNetworkAsync',
-      'loginScatterAsync',
+    ...mapGetters(['isLogined']),
+    ...mapActions('scatter', [
+      'connect',
+      'login',
     ]),
+    loginScatterAsync() { return this.login(); },
     goBack() {
       this.$router.go(-1);
     },
   },
   watch: {
+    isLogined(newState) {
+      if (newState) this.$Message.success('自动登录成功');
+    },
     isScatterConnected(newState) {
-      const { pageinfo, currentUsername, isScatterLoggingIn } = this;
+      const { pageinfo, isScatterLoggingIn } = this;
       if (pageinfo.needLogin !== undefined && pageinfo.needLogin) {
         if (newState && !isScatterLoggingIn) {
           console.log('auto log in');
@@ -98,5 +106,18 @@ a:active {
 .home-icon {
   width: 22px;
   margin-left: 14px;
+}
+.BaseHeader {
+  border-bottom: 1px solid #eaeaea;
+  box-sizing: border-box;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+}
+.right-slot{
+  display: flex;
+  align-items: center;
 }
 </style>

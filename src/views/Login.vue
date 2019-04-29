@@ -43,16 +43,12 @@ export default {
   methods: {
     ...mapActions([
       'connectScatterAsync',
-      'suggestNetworkAsync',
       'loginScatterAsync',
       'logoutScatterAsync',
     ]),
     async loginWithWallet() {
       try {
         // await this.connectScatterAsync();
-        // Scatter 10.0 need to suggestNetwork, if not, scatter is not working on login
-        // eslint-disable-next-line no-unused-vars
-        const suggestNetworkResult = await this.suggestNetworkAsync(); // suggestNetworkResult 未使用
         await this.loginScatterAsync();
       } catch (e) {
         // console.warn('Unable to connect wallets');

@@ -12,8 +12,8 @@ import store from './store';
 import './registerServiceWorker';
 
 // Vue plugins
-// eslint-disable-next-line import/extensions
-import './plugins/iview.js';
+import './plugins/iview';
+import './plugins/vue-toasted';
 
 // global css
 import '@/assets/css/index.css';
