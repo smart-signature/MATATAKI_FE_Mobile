@@ -282,7 +282,7 @@ const uploadAvatar = ({ avatar }, callback) => accessBackend({
 }, callback);
 
 // 获取头像
-const getAvatarImage = hash => `/image/${hash}`;
+const getAvatarImage = hash => `${apiServer}/image/${hash}`;
 
 // 编辑
 const editArticle = ({
