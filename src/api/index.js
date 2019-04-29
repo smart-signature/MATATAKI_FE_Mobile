@@ -10,7 +10,7 @@ export {
   getArticlesList, publishArticle, oldpublishArticle,
   auth, getAuth,
   getArticleDatafromIPFS,
-  getArticleInfo, getArticleInfoCB,
+  getArticleInfo,
   Follow, Unfollow, getUser, oldgetUser,
   setUserName, getFansList, getFollowList,
   getSharesbysignid, sendComment, addReadAmount, getAssets,

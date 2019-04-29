@@ -110,6 +110,11 @@ a:active {
 .BaseHeader {
   border-bottom: 1px solid #eaeaea;
   box-sizing: border-box;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
 }
 .right-slot{
   display: flex;

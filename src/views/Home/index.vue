@@ -10,7 +10,7 @@
         </Button>
         <div v-show='addShow' class='add-menu'>
           <a href='javascript:void(0);'>搬运</a>
-          <a href='javascript:void(0);' @click="$router.push({name: 'Publish'})">创作</a>
+          <a href='javascript:void(0);' @click="$router.push({name: 'Publish', params: {id: 'create'}})">创作</a>
         </div>
       </div>
       <div class='titles'>

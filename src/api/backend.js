@@ -207,13 +207,6 @@ const getArticleInfo = (hashOrId, callback) => {
 };
 
 
-// 該被廢棄
-const getArticleInfoCB = (hash, callback) => accessBackend({
-  method: 'GET',
-  url: `/post/${hash}`,
-}, callback);
-
-
 // Be used in User page.
 const Follow = ({ username, followed }, callback) => accessBackend({
   method: 'POST',
@@ -355,7 +348,7 @@ const getDraft = ({ id }, callback) => accessBackend({
 export {
   publishArticle, auth, getAuth,
   getArticleDatafromIPFS, getArticlesList,
-  getArticleInfo, getArticleInfoCB,
+  getArticleInfo,
   Follow, Unfollow, getUser, setUserName, getFansList, getFollowList, oldgetUser,
   getSharesbysignid, addReadAmount, sendComment, getAssets, getAvatarImage,
   disassembleToken, delArticle, uploadAvatar, getArticleSupports, editArticle,

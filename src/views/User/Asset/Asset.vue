@@ -1,7 +1,7 @@
 <template>
   <div class="assetpage">
     <BaseHeader
-      :pageinfo="{ left: 'back', title: `${newName.length >= 12 ?  `${newName.substring(0,12)}...` : newName}的资产明细`, rightPage: 'home',
+      :pageinfo="{ left: 'back', title: `资产明细`, rightPage: 'home',
                    needLogin: false, }"/>
     <div class="topcard">
       <div class="toptext1">待提现</div><br/>
