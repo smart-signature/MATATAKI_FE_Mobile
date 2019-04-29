@@ -1,28 +1,39 @@
 <template>
-  <div class="draft-outer">
-    <router-link :to="{ name: 'Publish', params: { id: draftbox.id }, query: { from: 'draft' } }" >
+  <div class="draft-outer" @click="() => {
+      this.$router.push({ name: 'Publish', params: { id: draftbox.id }, query: { from: 'draft' } });
+    }">
       <div class="onecard">
         <div class="onecard_title">{{draftbox.title}}</div>
-        <div class="onecard_date">{{draftbox.create_time}}</div>
+        <div class="onecard_date">{{createTime}}</div>
       </div>
-    </router-link>
-
     <za-icon
       theme="default"
       type="wrong-round-fill"
       style="color: #515a6e;font-size: 24px;"
-      @click="delListBtn(draftbox.id)">
+      @click.stop="delListBtn({
+        id: draftbox.id,
+        index: index
+      })">
     </za-icon>
   </div>
 </template>
 
 <script>
+import moment from 'moment';
+import { isNDaysAgo } from '@/common/methods';
+
 export default {
   name: 'DraftBoxList',
-  props: ['draftbox'],
+  props: ['draftbox', 'index'],
+  computed: {
+    createTime() {
+      const time = moment(this.draftbox.create_time);
+      return isNDaysAgo(2, time) ? time.format('MMMDo HH:mm') : time.fromNow();
+    },
+  },
   methods: {
-    delListBtn(id) {
-      this.$emit('delId', id);
+    delListBtn(data) {
+      this.$emit('delId', data);
     },
   },
 };

@@ -136,7 +136,6 @@ export default {
       }
     },
     removeAvatar() {
-      console.log(11);
       this.$refs.upload.remove(this.files);
       this.file = '';
       this.$emit('setDone', '');

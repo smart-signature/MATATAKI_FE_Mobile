@@ -7,9 +7,8 @@
         noArticles: '无草稿', }"
     :params="params"
     :apiUrl="apiUrl"
-    @getListData="getListData"
-    :autoRequestTime="autoRequestTime">
-    <DraftBoxList :draftbox="item"  v-for="(item, index) in draftBoxList" :key="index" @delId="delId"/>
+    @getListData="getListData">
+    <DraftBoxList :draftbox="item" :index="index"  v-for="(item, index) in draftBoxList" :key="index" @delId="delId"/>
   </BasePull>
   </div>
 </template>
@@ -17,7 +16,6 @@
 <script>
 import { delDraft } from '@/api';
 import DraftBoxList from './DraftBoxList.vue';
-import { setTimeout } from 'timers';
 
 export default {
   name: 'DeaftBox',
@@ -27,7 +25,6 @@ export default {
       apiUrl: 'drafts',
       draftBoxList: [],
       delModel: false,
-      autoRequestTime: 0,
     };
   },
   components: {
@@ -35,27 +32,31 @@ export default {
   },
   methods: {
     getListData(res) {
-      console.log(res);
+      // console.log(res);
       this.draftBoxList = res.data;
     },
-    delId(id) {
-      if (!id) return console.log('没有id');
+    delId(data) {
+      const { id, index } = data;
+      if (!id) {
+        console.log('没有id');
+        return;
+      }
       this.$Modal.confirm({
         title: '确定删除？',
         content: '<p>确定删除草稿箱文章？</p>',
         loading: true,
         onOk: () => {
-          this.asyncSuccessDel(id);
+          this.asyncSuccessDel(id, index);
         },
       });
     },
     // 删除草稿
-    async asyncSuccessDel(id) {
+    async asyncSuccessDel(id, index) {
       await delDraft({ id },
         ({ error, response }) => {
-          console.log(error, response);
+          // console.log(error, response);
           if (response.status !== 200 || error || !response) return console.log('自动删除草稿失败,请手动删除');
-          this.autoRequestTime += 1;
+          this.draftBoxList.splice(index, 1); // 前端手动删除一下数据
           this.$Modal.remove();
         });
     },
