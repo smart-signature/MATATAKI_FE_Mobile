@@ -201,9 +201,10 @@ export default {
         this.fans = data.fans;
         this.followed = data.is_follow;
       };
-      if (currentUsername.length > 12) return;
+      
       // todo(minakokojima): deprecate oldgetUser
       if (currentUsername !== null) {
+        if (currentUsername.length > 12) return;
         oldgetUser({ username }, ({ error, response }) => {
           console.log(response);
           const { data } = response;
