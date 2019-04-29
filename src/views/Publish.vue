@@ -76,6 +76,7 @@ export default {
     } else if (from === 'draft') {
       // console.log('草稿箱');
       this.editorMode = 'draft';
+      this.saveType = 'draft';
       this.getDraft(id);
     } else {
       this.editorMode = 'create'; // 当作发布文章处理
@@ -205,11 +206,11 @@ export default {
       await oldpublishArticle(data).then((response) => {
         if (response.data.msg !== 'success') this.failed('失败请重试');
         this.success(data.hash);
-        return true;
+        return Promise.resolve();
       }).catch((err) => {
         console.log(err);
         this.failed('失败请重试');
-        return false;
+        return Promise.reject();
       });
     },
     // 创建草稿
@@ -242,8 +243,8 @@ export default {
         });
     },
     // 更新草稿
-    updateDraft(data) {
-      updateDraft(data, (response) => {
+    async updateDraft(data) {
+      await updateDraft(data, (response) => {
         if (response.response.data.msg !== 'success') this.failed('失败请重试');
         this.$Notice.success({ title: '草稿更新成功' });
         this.$router.go(-1);
@@ -300,15 +301,17 @@ export default {
         });
       } else if (this.editorMode === 'draft' && this.saveType === 'public') { // 草稿箱编辑 发布
         const { hash } = await this.sendPost({ title, author, content });
-        const status = await this.oldpublishArticle({
+        this.oldpublishArticle({
           author, title, hash, fissionFactor, cover,
-        });
-        if (status) { // 发布成功删除文章
+        }).then(() => {
+          console.log(1);
           this.delDraft(this.id);
-        }
+        }).catch(() => {
+          console.log(3);
+        });
       } else if (this.editorMode === 'draft' && this.saveType === 'draft') { // 草稿箱编辑 更新
         await this.updateDraft({
-          id: this.signId, title, content, fissionFactor, cover,
+          id: this.id, title, content, fissionFactor, cover,
         });
       }
     },
