@@ -116,7 +116,7 @@ const disassembleToken = (token) => {
 // /<summary>
 // /装载access_token
 // /</summary>
-const getAuth = () => new Promise(async (resolve, reject) => {
+const getAuth = async () => {
   const currentToken = getCurrentAccessToken();
   const decodedData = disassembleToken(currentToken); // 拆包
   const username = currentToken != null ? decodedData.iss : null;
@@ -135,16 +135,16 @@ const getAuth = () => new Promise(async (resolve, reject) => {
         const accessToken = response.data;
         console.info('got the access token :', accessToken);
         setAccessToken(accessToken);
-        return resolve(accessToken);
+        return accessToken;
       }
 
       throw new Error('auth 出錯');
     } catch (error) {
       console.warn('取得用戶新簽名出錯', error);
-      return reject(error);
+      throw error;
     }
-  } else return resolve(currentToken);
-});
+  } else return currentToken;
+};
 
 /*
  * /<summary>
@@ -152,45 +152,42 @@ const getAuth = () => new Promise(async (resolve, reject) => {
  * /</summary>
 */
 /* eslint no-param-reassign: ["error", { "props": false }] */
-const accessBackend = (options, callback = () => {}) => {
+const accessBackend = async (options, callback = () => {}) => {
   // https://blog.fundebug.com/2018/07/25/es6-const/
   options.headers = {};
-  // 更新 Auth
-  getAuth().then((accessToken) => {
-    options.headers['x-access-token'] = accessToken;
-  }).catch(() => {
+  let accessToken = getCurrentAccessToken();
+  try { // 更新 Auth
+    accessToken = await getAuth();
+  } catch (error) {
     console.warn('將使用 access token 存檔');
-    options.headers['x-access-token'] = getCurrentAccessToken();
-  }).then(() => { // Do this whatever happened before
-    // console.info(
-    //   'b4 request send, options :', options,
-    //   ', x-access-token :', options.headers['x-access-token'],
-    // );
-    axiosforApiServer(options).then(response => callback({ response }))
-      .catch((error) => {
-        if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          console.log(error.response.data);
-          console.log(error.response.status);
-          console.log(error.response.headers);
-          callback({ error, response: error.response });
-          return;
-        } if (error.request) {
-          // The request was made but no response was received
-          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-          // http.ClientRequest in node.js
-          console.log(error.request);
-        } else {
-          // Something happened in setting up the request that triggered an Error
-          console.log('Error', error.message);
-        }
-        console.log(error.config);
-        callback({ error });
-      });
-  });
-};
+  }
+  options.headers['x-access-token'] = accessToken;
 
+  let error = null, response = null;
+  try {
+    response = await axiosforApiServer(options);
+  } catch (error) {
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+      callback({ error, response: error.response });
+      return;
+    } if (error.request) {
+      // The request was made but no response was received
+      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+      // http.ClientRequest in node.js
+      console.log(error.request);
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.log('Error', error.message);
+    }
+    console.log(error.config);
+  }
+  callback({ error, response });
+};
 
 const getArticleDatafromIPFS = hash => axiosforApiServer.get(`/ipfs/catJSON/${hash}`);
 
@@ -205,7 +202,6 @@ const getArticleInfo = (hashOrId, callback) => {
   }, callback);
   getArticleInfoAPI(hashOrId, callback);
 };
-
 
 // Be used in User page.
 const Follow = ({ username, followed }, callback) => accessBackend({
@@ -223,6 +219,7 @@ const Unfollow = ({ username, followed }, callback) => accessBackend({
 
 // Be used in User page.
 const getUser = ({ username }) => axiosforApiServer.get(`/user/${username}`);
+// todo: rename
 const oldgetUser = ({ username }, callback) => accessBackend({
   method: 'GET',
   url: `/user/${username}`,
@@ -346,13 +343,12 @@ const getDraft = ({ id }, callback) => accessBackend({
 
 // 每天浪費時間寫這個，不對吧，像隔壁用 API 一起輸出呀
 export {
-  publishArticle, auth, getAuth,
-  getArticleDatafromIPFS, getArticlesList,
-  getArticleInfo,
+  auth, getAuth,
+  publishArticle, oldpublishArticle,
+  getArticleDatafromIPFS, getArticleInfo, getArticlesList,
   Follow, Unfollow, getUser, setUserName, getFansList, getFollowList, oldgetUser,
   getSharesbysignid, addReadAmount, sendComment, getAssets, getAvatarImage,
   disassembleToken, delArticle, uploadAvatar, getArticleSupports, editArticle,
   getBackendData,
-  oldpublishArticle,
   draftList, createDraft, updateDraft, delDraft, getDraft,
 };

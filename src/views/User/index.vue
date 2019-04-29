@@ -201,13 +201,17 @@ export default {
         this.fans = data.fans;
         this.followed = data.is_follow;
       };
-      if (currentUsername.length > 12) return;
+      
       // todo(minakokojima): deprecate oldgetUser
       if (currentUsername !== null) {
+        if (currentUsername.length > 12) return;
         oldgetUser({ username }, ({ error, response }) => {
-          console.log(response);
-          const { data } = response;
-          setUser(data);
+          console.log(error, response);
+          if (!error) {
+            if (response.status !== 200) throw error;
+            const { data } = response;
+            setUser(data);
+          } else throw error;
         });
       } else {
         getUser({ username }).then((response) => {

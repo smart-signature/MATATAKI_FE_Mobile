@@ -27,7 +27,6 @@
 import { mapState, mapActions, mapGetters } from 'vuex';
 import {
   getUser,
-  oldgetUser,
   getAssets,
   getAvatarImage,
 } from '@/api';

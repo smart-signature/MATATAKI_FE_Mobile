@@ -98,7 +98,7 @@ export default {
     },
     async uploadAvatar(avatar) {
       await uploadAvatar({ avatar }, ({ error, response }) => {
-        if (response.status !== 201 || error) {
+        if (error || response.status !== 201) {
           console.log(error);
           this.$Message.error('设置头像错误请重试');
           return;
