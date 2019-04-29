@@ -151,21 +151,22 @@ const getAuth = () => new Promise(async (resolve, reject) => {
  * /后端访问入口，当遇到401的时候直接重新拿token
  * /</summary>
 */
+/* eslint no-param-reassign: ["error", { "props": false }] */
 const accessBackend = (options, callback = () => {}) => {
   // https://blog.fundebug.com/2018/07/25/es6-const/
-  const newOptions = options;
+  options.headers = {};
   // 更新 Auth
   getAuth().then((accessToken) => {
-    newOptions.headers['x-access-token'] = accessToken;
+    options.headers['x-access-token'] = accessToken;
   }).catch(() => {
     console.warn('將使用 access token 存檔');
-    newOptions.headers['x-access-token'] = getCurrentAccessToken();
+    options.headers['x-access-token'] = getCurrentAccessToken();
   }).then(() => { // Do this whatever happened before
     // console.info(
     //   'b4 request send, options :', options,
     //   ', x-access-token :', options.headers['x-access-token'],
     // );
-    axiosforApiServer(newOptions).then(response => callback({ response }))
+    axiosforApiServer(options).then(response => callback({ response }))
       .catch((error) => {
         if (error.response) {
           // The request was made and the server responded with a status code
