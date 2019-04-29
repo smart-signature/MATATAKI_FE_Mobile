@@ -68,13 +68,13 @@ export default {
     const { from, hash } = this.$route.query;
     // console.log(id, from);
     if (id === 'create' && !from) { // 发布文章 from 为 undefined
-      console.log('发布文章');
+      // console.log('发布文章');
     } else if (from === 'edit') {
-      console.log('编辑文章');
+      // console.log('编辑文章');
       this.editorMode = 'edit';
       this.setArticleData(hash);
     } else if (from === 'draft') {
-      console.log('草稿箱');
+      // console.log('草稿箱');
       this.editorMode = 'draft';
       this.getDraft(id);
     } else {
