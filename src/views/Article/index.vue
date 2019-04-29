@@ -45,7 +45,7 @@
             <div class="amount-text">赞赏总额</div>
           </div>
         </Tooltip>
-        <Tooltip content="你可得到的最高回报=赞赏额*裂变系数">
+        <Tooltip content="最高回报=赞赏额*裂变系数">
           <div class="fission">
             <div>
               <img class="amount-img" src="@/assets/img/icon_fission.png" />
@@ -56,13 +56,13 @@
         </Tooltip>
       </div>
       <div class="footer-block">
-        <Tooltip content="赞赏的文章可以在赞赏列表中查看">
+        <Tooltip content="赞赏获收益">
           <button class="button-support" v-if="isSupported===-1" @click="b4support">赞赏<img src="@/assets/img/icon_support.png"/></button>
           <button class="button-support" v-if="isSupported===0" disabled>赞赏中<img src="@/assets/img/icon_support.png"/></button>
           <button class="button-support" v-else-if="isSupported===1" @click="visible3 = true">赞赏<img src="@/assets/img/icon_support.png"/></button>
           <button class="button-support" v-else-if="isSupported===2" disabled>已赞赏<img src="@/assets/img/icon_support.png"/></button>
         </Tooltip>
-        <Tooltip content="先赞赏后分享，好友赞赏你可得更多" placement="top-end">
+        <Tooltip content="先赞赏后分享" placement="top-end">
           <button class="button-share" :data-clipboard-text="getClipboard" @click="share">分享<img src="@/assets/img/icon_share.png" /></button>
         </Tooltip>
       </div>
@@ -428,7 +428,7 @@ export default {
             if (!error) {
               console.log(error, response);
               if (response.status !== 200) throw new Error(error);
-            } else throw error;  
+            } else throw error;
           });
         }
         this.isSupported = RewardStatus.REWARDED; // 按钮状态
