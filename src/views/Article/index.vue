@@ -415,19 +415,25 @@ export default {
         try {
           // 發 comment 到後端
           console.log('Send comment...');
-          await sendComment({ comment, signId },
-            ({ error, response }) => {
+          await sendComment({ comment, signId }, ({ error, response }) => {
+            if (!error) {
               console.log(error, response);
-              if (response.status !== 200 || error) throw new Error(error); // wrong way
-            });
-        } catch (error) { // wrong way
+              if (response.status !== 200) throw new Error(error);
+            }
+            
+            throw error;    
+          });
+        } catch (error) {
           console.error(error);
           console.log('Resend comment...');
-          await sendComment({ comment, signId },
-            ({ error, response }) => {
+          await sendComment({ comment, signId }, ({ error, response }) => {
+            if (!error) {
               console.log(error, response);
-              if (response.status !== 200 || error) throw new Error(error); // wrong way
-            });
+              if (response.status !== 200) throw new Error(error);
+            }
+            
+            throw error;    
+          });
         }
         this.isSupported = RewardStatus.REWARDED; // 按钮状态
         this.$Message.success('赞赏成功！');
