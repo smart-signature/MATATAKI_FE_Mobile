@@ -206,9 +206,14 @@ export default {
       if (currentUsername !== null) {
         if (currentUsername.length > 12) return;
         oldgetUser({ username }, ({ error, response }) => {
-          console.log(response);
-          const { data } = response;
-          setUser(data);
+          console.log(error, response);
+          if (!error) {
+            if (response.status !== 200) throw error;
+            const { data } = response;
+            setUser(data);
+          }
+
+          throw error;
         });
       } else {
         getUser({ username }).then((response) => {
