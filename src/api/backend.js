@@ -206,7 +206,6 @@ const getArticleInfo = (hashOrId, callback) => {
   getArticleInfoAPI(hashOrId, callback);
 };
 
-
 // Be used in User page.
 const Follow = ({ username, followed }, callback) => accessBackend({
   method: 'POST',
