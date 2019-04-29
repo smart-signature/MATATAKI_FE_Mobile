@@ -7,20 +7,29 @@ import API, { currentEOSAccount as currentAccount } from './scatter';
 // https://github.com/axios/axios
 
 export const apiServer = process.env.VUE_APP_API;
+// https://github.com/axios/axios/issues/535
 const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+const axiosforApiServer = axios.create({
+  baseURL: apiServer,
+  headers: { Accept: '*/*' },
+  httpsAgent,
+});
 
+const getSignature = ({ author, hash }) => store.dispatch('getSignature', { author, hash });
 const publishArticle = async ({
   author, title, hash, fissionFactor, cover,
 }) => {
-  const signature = await store.dispatch('getSignature', { author, hash });
+  const signature = await getSignature({ author, hash });
   console.log('签名成功后调', signature);
-  const { publicKey, signature: sign, username } = signature;
-  return axios.post(`${apiServer}/publish`,
+  // 若 getSignature reject(或內部 throw 被轉為reject)
+  // 則 publishArticle 會成為 Promise.reject()
+  const { publicKey: publickey, signature: sign, username } = signature;
+  return axiosforApiServer.post('/publish',
     {
       author,
       fissionFactor,
       hash,
-      publickey: publicKey,
+      publickey,
       sign,
       title,
       username,
@@ -33,7 +42,7 @@ const oldpublishArticle = ({
 }) => API.getSignature(author, hash).then(({ publicKey, signature, username }) => {
   console.log('签名成功后调', publicKey, signature, username);
   // if (err) failed('2nd step failed');
-  return axios.post(`${apiServer}/publish`,
+  return axiosforApiServer.post('/publish',
     {
       author,
       fissionFactor,
@@ -48,18 +57,14 @@ const oldpublishArticle = ({
 
 
 // 获取支持过的文章列表 page user
-const getArticleSupports = params => axios.get(
-  `${apiServer}/supports`, { params },
-);
+const getArticleSupports = params => axiosforApiServer.get('/supports', { params });
 
 /**
  * 获取按照发表时间文章排行榜 https://github.com/smart-signature/smart-signature-backend/blob/master/doc.md#获取文章列表
  * @param {number} page： 第 {page} 页
  * @param {string} author 作者
  */
-const getArticlesList = params => axios.get(
-  `${apiServer}/posts`, { params },
-);
+const getArticlesList = params => axiosforApiServer.get('/posts', { params });
 
 /**
  * 转移到了组件内
@@ -75,7 +80,7 @@ const getArticlesList = params => axios.get(
 
 
 // 获取资产明细
-const getAssets = (user, page) => axios.get(`${apiServer}/assets`, { params: { user, page } });
+const getAssets = (user, page) => axiosforApiServer.get('/assets', { params: { user, page } });
 
 /*
   amount: 2000
@@ -84,7 +89,7 @@ const getAssets = (user, page) => axios.get(`${apiServer}/assets`, { params: { u
   create_time: "2019-03-26T01:04:21.000Z"
   sign_id: 173
 */
-const getSharesbysignid = (signid, page) => axios.get(`${apiServer}/shares?signid=${signid}&page=${page}`);
+const getSharesbysignid = (signid, page) => axiosforApiServer.get(`/shares?signid=${signid}&page=${page}`);
 
 const getCurrentAccessToken = () => localStorage.getItem('ACCESS_TOKEN');
 const setAccessToken = token => localStorage.setItem('ACCESS_TOKEN', token);
@@ -92,15 +97,10 @@ const setAccessToken = token => localStorage.setItem('ACCESS_TOKEN', token);
 // /<summary>
 // /根据用户名，公钥，客户端签名请求access_token
 // /</summary>
-const auth = ({ username, publicKey, sign }) => axios.post(`${apiServer}/auth`,
+const auth = ({ username, publicKey, sign }) => axiosforApiServer.post('/auth',
   { username, publickey: publicKey, sign },
   {
-    headers: {
-      Accept: '*/*',
-      Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==',
-    },
-    // https://github.com/axios/axios/issues/535
-    httpsAgent,
+    headers: { Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==' },
   });
 
 // /<summary>
@@ -151,7 +151,10 @@ const getAuth = () => new Promise(async (resolve, reject) => {
  * /后端访问入口，当遇到401的时候直接重新拿token
  * /</summary>
 */
+/* eslint no-param-reassign: ["error", { "props": false }] */
 const accessBackend = (options, callback = () => {}) => {
+  // https://blog.fundebug.com/2018/07/25/es6-const/
+  options.headers = {};
   // 更新 Auth
   getAuth().then((accessToken) => {
     options.headers['x-access-token'] = accessToken;
@@ -163,7 +166,7 @@ const accessBackend = (options, callback = () => {}) => {
     //   'b4 request send, options :', options,
     //   ', x-access-token :', options.headers['x-access-token'],
     // );
-    axios(options).then(response => callback({ response }))
+    axiosforApiServer(options).then(response => callback({ response }))
       .catch((error) => {
         if (error.response) {
           // The request was made and the server responded with a status code
@@ -189,7 +192,7 @@ const accessBackend = (options, callback = () => {}) => {
 };
 
 
-const getArticleDatafromIPFS = hash => axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
+const getArticleDatafromIPFS = hash => axiosforApiServer.get(`/ipfs/catJSON/${hash}`);
 
 // 获取单篇文章的信息 by hash or id  需要 token 否则无法获取赞赏状态
 const getArticleInfo = (hashOrId, callback) => {
@@ -198,9 +201,7 @@ const getArticleInfo = (hashOrId, callback) => {
   const url = reg.test(hashOrId) ? 'p' : 'post';
   const getArticleInfoAPI = (hashOrId, callback) => accessBackend({
     method: 'GET',
-    url: `${apiServer}/${url}/${hashOrId}`,
-    headers: { Accept: '*/*' },
-    httpsAgent,
+    url: `/${url}/${hashOrId}`,
   }, callback);
   getArticleInfoAPI(hashOrId, callback);
 };
@@ -209,61 +210,47 @@ const getArticleInfo = (hashOrId, callback) => {
 // Be used in User page.
 const Follow = ({ username, followed }, callback) => accessBackend({
   method: 'POST',
-  url: `${apiServer}/follow`,
-  headers: { Accept: '*/*' },
-  httpsAgent,
+  url: '/follow',
   data: { username, followed },
 }, callback);
 
 // Be used in User page.
 const Unfollow = ({ username, followed }, callback) => accessBackend({
   method: 'POST',
-  url: `${apiServer}/unfollow`,
-  headers: { Accept: '*/*' },
-  httpsAgent,
+  url: '/unfollow',
   data: { username, followed },
 }, callback);
 
 // Be used in User page.
-const getUser = ({ username }) => axios.get(`${apiServer}/user/${username}`);
+const getUser = ({ username }) => axiosforApiServer.get(`/user/${username}`);
 const oldgetUser = ({ username }, callback) => accessBackend({
   method: 'GET',
-  url: `${apiServer}/user/${username}`,
-  headers: { Accept: '*/*' },
-  httpsAgent,
+  url: `/user/${username}`,
   data: {},
 }, callback);
 
 // Be used in User page.
 const setUserName = ({ newname }, callback) => accessBackend({
   method: 'POST',
-  url: `${apiServer}/user/setNickname`,
-  headers: { Accept: '*/*' },
-  httpsAgent,
+  url: '/user/setNickname',
   data: { nickname: newname },
 }, callback);
 
 // Be used in User page.
 const getFansList = ({ username }, callback) => accessBackend({
   method: 'GET',
-  url: `${apiServer}/fans?user=${username}`,
-  headers: { Accept: '*/*' },
-  httpsAgent,
+  url: `/fans?user=${username}`,
 }, callback);
 
 // Be used in User page.
 const getFollowList = ({ username }, callback) => accessBackend({
   method: 'GET',
-  url: `${apiServer}/follows?user=${username}`,
-  headers: { Accept: '*/*' },
-  httpsAgent,
+  url: `/follows?user=${username}`,
 }, callback);
 
 const sendComment = ({ comment, signId }, callback) => accessBackend({
   method: 'POST',
-  url: `${apiServer}/post/comment`,
-  headers: { Accept: '*/*' },
-  httpsAgent,
+  url: '/post/comment',
   // eslint-disable-next-line camelcase
   data: { comment, sign_id: signId },
 }, callback);
@@ -271,25 +258,19 @@ const sendComment = ({ comment, signId }, callback) => accessBackend({
 // be Used in Article Page
 const addReadAmount = ({ articlehash }, callback) => accessBackend({
   method: 'POST',
-  url: `${apiServer}/post/show/${articlehash}`,
-  headers: { Accept: '*/*' },
-  httpsAgent,
+  url: `/post/show/${articlehash}`,
 }, callback);
 
 // 删除文章
 const delArticle = ({ id }, callback) => accessBackend({
   method: 'DELETE',
-  url: `${apiServer}/post/${id}`,
-  headers: { Accept: '*/*' },
-  httpsAgent,
+  url: `/post/${id}`,
 }, callback);
 
 // 设置头像
 const uploadAvatar = ({ avatar }, callback) => accessBackend({
   method: 'POST',
-  url: `${apiServer}/user/setAvatar`,
-  headers: { Accept: '*/*' },
-  httpsAgent,
+  url: '/user/setAvatar',
   data: { avatar },
 }, callback);
 
@@ -301,9 +282,7 @@ const editArticle = ({
   signId, author, title, hash, fissionFactor, cover,
 }, callback) => API.getSignature(author, hash).then(({ publicKey, signature, username }) => accessBackend({
   method: 'POST',
-  url: `${apiServer}/edit`,
-  headers: { Accept: '*/*' },
-  httpsAgent,
+  url: '/edit',
   data: {
     signId,
     author,
@@ -317,88 +296,51 @@ const editArticle = ({
   },
 }, callback));
 
-/* const editArticle = ({
-  signId, author, title, hash, publicKey, signature, username, fissionFactor,
-}, callback) => {
-  // const url = `http://localhost:7001/publish`;
-  const accessToken = localStorage.getItem('ACCESS_TOKEN');
-  request.post({
-    uri: `${apiServer}/edit`,
-    rejectUnauthorized: false,
-    json: true,
-    headers: { Accept: '*!/!*', 'x-access-token': accessToken },
-    dataType: 'json',
-    form: {
-      signId,
-      author,
-      fissionFactor,
-      hash,
-      publickey: publicKey,
-      username,
-      title,
-      sign: signature,
-    },
-  }, callback);
-}; */
-
-
 // 基础组件 BasePull 使用的方法
 // 因为目前只需要GET查询 所以不把 GET POST 等调用封装到一起，
 // 区别 GET 用 params， POST 等用 data
 // 所有用 BasePull 调用的接口 都带了 token 修改了 header，所以会请求两次 后续可以升级此方法来根据传进来的参数判断是否需要token
 const getBackendData = ({ url, params }, callback) => accessBackend({
   method: 'GET',
-  url: `${apiServer}/${url}`,
+  url: `/${url}`,
   params,
-  headers: { Accept: '*/*' },
-  httpsAgent,
 }, callback);
 
 // 草稿箱api
 const draftList = ({ page }, callback) => accessBackend({
   method: 'GET',
-  url: `${apiServer}/drafts`,
+  url: '/drafts',
   params: { page },
-  headers: { Accept: '*/*' },
-  httpsAgent,
 }, callback);
 
 const createDraft = ({
   title, content, cover, fissionFactor,
 }, callback) => accessBackend({
   method: 'POST',
-  url: `${apiServer}/draft/save`,
+  url: '/draft/save',
   data: {
     title, content, cover, fissionFactor,
   },
-  headers: { Accept: '*/*' },
-  httpsAgent,
 }, callback);
 
 const updateDraft = ({
   id, title, content, cover, fissionFactor,
 }, callback) => accessBackend({
   method: 'POST',
-  url: `${apiServer}/draft/save`,
+  url: '/draft/save',
   data: {
     id, title, content, cover, fissionFactor,
   },
-  headers: { Accept: '*/*' },
-  httpsAgent,
 }, callback);
 
 const delDraft = ({ id }, callback) => accessBackend({
   method: 'DELETE',
-  url: `${apiServer}/draft/${id}`,
-  headers: { Accept: '*/*' },
-  httpsAgent,
+  url: `/draft/${id}`,
 }, callback);
 
 const getDraft = ({ id }, callback) => accessBackend({
   method: 'GET',
-  url: `${apiServer}/draft/${id}`,
-  headers: { Accept: '*/*' },
-  httpsAgent,
+  url: `/draft/${id}`,
 }, callback);
 
 
