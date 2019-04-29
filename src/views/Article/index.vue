@@ -419,9 +419,7 @@ export default {
             if (!error) {
               console.log(error, response);
               if (response.status !== 200) throw new Error(error);
-            }
-            
-            throw error;    
+            } else throw error;
           });
         } catch (error) {
           console.error(error);
@@ -430,9 +428,7 @@ export default {
             if (!error) {
               console.log(error, response);
               if (response.status !== 200) throw new Error(error);
-            }
-            
-            throw error;    
+            } else throw error;  
           });
         }
         this.isSupported = RewardStatus.REWARDED; // 按钮状态

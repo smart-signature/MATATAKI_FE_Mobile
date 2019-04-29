@@ -211,9 +211,7 @@ export default {
             if (response.status !== 200) throw error;
             const { data } = response;
             setUser(data);
-          }
-
-          throw error;
+          } else throw error;
         });
       } else {
         getUser({ username }).then((response) => {
