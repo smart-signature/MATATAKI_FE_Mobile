@@ -2,7 +2,6 @@ import axios from 'axios';
 import https from 'https';
 import store from '@/store';
 import { Base64 } from 'js-base64';
-import API, { currentEOSAccount as currentAccount } from './scatter';
 
 // https://github.com/axios/axios
 
@@ -16,7 +15,7 @@ const axiosforApiServer = axios.create({
 });
 
 // store
-const { blockchain } = store.getters.currentUserInfo;
+const { name: currentUsername, blockchain } = store.getters.currentUserInfo;
 const getSignatureOfArticle = ({ author, hash }) => store.dispatch('getSignatureOfArticle', { author, hash });
 const getSignatureOfAuth = () => store.dispatch('getSignatureOfAuth');
 
@@ -106,9 +105,9 @@ const getAuth = async () => {
   const currentToken = getCurrentAccessToken();
   const decodedData = disassembleToken(currentToken); // 拆包
   const username = currentToken != null ? decodedData.iss : null;
-  if (currentAccount() !== null && (currentToken === null
+  if (currentUsername !== null && (currentToken === null
     || decodedData === null || decodedData.exp < new Date().getTime()
-    || username !== currentAccount().name)) {
+    || username !== currentUsername)) {
     try {
       console.log('Retake authtoken...');
       const signature = await getSignatureOfAuth();
