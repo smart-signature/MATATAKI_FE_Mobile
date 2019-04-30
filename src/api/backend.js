@@ -41,6 +41,26 @@ const publishArticle = async ({
     });
 };
 
+// 编辑
+const editArticle = ({
+  signId, author, title, hash, fissionFactor, cover,
+}, callback) => getSignatureOfArticle({ author, hash }).then(({ publicKey, signature, username }) => accessBackend({
+  method: 'POST',
+  url: '/edit',
+  data: {
+    signId,
+    author,
+    fissionFactor,
+    hash,
+    platform: blockchain,
+    publickey: publicKey,
+    sign: signature,
+    title,
+    username,
+    cover,
+  },
+}, callback));
+
 // 获取支持过的文章列表 page user
 const getArticleSupports = params => axiosforApiServer.get('/supports', { params });
 
@@ -259,25 +279,6 @@ const uploadAvatar = ({ avatar }, callback) => accessBackend({
 
 // 获取头像
 const getAvatarImage = hash => `${apiServer}/image/${hash}`;
-
-// 编辑
-const editArticle = ({
-  signId, author, title, hash, fissionFactor, cover,
-}, callback) => API.getSignatureOfArticle(author, hash).then(({ publicKey, signature, username }) => accessBackend({
-  method: 'POST',
-  url: '/edit',
-  data: {
-    signId,
-    author,
-    fissionFactor,
-    hash,
-    publickey: publicKey,
-    sign: signature,
-    title,
-    username,
-    cover,
-  },
-}, callback));
 
 // 基础组件 BasePull 使用的方法
 // 因为目前只需要GET查询 所以不把 GET POST 等调用封装到一起，
