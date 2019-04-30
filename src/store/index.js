@@ -40,13 +40,18 @@ export default new Vuex.Store({
   },
   actions: {
     // output: { publicKey, signature, username }
-    async getSignatureOfArticle({
-      commit, dispatch, state, getters,
-    }, { author, hash }) {
+    async getSignatureOfArticle({ dispatch, getters }, { author, hash }) {
       const { blockchain } = getters.currentUserInfo;
       let actionName = null;
       if (blockchain === 'EOS') actionName = 'scatter/getSignatureOfArticle';
       else if (blockchain === 'ONT') actionName = 'ontology/getSignatureOfArticle';
+      return dispatch(actionName, { author, hash });
+    },
+    async getSignatureOfAuth({ dispatch, getters }) {
+      const { blockchain } = getters.currentUserInfo;
+      let actionName = null;
+      if (blockchain === 'EOS') actionName = 'scatter/getSignatureOfAuth';
+      else if (blockchain === 'ONT') actionName = 'ontology/getSignatureOfAuth';
       return dispatch(actionName, { author, hash });
     },
     async idCheck({

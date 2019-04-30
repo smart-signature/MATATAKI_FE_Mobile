@@ -18,6 +18,7 @@ const axiosforApiServer = axios.create({
 // store
 const { blockchain } = store.getters.currentUserInfo;
 const getSignatureOfArticle = ({ author, hash }) => store.dispatch('getSignatureOfArticle', { author, hash });
+const getSignatureOfAuth = () => store.dispatch('getSignatureOfAuth');
 
 const publishArticle = async ({
   author, title, hash, fissionFactor, cover,
@@ -110,7 +111,7 @@ const getAuth = async () => {
     || username !== currentAccount().name)) {
     try {
       console.log('Retake authtoken...');
-      const signature = await API.authSignature();
+      const signature = await getSignatureOfAuth();
       console.info('API.authSignature :', signature);
       // 将取得的签名和用户名和公钥post到服务端 获得accessToken
       const { username: _username, publicKey, signature: sign } = signature;
