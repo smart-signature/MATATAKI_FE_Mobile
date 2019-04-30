@@ -144,7 +144,8 @@ const accessBackend = async (options, callback = () => {}) => {
   }
   options.headers['x-access-token'] = accessToken;
 
-  let error = null, response = null;
+  let error = null;
+  let response = null;
   try {
     response = await axiosforApiServer(options);
   } catch (error) {

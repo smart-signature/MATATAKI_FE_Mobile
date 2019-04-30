@@ -50,14 +50,14 @@ export default {
   },
   created() { // https://juejin.im/post/5bfa4bb951882558ae3c171e
     console.info('Smart Signature version :', version);
-    
+
     const { updateNotify, walletConnectionSetup } = this;
-    
+
     window.updateNotify = updateNotify;
 
     const usingBlockchain = { EOS: true, ONT: true };
     walletConnectionSetup(usingBlockchain).then((meg) => {
-      if(meg !== '') this.$Message.success(`${meg}登录成功！`);
+      if (meg !== '') this.$Message.success(`${meg}登录成功！`);
     });
   },
 };
