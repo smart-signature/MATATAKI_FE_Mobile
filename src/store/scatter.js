@@ -57,7 +57,7 @@ const actions = {
       }
     } else return false;
   },
-  async getSignature({signData, memo = ''}) {
+  async getSignature({ signData, memo = '' }) {
     const { account } = state;
     const result = await eosClient.getAccount(account.name);
     // 获取当前权限
@@ -74,7 +74,7 @@ const actions = {
     const hashPiece3 = hash.slice(24, 36);
     const hashPiece4 = hash.slice(36, 48);
     const signData = `${author} ${hashPiece1} ${hashPiece2} ${hashPiece3} ${hashPiece4}`;
-    return getSignature({ signData, memo: 'Smart Signature'});
+    return getSignature({ signData, memo: 'Smart Signature' });
   },
   async getSignatureOfAuth() {
     return getSignature({ signData: state.account.name, memo: 'Auth' });
