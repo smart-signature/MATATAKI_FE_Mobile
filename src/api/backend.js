@@ -254,12 +254,12 @@ const getFollowList = ({ username }, callback) => accessBackend({
   url: `/follows?user=${username}`,
 }).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
 
-const sendComment = ({ comment, signId }, callback) => accessBackend({
+const sendComment = ({ comment, signId }) => accessBackend({
   method: 'POST',
   url: '/post/comment',
   // eslint-disable-next-line camelcase
   data: { comment, sign_id: signId },
-}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
+});
 
 // be Used in Article Page
 const addReadAmount = ({ articlehash }, callback) => accessBackend({
