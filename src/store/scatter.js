@@ -5,6 +5,7 @@ import api, { eosClient, currentEOSAccount } from '@/api/scatter';
 
 // initial state
 const state = {
+  // account 是個物件, .name 才是帳號名
   account: null,
   balances: {
     eos: '... EOS',

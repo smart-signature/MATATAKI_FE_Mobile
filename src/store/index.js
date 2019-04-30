@@ -14,10 +14,14 @@ export default new Vuex.Store({
     scatter,
   },
   getters: {
+    // rule: 帳號優先級 EOS > ONT
+    // rule: EOS 帳號最長 12 位， ONT 帳號(地址)一定是 20 位
     currentUserInfo: (state, { currentUsername, currentBalance }) => ({
       name: currentUsername,
       balance: currentBalance,
-      blockchain: 'ONT', // null,
+      blockchain: currentUsername
+        ? (currentUsername.length <= 12 ? 'EOS' : 'ONT')
+        : null,
     }),
     currentUsername: (state, { 'scatter/currentUsername': scatter }) => (
       scatter || (state.ontology.account || null)
