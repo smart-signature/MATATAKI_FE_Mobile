@@ -227,12 +227,10 @@ export default {
     },
     // 编辑文章
     async editArticle(data) {
-      await editArticle(data, (res) => {
-        const { response } = res;
-        console.log(res);
-        if (response.data.msg !== 'success') this.failed('失败请重试');
-        this.success(data.hash);
-      });
+      const response = await editArticle(data);
+      console.log(response);
+      if (response.data.msg !== 'success') this.failed('失败请重试');
+      this.success(data.hash);
     },
     // 删除草稿
     async delDraft(id) {

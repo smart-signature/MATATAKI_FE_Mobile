@@ -42,24 +42,29 @@ const publishArticle = async ({
 };
 
 // 编辑
-const editArticle = ({
+const editArticle = async ({
   signId, author, title, hash, fissionFactor, cover,
-}, callback) => getSignatureOfArticle({ author, hash }).then(({ publicKey, signature, username }) => accessBackend({
-  method: 'POST',
-  url: '/edit',
-  data: {
-    signId,
-    author,
-    fissionFactor,
-    hash,
-    platform: blockchain,
-    publickey: publicKey,
-    sign: signature,
-    title,
-    username,
-    cover,
-  },
-}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
+}) => {
+  const signature = await getSignatureOfArticle({ author, hash });
+  console.log('签名成功后调', signature);
+  const { publicKey: publickey, signature: sign, username } = signature;
+  return accessBackend({
+    method: 'POST',
+    url: '/edit',
+    data: {
+      signId,
+      author,
+      fissionFactor,
+      hash,
+      platform: blockchain,
+      publickey,
+      sign,
+      title,
+      username,
+      cover,
+    },
+  });
+};
 
 // 获取支持过的文章列表 page user
 const getArticleSupports = params => axiosforApiServer.get('/supports', { params });
