@@ -59,7 +59,7 @@ const editArticle = ({
     username,
     cover,
   },
-}, callback));
+}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
 
 // 获取支持过的文章列表 page user
 const getArticleSupports = params => axiosforApiServer.get('/supports', { params });
@@ -157,7 +157,7 @@ const getAuth = async () => {
  * /</summary>
 */
 /* eslint no-param-reassign: ["error", { "props": false }] */
-const accessBackend = async (options, callback = () => {}) => {
+const accessBackend = async (options) => {
   // https://blog.fundebug.com/2018/07/25/es6-const/
   options.headers = {};
   let accessToken = getCurrentAccessToken();
@@ -168,10 +168,11 @@ const accessBackend = async (options, callback = () => {}) => {
   }
   options.headers['x-access-token'] = accessToken;
 
-  let error = null;
+  const error = null;
   let response = null;
   try {
     response = await axiosforApiServer(options);
+    return response;
   } catch (error) {
     if (error.response) {
       // The request was made and the server responded with a status code
@@ -179,8 +180,7 @@ const accessBackend = async (options, callback = () => {}) => {
       console.log(error.response.data);
       console.log(error.response.status);
       console.log(error.response.headers);
-      callback({ error, response: error.response });
-      return;
+      throw ({ error, response: error.response });
     } if (error.request) {
       // The request was made but no response was received
       // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
@@ -191,8 +191,8 @@ const accessBackend = async (options, callback = () => {}) => {
       console.log('Error', error.message);
     }
     console.log(error.config);
+    throw ({ error });
   }
-  callback({ error, response });
 };
 
 const getArticleDatafromIPFS = hash => axiosforApiServer.get(`/ipfs/catJSON/${hash}`);
@@ -205,7 +205,7 @@ const getArticleInfo = (hashOrId, callback) => {
   const getArticleInfoAPI = (hashOrId, callback) => accessBackend({
     method: 'GET',
     url: `/${url}/${hashOrId}`,
-  }, callback);
+  }).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
   getArticleInfoAPI(hashOrId, callback);
 };
 
@@ -214,14 +214,14 @@ const Follow = ({ username, followed }, callback) => accessBackend({
   method: 'POST',
   url: '/follow',
   data: { username, followed },
-}, callback);
+}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
 
 // Be used in User page.
 const Unfollow = ({ username, followed }, callback) => accessBackend({
   method: 'POST',
   url: '/unfollow',
   data: { username, followed },
-}, callback);
+}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
 
 // Be used in User page.
 const getUser = ({ username }) => axiosforApiServer.get(`/user/${username}`);
@@ -230,52 +230,52 @@ const oldgetUser = ({ username }, callback) => accessBackend({
   method: 'GET',
   url: `/user/${username}`,
   data: {},
-}, callback);
+}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
 
 // Be used in User page.
 const setUserName = ({ newname }, callback) => accessBackend({
   method: 'POST',
   url: '/user/setNickname',
   data: { nickname: newname },
-}, callback);
+}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
 
 // Be used in User page.
 const getFansList = ({ username }, callback) => accessBackend({
   method: 'GET',
   url: `/fans?user=${username}`,
-}, callback);
+}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
 
 // Be used in User page.
 const getFollowList = ({ username }, callback) => accessBackend({
   method: 'GET',
   url: `/follows?user=${username}`,
-}, callback);
+}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
 
 const sendComment = ({ comment, signId }, callback) => accessBackend({
   method: 'POST',
   url: '/post/comment',
   // eslint-disable-next-line camelcase
   data: { comment, sign_id: signId },
-}, callback);
+}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
 
 // be Used in Article Page
 const addReadAmount = ({ articlehash }, callback) => accessBackend({
   method: 'POST',
   url: `/post/show/${articlehash}`,
-}, callback);
+}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
 
 // 删除文章
 const delArticle = ({ id }, callback) => accessBackend({
   method: 'DELETE',
   url: `/post/${id}`,
-}, callback);
+}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
 
 // 设置头像
 const uploadAvatar = ({ avatar }, callback) => accessBackend({
   method: 'POST',
   url: '/user/setAvatar',
   data: { avatar },
-}, callback);
+}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
 
 // 获取头像
 const getAvatarImage = hash => `${apiServer}/image/${hash}`;
@@ -288,14 +288,14 @@ const getBackendData = ({ url, params }, callback) => accessBackend({
   method: 'GET',
   url: `/${url}`,
   params,
-}, callback);
+}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
 
 // 草稿箱api
 const draftList = ({ page }, callback) => accessBackend({
   method: 'GET',
   url: '/drafts',
   params: { page },
-}, callback);
+}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
 
 const createDraft = ({
   title, content, cover, fissionFactor,
@@ -305,7 +305,7 @@ const createDraft = ({
   data: {
     title, content, cover, fissionFactor,
   },
-}, callback);
+}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
 
 const updateDraft = ({
   id, title, content, cover, fissionFactor,
@@ -315,17 +315,17 @@ const updateDraft = ({
   data: {
     id, title, content, cover, fissionFactor,
   },
-}, callback);
+}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
 
 const delDraft = ({ id }, callback) => accessBackend({
   method: 'DELETE',
   url: `/draft/${id}`,
-}, callback);
+}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
 
 const getDraft = ({ id }, callback) => accessBackend({
   method: 'GET',
   url: `/draft/${id}`,
-}, callback);
+}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
 
 
 // 每天浪費時間寫這個，不對吧，像隔壁用 API 一起輸出呀
