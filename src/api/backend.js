@@ -15,7 +15,10 @@ const axiosforApiServer = axios.create({
   httpsAgent,
 });
 
+// store
+const { blockchain } = store.getters.currentUserInfo;
 const getSignatureOfArticle = ({ author, hash }) => store.dispatch('getSignatureOfArticle', { author, hash });
+
 const publishArticle = async ({
   author, title, hash, fissionFactor, cover,
 }) => {
@@ -29,6 +32,7 @@ const publishArticle = async ({
       author,
       fissionFactor,
       hash,
+      platform: blockchain,
       publickey,
       sign,
       title,
