@@ -18,16 +18,15 @@ const getters = {
 };
 
 const actions = {
-  getAccount({ commit }) {
+  async getAccount({ commit }) {
     console.log('Connecting to ont wallet ...');
-    return new Promise((resolve, reject) => {
-      cyanobridgeAPI.getAccount()
-        .then((address) => {
-          commit('setAccount', address);
-          resolve(address);
-        })
-        .catch(result => reject(result));
-    });
+    try {
+      const address = await cyanobridgeAPI.getAccount();
+      commit('setAccount', address);
+      return address;
+    } catch (error) {
+      throw error;
+    }
   },
   async getSignatureOfArticle({ dispatch, state }, { author, hash }) {
     let { account } = state;

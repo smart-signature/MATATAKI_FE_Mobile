@@ -88,7 +88,26 @@ export default new Vuex.Store({
         }
       });
     },
-    async walletConnectionSetup() {
+    async walletConnectionSetup({ dispatch }, { EOS, ONT }) {
+      let meg = '';
+      if (EOS) {
+        try {
+          await dispatch('scatter/connect');
+          // if (!this.scatterAccount) await this.loginScatterAsync();
+        } catch (error) {
+          console.warn('Unable to connect Scatter wallets :', error);
+        }
+      }
+      if (ONT) {
+        try {
+          const address = await dispatch('ontology/getAccount');
+          console.info('ONT address :', address);
+          meg += `ONT address : ${address}\n`;
+        } catch (error) {
+          console.warn('Failed to get ONT account :', error);
+        }
+      }
+      return meg;
     },
   },
 });
