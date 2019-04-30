@@ -29,7 +29,7 @@ const actions = {
         .catch(result => reject(result));
     });
   },
-  async getSignature({ dispatch, state }, { author, hash }) {
+  async getSignatureOfArticle({ dispatch, state }, { author, hash }) {
     let { account } = state;
     if (!account) {
       await dispatch('getAccount');

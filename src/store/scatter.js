@@ -1,4 +1,4 @@
-import api, { currentEOSAccount } from '@/api/scatter';
+import api, { eosClient, currentEOSAccount } from '@/api/scatter';
 
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-shadow */
@@ -55,6 +55,23 @@ const actions = {
         return true;
       }
     } else return false;
+  },
+  async getSignatureOfArticle({ state }, { author, hash }) {
+    const { account } = state;
+    const result = await eosClient.getAccount(account.name);
+    // 获取当前权限
+    const permissions = result.permissions.find(x => x.perm_name === account.authority);
+    // 获取当前权限的public key
+    const publicKey = permissions.required_auth.keys[0].key;
+    // 需要签名的数据
+    const hashPiece1 = hash.slice(0, 12);
+    const hashPiece2 = hash.slice(12, 24);
+    const hashPiece3 = hash.slice(24, 36);
+    const hashPiece4 = hash.slice(36, 48);
+    const signData = `${author} ${hashPiece1} ${hashPiece2} ${hashPiece3} ${hashPiece4}`;
+    // 申请签名
+    const signature = await api.getArbitrarySignature(publicKey, signData, 'Smart Signature');
+    return ({ publicKey, signature, username: account.name });
   },
   async setBalances({ commit, state }) {
     const { name } = state.account;

@@ -45,7 +45,7 @@ import { mapGetters, mapActions, mapState } from 'vuex';
 import { sendPost } from '@/api/ipfs';
 import { mavonEditor } from 'mavon-editor';
 import {
-  defaultImagesUploader, oldpublishArticle, createDraft,
+  defaultImagesUploader, publishArticle, createDraft,
   editArticle, getArticleDatafromIPFS, getArticleInfo,
   getDraft, updateDraft, delDraft,
 } from '@/api/index';
@@ -202,16 +202,20 @@ export default {
       return data;
     },
     // 发布文章
-    async oldpublishArticle(data) {
-      await oldpublishArticle(data).then((response) => {
-        if (response.data.msg !== 'success') this.failed('失败请重试');
-        this.success(data.hash);
-        return Promise.resolve();
-      }).catch((err) => {
+    async publishArticle(data) {
+      const { failed, success } = this;
+      try {
+        const response = await publishArticle(data);
+        if (response.data.msg !== 'success') {
+          throw '失败请重试';
+        }
+        success(data.hash);
+        return 'success';
+      } catch (error) {
         console.log(err);
-        this.failed('失败请重试');
-        return Promise.reject();
-      });
+        failed('失败请重试');
+        throw error;
+      }
     },
     // 创建草稿
     async createDraft(data) {
@@ -281,7 +285,7 @@ export default {
 
       if (this.editorMode === 'create' && this.saveType === 'public') { // 发布文章
         const { hash } = await this.sendPost({ title, author, content });
-        this.oldpublishArticle({
+        this.publishArticle({
           author, title, hash, fissionFactor, cover,
         });
       } else if (this.editorMode === 'create' && this.saveType === 'draft') { // 发布到草稿箱
@@ -301,7 +305,7 @@ export default {
         });
       } else if (this.editorMode === 'draft' && this.saveType === 'public') { // 草稿箱编辑 发布
         const { hash } = await this.sendPost({ title, author, content });
-        this.oldpublishArticle({
+        this.publishArticle({
           author, title, hash, fissionFactor, cover,
         }).then(() => {
           this.delDraft(this.id);

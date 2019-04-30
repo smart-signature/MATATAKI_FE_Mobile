@@ -15,13 +15,13 @@ const axiosforApiServer = axios.create({
   httpsAgent,
 });
 
-const getSignature = ({ author, hash }) => store.dispatch('getSignature', { author, hash });
+const getSignatureOfArticle = ({ author, hash }) => store.dispatch('getSignatureOfArticle', { author, hash });
 const publishArticle = async ({
   author, title, hash, fissionFactor, cover,
 }) => {
-  const signature = await getSignature({ author, hash });
+  const signature = await getSignatureOfArticle({ author, hash });
   console.log('签名成功后调', signature);
-  // 若 getSignature reject(或內部 throw 被轉為reject)
+  // 若 getSignatureOfArticle reject(或內部 throw 被轉為reject)
   // 則 publishArticle 會成為 Promise.reject()
   const { publicKey: publickey, signature: sign, username } = signature;
   return axiosforApiServer.post('/publish',
@@ -36,25 +36,6 @@ const publishArticle = async ({
       cover,
     });
 };
-
-const oldpublishArticle = ({
-  author, title, hash, fissionFactor, cover,
-}) => API.getSignature(author, hash).then(({ publicKey, signature, username }) => {
-  console.log('签名成功后调', publicKey, signature, username);
-  // if (err) failed('2nd step failed');
-  return axiosforApiServer.post('/publish',
-    {
-      author,
-      fissionFactor,
-      hash,
-      publickey: publicKey,
-      sign: signature,
-      title,
-      username,
-      cover,
-    });
-});
-
 
 // 获取支持过的文章列表 page user
 const getArticleSupports = params => axiosforApiServer.get('/supports', { params });
@@ -277,7 +258,7 @@ const getAvatarImage = hash => `${apiServer}/image/${hash}`;
 // 编辑
 const editArticle = ({
   signId, author, title, hash, fissionFactor, cover,
-}, callback) => API.getSignature(author, hash).then(({ publicKey, signature, username }) => accessBackend({
+}, callback) => API.getSignatureOfArticle(author, hash).then(({ publicKey, signature, username }) => accessBackend({
   method: 'POST',
   url: '/edit',
   data: {
@@ -344,7 +325,7 @@ const getDraft = ({ id }, callback) => accessBackend({
 // 每天浪費時間寫這個，不對吧，像隔壁用 API 一起輸出呀
 export {
   auth, getAuth,
-  publishArticle, oldpublishArticle,
+  publishArticle,
   getArticleDatafromIPFS, getArticleInfo, getArticlesList,
   Follow, Unfollow, getUser, setUserName, getFansList, getFollowList, oldgetUser,
   getSharesbysignid, addReadAmount, sendComment, getAssets, getAvatarImage,
