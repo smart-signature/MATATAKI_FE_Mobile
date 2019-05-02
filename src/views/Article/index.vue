@@ -356,7 +356,11 @@ export default {
     // 设置文章
     async setArticle(article, supportDialog = false) {
       // console.log(article);
-      await addReadAmount({ articlehash: article.hash }); // 增加文章阅读量
+      try {
+        await addReadAmount({ articlehash: article.hash }); // 增加文章阅读量
+      } catch (error) {
+        console.error('addReadAmount :', error);
+      }
       this.article = article;
       this.articleCreateTime = article.create_time;
       this.totalSupportedAmount = article.value;

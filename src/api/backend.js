@@ -262,10 +262,10 @@ const sendComment = ({ comment, signId }) => accessBackend({
 });
 
 // be Used in Article Page
-const addReadAmount = ({ articlehash }, callback) => accessBackend({
+const addReadAmount = ({ articlehash }) => accessBackend({
   method: 'POST',
   url: `/post/show/${articlehash}`,
-}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
+});
 
 // 删除文章
 const delArticle = ({ id }, callback) => accessBackend({
