@@ -173,42 +173,20 @@ const accessBackend = async (options) => {
   }
   options.headers['x-access-token'] = accessToken;
 
-  try {
-    const response = await axiosforApiServer(options);
-    return response;
-  } catch (error) {
-    if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
-      console.log(error.response.data);
-      console.log(error.response.status);
-      console.log(error.response.headers);
-      throw ({ error, response: error.response });
-    } if (error.request) {
-      // The request was made but no response was received
-      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-      // http.ClientRequest in node.js
-      console.log(error.request);
-    } else {
-      // Something happened in setting up the request that triggered an Error
-      console.log('Error', error.message);
-    }
-    console.log(error.config);
-    throw ({ error });
-  }
+  return axiosforApiServer(options);
 };
 
 const getArticleDatafromIPFS = hash => axiosforApiServer.get(`/ipfs/catJSON/${hash}`);
 
 // 获取单篇文章的信息 by hash or id  需要 token 否则无法获取赞赏状态
-const getArticleInfo = (hashOrId, callback) => {
+const getArticleInfo = (hashOrId, callback = () => {}) => {
   const reg = /^[0-9]*$/;
   // post hash获取  ， p id 短链接
   const url = reg.test(hashOrId) ? 'p' : 'post';
   const getArticleInfoAPI = (hashOrId, callback) => accessBackend({
     method: 'GET',
     url: `/${url}/${hashOrId}`,
-  }).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
+  }).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
   getArticleInfoAPI(hashOrId, callback);
 };
 
@@ -217,14 +195,14 @@ const Follow = ({ username, followed }, callback) => accessBackend({
   method: 'POST',
   url: '/follow',
   data: { username, followed },
-}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
+}).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
 
 // Be used in User page.
 const Unfollow = ({ username, followed }, callback) => accessBackend({
   method: 'POST',
   url: '/unfollow',
   data: { username, followed },
-}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
+}).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
 
 // Be used in User page.
 const getUser = ({ username }) => axiosforApiServer.get(`/user/${username}`);
@@ -233,7 +211,7 @@ const oldgetUser = ({ username }, callback) => accessBackend({
   method: 'GET',
   url: `/user/${username}`,
   data: {},
-}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
+}).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
 
 // Be used in User page.
 const setUserName = ({ newname }) => accessBackend({
@@ -246,13 +224,13 @@ const setUserName = ({ newname }) => accessBackend({
 const getFansList = ({ username }, callback) => accessBackend({
   method: 'GET',
   url: `/fans?user=${username}`,
-}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
+}).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
 
 // Be used in User page.
 const getFollowList = ({ username }, callback) => accessBackend({
   method: 'GET',
   url: `/follows?user=${username}`,
-}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
+}).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
 
 const sendComment = ({ comment, signId }) => accessBackend({
   method: 'POST',
@@ -271,14 +249,14 @@ const addReadAmount = ({ articlehash }) => accessBackend({
 const delArticle = ({ id }, callback) => accessBackend({
   method: 'DELETE',
   url: `/post/${id}`,
-}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
+}).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
 
 // 设置头像
 const uploadAvatar = ({ avatar }, callback) => accessBackend({
   method: 'POST',
   url: '/user/setAvatar',
   data: { avatar },
-}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
+}).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
 
 // 获取头像
 const getAvatarImage = hash => `${apiServer}/image/${hash}`;
@@ -291,14 +269,14 @@ const getBackendData = ({ url, params }, callback) => accessBackend({
   method: 'GET',
   url: `/${url}`,
   params,
-}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
+}).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
 
 // 草稿箱api
 const draftList = ({ page }, callback) => accessBackend({
   method: 'GET',
   url: '/drafts',
   params: { page },
-}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
+}).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
 
 const createDraft = ({
   title, content, cover, fissionFactor,
@@ -308,7 +286,7 @@ const createDraft = ({
   data: {
     title, content, cover, fissionFactor,
   },
-}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
+}).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
 
 const updateDraft = ({
   id, title, content, cover, fissionFactor,
@@ -318,17 +296,17 @@ const updateDraft = ({
   data: {
     id, title, content, cover, fissionFactor,
   },
-}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
+}).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
 
 const delDraft = ({ id }, callback) => accessBackend({
   method: 'DELETE',
   url: `/draft/${id}`,
-}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
+}).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
 
 const getDraft = ({ id }, callback) => accessBackend({
   method: 'GET',
   url: `/draft/${id}`,
-}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
+}).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
 
 
 // 每天浪費時間寫這個，不對吧，像隔壁用 API 一起輸出呀
