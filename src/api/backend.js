@@ -236,11 +236,11 @@ const oldgetUser = ({ username }, callback) => accessBackend({
 }).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
 
 // Be used in User page.
-const setUserName = ({ newname }, callback) => accessBackend({
+const setUserName = ({ newname }) => accessBackend({
   method: 'POST',
   url: '/user/setNickname',
   data: { nickname: newname },
-}).then(response => callback({ response })).catch(({ error, response }) => callback({ error, response }));
+});
 
 // Be used in User page.
 const getFansList = ({ username }, callback) => accessBackend({
