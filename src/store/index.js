@@ -57,7 +57,6 @@ export default new Vuex.Store({
     async idCheck({
       commit, dispatch, state, getters,
     }) {
-      await new Promise(async (resolve, reject) => {
         const { ontology, scatter } = state;
         const {
           isConnected: isScatterConnected,
@@ -69,14 +68,13 @@ export default new Vuex.Store({
 
         const noId = (error) => {
           console.warn('Unable to get id, reason :', error);
-          reject(error);
+          throw error;
         };
 
         console.log('Start id check ...');
         if (getters.currentUserInfo.name) {
           console.log('Id check pass, id :', getters.currentUserInfo.name);
-          resolve(true);
-          return;
+          return true;
         }
         console.info('Ontology status :', isOntologyConnected);
         console.info('Scatter status :', isScatterConnected);
@@ -89,9 +87,8 @@ export default new Vuex.Store({
         if (isScatterConnected && !isScatterLoggingIn) {
           const result = await dispatch('scatter/login');
           if (!result) noId(new Error('scatter login faild'));
-          else resolve(true);
+          else return true;
         }
-      });
     },
     async walletConnectionSetup({ dispatch }, { EOS, ONT }) {
       let meg = '';
