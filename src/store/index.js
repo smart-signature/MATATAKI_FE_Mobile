@@ -57,38 +57,37 @@ export default new Vuex.Store({
     async idCheck({
       commit, dispatch, state, getters,
     }) {
-        const { ontology, scatter } = state;
-        const {
-          isConnected: isScatterConnected,
-          isLoggingIn: isScatterLoggingIn,
-        } = scatter;
-        const {
-          account: isOntologyConnected,
-        } = ontology;
+      const { ontology, scatter } = state;
+      const {
+        isConnected: isScatterConnected,
+        isLoggingIn: isScatterLoggingIn,
+      } = scatter;
+      const {
+        account: isOntologyConnected,
+      } = ontology;
+      const noId = (error) => {
+        console.warn('Unable to get id, reason :', error);
+        throw error;
+      };
 
-        const noId = (error) => {
-          console.warn('Unable to get id, reason :', error);
-          throw error;
-        };
-
-        console.log('Start id check ...');
-        if (getters.currentUserInfo.name) {
-          console.log('Id check pass, id :', getters.currentUserInfo.name);
-          return true;
-        }
-        console.info('Ontology status :', isOntologyConnected);
-        console.info('Scatter status :', isScatterConnected);
-        // 場景：開了網頁之後才解鎖 Scatter
-        // 這時候沒有執行 connectScatter 就登录不能
-        if (!isScatterConnected) {
-          const result = await dispatch('scatter/connect');
-          if (!result) noId(new Error('faild connect to scatter'));
-        }
-        if (isScatterConnected && !isScatterLoggingIn) {
-          const result = await dispatch('scatter/login');
-          if (!result) noId(new Error('scatter login faild'));
-          else return true;
-        }
+      console.log('Start id check ...');
+      if (getters.currentUserInfo.name) {
+        console.log('Id check pass, id :', getters.currentUserInfo.name);
+        return true;
+      }
+      console.info('Ontology status :', isOntologyConnected);
+      console.info('Scatter status :', isScatterConnected);
+      // 場景：開了網頁之後才解鎖 Scatter
+      // 這時候沒有執行 connectScatter 就登录不能
+      if (!isScatterConnected) {
+        const result = await dispatch('scatter/connect');
+        if (!result) noId(new Error('faild connect to scatter'));
+      }
+      if (isScatterConnected && !isScatterLoggingIn) {
+        const result = await dispatch('scatter/login');
+        if (!result) noId(new Error('scatter login faild'));
+        else return true;
+      }
     },
     async walletConnectionSetup({ dispatch }, { EOS, ONT }) {
       let meg = '';
