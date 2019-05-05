@@ -66,6 +66,13 @@ const editArticle = async ({
   });
 };
 
+// todo: 等後端給參數
+/*
+const getShareKey = ({
+  signId, username, amount, referral
+}) => axiosforApiServer.post('', { signId, username, amount, referral });
+*/
+
 // 获取支持过的文章列表 page user
 const getArticleSupports = params => axiosforApiServer.get('/supports', { params });
 
