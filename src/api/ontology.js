@@ -31,7 +31,7 @@ const toolkit = {
   },
 };
 
-const cyanobridgeAPI = {
+const API = {
   client: null,
   async setClient() {
     if (this.client) return;
@@ -83,5 +83,5 @@ const cyanobridgeAPI = {
 
 
 
-export default cyanobridgeAPI;
+export default API;
 export { toolkit };

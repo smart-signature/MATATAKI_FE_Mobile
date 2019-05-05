@@ -1,4 +1,4 @@
-import cyanobridgeAPI from '@/api/ontology';
+import API from '@/api/ontology';
 
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-shadow */
@@ -21,7 +21,7 @@ const actions = {
   async getAccount({ commit }) {
     console.log('Connecting to ont wallet ...');
     try {
-      const address = await cyanobridgeAPI.getAccount();
+      const address = await API.getAccount();
       commit('setAccount', address);
       return address;
     } catch (error) {
@@ -34,7 +34,7 @@ const actions = {
       await dispatch('getAccount');
       account = state.account;
     }
-    const signature = await cyanobridgeAPI.signMessage(signData);
+    const signature = await API.signMessage(signData);
     return ({ publicKey: signature.publicKey, signature: signature.data, username: account });
   },
   async getSignatureOfArticle({ dispatch }, { author, hash }) {
