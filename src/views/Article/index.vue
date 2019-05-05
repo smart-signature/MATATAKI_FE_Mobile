@@ -189,7 +189,10 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['currentUsername']),
+    ...mapGetters(['currentUserInfo']),
+    currentUsername() {
+      return this.currentUserInfo.name;
+    },
     isLogined() {
       return this.currentUsername !== null;
     },
@@ -415,7 +418,20 @@ export default {
         // 問用戶要 acceess token
         await getAuth();
         // 發轉帳 action 到合約
-        await support({ amount, signId, referrer });
+        // 1. EOS 照舊
+        // 2. ONT 用新流程
+        const { blockchain, name: username } = this.currentUserInfo;
+        const makeShare = async () => {
+          if (blockchain === 'EOS')
+            return support({ amount, signId, referrer });
+          else if (blockchain === 'ONT') {
+            // const shareKey = await getShareKey({ signId, username, amount, referral: referrer });
+            // const contractResult = await recordShare({ amount, shareKey });
+            // return reportShareRecord({ contractResult });
+          }
+        };
+        const backendResult = await makeShare();
+
         try { // 發 comment 到後端
           console.log('Send comment...');
           const response = await sendComment({ comment, signId });
