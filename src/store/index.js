@@ -52,7 +52,7 @@ export default new Vuex.Store({
       let actionName = null;
       if (blockchain === 'EOS') actionName = 'scatter/getSignatureOfAuth';
       else if (blockchain === 'ONT') actionName = 'ontology/getSignatureOfAuth';
-      return dispatch(actionName, { author, hash });
+      return dispatch(actionName);
     },
     async idCheck({
       commit, dispatch, state, getters,
