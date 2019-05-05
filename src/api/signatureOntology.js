@@ -1,5 +1,5 @@
 // 待修
-import { client, isAPP, toolkit } from './cyanobridge';
+import { client, isAPP, toolkit } from './ontology';
 
 const scriptHash = '03d99d998fba6b1bb02d84676bce52f2f4a6ddc3';
 const gasLimit = 20000;

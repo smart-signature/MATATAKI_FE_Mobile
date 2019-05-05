@@ -1,4 +1,4 @@
-import cyanobridgeAPI from '@/api/cyanobridge';
+import cyanobridgeAPI from '@/api/ontology';
 
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-shadow */
