@@ -28,17 +28,22 @@ const actions = {
       throw error;
     }
   },
-  async getSignatureOfArticle({ dispatch, state }, { author, hash }) {
+  async getSignature({ signData }) {
     let { account } = state;
     if (!account) {
       await dispatch('getAccount');
       account = state.account;
     }
-    // 需要签名的数据
-    const signData = `${author} ${hash}`;
-    // 申请签名
     const signature = await cyanobridgeAPI.signMessage(signData);
     return ({ publicKey: signature.publicKey, signature: signature.data, username: account });
+  },
+  async getSignatureOfArticle({ dispatch }, { author, hash }) {
+    return dispatch('getSignature', { signData: `${author} ${hash}` })
+  },
+  async getSignatureOfAuth({ dispatch, state }) {
+    const { account } = state;
+    if (!account) throw new Error('no account');
+    return dispatch('getSignature', { signData: account });
   },
 };
 

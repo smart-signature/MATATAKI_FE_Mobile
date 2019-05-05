@@ -74,10 +74,10 @@ const actions = {
     const hashPiece3 = hash.slice(24, 36);
     const hashPiece4 = hash.slice(36, 48);
     const signData = `${author} ${hashPiece1} ${hashPiece2} ${hashPiece3} ${hashPiece4}`;
-    return getSignature({ signData, memo: 'Smart Signature' });
+    return dispatch('getSignature', { signData, memo: 'Smart Signature' });
   },
   async getSignatureOfAuth() {
-    return getSignature({ signData: state.account.name, memo: 'Auth' });
+    return dispatch('getSignature', { signData: state.account.name, memo: 'Auth' });
   },
   async setBalances({ commit, state }) {
     const { name } = state.account;
