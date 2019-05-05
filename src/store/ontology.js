@@ -1,4 +1,5 @@
 import API from '@/api/ontology';
+import { recordShare } from '@/api/signatureOntology';
 
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-shadow */
@@ -28,13 +29,13 @@ const actions = {
       throw error;
     }
   },
-  async getSignature({ signData }) {
+  async getSignature({ state }, { signData }) {
     let { account } = state;
     if (!account) {
       await dispatch('getAccount');
       account = state.account;
     }
-    const signature = await API.signMessage(signData);
+    const signature = await API.signMessage({ message: signData });
     return ({ publicKey: signature.publicKey, signature: signature.data, username: account });
   },
   async getSignatureOfArticle({ dispatch }, { author, hash }) {
@@ -44,6 +45,11 @@ const actions = {
     const { account } = state;
     if (!account) throw new Error('no account');
     return dispatch('getSignature', { signData: account });
+  },
+  async recordShare({ state }, { amount, shareKey }) {
+    const { account } = state;
+    if (!account) throw new Error('no account');
+    return recordShare({ amount, shareKey });
   },
 };
 

@@ -45,6 +45,7 @@ const API = {
       this.client = client;
     }
   },
+  // Asset
   async getAccount() {
     if (!this.client) await this.setClient();
     const { client } = this;
@@ -54,13 +55,14 @@ const API = {
     };
     try {
       return isAPP 
-        ? client.api.asset.getAccount(params)
-        : client.api.asset.getAccount();
+        ? client.api.asset.getAccount(params) // done
+        : client.api.asset.getAccount(); // done
     } catch(err) {
       console.error('cyanobridge.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', err);
     }
   },
-  async signMessage(message) {
+  // Message
+  async signMessage({ message }) {
     if (!this.client) await this.setClient();
     const { client } = this;
     const params = {
@@ -68,13 +70,43 @@ const API = {
       dappName: config.dappName, // dapp's name
       dappIcon: '', // some url that points to the dapp's icon
       message, // message sent from dapp that will be signed by native client
-      expired: new Date('2019-01-01').getTime(), // expired date of login
+      expired: new Date('2020-01-01').getTime(), // expired date of login
       callback: '' // callback url of dapp
     };
     try {
       return isAPP
-        ? client.api.message.login(params) // todo: expired
-        : client.api.message.signMessage({ message });
+        ? client.api.message.login(params) // done, todo: setup expired
+        : client.api.message.signMessage({ message }); // done
+    } catch(err) {
+      console.error('cyanobridge.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', err);
+    }
+  },
+  // SmartContract
+  async invoke({
+    scriptHash, operation, args, gasPrice, gasLimit, requireIdentity
+  }) {
+    if (!this.client) await this.setClient();
+    const { client } = this;
+    const config = {
+      "login": true,
+      "message": "invoke smart contract",
+      "url": ""  
+    }
+    const params = {
+          scriptHash,
+          operation,
+          args,
+          gasPrice,
+          gasLimit,
+          payer: await this.getAccount(),
+          config,
+    }
+    try {
+      return isAPP
+        ? client.api.smartContract.invoke(params) // done
+        : client.api.smartContract.invoke({
+          scriptHash, operation, args, gasPrice, gasLimit, requireIdentity
+        }); // done
     } catch(err) {
       console.error('cyanobridge.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', err);
     }

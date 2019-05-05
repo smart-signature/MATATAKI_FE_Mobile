@@ -314,7 +314,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['idCheck']),
+    ...mapActions(['idCheck', 'recordShare']),
     // 分享功能
     initClipboard() {
       this.clipboard = new Clipboard('.button-share');
@@ -420,13 +420,14 @@ export default {
         // 發轉帳 action 到合約
         // 1. EOS 照舊
         // 2. ONT 用新流程
-        const { blockchain, name: username } = this.currentUserInfo;
+        const { currentUserInfo, recordShare } = this;
+        const { blockchain, name: username } = currentUserInfo;
         const makeShare = async () => {
           if (blockchain === 'EOS')
             return support({ amount, signId, referrer });
           else if (blockchain === 'ONT') {
-            // const shareKey = await getShareKey({ signId, username, amount, referral: referrer });
-            // const contractResult = await recordShare({ amount, shareKey });
+            const shareKey = await getShareKey({ signId, username, amount, referral: referrer });
+            const contractResult = await recordShare({ amount, shareKey });
             // return reportShareRecord({ contractResult });
           }
         };

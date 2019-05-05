@@ -89,6 +89,13 @@ export default new Vuex.Store({
         else return true;
       }
     },
+    async recordShare({ dispatch }, { amount, shareKey }) {
+      const { blockchain } = getters.currentUserInfo;
+      let actionName = null;
+      if (blockchain === 'EOS') actionName = 'scatter/recordShare';
+      else if (blockchain === 'ONT') actionName = 'ontology/recordShare';
+      return dispatch(actionName, { amount, shareKey });
+    },
     async walletConnectionSetup({ dispatch }, { EOS, ONT }) {
       let meg = '';
       if (EOS) {
