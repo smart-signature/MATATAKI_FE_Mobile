@@ -117,7 +117,7 @@ const auth = ({ username, publicKey, sign }) => axiosforApiServer.post('/auth',
 // /拆token，返回json对象
 // /</summary>
 const disassembleToken = (token) => {
-  if (token === undefined || token === null) { return { iss: null, exp: 0 }; }
+  if (!token) { return { iss: null, exp: 0 }; }
   let tokenPayload = token.substring(token.indexOf('.') + 1);
   tokenPayload = tokenPayload.substring(0, tokenPayload.indexOf('.'));
   return JSON.parse(Base64.decode(tokenPayload));
