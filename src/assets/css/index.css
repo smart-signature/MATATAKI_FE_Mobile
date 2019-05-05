@@ -17,3 +17,9 @@ body {
   max-width: 750px;
   margin: 0 auto;
 }
+/* 全局 markdown 文字加粗覆盖样式 
+因为导入的样式优先级低于了默认的样式 导致安卓机型 600 不加粗 
+使用 bolder 覆盖 */
+.markdown-body strong {
+  font-weight: bolder !important;
+}

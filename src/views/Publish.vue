@@ -59,7 +59,7 @@ import { sleep } from '@/common/methods';
 export default {
   name: 'NewPost',
   components: {
-    'mavon-editor': mavonEditor,
+    mavonEditor,
     VueSlider,
     ImgUpload,
   },
