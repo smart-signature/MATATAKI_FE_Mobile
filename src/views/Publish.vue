@@ -207,12 +207,12 @@ export default {
       try {
         const response = await publishArticle(data);
         if (response.data.msg !== 'success') {
-          throw '失败请重试';
+          throw new Error('失败请重试');
         }
         success(data.hash);
         return 'success';
       } catch (error) {
-        console.log(error);
+        console.error(error);
         failed('失败请重试');
         throw error;
       }
@@ -259,7 +259,7 @@ export default {
         await this.idCheck();
         // this.$Message.success('检测通过');
       } catch (error) {
-        console.log(error);
+        console.error(error);
         this.$Message.error('本功能需登录');
         return;
       }
@@ -278,9 +278,10 @@ export default {
         cover,
         editorMode, saveType,
       } = this;
-      console.log('mode :', editorMode, saveType);
+      console.log('sendThePost mode :', editorMode, saveType);
       if (editorMode === 'create' && saveType === 'public') { // 发布文章
         const { hash } = await this.sendPost({ title, author, content });
+        console.log('sendPost result :', hash);
         this.publishArticle({
           author, title, hash, fissionFactor, cover,
         });

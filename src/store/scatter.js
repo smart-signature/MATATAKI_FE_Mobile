@@ -55,9 +55,10 @@ const actions = {
         ));
         return true;
       }
-    } else return false;
+    }
+    return false;
   },
-  async getSignature({ signData, memo = '' }) {
+  async getSignature({ state }, { signData, memo = '' }) {
     const { account } = state;
     const result = await eosClient.getAccount(account.name);
     // 获取当前权限
@@ -66,14 +67,14 @@ const actions = {
     const publicKey = permissions.required_auth.keys[0].key;
     // 申请签名
     const signature = await api.getArbitrarySignature(publicKey, signData, memo);
+    console.log('got signature: ', signature);
     return ({ publicKey, signature, username: account.name });
   },
   async getSignatureOfArticle({ dispatch }, { author, hash }) {
-    const hashPiece1 = hash.slice(0, 12);
-    const hashPiece2 = hash.slice(12, 24);
-    const hashPiece3 = hash.slice(24, 36);
-    const hashPiece4 = hash.slice(36, 48);
-    const signData = `${author} ${hashPiece1} ${hashPiece2} ${hashPiece3} ${hashPiece4}`;
+    const hashPiece = [
+      hash.slice(0, 12), hash.slice(12, 24), hash.slice(24, 36), hash.slice(36, 48),
+    ];
+    const signData = `${author} ${hashPiece[0]} ${hashPiece[1]} ${hashPiece[2]} ${hashPiece[3]}`;
     return dispatch('getSignature', { signData, memo: 'Smart Signature' });
   },
   async getSignatureOfAuth({ dispatch }) {

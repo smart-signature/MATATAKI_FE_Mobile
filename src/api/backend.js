@@ -23,7 +23,7 @@ const publishArticle = async ({
   author, title, hash, fissionFactor, cover,
 }) => {
   const signature = await getSignatureOfArticle({ author, hash });
-  console.log('签名成功后调', signature);
+  console.log('getSignatureOfArticle :', signature);
   // 若 getSignatureOfArticle reject(或內部 throw 被轉為reject)
   // 則 publishArticle 會成為 Promise.reject()
   const { publicKey: publickey, signature: sign, username } = signature;
