@@ -422,10 +422,11 @@ export default {
         const { currentUserInfo, recordShare } = this;
         const { blockchain, name: username } = currentUserInfo;
         const makeShare = async () => {
-          if (blockchain === 'EOS')
-            return support({ amount, signId, referrer });
-          else if (blockchain === 'ONT') {
-            const shareKey = await getShareKey({ signId, username, amount, referral: referrer });
+          if (blockchain === 'EOS') return support({ amount, signId, referrer });
+          if (blockchain === 'ONT') {
+            const shareKey = await getShareKey({
+              signId, username, amount, referral: referrer,
+            });
             const contractResult = await recordShare({ amount, shareKey });
             // return reportShareRecord({ contractResult });
           }

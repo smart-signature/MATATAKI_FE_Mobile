@@ -212,7 +212,7 @@ export default {
         this.fans = data.fans;
         this.followed = data.is_follow;
       };
-      
+
       // todo(minakokojima): deprecate oldgetUser
       if (currentUsername !== null) {
         if (currentUsername.length > 12) return;

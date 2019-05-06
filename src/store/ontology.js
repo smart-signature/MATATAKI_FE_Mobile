@@ -44,7 +44,7 @@ const actions = {
     return ({ publicKey: signature.publicKey, signature: signature.data, username: account });
   },
   async getSignatureOfArticle({ dispatch }, { author, hash }) {
-    return dispatch('getSignature', { signData: `${author} ${hash}` })
+    return dispatch('getSignature', { signData: `${author} ${hash}` });
   },
   async getSignatureOfAuth({ dispatch, state }) {
     const { account } = state;
