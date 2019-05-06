@@ -68,7 +68,7 @@ const actions = {
     const signature = await api.getArbitrarySignature(publicKey, signData, memo);
     return ({ publicKey, signature, username: account.name });
   },
-  async getSignatureOfArticle({}, { author, hash }) {
+  async getSignatureOfArticle({ dispatch }, { author, hash }) {
     const hashPiece1 = hash.slice(0, 12);
     const hashPiece2 = hash.slice(12, 24);
     const hashPiece3 = hash.slice(24, 36);
@@ -76,7 +76,7 @@ const actions = {
     const signData = `${author} ${hashPiece1} ${hashPiece2} ${hashPiece3} ${hashPiece4}`;
     return dispatch('getSignature', { signData, memo: 'Smart Signature' });
   },
-  async getSignatureOfAuth() {
+  async getSignatureOfAuth({ dispatch }) {
     return dispatch('getSignature', { signData: state.account.name, memo: 'Auth' });
   },
   async setBalances({ commit, state }) {
