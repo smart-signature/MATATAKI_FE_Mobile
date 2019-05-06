@@ -67,6 +67,7 @@ export default {
     isLogined(newState) {
       if (newState) this.$Message.success('自动登录成功');
     },
+    /*
     isScatterConnected(newState) {
       const { pageinfo, isScatterLoggingIn } = this;
       if (pageinfo.needLogin !== undefined && pageinfo.needLogin) {
@@ -82,7 +83,7 @@ export default {
             });
         }
       }
-    },
+    },*/
   },
 };
 </script>
