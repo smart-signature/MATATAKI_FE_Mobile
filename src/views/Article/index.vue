@@ -55,13 +55,13 @@
             <div class="amount-text">赞赏总额</div>
           </div>
         </Tooltip>
-        <Tooltip content="最高回报=赞赏额*裂变系数">
+        <Tooltip content="最高回报=赞赏额*收益杠杆">
           <div class="fission">
             <div>
               <img class="amount-img" src="@/assets/img/icon_fission.png" />
               {{getDisplayedFissionFactor}}
             </div>
-            <div class="amount-text">裂变系数</div>
+            <div class="amount-text">收益杠杆</div>
           </div>
         </Tooltip>
       </div>
@@ -370,7 +370,6 @@ export default {
       } catch (error) {
         console.log(error);
         this.$Message.error('本功能需登录');
-        
       }
     },
     async support() {

@@ -17,7 +17,7 @@
       :autofocus="false"
       placeholder="请输入 Markdown 格式的文字开始编辑"/>
       <div v-if="editorMode !== 'edit'" class="fission">
-          <p>裂变系数</p>
+          <p>收益杠杆</p>
           <div class="fission-num-slider" v-if="editorMode !== 'edit'">
             <vue-slider class="fission-num-slider2" :min="1" :max="2" :interval="0.1" v-model="fissionNum"></vue-slider>
           </div>
@@ -266,7 +266,7 @@ export default {
         this.$Message.error('标题或正文不能为空');
         return;
       }
-      if (this.fissionFactor === '') this.fissionFactor = 2; // 用户不填写裂变系数则默认为2
+      if (this.fissionFactor === '') this.fissionFactor = 2; // 用户不填写收益杠杆则默认为2
 
       const {
         title,
