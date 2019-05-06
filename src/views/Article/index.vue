@@ -248,17 +248,7 @@ export default {
     document.title = '正在加载文章 - Smart Signature';
     this.initClipboard(); // 分享按钮功能需要放在前面 保证功能的正常执行
   },
-  mounted() {
-    !(function (d, i) {
-      if (!d.getElementById(i)) {
-        const j = d.createElement('script');
-        j.id = i;
-        j.src = 'https://widgets.getpocket.com/v1/j/btn.js?v=1';
-        const w = d.getElementById(i);
-        d.body.appendChild(j);
-      }
-    }(document, 'pocket-btn-js'));
-  },
+
   beforeDestroy() {
     this.clipboard.destroy(); // 组件销毁之前 销毁clipboard
   },
@@ -289,6 +279,15 @@ export default {
         // { n: 'twitter:site', c: '@Smart Signature' },
         // { n: 'twitter:creator', c: '@article' }, // @username for the content creator / author.
         // 未來支持推特連接後， 可以顯示其推特帳號在推特 card 預覽裡
+      ];
+    },
+    script() {
+      return [
+        {
+          type: 'text/javascript',
+          id: 'pocket-btn-js', // id 不知道作用 生成的 script 有id就带着好了
+          src: 'https://widgets.getpocket.com/v1/j/btn.js?v=1',
+        },
       ];
     },
   },
