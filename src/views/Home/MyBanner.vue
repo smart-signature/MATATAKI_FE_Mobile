@@ -7,7 +7,7 @@
             <p class="username">{{displayName}}</p>
             <p class="my-balance">
               {{displayBalance}}
-              <span class="coin-symbol">EOS</span>
+              <span class="coin-symbol">{{displayBalanceSymbol}}</span>
             </p>
          </div>
       </div>
@@ -40,6 +40,9 @@ export default {
     ...mapGetters(['currentUserInfo', 'isLogined']),
     displayBalance() {
       return this.currentUserInfo.balance.slice(0, -4);
+    },
+    displayBalanceSymbol() {
+      return this.currentUserInfo.balance.slice(-4);
     },
     displayName() {
       const { currentUserInfo, nickname } = this;

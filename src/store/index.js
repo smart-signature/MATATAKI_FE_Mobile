@@ -108,7 +108,13 @@ export default new Vuex.Store({
       if (ONT) {
         try {
           const address = await dispatch('ontology/getAccount');
-          console.info('ONT address :', address);
+          let balance = null;
+          try {
+            balance = await dispatch('ontology/getBalance');
+          } catch (error) {
+            console.warn('Failed to get balance :', error);
+          }
+          console.info('ONT address :', address, 'balance :', balance);
           meg += `ONT address : ${address}\n`;
         } catch (error) {
           console.warn('Failed to get ONT account :', error);

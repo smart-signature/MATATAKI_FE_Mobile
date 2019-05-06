@@ -7,29 +7,34 @@ import { recordShare } from '@/api/signatureOntology';
 // initial state
 const state = {
   account: null,
-  balances: {
-    ong: '... ONG',
-    ont: '... ONT',
+  balance: {
+    ONG: 0,
+    ONT: 0,
   },
 };
 
 const getters = {
-  currentBalance: ({ balances }) => (balances.ont),
-  // currentUsername: ({ account }) => (account || null),
+  currentBalance: ({ balance }) => (`${balance.ONT} ONT`),
 };
 
 const actions = {
   async getAccount({ commit }) {
     console.log('Connecting to ont wallet ...');
-    try {
-      const address = await API.getAccount();
-      commit('setAccount', address);
-      return address;
-    } catch (error) {
-      throw error;
-    }
+    const address = await API.getAccount();
+    commit('setAccount', address);
+    return address;
   },
-  async getSignature({ state }, { signData }) {
+  async getBalance({ commit, dispatch, state }) {
+    let { account } = state;
+    if (!account) {
+      await dispatch('getAccount');
+      account = state.account;
+    }
+    const balance = await API.getBalance({ address: account });
+    commit('setBalance', balance);
+    return balance;
+  },
+  async getSignature({ dispatch, state }, { signData }) {
     let { account } = state;
     if (!account) {
       await dispatch('getAccount');
@@ -56,6 +61,9 @@ const actions = {
 const mutations = {
   setAccount(state, account) {
     state.account = account;
+  },
+  setBalance(state, balance) {
+    state.balance = balance;
   },
 };
 
