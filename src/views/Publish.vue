@@ -252,19 +252,17 @@ export default {
         this.$router.go(-1);
       });
     },
-
-
     // 发布||修改按钮
     async sendThePost() {
-      // this.$Message.info('帐号检测中...');
-      await this.idCheck()
-        .then(() => {
-          // this.$Message.success('检测通过');
-        })
-        .catch((err) => {
-          this.$Message.error('本功能需登录');
-          console.log(err);
-        });
+      try {
+        // this.$Message.info('帐号检测中...');
+        await this.idCheck();
+        // this.$Message.success('检测通过');
+      } catch (error) {
+        console.log(error);
+        this.$Message.error('本功能需登录');
+        return;
+      }
 
       if (this.title === '' || this.markdownData === '') { // 标题或内容为空时
         this.$Message.error('标题或正文不能为空');
@@ -278,18 +276,19 @@ export default {
         currentUsername: author,
         fissionFactor,
         cover,
+        editorMode, saveType,
       } = this;
-      console.log(this.editorMode, this.saveType);
-      if (this.editorMode === 'create' && this.saveType === 'public') { // 发布文章
+      console.log('mode :', editorMode, saveType);
+      if (editorMode === 'create' && saveType === 'public') { // 发布文章
         const { hash } = await this.sendPost({ title, author, content });
         this.publishArticle({
           author, title, hash, fissionFactor, cover,
         });
-      } else if (this.editorMode === 'create' && this.saveType === 'draft') { // 发布到草稿箱
+      } else if (editorMode === 'create' && saveType === 'draft') { // 发布到草稿箱
         this.createDraft({
           title, content, fissionFactor, cover,
         });
-      } else if (this.editorMode === 'edit') { // 编辑文章
+      } else if (editorMode === 'edit') { // 编辑文章
         const { hash } = await this.sendPost({ title, author, content });
         this.editArticle({
           signId: this.signId,
@@ -300,7 +299,7 @@ export default {
           signature: this.signature,
           cover,
         });
-      } else if (this.editorMode === 'draft' && this.saveType === 'public') { // 草稿箱编辑 发布
+      } else if (editorMode === 'draft' && saveType === 'public') { // 草稿箱编辑 发布
         const { hash } = await this.sendPost({ title, author, content });
         this.publishArticle({
           author, title, hash, fissionFactor, cover,
@@ -309,7 +308,7 @@ export default {
         }).catch(() => {
           console.log('发布错误');
         });
-      } else if (this.editorMode === 'draft' && this.saveType === 'draft') { // 草稿箱编辑 更新
+      } else if (editorMode === 'draft' && saveType === 'draft') { // 草稿箱编辑 更新
         await this.updateDraft({
           id: this.id, title, content, fissionFactor, cover,
         });
