@@ -50,7 +50,7 @@ export default {
   // 依據 https://github.com/vuejs/vue/issues/7333
   // 已確認此 Header.vue 的 crearted 內容不會被執行
   mounted() {
-    console.log('Does this page need to log in?:', this.pageinfo.needLogin);
+    // console.log('Does this page need to log in?:', this.pageinfo.needLogin);
   },
   methods: {
     ...mapGetters(['isLogined']),
