@@ -1,5 +1,5 @@
 <template>
-  <div class="about">
+  <div class="about mw">
     <BaseHeader
       :pageinfo="{ left: 'back', title: `关于我们`, rightPage: 'home',
                    needLogin: false, }"/>

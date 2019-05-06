@@ -1,5 +1,5 @@
 <template>
-  <div class="BaseHeader">
+  <div class="BaseHeader" :class="isCenter && 'mw'">
     <za-nav-bar>
       <div slot="left">
         <img src="@/assets/back.svg" alt="home" @click="goBack" class="back-icon">
@@ -37,7 +37,15 @@ import {
 
 export default {
   name: 'BaseHeader',
-  props: ['pageinfo'],
+  props: {
+    pageinfo: {
+      type: Object,
+    },
+    isCenter: {
+      type: Boolean,
+      default: true,
+    },
+  },
   computed: {
     ...mapState('scatter', {
       isScatterConnected: state => state.isConnected,
@@ -83,7 +91,7 @@ export default {
             });
         }
       }
-    },*/
+    }, */
   },
 };
 </script>

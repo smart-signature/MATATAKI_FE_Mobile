@@ -1,6 +1,6 @@
 <template>
   <div class="new-post">
-    <BaseHeader :pageinfo="{ title: editorText, rightPage: 'home', needLogin: false, }">
+    <BaseHeader :isCenter="false" :pageinfo="{ title: editorText, rightPage: 'home', needLogin: false, }">
       <div slot="right">
         <span class="send-button" @click="sendThePost">{{sendBtnText}}</span>
       </div>

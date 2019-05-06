@@ -41,14 +41,26 @@ export default new Router({
       component: () => import(/* webpackChunkName: "user" */ './views/User/index.vue'),
     },
     {
-      path: '/user/:username/asset',
+      path: '/user/asset/:username',
       name: 'Asset',
+      props: true,
+      component: () => import(/* webpackChunkName: "user" */ './views/User/Asset/index.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
+        // eslint-disable-next-line eqeqeq
+        if (to.params.username != tokenUserName) next(`/user/asset/${tokenUserName}`);
+        else { next(); }
+      }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
+    },
+    {
+      path: '/user/asset/:username/:type',
+      name: 'AssetType',
       props: true,
       component: () => import(/* webpackChunkName: "user" */ './views/User/Asset/Asset.vue'),
       beforeEnter: (to, from, next) => {
         const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
         // eslint-disable-next-line eqeqeq
-        if (to.params.username != tokenUserName) next(`/user/${tokenUserName}/asset`);
+        if (to.params.username != tokenUserName) next(`/user/asset/${tokenUserName}`);
         else { next(); }
       }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
     },
@@ -98,6 +110,10 @@ export default new Router({
       name: 'EasterEgg',
       props: true,
       component: () => import(/* webpackChunkName: "easter-egg" */ './views/EasterEgg.vue'),
+    },
+    { // 幽林页面重定向进入首页 可以考虑设计 404 页面
+      path: '*',
+      redirect: '/',
     },
   ],
 });

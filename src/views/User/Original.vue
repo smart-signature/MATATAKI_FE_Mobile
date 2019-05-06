@@ -1,5 +1,5 @@
 <template>
-  <div class="original">
+  <div class="original mw">
     <BaseHeader
             :pageinfo="{ left: 'back', title: userTitle, rightPage: 'home',
                    needLogin: false, }"/>

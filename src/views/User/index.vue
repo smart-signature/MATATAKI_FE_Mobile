@@ -1,6 +1,6 @@
 /* eslint-disable no-shadow */
 <template>
-  <div class="user">
+  <div class="user mw">
     <BaseHeader :pageinfo="{ title: `个人主页`, rightPage: 'home', needLogin: false, }" />
     <div class="usercard" >
       <div class="user-avatar">

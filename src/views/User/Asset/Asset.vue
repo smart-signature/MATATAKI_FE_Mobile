@@ -1,17 +1,20 @@
 <template>
-  <div class="assetpage">
+  <div class="assetpage mw">
     <BaseHeader
-      :pageinfo="{ left: 'back', title: `资产明细`, rightPage: 'home',
-                   needLogin: false, }"/>
+      :pageinfo="{ left: 'back', title: `资产明细`, rightPage: 'home', needLogin: false, }"/>
     <div class="topcard">
-      <div class="toptext1">待提现</div><br/>
-      <div class="topremain">{{playerincome.toFixed(4)}}</div>
-      <div style="position:absolute;right:40px;top:90px;">
-          <Button class="withdraw" ghost @click="visible = true"><div style="margin-top:-2px">提现</div></Button>
-          <za-confirm
-            :visible="visible"
-            title="提现确认" message="确定要提现吗？"
-            :ok="handleOk" :cancel="() => { visible = false }"></za-confirm>
+      <div class="topcard-head">
+          <div>
+          <p class="toptext1">待提现</p>
+          <p class="topremain">{{playerincome.toFixed(4)}}</p>
+        </div>
+        <div>
+            <Button class="withdraw" ghost @click="visible = true"><div style="margin-top:-2px">全部提现</div></Button>
+            <za-confirm
+              :visible="visible"
+              title="提现确认" message="确定要提现吗？"
+              :ok="handleOk" :cancel="() => { visible = false }"></za-confirm>
+        </div>
       </div>
       <Divider style="margin-top:10px;margin-bottom:10px;"/>
       <Row type="flex" justify="center" class="code-row-bg">
@@ -59,7 +62,7 @@ import { isEmptyArray } from '@/common/methods';
 import AssetList from './AssetList.vue';
 
 export default {
-  name: 'Asset',
+  name: 'AssetType',
   props: ['username'],
   components: { AssetList },
   created() {
