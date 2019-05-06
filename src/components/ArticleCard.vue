@@ -30,7 +30,7 @@ export default {
       return isNDaysAgo(2, time) ? time.format('MMMDo HH:mm') : time.fromNow();
     },
     hash() {
-      return this.article.hash;
+      return this.article.id; // 原来是 hash 现在用id进入
     },
     cover() {
       if (this.article.cover) {

@@ -29,6 +29,7 @@
     "scatterjs-core": "^2.7.16",
     "scatterjs-plugin-eosjs": "^1.5.1",
     "vue": "^2.6.6",
+    "vue-content-loader": "^0.2.1",
     "vue-head": "^2.1.1",
     "vue-infinite-scroll": "^2.0.2",
     "vue-router": "^3.0.1",

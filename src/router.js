@@ -24,7 +24,7 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ './views/About.vue'),
     },
     {
-      path: '/article/:hash',
+      path: '/article/:hash', // 支持 hash id 访问
       name: 'Article',
       props: true,
       component: () => import(/* webpackChunkName: "article" */ './views/Article/index.vue'),

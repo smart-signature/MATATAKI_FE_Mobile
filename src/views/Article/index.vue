@@ -11,24 +11,34 @@
     </BaseHeader>
     <transition name="fade" mode="out-in">
       <div class="dropdown" v-show="opr">
-        <div class="dropdown-item" @click="$router.push({name: 'Publish', params: { id: article.id }, query: { from: 'edit', hash: hash }})">编辑</div>
+        <div class="dropdown-item" @click="$router.push({name: 'Publish', params: { id: article.id }, query: { from: 'edit', hash: article.hash }})">编辑</div>
         <div class="dropdown-item" @click="delArticleButton">删除</div>
       </div>
     </transition>
-    <header class="ta_header">
-      <h1 dir="auto">{{post.title}}</h1>
-      <p>
-        <Avatar icon="ios-person" class="avatar-size" size="small" />
-        <router-link class="author"
-          :to="{ name: 'User', params: { username:post.author }}">
-          {{article.nickname || post.author}}
-        </router-link>
-        {{articleCreateTimeComputed}} | {{article.read || 0}}阅读
-      </p>
-      <p class="break_all">IPFS Hash: {{article.hash}}</p>
-    </header>
-    <mavon-editor v-show="false" style="display: none;"/>
-    <div class="markdown-body" v-html="compiledMarkdown"></div>
+    <ContentLoader v-if="articleLoading">
+        <circle cx="36.98272" cy="24.082720000000002" r="11.98272" />
+        <rect x="54" y="14.8" rx="0" ry="0" width="63.8" height="7.0666" />
+        <rect x="54" y="25.8" rx="0" ry="0" width="30.83" height="5.759600000000001" />
+        <rect x="26" y="47.8" rx="0" ry="0" width="334.43" height="120" />
+    </ContentLoader>
+    <template v-else>
+      <header class="ta_header">
+        <h1 dir="auto">{{post.title}}</h1>
+        <p>
+          <Avatar icon="ios-person" class="avatar-size" size="small" />
+          <router-link class="author"
+            :to="{ name: 'User', params: { username:post.author }}">
+            {{article.nickname || post.author}}
+          </router-link>
+          {{articleCreateTimeComputed}} | {{article.read || 0}}阅读
+        </p>
+        <p class="break_all">IPFS Hash: {{article.hash}}</p>
+      </header>
+      <mavon-editor v-show="false" style="display: none;"/>
+      <div class="markdown-body" v-html="compiledMarkdown"></div>
+    </template>
+
+
     <div class="pocket">
       <a data-pocket-label="pocket" data-pocket-count="horizontal" class="pocket-btn" data-lang="en"></a>
     </div>
@@ -105,10 +115,10 @@ import {
 import { support } from '@/api/signature';
 import 'mavon-editor/dist/css/index.css';
 import moment from 'moment';
+import { ContentLoader } from 'vue-content-loader';
 import CommentsList from './CommentsList.vue';
 import { sleep, isNDaysAgo } from '@/common/methods';
 import ArticleInfo from './ArticleInfo.vue';
-
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
 
@@ -120,52 +130,14 @@ const RewardStatus = { // 0=加载中,1=未打赏 2=已打赏, -1未登录
 };
 
 export default {
-  async beforeRouteEnter(to, from, next) {
-    const { hash } = to.params; // url 传进来的 hash 或者是 id
-    let article = null; // 文章信息
-    let post = null; // 文章内容
-
-    // 获取文章内容 from ipfs
-    const getArticleDatafromIPFSFunc = async (hash) => {
-      await getArticleDatafromIPFS(hash).then(({ data }) => {
-        post = data.data;
-        next((vm) => { // 通过 `vm` 访问组件实例
-          // console.info('article :', article, 'post :', post);
-          vm.setArticle(article);
-          vm.setPost(post);
-          vm.$emit('updateHead');
-        });
-      }).catch((err) => {
-        console.log(err, '获取文章内容失败请重试');
-        next((vm) => {
-          vm.$Message.error('获取文章内容失败请重试');
-        });
-      });
-    };
-    // 获取文章信息
-    const getArticleInfoFunc = async (hashOrId) => {
-      await getArticleInfo(hashOrId, ({ error, response }) => {
-        if (error) {
-          console.log(error, '获取文章信息失败请重试');
-          next((vm) => {
-            vm.$Message.error('获取文章信息失败请重试');
-          });
-        } else {
-          article = response.data;
-          getArticleDatafromIPFSFunc(response.data.hash);
-        }
-      });
-    };
-    getArticleInfoFunc(hash);
-  },
   name: 'Article',
   props: ['hash'],
-  components: { mavonEditor, CommentsList, ArticleInfo },
+  components: {
+    CommentsList, ArticleInfo, ContentLoader, mavonEditor,
+  },
   data() {
     return {
       signId: null,
-      comments: [],
-      // refreshing: false,
       post: {
         author: 'Loading...',
         title: 'Loading...',
@@ -186,6 +158,7 @@ export default {
       opr: false,
       infoModa: false,
       isRequest: false,
+      articleLoading: true, // 文章加载状态
     };
   },
   computed: {
@@ -250,6 +223,7 @@ export default {
   created() {
     document.title = '正在加载文章 - Smart Signature';
     this.initClipboard(); // 分享按钮功能需要放在前面 保证功能的正常执行
+    this.getArticleInfo(this.hash); // 得到文章信息
   },
 
   beforeDestroy() {
@@ -318,17 +292,15 @@ export default {
     initClipboard() {
       this.clipboard = new Clipboard('.button-share');
       this.clipboard.on('success', (e) => {
-        this.$Modal.info({
-          title: '提示',
-          content: '复制成功',
+        this.$toasted.show('复制成功', {
+          position: 'top-center',
+          duration: 1000,
+          fitToScreen: true,
         });
         e.clearSelection();
       });
       this.clipboard.on('error', () => {
-        this.$Modal.error({
-          title: '提示',
-          content: '该浏览器不支持自动复制',
-        });
+        this.$Message.error('该浏览器不支持自动复制');
       });
     },
     // 得到文章信息 hash id, supportDialog 为 true 则只更新文章信息
@@ -341,7 +313,7 @@ export default {
           this.setArticle(response.data, supportDialog);
           // 默认会执行获取文章方法，更新文章调用则不需要获取内容
           if (!supportDialog) {
-            this.getArticleDatafromIPFS(response.data.hash);
+            this.getArticleDatafromIPFS(response.data.hash); // 获取 ipfs 内容
           }
         }
       });
@@ -357,7 +329,6 @@ export default {
     },
     // 设置文章
     async setArticle(article, supportDialog = false) {
-      // console.log(article);
       try {
         await addReadAmount({ articlehash: article.hash }); // 增加文章阅读量
       } catch (error) {
@@ -367,6 +338,7 @@ export default {
       this.articleCreateTime = article.create_time;
       this.totalSupportedAmount = article.value;
       this.signId = article.id;
+      this.articleLoading = false; // 文章加载状态隐藏
       // 未登录下点击赞赏会自动登陆并且重新获取文章信息 如果没有打赏并且是点击赞赏 则显示赞赏框
       if (!article.support && supportDialog) {
         this.visible3 = true;
@@ -375,6 +347,7 @@ export default {
     // 设置文章内容
     setPost(post) {
       this.post = post;
+      this.articleLoading = false; // 文章加载状态隐藏
     },
     handleChange(e) {
       // 小数点后三位 如果后面需要解除限制修改正则  {0,3}
@@ -422,10 +395,11 @@ export default {
         const { currentUserInfo, recordShare } = this;
         const { blockchain, name: username } = currentUserInfo;
         const makeShare = async () => {
-          if (blockchain === 'EOS')
-            return support({ amount, signId, referrer });
-          else if (blockchain === 'ONT') {
-            const shareKey = await getShareKey({ signId, username, amount, referral: referrer });
+          if (blockchain === 'EOS') { return support({ amount, signId, referrer }); }
+          if (blockchain === 'ONT') {
+            const shareKey = await getShareKey({
+              signId, username, amount, referral: referrer,
+            });
             const contractResult = await recordShare({ amount, shareKey });
             // return reportShareRecord({ contractResult });
           }
