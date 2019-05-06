@@ -144,17 +144,16 @@ export default {
     };
     // 获取文章信息
     const getArticleInfoFunc = async (hashOrId) => {
-      await getArticleInfo(hashOrId, ({ error, response }) => {
-        if (error) {
-          console.log(error, '获取文章信息失败请重试');
-          next((vm) => {
-            vm.$Message.error('获取文章信息失败请重试');
-          });
-        } else {
-          article = response.data;
-          getArticleDatafromIPFSFunc(response.data.hash);
-        }
-      });
+      try {
+        const response = await getArticleInfo(hashOrId);
+        article = response.data;
+        getArticleDatafromIPFSFunc(response.data.hash);
+      } catch (error) {
+        console.log(error, '获取文章信息失败请重试');
+        next((vm) => {
+          vm.$Message.error('获取文章信息失败请重试');
+        });
+      }
     };
     getArticleInfoFunc(hash);
   },
@@ -333,18 +332,17 @@ export default {
     },
     // 得到文章信息 hash id, supportDialog 为 true 则只更新文章信息
     async getArticleInfo(hash, supportDialog = false) {
-      await getArticleInfo(hash, ({ error, response }) => {
-        if (error) {
-          this.$Message.error('获取文章信息失败请重试');
-          console.log(error);
-        } else {
-          this.setArticle(response.data, supportDialog);
-          // 默认会执行获取文章方法，更新文章调用则不需要获取内容
-          if (!supportDialog) {
-            this.getArticleDatafromIPFS(response.data.hash);
-          }
+      try {
+        const response = await getArticleInfo(hash);
+        this.setArticle(response.data, supportDialog);
+        // 默认会执行获取文章方法，更新文章调用则不需要获取内容
+        if (!supportDialog) {
+          this.getArticleDatafromIPFS(response.data.hash);
         }
-      });
+      } catch (error) {
+        this.$Message.error('获取文章信息失败请重试');
+        console.log(error);
+      }
     },
     // 获取文章内容 from ipfs
     async getArticleDatafromIPFS(hash) {
@@ -390,14 +388,16 @@ export default {
       }
     },
     async b4support() {
-      // this.$Message.info('帐号检测中...');
-      await this.idCheck().then(() => {
-        this.getArticleInfo(this.hash, true);
+      try {
+        // this.$Message.info('帐号检测中...');
+        await this.idCheck();
         // this.$Message.success('检测通过');
-      }).catch((err) => {
-        console.log(err);
+        this.getArticleInfo(this.hash, true);
+      } catch (error) {
+        console.log(error);
         this.$Message.error('本功能需登录');
-      });
+        return;
+      }
     },
     async support() {
       const { article, comment } = this;
@@ -486,12 +486,13 @@ export default {
       };
       const delArticleFunc = async (id) => {
         if (!id) return fail('没有id');
-        await delArticle({ id },
-          ({ error, response }) => {
-            console.log(error, response);
-            if (response.status !== 200 || error || !response) return fail(error);
-            delSuccess();
-          });
+        try {
+          const response = await delArticle({ id });
+          if (response.status !== 200) return fail(error);
+          delSuccess();
+        } catch (error) {
+          return fail(error);
+        }
       };
       this.$Modal.confirm({
         title: '提示',

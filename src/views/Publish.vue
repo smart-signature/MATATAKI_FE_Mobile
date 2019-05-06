@@ -143,19 +143,16 @@ export default {
     // 设置文章数据 by hash
     async setArticleData(hash) {
       const articleData = await getArticleDatafromIPFS(hash);
-      // 获取文章信息
-      getArticleInfo(hash, ({ error, response }) => {
-        if (error) {
-          this.$Message.error('获取文章信息发生错误');
-          console.log(error);
-        } else {
-          const { data } = response;
-          this.fissionNum = data.fission_factor / 1000;
-          this.signature = data.sign;
-          this.cover = data.cover;
-          this.signId = data.id;
-        }
-      });
+      try { // 获取文章信息
+        const { data } = await getArticleInfo(hash);
+        this.fissionNum = data.fission_factor / 1000;
+        this.signature = data.sign;
+        this.cover = data.cover;
+        this.signId = data.id;
+      } catch (error) {
+        console.log(error);
+        this.$Message.error('获取文章信息发生错误');  
+      }
       // 设置文章内容
       const { data } = articleData.data;
       this.title = data.title;
@@ -163,14 +160,12 @@ export default {
     },
     // 得到草稿箱内容 by id
     async getDraft(id) {
-      await getDraft({ id }, ({ response }) => {
-        const { data } = response;
-        this.fissionNum = data.fission_factor ? data.fission_factor / 1000 : 2;
-        this.cover = data.cover;
-        this.title = data.title;
-        this.markdownData = data.content;
-        this.id = id;
-      });
+      const { data } = await getDraft({ id });
+      this.fissionNum = data.fission_factor ? data.fission_factor / 1000 : 2;
+      this.cover = data.cover;
+      this.title = data.title;
+      this.markdownData = data.content;
+      this.id = id;
     },
     // 错误提示
     failed(error) {
@@ -219,11 +214,10 @@ export default {
     },
     // 创建草稿
     async createDraft(data) {
-      await createDraft(data, (response) => {
-        if (response.response.data.msg !== 'success') this.failed('失败请重试');
-        this.$Notice.success({ title: '草稿保存成功' });
-        this.$router.go(-1);
-      });
+      const response = await createDraft(data);
+      if (response.data.msg !== 'success') this.failed('失败请重试');
+      this.$Notice.success({ title: '草稿保存成功' });
+      this.$router.go(-1);
     },
     // 编辑文章
     async editArticle(data) {
@@ -238,19 +232,23 @@ export default {
         this.failed('自动删除草稿失败,请手动删除');
         return;
       }
-      await delDraft({ id },
-        ({ error, response }) => {
-          console.log(error, response);
-          if (response.status !== 200 || error || !response) this.failed('自动删除草稿失败,请手动删除');
-        });
+      try {
+        const response = await delDraft({ id });
+        if (response.status !== 200) this.failed('自动删除草稿失败,请手动删除');
+      } catch (error) {
+        this.failed('自动删除草稿失败,请手动删除');
+      }
     },
     // 更新草稿
     async updateDraft(data) {
-      await updateDraft(data, (response) => {
-        if (response.response.data.msg !== 'success') this.failed('失败请重试');
+      try {
+        const response = await updateDraft(data);
+        if (response.data.msg !== 'success') this.failed('失败请重试');
         this.$Notice.success({ title: '草稿更新成功' });
         this.$router.go(-1);
-      });
+      } catch (error) {
+        this.failed('失败请重试');
+      }
     },
     // 发布||修改按钮
     async sendThePost() {

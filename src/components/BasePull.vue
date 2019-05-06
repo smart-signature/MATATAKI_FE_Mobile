@@ -114,17 +114,8 @@ export default {
       }, isEmptyArray);
     },
     async getApiData({ url, params }, isEmptyArray) {
-      await getBackendData({ url, params }, ({ error, response }) => {
-        // console.log(error, response);
-        if (error) {
-          console.log(error);
-          this.$Message.error('获取数据失败');
-          this.busy = true;
-          this.isTheEndOfTheScroll = true;
-          return;
-        }
-        const { data } = response;
-
+      try {
+        const { data } = await getBackendData({ url, params });
         if (isEmptyArray) this.articles.length = 0;
         if (this.isObj.type === 'Array') {
           // 如果返回的数据是 Array 返回整个 data
@@ -147,7 +138,13 @@ export default {
         }
         this.page += 1;
         this.busy = false;
-      });
+      } catch (error) {
+        console.log(error);
+        this.$Message.error('获取数据失败');
+        this.busy = true;
+        this.isTheEndOfTheScroll = true;
+        return;
+      }
     },
     // 刷新
     async refresh() {

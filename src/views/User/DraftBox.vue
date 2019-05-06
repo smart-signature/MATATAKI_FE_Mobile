@@ -52,13 +52,14 @@ export default {
     },
     // 删除草稿
     async asyncSuccessDel(id, index) {
-      await delDraft({ id },
-        ({ error, response }) => {
-          // console.log(error, response);
-          if (response.status !== 200 || error || !response) return console.log('自动删除草稿失败,请手动删除');
-          this.draftBoxList.splice(index, 1); // 前端手动删除一下数据
-          this.$Modal.remove();
-        });
+      try {
+        const response = await delDraft({ id });
+        if (response.status !== 200) return console.log('自动删除草稿失败,请手动删除');
+        this.draftBoxList.splice(index, 1); // 前端手动删除一下数据
+        this.$Modal.remove();
+      } catch (error) {
+        return console.log('自动删除草稿失败,请手动删除');
+      }
     },
   },
   mounted() {

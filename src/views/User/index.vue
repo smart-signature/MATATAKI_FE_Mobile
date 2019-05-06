@@ -1,4 +1,4 @@
-/* eslint-disable no-shadow */
+  /* eslint-disable no-shadow */
 <template>
   <div class="user">
     <BaseHeader :pageinfo="{ title: `个人主页`, rightPage: 'home', needLogin: false, }" />
@@ -213,17 +213,15 @@ export default {
         this.followed = data.is_follow;
       };
 
-      // todo(minakokojima): deprecate oldgetUser
       if (currentUsername !== null) {
-        if (currentUsername.length > 12) return;
-        oldgetUser({ username }, ({ error, response }) => {
-          console.log(error, response);
-          if (!error) {
-            if (response.status !== 200) throw error;
-            const { data } = response;
-            setUser(data);
-          } else throw error;
-        });
+        try {
+          const response = oldgetUser({ username });
+          if (response.status !== 200) throw new Error('getUser error');
+          const { data } = response;
+          setUser(data);
+        } catch (error) {
+          throw error;
+        }
       } else {
         getUser({ username }).then((response) => {
           console.log(response);
@@ -232,46 +230,35 @@ export default {
         });
       }
     },
-    follow_user() {
+    async follow_user() {
       const { username, currentUsername } = this;
-      if (!currentUsername || !username || currentUsername.length > 12) {
-        this.$Notice.error({
-          title: '账号信息无效，关注失败',
-        });
+      if (!currentUsername || !username) {
+        this.$Notice.error({ title: '账号信息无效，关注失败', });
         return;
       }
-      Follow({
-        followed: username, username: currentUsername,
-      }, ({ error, response }) => {
-        console.log(error);
-        if (!error) {
-          this.$Notice.success({ title: '关注成功' });
-          this.followed = true;
-        } else {
-          this.$Notice.error({
-            title: '关注失败',
-          });
-        }
-        this.refreshUser();
-      });
+      try {
+        await Follow({ followed: username, username: currentUsername, });
+        this.$Notice.success({ title: '关注成功' });
+        this.followed = true;
+      } catch (error) {
+        this.$Notice.error({ title: '关注失败', });
+      }
+      this.refreshUser();
     },
-    unfollow_user() {
+    async unfollow_user() {
       const { username, currentUsername } = this;
-      if (!currentUsername || !username || currentUsername.length > 12) {
+      if (!currentUsername || !username) {
         this.$Notice.error({ title: '账号信息无效，取消关注失败' });
         return;
       }
-      Unfollow({
-        followed: username, username: currentUsername,
-      }, ({ error, response }) => {
-        if (!error) {
-          this.$Notice.success({ title: '已取消关注' });
-          this.followed = false;
-        } else {
-          this.$Notice.error({ title: '取消关注失败' });
-        }
-        this.refreshUser();
-      });
+      try {
+        await Unfollow({ followed: username, username: currentUsername, });
+        this.$Notice.success({ title: '已取消关注' });
+        this.followed = false;
+      } catch (error) {
+        this.$Notice.error({ title: '取消关注失败' });
+      }
+      this.refreshUser();
     },
     // 获取历史总收入
     async getAssets() {

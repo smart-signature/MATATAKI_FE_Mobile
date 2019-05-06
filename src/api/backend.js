@@ -191,39 +191,35 @@ const accessBackend = async (options) => {
 const getArticleDatafromIPFS = hash => axiosforApiServer.get(`/ipfs/catJSON/${hash}`);
 
 // 获取单篇文章的信息 by hash or id  需要 token 否则无法获取赞赏状态
-const getArticleInfo = (hashOrId, callback = () => {}) => {
+const getArticleInfo = (hashOrId) => {
   const reg = /^[0-9]*$/;
   // post hash获取  ， p id 短链接
   const url = reg.test(hashOrId) ? 'p' : 'post';
-  const getArticleInfoAPI = (hashOrId, callback) => accessBackend({
+  return accessBackend({
     method: 'GET',
     url: `/${url}/${hashOrId}`,
-  }).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
-  getArticleInfoAPI(hashOrId, callback);
+  });
 };
 
 // Be used in User page.
-const Follow = ({ username, followed }, callback) => accessBackend({
+const Follow = ({ username, followed }) => accessBackend({
   method: 'POST',
   url: '/follow',
   data: { username, followed },
-}).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
-
-// Be used in User page.
-const Unfollow = ({ username, followed }, callback) => accessBackend({
+});
+const Unfollow = ({ username, followed }) => accessBackend({
   method: 'POST',
   url: '/unfollow',
   data: { username, followed },
-}).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
+});
 
 // Be used in User page.
 const getUser = ({ username }) => axiosforApiServer.get(`/user/${username}`);
 // todo: rename
-const oldgetUser = ({ username }, callback) => accessBackend({
+const oldgetUser = ({ username }) => accessBackend({
   method: 'GET',
   url: `/user/${username}`,
-  data: {},
-}).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
+});
 
 // Be used in User page.
 const setUserName = ({ newname }) => accessBackend({
@@ -233,16 +229,14 @@ const setUserName = ({ newname }) => accessBackend({
 });
 
 // Be used in User page.
-const getFansList = ({ username }, callback) => accessBackend({
+const getFansList = ({ username }) => accessBackend({
   method: 'GET',
   url: `/fans?user=${username}`,
-}).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
-
-// Be used in User page.
-const getFollowList = ({ username }, callback) => accessBackend({
+});
+const getFollowList = ({ username }) => accessBackend({
   method: 'GET',
   url: `/follows?user=${username}`,
-}).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
+});
 
 const sendComment = ({ comment, signId }) => accessBackend({
   method: 'POST',
@@ -258,17 +252,17 @@ const addReadAmount = ({ articlehash }) => accessBackend({
 });
 
 // 删除文章
-const delArticle = ({ id }, callback) => accessBackend({
+const delArticle = ({ id }) => accessBackend({
   method: 'DELETE',
   url: `/post/${id}`,
-}).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
+});
 
 // 设置头像
-const uploadAvatar = ({ avatar }, callback) => accessBackend({
+const uploadAvatar = ({ avatar }) => accessBackend({
   method: 'POST',
   url: '/user/setAvatar',
   data: { avatar },
-}).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
+});
 
 // 获取头像
 const getAvatarImage = hash => `${apiServer}/image/${hash}`;
@@ -277,49 +271,48 @@ const getAvatarImage = hash => `${apiServer}/image/${hash}`;
 // 因为目前只需要GET查询 所以不把 GET POST 等调用封装到一起，
 // 区别 GET 用 params， POST 等用 data
 // 所有用 BasePull 调用的接口 都带了 token 修改了 header，所以会请求两次 后续可以升级此方法来根据传进来的参数判断是否需要token
-const getBackendData = ({ url, params }, callback) => accessBackend({
+const getBackendData = ({ url, params }) => accessBackend({
   method: 'GET',
   url: `/${url}`,
   params,
-}).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
+});
 
 // 草稿箱api
-const draftList = ({ page }, callback) => accessBackend({
+const draftList = ({ page }) => accessBackend({
   method: 'GET',
   url: '/drafts',
   params: { page },
-}).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
+});
 
 const createDraft = ({
   title, content, cover, fissionFactor,
-}, callback) => accessBackend({
+}) => accessBackend({
   method: 'POST',
   url: '/draft/save',
   data: {
     title, content, cover, fissionFactor,
   },
-}).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
+});
 
 const updateDraft = ({
   id, title, content, cover, fissionFactor,
-}, callback) => accessBackend({
+}) => accessBackend({
   method: 'POST',
   url: '/draft/save',
   data: {
     id, title, content, cover, fissionFactor,
   },
-}).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
+});
 
-const delDraft = ({ id }, callback) => accessBackend({
+const delDraft = ({ id }) => accessBackend({
   method: 'DELETE',
   url: `/draft/${id}`,
-}).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
+});
 
-const getDraft = ({ id }, callback) => accessBackend({
+const getDraft = ({ id }) => accessBackend({
   method: 'GET',
   url: `/draft/${id}`,
-}).then(response => callback({ response })).catch(error => callback({ error, response: error.response }));
-
+});
 
 // 每天浪費時間寫這個，不對吧，像隔壁用 API 一起輸出呀
 export {
