@@ -212,7 +212,7 @@ export default {
         success(data.hash);
         return 'success';
       } catch (error) {
-        console.log(err);
+        console.log(error);
         failed('失败请重试');
         throw error;
       }
@@ -280,7 +280,6 @@ export default {
         cover,
       } = this;
       console.log(this.editorMode, this.saveType);
-
       if (this.editorMode === 'create' && this.saveType === 'public') { // 发布文章
         const { hash } = await this.sendPost({ title, author, content });
         this.publishArticle({
