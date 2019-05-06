@@ -48,7 +48,7 @@ const getSign = async (signId) => {
       results[2] ? parseInt(reverseHex(`${results[2]}`), 16) : 0,
     ]
 
-};*/
+}; */
 
 const recordShare = async ({ amount = null, shareKey = null }) => {
   // if (currentAccount() === null) { throw new Error('请先登录'); }
@@ -57,7 +57,7 @@ const recordShare = async ({ amount = null, shareKey = null }) => {
   const { scriptHash, gasLimit, gasPrice } = config.ontology;
   const response = await client.api.smartContract.invoke({
     scriptHash,
-    operation : 'RecordShare',
+    operation: 'RecordShare',
     args: [
       {
         type: 'Integer',

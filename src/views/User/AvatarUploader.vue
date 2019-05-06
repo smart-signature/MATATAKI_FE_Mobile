@@ -97,15 +97,16 @@ export default {
       });
     },
     async uploadAvatar(avatar) {
-      await uploadAvatar({ avatar }, ({ error, response }) => {
-        if (error || response.status !== 201) {
-          console.log(error);
-          this.$Message.error('设置头像错误请重试');
-          return;
-        }
+      try {
+        const response = await uploadAvatar({ avatar });
+        if (response.status !== 201) throw new Error('201');
         this.$emit('setDone', false);
         this.$Message.success('设置成功');
-      });
+      } catch (error) {
+        console.log(error);
+        this.$Message.error('设置头像错误请重试');
+        return;
+      }
     },
     alert(message) {
       alert(message);

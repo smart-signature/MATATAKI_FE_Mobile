@@ -28,13 +28,12 @@ export default new Vuex.Store({
     ),
     currentBalance: (state, {
       'scatter/currentUsername': scatterUsername,
-      'ontology/currentUsername': ontologyUsername,
       'scatter/currentBalance': scatterBalance,
       'ontology/currentBalance': ontologyBalance,
     }) => (
       scatterUsername
         ? scatterBalance
-        : (ontologyUsername ? ontologyBalance : '... XXX')
+        : (state.ontology.account ? ontologyBalance : '... XXX')
     ),
     isLogined: (state, { currentUserInfo }) => currentUserInfo.name !== null,
   },
@@ -109,7 +108,13 @@ export default new Vuex.Store({
       if (ONT) {
         try {
           const address = await dispatch('ontology/getAccount');
-          console.info('ONT address :', address);
+          let balance = null;
+          try {
+            balance = await dispatch('ontology/getBalance');
+          } catch (error) {
+            console.warn('Failed to get balance :', error);
+          }
+          console.info('ONT address :', address, 'balance :', balance);
           meg += `ONT address : ${address}\n`;
         } catch (error) {
           console.warn('Failed to get ONT account :', error);

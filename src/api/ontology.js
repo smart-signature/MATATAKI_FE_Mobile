@@ -45,6 +45,18 @@ const API = {
       this.client = client;
     }
   },
+  // Network
+  async getBalance({ address }) {
+    if (!this.client) await this.setClient();
+    const { client } = this;
+    try {
+      if (isAPP) throw new Error('no getBalance func'); // done
+      return client.api.network.getBalance({ address }); // done
+    } catch(error) {
+      console.error('cyanobridge.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', error);
+      throw error;
+    }
+  },
   // Asset
   async getAccount() {
     if (!this.client) await this.setClient();
@@ -57,8 +69,8 @@ const API = {
       return isAPP 
         ? client.api.asset.getAccount(params) // done
         : client.api.asset.getAccount(); // done
-    } catch(err) {
-      console.error('cyanobridge.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', err);
+    } catch(error) {
+      console.error('cyanobridge.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', error);
     }
   },
   // Message

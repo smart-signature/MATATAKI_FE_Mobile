@@ -28,4 +28,6 @@ const i18n = [
   },
 ];
 
-export { dappName, ontology, i18n, network };
+export {
+  dappName, ontology, i18n, network,
+};
