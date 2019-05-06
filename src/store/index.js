@@ -28,13 +28,12 @@ export default new Vuex.Store({
     ),
     currentBalance: (state, {
       'scatter/currentUsername': scatterUsername,
-      'ontology/currentUsername': ontologyUsername,
       'scatter/currentBalance': scatterBalance,
       'ontology/currentBalance': ontologyBalance,
     }) => (
       scatterUsername
         ? scatterBalance
-        : (ontologyUsername ? ontologyBalance : '... XXX')
+        : (state.ontology.account ? ontologyBalance : '... XXX')
     ),
     isLogined: (state, { currentUserInfo }) => currentUserInfo.name !== null,
   },
