@@ -149,7 +149,7 @@ export default {
     cancel() {
       this.editing = !this.editing;
     },
-    save() {
+    async save() {
       if (this.newname === this.nickname) {
         this.editing = !this.editing;
         return;
@@ -165,29 +165,40 @@ export default {
         });
         return;
       }
-      setUserName({ newname: this.newname }, ({ error, response }) => {
-        if (!error) {
-          if (response.status === 500) {
-            this.$Notice.error({
-              title: '昵称已存在，请重新设置',
-            });
+      try {
+        const response = await setUserName({ newname: this.newname });
+        this.$Notice.success({ title: '保存成功' });
+        this.nickname = this.newname;
+      } catch (error) {
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+          if (error.response.status === 500) {
+            this.$Notice.error({ title: '昵称已存在，请重新设置' });
+            this.nickname = this.newname;
           } else {
-            this.$Notice.success({
-              title: '保存成功',
+            this.$Notice.error({
+              title: '保存失败',
+              desc: '昵称长度为1-12位，中文、英文、数字但不包括下划线等符号',
             });
+            this.newname = this.nickname === '' ? this.username : this.nickname;
           }
-          this.nickname = this.newname;
+        } else if (error.request) {
+          // The request was made but no response was received
+          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+          // http.ClientRequest in node.js
+          console.log(error.request);
         } else {
-          this.$Notice.error({
-            title: '保存失败',
-            desc: '昵称长度为1-12位，中文、英文、数字但不包括下划线等符号',
-          });
-          console.log(response.data);
-          this.newname = this.nickname === '' ? this.username : this.nickname;
+          // Something happened in setting up the request that triggered an Error
+          console.log('Error', error.message);
         }
-        this.refreshUser();
-        this.editing = !this.editing;
-      });
+        console.log(error.config);
+      }
+      this.refreshUser();
+      this.editing = !this.editing;
     },
     refreshUser() {
       if (this.username === null) this.username = this.currentUsername;

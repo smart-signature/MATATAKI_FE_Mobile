@@ -7,20 +7,14 @@
 
 <script>
 import Konami from 'konami';
-import { mapActions, mapState } from 'vuex';
+import { mapActions } from 'vuex';
 import { version } from '../package.json';
 // import { getSign } from '@/api/signatureOntology';
 
 export default {
   data: () => ({}),
   methods: {
-    ...mapActions('ontology', [
-      'getAccount',
-    ]),
-    ...mapActions('scatter', [
-      'connect',
-      'login',
-    ]),
+    ...mapActions(['walletConnectionSetup']),
     updateNotify(desc) {
       const btnCommonStyle = {
         type: 'default',
@@ -55,22 +49,16 @@ export default {
   computed: {
   },
   created() { // https://juejin.im/post/5bfa4bb951882558ae3c171e
-    window.updateNotify = this.updateNotify;
     console.info('Smart Signature version :', version);
-    const { getAccount: getOntologyAccount, connect: connectScatter } = this;
-    try {
-      connectScatter();
-      // if (!this.scatterAccount) await this.loginScatterAsync();
-    } catch (e) {
-      console.warn('Unable to connect wallets');
-      this.$Message.error('钱包连接失败，钱包需打开并解锁');
-    }
 
-    getOntologyAccount().then((address) => {
-      console.info('ONT address :', address);
-      this.$Message.success(`ONT address : ${address} ，登陸成功`);
-      // getSign(999);
-    }).catch(result => console.warn('Failed to get ONT account :', result));
+    const { updateNotify, walletConnectionSetup } = this;
+
+    window.updateNotify = updateNotify;
+
+    const usingBlockchain = { EOS: true, ONT: true };
+    walletConnectionSetup(usingBlockchain).then((meg) => {
+      if (meg !== '') this.$Message.success(`${meg}登录成功！`);
+    });
   },
 };
 </script>

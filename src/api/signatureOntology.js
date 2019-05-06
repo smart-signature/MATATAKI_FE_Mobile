@@ -1,30 +1,31 @@
-// 待修
-import { client, isAPP, toolkit } from './cyanobridge';
+import API from './ontology';
+import * as config from '@/config';
 
+/*
 const getSign = async (signId) => {
   let result = null;
-  console.log('x1.');
+  // console.log('x1.');
   if (!isAPP) {
     result = await client.api.smartContract.invokeRead({
-      scriptHash: '03d99d998fba6b1bb02d84676bce52f2f4a6ddc3',
+      scriptHash,
       operation: 'getSign',
       args: [{
         type: 'Integer',
         value: signId,
       }],
-      gasLimit: 20000,
-      gasPrice: 500,
+      gasLimit,
+      gasPrice,
     });
   } else {
     result = await client.api.smartContract.invokeRead({
-      scriptHash: '03d99d998fba6b1bb02d84676bce52f2f4a6ddc3',
+      scriptHash,
       operation: 'getSign',
       args: [{
         type: 'Integer',
         value: signId,
       }],
-      gasLimit: 20000,
-      gasPrice: 500,
+      gasLimit,
+      gasPrice,
     });
   }
 
@@ -32,7 +33,7 @@ const getSign = async (signId) => {
 
 
   const { ab2str, hexstring2ab, reverseHex } = toolkit;
-  /*
+
     const langarr.push([
         parseInt(reverseHex(`${result[0]}`), 16),
         parseInt(reverseHex(`${result[1]}`), 16),
@@ -47,9 +48,34 @@ const getSign = async (signId) => {
       results[2] ? parseInt(reverseHex(`${results[2]}`), 16) : 0,
     ]
 
-   */
+};*/
+
+const recordShare = async ({ amount = null, shareKey = null }) => {
+  // if (currentAccount() === null) { throw new Error('请先登录'); }
+  if (!amount) { throw new Error('amount cant be null'); }
+  if (!shareKey) { throw new Error('shareKey cant be null'); }
+  const { scriptHash, gasLimit, gasPrice } = config.ontology;
+  const response = await client.api.smartContract.invoke({
+    scriptHash,
+    operation : 'RecordShare',
+    args: [
+      {
+        type: 'Integer',
+        value: amount,
+      },
+      {
+        type: 'string',
+        value: shareKey,
+      },
+    ],
+    gasLimit,
+    gasPrice,
+  });
+  console.log(response);
+  const { transaction } = response;
+  return transaction;
 };
 
 export {
-  getSign,
+  recordShare,
 };

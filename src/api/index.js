@@ -7,7 +7,7 @@ import defaultImagesUploader from './imagesUploader';
 // This line below is exports
 
 export {
-  getArticlesList, publishArticle, oldpublishArticle,
+  getArticlesList, publishArticle,
   auth, getAuth,
   getArticleDatafromIPFS,
   getArticleInfo,

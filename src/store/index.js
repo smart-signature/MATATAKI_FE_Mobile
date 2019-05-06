@@ -14,10 +14,14 @@ export default new Vuex.Store({
     scatter,
   },
   getters: {
+    // rule: 帳號優先級 EOS > ONT
+    // rule: EOS 帳號最長 12 位， ONT 帳號(地址)一定是 20 位
     currentUserInfo: (state, { currentUsername, currentBalance }) => ({
       name: currentUsername,
       balance: currentBalance,
-      blockchain: 'ONT', // null,
+      blockchain: currentUsername
+        ? (currentUsername.length <= 12 ? 'EOS' : 'ONT')
+        : null,
     }),
     currentUsername: (state, { 'scatter/currentUsername': scatter }) => (
       scatter || (state.ontology.account || null)
@@ -35,57 +39,83 @@ export default new Vuex.Store({
     isLogined: (state, { currentUserInfo }) => currentUserInfo.name !== null,
   },
   actions: {
-    // outpu: { publicKey, signature, username }
-    async getSignature({
-      commit, dispatch, state, getters,
-    }, { author, hash }) {
+    // output: { publicKey, signature, username }
+    async getSignatureOfArticle({ dispatch, getters }, { author, hash }) {
       const { blockchain } = getters.currentUserInfo;
       let actionName = null;
-      if (blockchain === 'ONT') actionName = 'ontology/getSignature';
-      // todo:
-      // else if (blockchain === 'EOS') actionName = 'ontology/getSignature';
+      if (blockchain === 'EOS') actionName = 'scatter/getSignatureOfArticle';
+      else if (blockchain === 'ONT') actionName = 'ontology/getSignatureOfArticle';
       return dispatch(actionName, { author, hash });
+    },
+    async getSignatureOfAuth({ dispatch, getters }) {
+      const { blockchain } = getters.currentUserInfo;
+      let actionName = null;
+      if (blockchain === 'EOS') actionName = 'scatter/getSignatureOfAuth';
+      else if (blockchain === 'ONT') actionName = 'ontology/getSignatureOfAuth';
+      return dispatch(actionName);
     },
     async idCheck({
       commit, dispatch, state, getters,
     }) {
-      await new Promise(async (resolve, reject) => {
-        const { ontology, scatter } = state;
-        const {
-          isConnected: isScatterConnected,
-          isLoggingIn: isScatterLoggingIn,
-        } = scatter;
-        const {
-          account: isOntologyConnected,
-        } = ontology;
+      const { ontology, scatter } = state;
+      const {
+        isConnected: isScatterConnected,
+        isLoggingIn: isScatterLoggingIn,
+      } = scatter;
+      const {
+        account: isOntologyConnected,
+      } = ontology;
+      const noId = (error) => {
+        console.warn('Unable to get id, reason :', error);
+        throw error;
+      };
 
-        const noId = (error) => {
-          console.warn('Unable to get id, reason :', error);
-          reject(error);
-        };
-
-        console.log('Start id check ...');
-        if (getters.currentUserInfo.name) {
-          console.log('Id check pass, id :', getters.currentUserInfo.name);
-          resolve(true);
-          return;
-        }
-        console.info('Ontology status :', isOntologyConnected);
-        console.info('Scatter status :', isScatterConnected);
-        // 場景：開了網頁之後才解鎖 Scatter
-        // 這時候沒有執行 connectScatter 就登录不能
-        if (!isScatterConnected) {
-          const result = await dispatch('scatter/connect');
-          if (!result) noId(new Error('faild connect to scatter'));
-        }
-        if (isScatterConnected && !isScatterLoggingIn) {
-          const result = await dispatch('scatter/login');
-          if (!result) noId(new Error('scatter login faild'));
-          else resolve(true);
-        }
-      });
+      console.log('Start id check ...');
+      if (getters.currentUserInfo.name) {
+        console.log('Id check pass, id :', getters.currentUserInfo.name);
+        return true;
+      }
+      console.info('Ontology status :', isOntologyConnected);
+      console.info('Scatter status :', isScatterConnected);
+      // 場景：開了網頁之後才解鎖 Scatter
+      // 這時候沒有執行 connectScatter 就登录不能
+      if (!isScatterConnected) {
+        const result = await dispatch('scatter/connect');
+        if (!result) noId(new Error('faild connect to scatter'));
+      }
+      if (isScatterConnected && !isScatterLoggingIn) {
+        const result = await dispatch('scatter/login');
+        if (!result) noId(new Error('scatter login faild'));
+        else return true;
+      }
     },
-    async walletConnectionSetup() {
+    async recordShare({ dispatch }, { amount, shareKey }) {
+      const { blockchain } = getters.currentUserInfo;
+      let actionName = null;
+      if (blockchain === 'EOS') actionName = 'scatter/recordShare';
+      else if (blockchain === 'ONT') actionName = 'ontology/recordShare';
+      return dispatch(actionName, { amount, shareKey });
+    },
+    async walletConnectionSetup({ dispatch }, { EOS, ONT }) {
+      let meg = '';
+      if (EOS) {
+        try {
+          await dispatch('scatter/connect');
+          // if (!this.scatterAccount) await this.loginScatterAsync();
+        } catch (error) {
+          console.warn('Unable to connect Scatter wallets :', error);
+        }
+      }
+      if (ONT) {
+        try {
+          const address = await dispatch('ontology/getAccount');
+          console.info('ONT address :', address);
+          meg += `ONT address : ${address}\n`;
+        } catch (error) {
+          console.warn('Failed to get ONT account :', error);
+        }
+      }
+      return meg;
     },
   },
 });

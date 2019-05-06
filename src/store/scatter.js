@@ -1,10 +1,11 @@
-import api, { currentEOSAccount } from '@/api/scatter';
+import api, { eosClient, currentEOSAccount } from '@/api/scatter';
 
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-shadow */
 
 // initial state
 const state = {
+  // account 是個物件, .name 才是帳號名
   account: null,
   balances: {
     eos: '... EOS',
@@ -55,6 +56,28 @@ const actions = {
         return true;
       }
     } else return false;
+  },
+  async getSignature({ signData, memo = '' }) {
+    const { account } = state;
+    const result = await eosClient.getAccount(account.name);
+    // 获取当前权限
+    const permissions = result.permissions.find(x => x.perm_name === account.authority);
+    // 获取当前权限的public key
+    const publicKey = permissions.required_auth.keys[0].key;
+    // 申请签名
+    const signature = await api.getArbitrarySignature(publicKey, signData, memo);
+    return ({ publicKey, signature, username: account.name });
+  },
+  async getSignatureOfArticle({}, { author, hash }) {
+    const hashPiece1 = hash.slice(0, 12);
+    const hashPiece2 = hash.slice(12, 24);
+    const hashPiece3 = hash.slice(24, 36);
+    const hashPiece4 = hash.slice(36, 48);
+    const signData = `${author} ${hashPiece1} ${hashPiece2} ${hashPiece3} ${hashPiece4}`;
+    return dispatch('getSignature', { signData, memo: 'Smart Signature' });
+  },
+  async getSignatureOfAuth() {
+    return dispatch('getSignature', { signData: state.account.name, memo: 'Auth' });
   },
   async setBalances({ commit, state }) {
     const { name } = state.account;

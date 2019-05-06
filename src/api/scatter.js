@@ -21,48 +21,6 @@ const eosClient = Eos({
 });
 
 const API = {
-  authSignature() {
-    return new Promise((resolve, reject) => {
-      const { getAccount, getArbitrarySignature } = this;
-      const account = getAccount();
-      eosClient.getAccount(account.name).then((result) => {
-        // 获取当前权限
-        const permissions = result.permissions.find(x => x.perm_name === account.authority);
-        // 获取当前权限的public key
-        const publicKey = permissions.required_auth.keys[0].key;
-        // 需要签名的数据
-        const signData = account.name;
-        // 申请签名
-        getArbitrarySignature(publicKey, signData, 'Auth')
-        .then(signature => { resolve({ publicKey, signature, username: account.name }); })
-        .catch(error => reject(error));
-      });
-    });
-  },
-
-  getSignature(author, hash) {
-    return new Promise((resolve, reject) => {
-      const { getAccount, getArbitrarySignature } = this;
-      const account = getAccount();
-      eosClient.getAccount(account.name).then((result) => {
-        // 获取当前权限
-        const permissions = result.permissions.find(x => x.perm_name === account.authority);
-        // 获取当前权限的public key
-        const publicKey = permissions.required_auth.keys[0].key;
-        // 需要签名的数据
-        const hashPiece1 = hash.slice(0, 12);
-        const hashPiece2 = hash.slice(12, 24);
-        const hashPiece3 = hash.slice(24, 36);
-        const hashPiece4 = hash.slice(36, 48);
-        const signData = `${author} ${hashPiece1} ${hashPiece2} ${hashPiece3} ${hashPiece4}`;
-        // 申请签名
-        getArbitrarySignature(publicKey, signData, 'Smart Signature')
-        .then(signature => { resolve({ publicKey, signature, username: account.name }); })
-        .catch(error => { reject(error); });
-      });
-    });
-  },
-
   async getBalancesByContract({ tokenContract = 'eosio.token', accountName, symbol }) {
     return eos().getCurrencyBalance(tokenContract, accountName, symbol);
   },
@@ -78,15 +36,15 @@ const API = {
   connectScatterAsync() {
     return ScatterJS.scatter.connect(config.dappName, { initTimeout: 2000 });
   },
-  suggestNetworkAsync() {
-    return ScatterJS.scatter.suggestNetwork(currentNetwork);
-  },
   loginScatterAsync() {
     const requiredFields = { accounts: [currentNetwork] };
     return ScatterJS.scatter.getIdentity(requiredFields);
   },
   logoutScatterAsync() {
     return ScatterJS.scatter.forgetIdentity();
+  },
+  suggestNetworkAsync() {
+    return ScatterJS.scatter.suggestNetwork(currentNetwork);
   },
   transferEOSAsync({
     to,
@@ -138,4 +96,4 @@ const API = {
 
 
 export default API;
-export { eos, currentEOSAccount };
+export { eos, eosClient, currentEOSAccount };

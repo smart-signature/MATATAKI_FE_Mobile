@@ -1,6 +1,11 @@
 import { networks } from './network';
 
 const dappName = 'Smart Signature';
+const ontology = {
+  scriptHash: process.env.VUE_APP_SCRIPT_HASH,
+  gasLimit: 20000,
+  gasPrice: 500,
+};
 
 const network = networks;
 
@@ -23,4 +28,4 @@ const i18n = [
   },
 ];
 
-export { dappName, i18n, network };
+export { dappName, ontology, i18n, network };

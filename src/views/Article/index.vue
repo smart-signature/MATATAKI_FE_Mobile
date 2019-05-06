@@ -189,7 +189,10 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['currentUsername']),
+    ...mapGetters(['currentUserInfo']),
+    currentUsername() {
+      return this.currentUserInfo.name;
+    },
     isLogined() {
       return this.currentUsername !== null;
     },
@@ -310,7 +313,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['idCheck']),
+    ...mapActions(['idCheck', 'recordShare']),
     // 分享功能
     initClipboard() {
       this.clipboard = new Clipboard('.button-share');
@@ -355,7 +358,11 @@ export default {
     // 设置文章
     async setArticle(article, supportDialog = false) {
       // console.log(article);
-      await addReadAmount({ articlehash: article.hash }); // 增加文章阅读量
+      try {
+        await addReadAmount({ articlehash: article.hash }); // 增加文章阅读量
+      } catch (error) {
+        console.error('addReadAmount :', error);
+      }
       this.article = article;
       this.articleCreateTime = article.create_time;
       this.totalSupportedAmount = article.value;
@@ -410,25 +417,32 @@ export default {
         // 問用戶要 acceess token
         await getAuth();
         // 發轉帳 action 到合約
-        await support({ amount, signId, referrer });
-        try {
-          // 發 comment 到後端
+        // 1. EOS 照舊
+        // 2. ONT 用新流程
+        const { currentUserInfo, recordShare } = this;
+        const { blockchain, name: username } = currentUserInfo;
+        const makeShare = async () => {
+          if (blockchain === 'EOS')
+            return support({ amount, signId, referrer });
+          else if (blockchain === 'ONT') {
+            const shareKey = await getShareKey({ signId, username, amount, referral: referrer });
+            const contractResult = await recordShare({ amount, shareKey });
+            // return reportShareRecord({ contractResult });
+          }
+        };
+        const backendResult = await makeShare();
+
+        try { // 發 comment 到後端
           console.log('Send comment...');
-          await sendComment({ comment, signId }, ({ error, response }) => {
-            if (!error) {
-              console.log(error, response);
-              if (response.status !== 200) throw new Error(error);
-            } else throw error;
-          });
+          const response = await sendComment({ comment, signId });
+          console.log(response);
+          if (response.status !== 200) throw new Error(error);
         } catch (error) {
           console.error(error);
           console.log('Resend comment...');
-          await sendComment({ comment, signId }, ({ error, response }) => {
-            if (!error) {
-              console.log(error, response);
-              if (response.status !== 200) throw new Error(error);
-            } else throw error;
-          });
+          const response = await sendComment({ comment, signId });
+          console.log(response);
+          if (response.status !== 200) throw new Error(error);
         }
         this.isSupported = RewardStatus.REWARDED; // 按钮状态
         this.$Message.success('赞赏成功！');
