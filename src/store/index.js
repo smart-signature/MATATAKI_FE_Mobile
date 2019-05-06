@@ -72,7 +72,7 @@ export default new Vuex.Store({
 
       console.log('Start id check ...');
       if (getters.currentUserInfo.name) {
-        console.log('Id check pass, id :', getters.currentUserInfo.name);
+        console.log('Id check pass, id :', getters.currentUserInfo);
         return true;
       }
       console.info('Ontology status :', isOntologyConnected);
