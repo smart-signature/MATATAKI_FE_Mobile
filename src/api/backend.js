@@ -15,7 +15,7 @@ const axiosforApiServer = axios.create({
 });
 
 // store
-const { name: currentUsername, blockchain } = store.getters.currentUserInfo;
+const platform = () => (store.getters.currentUserInfo.blockchain.toLowerCase());
 const getSignatureOfArticle = ({ author, hash }) => store.dispatch('getSignatureOfArticle', { author, hash });
 const getSignatureOfAuth = () => store.dispatch('getSignatureOfAuth');
 
@@ -32,7 +32,7 @@ const publishArticle = async ({
       author,
       fissionFactor,
       hash,
-      // platform: blockchain,
+      platform: platform(),
       publickey,
       sign,
       title,
@@ -56,7 +56,7 @@ const editArticle = async ({
       author,
       fissionFactor,
       hash,
-      // platform: blockchain,
+      platform: platform(),
       publickey,
       sign,
       title,
@@ -120,7 +120,7 @@ const setAccessToken = token => localStorage.setItem('ACCESS_TOKEN', token);
 // /根据用户名，公钥，客户端签名请求access_token
 // /</summary>
 const auth = ({ username, publicKey, sign }) => axiosforApiServer.post('/auth',
-  { username, publickey: publicKey, sign },
+  { username, publickey: publicKey, sign, platform: platform() },
   {
     headers: { Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==' },
   });
@@ -141,10 +141,11 @@ const disassembleToken = (token) => {
 const getAuth = async () => {
   const currentToken = getCurrentAccessToken();
   const decodedData = disassembleToken(currentToken); // 拆包
-  const username = currentToken != null ? decodedData.iss : null;
-  if (currentUsername !== null && (currentToken === null
-    || decodedData === null || decodedData.exp < new Date().getTime()
-    || username !== currentUsername)) {
+  const username = currentToken ? decodedData.iss : null;
+  const { name: currentUsername } = store.getters.currentUserInfo;
+  if (!currentUsername) throw new Error('no currentUsername');
+  if (!currentToken || !decodedData || decodedData.exp < new Date().getTime()
+    || username !== currentUsername) {
     try {
       console.log('Retake authtoken...');
       const signature = await getSignatureOfAuth();
@@ -181,6 +182,7 @@ const accessBackend = async (options) => {
   try { // 更新 Auth
     accessToken = await getAuth();
   } catch (error) {
+    console.error('getAuth() error:', error);
     console.warn('將使用 access token 存檔');
   }
   options.headers['x-access-token'] = accessToken;

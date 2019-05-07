@@ -206,7 +206,7 @@ export default {
       this.refreshUser();
       this.editing = !this.editing;
     },
-    refreshUser() {
+    async refreshUser() {
       if (this.username === null) this.username = this.currentUsername;
       const { username, currentUsername } = this;
       const setUser = (data) => {
@@ -218,22 +218,14 @@ export default {
         this.fans = data.fans;
         this.followed = data.is_follow;
       };
-
-      if (currentUsername !== null) {
-        try {
-          const response = oldgetUser({ username });
-          if (response.status !== 200) throw new Error('getUser error');
-          const { data } = response;
-          setUser(data);
-        } catch (error) {
-          throw error;
-        }
-      } else {
-        getUser({ username }).then((response) => {
-          console.log(response);
-          const { data } = response;
-          setUser(data);
-        });
+      try {
+        const response = await (
+          currentUsername ? oldgetUser({ username }) : getUser({ username })
+        );
+        if (response.status !== 200) throw new Error('getUser error');
+        setUser(response.data);
+      } catch (error) {
+        throw error;
       }
     },
     async follow_user() {
