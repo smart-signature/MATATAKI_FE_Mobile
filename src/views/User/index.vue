@@ -5,12 +5,10 @@
     <div class="usercard" >
       <div class="user-avatar">
         <img class="userpic" :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png');}" />
-        <imgUpload :model="false" class="camera" v-if="editing">
+        <imgUpload :imgUploadDone="imgUploadDone" class="camera" v-if="editing" @doneImageUpload="doneImageUpload">
           <img slot="uploadButton" src="/img/camera.png" />
         </imgUpload>
       </div>
-          <!-- <img slot="uploadButton" class="camera" src="/img/camera.png" @click="editingavatar = true" v-if="editing" /> -->
-
 
       <div class="texts">
         <p v-if="!editing" class="username" :class="[!email ? 'username-email' : '']">{{nickname === "" ? username : nickname}}</p>
@@ -91,11 +89,6 @@
       <Button class="bottombutton" long @click="logoutScatterAsync">退出登录</Button>
     </div>
     <ArticlesList :listtype="'others'" ref='ArticlesList' :username='username' v-if="!isMe"/>
-
-    <!-- ⬇头像编辑 -->
-    <za-modal :visible.sync='editingavatar' title="编辑头像" :show-close='true'>
-      <Avatar @setDone="setDone" />
-    </za-modal>
   </div>
 </template>
 
@@ -104,15 +97,15 @@ import { mapGetters, mapActions } from 'vuex';
 import {
   Follow, Unfollow, getUser, oldgetUser,
   setUserName, getAssets, getAvatarImage,
+  uploadAvatar,
 } from '@/api';
 import ArticlesList from './ArticlesList.vue';
-import Avatar from './AvatarUploader.vue';
 import imgUpload from '@/components/imgUpload/index.vue';
 
 export default {
   name: 'User',
   props: ['username'],
-  components: { Avatar, ArticlesList, imgUpload },
+  components: { ArticlesList, imgUpload },
   data() {
     return {
       playerincome: 0,
@@ -125,7 +118,7 @@ export default {
       email: '',
       // eslint-disable-next-line global-require
       avatar: require('../../assets/logo.png'),
-      editingavatar: false,
+      imgUploadDone: 0, // 图片是否上传完成
     };
   },
   computed: {
@@ -140,15 +133,9 @@ export default {
       'logout',
     ]),
     logoutScatterAsync() { return this.logout(); },
-    goBack() {
-      this.$router.go(-1);
-    },
     edit() {
       this.editing = !this.editing;
     },
-    // clickCamera(){
-    //   console.log("clicked.");
-    // },
     jumpTo(params) {
       this.$router.push(params);
     },
@@ -275,11 +262,20 @@ export default {
       if (!hash) this.avatar = require('../../assets/logo.png');
       else this.avatar = getAvatarImage(hash);
     },
-    // 设置头像完成 子组件与夫组件通信
-    setDone(status) {
-      console.log(status);
-      this.editingavatar = status;
-      this.refreshUser();
+    // 完成上传
+    async doneImageUpload(res) {
+      const avatar = res.hash;
+      try {
+        // 更新图像
+        const response = await uploadAvatar({ avatar });
+        if (response.status !== 201) throw new Error('201');
+        this.refreshUser();
+        this.$Message.success('设置成功');
+        this.imgUploadDone += 1;
+      } catch (error) {
+        console.log(error);
+        this.$Message.error('设置头像错误请重试');
+      }
     },
   },
   created() {

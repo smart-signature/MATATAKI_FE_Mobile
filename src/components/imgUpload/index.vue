@@ -8,6 +8,7 @@
             @input-filter="inputFilter"
             extensions="gif,jpg,jpeg,png,webp"
             accept="image/png,image/gif,image/jpeg,image/webp"
+            name="avatar"
             :post-action="postAction"
             >
             <slot name="uploadButton">
@@ -51,7 +52,7 @@
 import VueUploadComponent from 'vue-upload-component';
 import Cropper from 'cropperjs';
 import './cropper.css';
-import { apiServer, uploadAvatar } from '@/api/backend';
+import { apiServer } from '@/api/backend';
 
 
 export default {
@@ -67,6 +68,12 @@ export default {
     imgSize: {
       type: Number,
       default: 2,
+    },
+    // 是否上传完成
+    imgUploadDone: {
+      type: Number,
+      default: 0,
+      required: true,
     },
   },
   data() {
@@ -95,6 +102,11 @@ export default {
         this.cropper.destroy();
         this.cropper = false;
       }
+    },
+    // 上传完成
+    imgUploadDone() {
+      this.modal = false;
+      this.modalLoading = false;
     },
   },
   methods: {
@@ -136,14 +148,17 @@ export default {
         if (URL && URL.createObjectURL) {
         // eslint-disable-next-line no-param-reassign
           newFile.url = URL.createObjectURL(newFile.file);
-          console.log(this.files);
+          //   console.log(this.files);
           this.modal = true; // 显示 modal
         }
       }
     },
     // 上传图片
-    async uploadButton() {
+    uploadButton() {
       this.modalLoading = true;
+      this.uploadImg();
+    },
+    async uploadImg() {
       // 上传图像 from https://github.com/lian-yue/vue-upload-component/blob/master/docs/views/examples/Avatar.vue
       const oldFile = this.files[0];
       const binStr = atob(this.cropper.getCroppedCanvas().toDataURL(oldFile.type).split(',')[1]);
@@ -166,13 +181,20 @@ export default {
      * @return undefined
      */
     inputFile(newFile, oldFile) {
-      if (newFile && oldFile && !newFile.active && oldFile.active) {
-        // 获得相应数据
-        console.log('response', newFile.response);
-        if (newFile.xhr) {
-          //  获得响应状态码
-          console.log('status', newFile.xhr.status);
+      if (newFile
+           && oldFile
+           && !newFile.active
+           && oldFile.active
+      ) {
+        if (newFile.response.code === 200) {
+          this.$emit('doneImageUpload', newFile.response);
+        } else {
           this.modalLoading = false;
+          this.$toasted.show('上传图片失败', {
+            position: 'top-center',
+            duration: 1500,
+            fitToScreen: true,
+          });
         }
       }
     },
