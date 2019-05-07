@@ -27,7 +27,13 @@
       </div>
       <div class="cover">
         <p>图文封面</p>
-        <ImgUpload class="cover-upload" @setDone="setDone" :cover="cover"></ImgUpload>
+        <imgUpload :imgUploadDone="imgUploadDone" class="cover-upload" @doneImageUpload="doneImageUpload" v-if="!cover">
+          <img slot="uploadButton" class="cover-add" src="@/assets/img/icon_add.svg" alt="add">
+        </imgUpload>
+        <div class="cover-right" v-else>
+          <img class="cover-right-img" :src="coverEditor" alt="cover" />
+          <img class="cover-right-remove" @click.prevent="removeCover" src="@/assets/img/icon_remove.svg" alt="remove">
+        </div>
       </div>
     </div>
 
@@ -48,21 +54,23 @@ import {
   defaultImagesUploader, publishArticle, createDraft,
   editArticle, getArticleDatafromIPFS, getArticleInfo,
   getDraft, updateDraft, delDraft,
+  getAvatarImage,
 } from '@/api/index';
 
 import 'mavon-editor/dist/css/index.css'; // editor css
 import VueSlider from 'vue-slider-component';
 import 'vue-slider-component/theme/default.css';
-import ImgUpload from '@/components/ImgUpload';
 import { sleep } from '@/common/methods';
 import { toolbars } from './toolbars'; // 编辑器配置
+import imgUpload from '@/components/imgUpload/index.vue';
+
 
 export default {
   name: 'NewPost',
   components: {
     mavonEditor,
     VueSlider,
-    ImgUpload,
+    imgUpload,
   },
   created() {
     const { id } = this.$route.params;
@@ -135,11 +143,11 @@ export default {
       }
       return text;
     },
+    coverEditor() {
+      return getAvatarImage(this.cover);
+    },
   },
   methods: {
-    setDone(fileHash) {
-      this.cover = fileHash;
-    },
     ...mapActions(['idCheck']),
     // 设置文章数据 by hash
     async setArticleData(hash) {
@@ -334,6 +342,15 @@ export default {
       window.onresize = () => {
         this.screenWidth = document.body.clientWidth;
       };
+    },
+    // 上传完成
+    doneImageUpload(res) {
+      this.cover = res.hash;
+      this.imgUploadDone += 1;
+    },
+    // 删除cover
+    removeCover() {
+      this.cover = '';
     },
   },
   watch: {

@@ -270,11 +270,10 @@ export default {
         const response = await uploadAvatar({ avatar });
         if (response.status !== 201) throw new Error('201');
         this.refreshUser();
-        this.$Message.success('设置成功');
         this.imgUploadDone += 1;
       } catch (error) {
         console.log(error);
-        this.$Message.error('设置头像错误请重试');
+        this.$Message.error('上传失败请重试');
       }
     },
   },

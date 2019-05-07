@@ -88,6 +88,7 @@ export default {
     // 显示modal
     modal(value) {
       if (value) {
+        this.modalLoading = false;
         this.$nextTick(() => {
           if (!this.$refs.editImage) {
             return;
