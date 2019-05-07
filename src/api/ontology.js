@@ -66,9 +66,14 @@ const API = {
       dappIcon: '' // some url points to the dapp icon
     };
     try {
-      return isAPP 
-        ? client.api.asset.getAccount(params) // done
-        : client.api.asset.getAccount(); // done
+      let address = null;
+      if (isAPP) {
+        const { result } = await client.api.asset.getAccount(params);
+        address = result;
+      } else {
+        address = await client.api.asset.getAccount();
+      }
+      return address;
     } catch(error) {
       console.error('cyanobridge.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', error);
     }
@@ -82,15 +87,21 @@ const API = {
       dappName: config.dappName, // dapp's name
       dappIcon: '', // some url that points to the dapp's icon
       message, // message sent from dapp that will be signed by native client
-      expired: new Date('2020-01-01').getTime(), // expired date of login
+      expired: new Date('2020-01-01').getTime(), // expired date of login // todo
       callback: '' // callback url of dapp
     };
     try {
-      return isAPP
-        ? client.api.message.login(params) // done, todo: setup expired
-        : client.api.message.signMessage({ message }); // done
-    } catch(err) {
-      console.error('cyanobridge.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', err);
+      let signature = null;
+      if (isAPP) {
+        const { result } = await client.api.message.login(params);
+        const { publickey: publicKey, signature: data } = result;
+        signature = { publicKey, data };
+      } else {
+        signature = await client.api.message.signMessage({ message });
+      }
+      return signature;
+    } catch(error) {
+      console.error('cyanobridge.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', error);
     }
   },
   // SmartContract
