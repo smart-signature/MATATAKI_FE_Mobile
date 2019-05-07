@@ -94,26 +94,24 @@ const actions = {
   async login({ commit, dispatch }) {
     console.log('Start log in...');
     commit('setIsLoggingIn', true);
-    return new Promise(async (resolve, reject) => {
-      try {
-        const identity = await api.loginScatterAsync();
-        if (!identity) { // 失敗若是走了 catch ，這條也不會 run
-          commit('setAccount', null);
-          commit('setIsLoggingIn', false);
-          reject(new Error('Failed to get identity in Scatter'));
-        }
-        const account = identity.accounts.find(({ blockchain }) => blockchain === 'eos');
-        commit('setAccount', account);
-        console.log(account, 'log in successful.');
-        dispatch('setBalances');
+    try {
+      const identity = await api.loginScatterAsync();
+      if (!identity) { // 失敗若是走了 catch ，這條也不會 run
+        commit('setAccount', null);
         commit('setIsLoggingIn', false);
-        resolve(account);
-      } catch (err) {
-        commit('setIsLoggingIn', false);
-        console.error('Failed to log in Scatter :', err);
-        reject(err);
+        throw new Error('Failed to get identity in Scatter');
       }
-    });
+      const account = identity.accounts.find(({ blockchain }) => blockchain === 'eos');
+      commit('setAccount', account);
+      console.log(account, 'log in successful.');
+      dispatch('setBalances');
+      commit('setIsLoggingIn', false);
+      return account;
+    } catch (error) {
+      commit('setIsLoggingIn', false);
+      console.error('Failed to log in Scatter :', error);
+      throw error;
+    }
   },
   async logout({ commit }) {
     try {
