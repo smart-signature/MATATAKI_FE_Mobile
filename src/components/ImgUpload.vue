@@ -36,7 +36,7 @@
 import FileUpload from 'vue-upload-component';
 import { apiServer, getAvatarImage } from '@/api/backend';
 import Cropper from 'cropperjs';
-import '../views/User/css/cropper.css';
+// import '../views/User/css/cropper.css';
 
 export default {
   name: 'imgUpload',

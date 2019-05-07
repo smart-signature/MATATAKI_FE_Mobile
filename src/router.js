@@ -85,7 +85,7 @@ export default new Router({
       path: '/publish/:id',
       name: 'Publish',
       props: true,
-      component: () => import(/* webpackChunkName: "article-edit" */ './views/Publish.vue'),
+      component: () => import(/* webpackChunkName: "article-edit" */ './views/Publish/Publish.vue'),
     },
     {
       path: '/followlist/:username',

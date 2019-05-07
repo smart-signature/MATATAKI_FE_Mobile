@@ -1,0 +1,95 @@
+.send-button{
+    font-size: 14px;
+    font-family: PingFangSC-Medium;
+    font-weight: bolder;
+    color: #7D7D7D;
+    cursor: pointer;
+  }
+  .new-post {
+    padding-top: 45px;
+    min-height: 100%;
+    background: #fff;
+  }
+
+  .radio {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px;
+  }
+  .edit-content {
+    /* margin: 10px; */
+  }
+
+  /* 编辑器层级大于modal 改变编辑器层级 */
+  .v-note-wrapper{
+    z-index: 9;
+  }
+  .fission{
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    padding: 18px 20px;
+    font-size: 14px;
+    border-bottom: 1px solid #eaeaea;
+    p {
+      font-weight: bold;
+    }
+    .fission-num-slider{
+      max-width: 130px;
+      width: 70%;
+      margin: 0 20px 0 10px;
+      z-index: 99;
+    }
+    .fission-num-Input{
+      font-size: 16px;
+    }
+  }
+
+  .cover {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    padding: 8px 20px;
+    font-size: 14px;
+    border-bottom: 1px solid #eaeaea;
+     p {
+      font-weight: bold;
+    }
+    .cover-upload{
+      margin-left: 10px;
+    }
+  }
+  .radio{
+    display: flex;
+    justify-content: center;
+    background-color: #fff;
+    padding: 8px 20px;
+    font-size: 14px;
+    border-bottom: 1px solid #eaeaea;
+    .save-type {
+      float: left;
+      text-align: left;
+    }
+  }
+
+
+  .edit-title {
+    width: 100%;
+    padding: 14px 10px;
+    border: none;
+    outline: none;
+    border-radius: 0;
+    background: transparent;
+    background-color: #fff;
+    color: #000;
+    border-bottom: 1px solid #ddd;
+    font-size: 26px;
+    font-weight: bold;
+  }
+  @media screen and (max-width: 576px) {
+    .edit-title {
+      font-size: 18px;
+    }
+}
