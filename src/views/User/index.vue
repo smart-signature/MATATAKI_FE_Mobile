@@ -1,12 +1,16 @@
-  /* eslint-disable no-shadow */
+/* eslint-disable no-shadow */
 <template>
   <div class="user mw">
     <BaseHeader :pageinfo="{ title: `个人主页`, rightPage: 'home', needLogin: false, }" />
     <div class="usercard" >
       <div class="user-avatar">
         <img class="userpic" :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png');}" />
-        <img class="camera" src="/img/camera.png" @click="editingavatar = true" v-if="editing" />
+        <imgUpload :model="false" class="camera" v-if="editing">
+          <img slot="uploadButton" src="/img/camera.png" />
+        </imgUpload>
       </div>
+          <!-- <img slot="uploadButton" class="camera" src="/img/camera.png" @click="editingavatar = true" v-if="editing" /> -->
+
 
       <div class="texts">
         <p v-if="!editing" class="username" :class="[!email ? 'username-email' : '']">{{nickname === "" ? username : nickname}}</p>
@@ -103,11 +107,12 @@ import {
 } from '@/api';
 import ArticlesList from './ArticlesList.vue';
 import Avatar from './AvatarUploader.vue';
+import imgUpload from '@/components/imgUpload/index.vue';
 
 export default {
   name: 'User',
   props: ['username'],
-  components: { Avatar, ArticlesList },
+  components: { Avatar, ArticlesList, imgUpload },
   data() {
     return {
       playerincome: 0,
@@ -118,6 +123,7 @@ export default {
       nickname: '',
       newname: '',
       email: '',
+      // eslint-disable-next-line global-require
       avatar: require('../../assets/logo.png'),
       editingavatar: false,
     };
