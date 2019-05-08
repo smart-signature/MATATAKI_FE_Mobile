@@ -36,11 +36,11 @@ const API = {
   async setClient() {
     if (this.client) return;
     if (isAPP) {
-      const { client } = await import(/* webpackChunkName: "cyanobridge" */ 'cyanobridge');
+      const { client } = await import(/* webpackChunkName: "ontology" */ 'cyanobridge');
       client.registerClient();
       this.client = client;
     } else {
-      const { client } = await import(/* webpackChunkName: "cyanobridge" */ 'ontology-dapi');
+      const { client } = await import(/* webpackChunkName: "ontology" */ 'ontology-dapi');
       client.registerClient({});
       this.client = client;
     }
