@@ -95,7 +95,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import {
-  Follow, Unfollow, getUser, oldgetUser,
+  Follow, Unfollow, getUser,
   setUserName, getAssets, getAvatarImage,
   uploadAvatar,
 } from '@/api';
@@ -206,9 +206,7 @@ export default {
         this.followed = data.is_follow;
       };
       try {
-        const response = await (
-          currentUsername ? oldgetUser({ username }) : getUser({ username })
-        );
+        const response = await getUser({ username }, currentUsername);
         if (response.status !== 200) throw new Error('getUser error');
         setUser(response.data);
       } catch (error) {

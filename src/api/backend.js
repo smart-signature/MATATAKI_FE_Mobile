@@ -19,52 +19,39 @@ const platform = () => (store.getters.currentUserInfo.blockchain.toLowerCase());
 const getSignatureOfArticle = ({ author, hash }) => store.dispatch('getSignatureOfArticle', { author, hash });
 const getSignatureOfAuth = () => store.dispatch('getSignatureOfAuth');
 
-const publishArticle = async ({
-  author, title, hash, fissionFactor, cover,
-}) => {
-  const signature = await getSignatureOfArticle({ author, hash });
-  console.log('getSignatureOfArticle :', signature);
+const sendArticle = async (url = '', {
+  signId = null, author, hash, title, fissionFactor, cover,
+}, needAccessToken = false) => {
   // 若 getSignatureOfArticle reject(或內部 throw 被轉為reject)
-  // 則 publishArticle 會成為 Promise.reject()
-  const { publicKey: publickey, signature: sign, username } = signature;
-  return axiosforApiServer.post('/publish',
-    {
-      author,
-      fissionFactor,
-      hash,
-      platform: platform(),
-      publickey,
-      sign,
-      title,
-      username,
-      cover,
-    });
+  // 則 sendArticle 會成為 Promise.reject()
+  const { publicKey, signature, username } = await getSignatureOfArticle({ author, hash });
+  console.log('getSignatureOfArticle :', { publicKey, signature, username });
+  const data = {
+    author,
+    cover,
+    fissionFactor,
+    hash,
+    platform: platform(),
+    publickey: publicKey,
+    sign: signature,
+    signId,
+    title,
+    username,
+  };
+  return !needAccessToken ? axiosforApiServer.post(url, data)
+    : accessBackend({ method: 'POST', url, data });
 };
 
-// 编辑
-const editArticle = async ({
-  signId, author, title, hash, fissionFactor, cover,
-}) => {
-  const signature = await getSignatureOfArticle({ author, hash });
-  console.log('签名成功后调', signature);
-  const { publicKey: publickey, signature: sign, username } = signature;
-  return accessBackend({
-    method: 'POST',
-    url: '/edit',
-    data: {
-      signId,
-      author,
-      fissionFactor,
-      hash,
-      platform: platform(),
-      publickey,
-      sign,
-      title,
-      username,
-      cover,
-    },
-  });
-};
+const publishArticle = ({
+  author, hash, title, fissionFactor, cover,
+}) => sendArticle('/publish', {
+  author, hash, title, fissionFactor, cover,
+});
+const editArticle = ({
+  signId, author, hash, title, fissionFactor, cover,
+}) => sendArticle('/edit', {
+  signId, author, hash, title, fissionFactor, cover,
+}, true);
 
 // todo: 等後端給參數
 /*
@@ -119,8 +106,10 @@ const setAccessToken = token => localStorage.setItem('ACCESS_TOKEN', token);
 // /<summary>
 // /根据用户名，公钥，客户端签名请求access_token
 // /</summary>
-const auth = ({ username, publicKey, sign }) => axiosforApiServer.post('/auth',
-  { username, publickey: publicKey, sign, platform: platform() },
+const auth = ({ publicKey, signature, username }) => axiosforApiServer.post('/auth',
+  {
+    platform: platform(), publickey: publicKey, sign: signature, username,
+  },
   {
     headers: { Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==' },
   });
@@ -148,20 +137,17 @@ const getAuth = async () => {
     || username !== currentUsername) {
     try {
       console.log('Retake authtoken...');
-      const signature = await getSignatureOfAuth();
-      console.info('API.authSignature :', signature);
+      const result = await getSignatureOfAuth();
+      console.info('getSignatureOfAuth() :', result);
       // 将取得的签名和用户名和公钥post到服务端 获得accessToken
-      const { username: _username, publicKey, signature: sign } = signature;
-      const response = await auth({ username: _username, publicKey, sign });
-      if (response.status === 200) {
-        // 3. save accessToken
-        const accessToken = response.data;
-        console.info('got the access token :', accessToken);
-        setAccessToken(accessToken);
-        return accessToken;
-      }
-
-      throw new Error('auth 出錯');
+      const { username: _username, publicKey, signature } = result;
+      const response = await auth({ username: _username, publicKey, signature });
+      if (response.status !== 200) throw new Error('auth 出錯');
+      // 3. save accessToken
+      const accessToken = response.data;
+      console.info('got the access token :', accessToken);
+      setAccessToken(accessToken);
+      return accessToken;
     } catch (error) {
       console.warn('取得用戶新簽名出錯', error);
       throw error;
@@ -215,13 +201,10 @@ const Unfollow = ({ username, followed }) => accessBackend({
   data: { username, followed },
 });
 
-// Be used in User page.
-const getUser = ({ username }) => axiosforApiServer.get(`/user/${username}`);
-// todo: rename
-const oldgetUser = ({ username }) => accessBackend({
-  method: 'GET',
-  url: `/user/${username}`,
-});
+const getUser = ({ username }, needAccessToken = false) => {
+  const url = `/user/${username}`;
+  return !needAccessToken ? axiosforApiServer.get(url) : accessBackend({ method: 'GET', url });
+};
 
 // Be used in User page.
 const setUserName = ({ newname }) => accessBackend({
@@ -321,7 +304,7 @@ export {
   auth, getAuth,
   publishArticle,
   getArticleDatafromIPFS, getArticleInfo, getArticlesList,
-  Follow, Unfollow, getUser, setUserName, getFansList, getFollowList, oldgetUser,
+  Follow, Unfollow, getUser, setUserName, getFansList, getFollowList,
   getSharesbysignid, addReadAmount, sendComment, getAssets, getAvatarImage,
   disassembleToken, delArticle, uploadAvatar, getArticleSupports, editArticle,
   getBackendData,
