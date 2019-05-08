@@ -36,7 +36,7 @@ components: { ImgUpload },
 接口地址
 
 ```js
-`${apiServer}/ipfs/upload`, // 上传地址
+ifpsUpload, // from by api/ipfs.js
 ``` 
 
 上传完成事件

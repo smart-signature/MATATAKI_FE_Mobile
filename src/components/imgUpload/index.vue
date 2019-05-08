@@ -48,7 +48,7 @@
 import VueUploadComponent from 'vue-upload-component';
 import Cropper from 'cropperjs';
 import './cropper.css';
-import { apiServer } from '@/api/backend';
+import { ifpsUpload } from '@/api/ipfs';
 import Compressor from 'compressorjs';
 
 export default {
@@ -85,7 +85,7 @@ export default {
       files: [], // 文件数据
       modal: false, // modal 框显示和隐藏
       modalLoading: false, // modal button loading
-      postAction: `${apiServer}/ipfs/upload`, // 上传地址
+      postAction: ifpsUpload, // 上传地址
     };
   },
   watch: {
