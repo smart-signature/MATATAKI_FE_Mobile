@@ -1,31 +1,15 @@
 <template>
-  <div class="BaseHeader" :class="isCenter && 'mw'">
-    <za-nav-bar>
-      <div slot="left">
-        <img src="@/assets/back.svg" alt="home" @click="goBack" class="back-icon">
-        <router-link :to="{ name: 'home' }">
-          <img src="@/assets/home.svg" alt="home" class="home-icon">
-        </router-link>
-          <!--<za-icon v-if="pageinfo.left==='back'"
-            theme="primary" type="arrow-left" @click="goBack"/>
-          <router-link v-else :to="{ name: 'home' }">
-            <Icon type="ios-home" :size="24" />
-          </router-link>-->
-      </div>
-      <div slot="title" style="font-size: 16px;">
-        <!--<router-link tag="my-Header" :to="{ name: 'home' }">-->
-          {{pageinfo.title}}
-        <!--</router-link>-->
-      </div>
-      <div class="right-slot" slot="right">
-        <slot name='info'></slot>
-        <slot name="right"></slot>
-        <!--<router-link :to="{ name: pageinfo.rightPage }">
-          &lt;!&ndash;<Icon type="ios-share-alt" :size="24" />&ndash;&gt;
-        </router-link>-->
-      </div>
-    </za-nav-bar>
-</div>
+  <div class="header" :class="isCenter && 'mw'">
+    <div class="header-left" slot="left">
+      <img src="@/assets/img/icon_back.svg" alt="home" @click="goBack" class="back-icon">
+      <img src="@/assets/img/icon_home.svg" alt="home" @click="goHome" class="home-icon">
+    </div>
+    <p slot="title" class="title"> {{pageinfo.title}} </p>
+    <div class="header-right" slot="right">
+      <slot name='info'></slot>
+      <slot name="right"></slot>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -70,6 +54,9 @@ export default {
     goBack() {
       this.$router.go(-1);
     },
+    goHome() {
+      this.$router.push({ name: 'home' });
+    },
   },
   watch: {
     isLogined(newState) {
@@ -97,27 +84,12 @@ export default {
 </script>
 
 <style scoped>
-a:link {
-  color: black;
-}
-a:visited {
-  color: black;
-}
-a:hover a:active {
-  color: black;
-}
-a:active {
-  color: black;
-}
-.back-icon {
-  width: 16px;
-}
-.home-icon {
-  width: 22px;
-  margin-left: 14px;
-}
-.BaseHeader {
-  border-bottom: 1px solid #eaeaea;
+.header {
+  background-color: transparent;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   box-sizing: border-box;
   position: fixed;
   top: 0;
@@ -125,8 +97,33 @@ a:active {
   right: 0;
   z-index: 999;
 }
-.right-slot{
+.header-left {
+  position: absolute;
+  left: 20px;
+    display: flex;
+  align-items: center;
+}
+.title {
+  text-align: center;
+  font-size:16px;
+  font-family:PingFangSC-Regular;
+  font-weight:400;
+  letter-spacing:1px;
+  color: #676767;
+}
+.header-right{
+  position: absolute;
+  right: 20px;
   display: flex;
   align-items: center;
 }
+.back-icon {
+  width: 16px;
+}
+
+.home-icon {
+  width: 22px;
+  margin-left: 6px;
+}
+
 </style>

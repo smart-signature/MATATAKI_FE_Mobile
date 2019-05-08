@@ -1,16 +1,11 @@
 <template>
     <div class="asset mw">
-        <BaseHeader :pageinfo="{ left: 'back', title: `账户`, rightPage: 'home', needLogin: false, }"/>
-        <div class="asset-list">
-            <div class="list" v-for="(item, index) in assetList" :key="index" @click="jumpTo(index)">
-               <div>
-                    <span class="list-type">{{item.type}}</span>
-                    <span
-                    class="list-status "
-                    :class="item.status && 'bind'"
-                    >
-                    {{item.status ? '已绑定' : '未绑定'}}
-                    </span>
+        <BaseHeader :pageinfo="{ left: 'back', title: `我的账户`, rightPage: 'home', needLogin: false, }"/>
+        <div class="asset-list" v-for="(itemAssetList, index) in assetList" :key="index">
+            <div class="list" v-for="(item, index) in itemAssetList" :key="index" @click="jumpTo(index)">
+               <div class="list-left">
+                    <img class="list-icon" :src="item.imgUrl" :alt="item.type" />
+                    <span class="list-type" :class="item.status || 'unbind'">{{item.type}}</span>
                </div>
                <div class="list-right">
                    <template v-if="item.status">
@@ -20,8 +15,9 @@
                        </div>
                    </template>
                     <template v-else>
-                        <p class="list-right-unbind">暂未推出,敬请期待</p>
+                        <p class="list-right-unbind">即将上线,敬请期待</p>
                     </template>
+                    <img class="arrow" src="@/assets/img/icon_arrow.svg" alt="">
                </div>
             </div>
         </div>
@@ -41,36 +37,45 @@ export default {
   data() {
     return {
       assetList: [
-        {
-          type: 'EOS',
-          status: true,
-          withdraw: 0,
-          total: 0,
-        },
-        {
-          type: 'ONT',
-          status: false,
-          withdraw: 0,
-          total: 0,
-        },
-        {
-          type: 'ETH',
-          status: false,
-          withdraw: 0,
-          total: 0,
-        },
-        {
-          type: 'BTC',
-          status: false,
-          withdraw: 0,
-          total: 0,
-        },
-        {
-          type: 'RMB',
-          status: false,
-          withdraw: 0,
-          total: 0,
-        },
+        [
+          {
+            type: 'EOS',
+            imgUrl: require('../../../assets/img/icon_EOS.svg'),
+            status: true,
+            withdraw: 0,
+            total: 0,
+          },
+          {
+            type: 'ONT',
+            imgUrl: require('../../../assets/img/icon_ONT.png'),
+            status: false,
+            withdraw: 0,
+            total: 0,
+          },
+        ],
+        [
+          {
+            type: 'ETH',
+            imgUrl: require('../../../assets/img/icon_ETH.svg'),
+            status: false,
+            withdraw: 0,
+            total: 0,
+          },
+          {
+            type: 'BTC',
+            imgUrl: require('../../../assets/img/icon_BTC.svg'),
+            status: false,
+            withdraw: 0,
+            total: 0,
+          },
+          {
+            type: 'RMB',
+            imgUrl: require('../../../assets/img/icon_RMB.svg'),
+            status: false,
+            withdraw: 0,
+            total: 0,
+          },
+        ],
       ],
     };
   },
