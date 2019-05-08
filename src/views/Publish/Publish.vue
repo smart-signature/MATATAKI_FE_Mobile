@@ -27,9 +27,9 @@
       </div>
       <div class="cover">
         <p>图文封面</p>
-        <imgUpload :imgUploadDone="imgUploadDone" class="cover-upload" @doneImageUpload="doneImageUpload" v-if="!cover">
+        <img-upload :imgUploadDone="imgUploadDone" :imgSize="5" class="cover-upload" @doneImageUpload="doneImageUpload" v-if="!cover">
           <img slot="uploadButton" class="cover-add" src="@/assets/img/icon_add.svg" alt="add">
-        </imgUpload>
+        </img-upload>
         <div class="cover-right" v-else>
           <img class="cover-right-img" :src="coverEditor" alt="cover" />
           <img class="cover-right-remove" @click.prevent="removeCover" src="@/assets/img/icon_remove.svg" alt="remove">
@@ -62,7 +62,7 @@ import VueSlider from 'vue-slider-component';
 import 'vue-slider-component/theme/default.css';
 import { sleep } from '@/common/methods';
 import { toolbars } from './toolbars'; // 编辑器配置
-import imgUpload from '@/components/imgUpload/index.vue';
+import ImgUpload from '@/components/ImgUpload/index.vue';
 
 
 export default {
@@ -70,7 +70,7 @@ export default {
   components: {
     mavonEditor,
     VueSlider,
-    imgUpload,
+    ImgUpload,
   },
   created() {
     const { id } = this.$route.params;
@@ -109,6 +109,7 @@ export default {
     id: '',
     editorMode: 'create', // 默认是创建文章
     saveType: 'public', // 发布文章模式， 公开 || 草稿
+    imgUploadDone: 0,
   }),
   computed: {
     ...mapState('scatter', {

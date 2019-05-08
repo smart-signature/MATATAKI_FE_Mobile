@@ -16,10 +16,6 @@
             </slot>
         </file-upload>
 
-        <!-- <button v-show="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true" type="button">开始上传</button> -->
-        <!-- <button v-show="$refs.upload && $refs.upload.active" @click.prevent="$refs.upload.active = false" type="button">停止上传</button> -->
-
-
         <!-- 编辑图片 modal -->
         <Modal
             width="400"
@@ -53,10 +49,10 @@ import VueUploadComponent from 'vue-upload-component';
 import Cropper from 'cropperjs';
 import './cropper.css';
 import { apiServer } from '@/api/backend';
-
+import Compressor from 'compressorjs';
 
 export default {
-  name: 'imgUpload',
+  name: 'ImgUpload',
   components: { FileUpload: VueUploadComponent },
   props: {
     // 按钮文字
@@ -74,6 +70,14 @@ export default {
       type: Number,
       default: 0,
       required: true,
+    },
+    // 压缩图片
+    compressorSetting: {
+      type: Object,
+      default: () => ({
+        status: true, // 默认开启压缩
+        quality: 0.8, // 压缩品质
+      }),
     },
   },
   data() {
@@ -119,7 +123,7 @@ export default {
      * @return undefined
      */
     // eslint-disable-next-line consistent-return
-    inputFilter(newFile, oldFile, prevent) {
+    async inputFilter(newFile, oldFile, prevent) {
       if (newFile && !oldFile) {
         // 过滤不是图片后缀的文件
         if (!/\.(gif|jpg|jpeg|png|webp)$/i.test(newFile.name)) {
@@ -133,26 +137,62 @@ export default {
       }
 
       // 限定最大字节
-      if (newFile.size >= 0 && newFile.size > 1024 * 1024 * this.imgSize) {
-        this.$toasted.show(`请选择 ${this.imgSize}M 以内的图片`, {
-          position: 'top-center',
-          duration: 1500,
-          fitToScreen: true,
-        });
-        return prevent();
-      }
-      // 图片预览
-      if (newFile && (!oldFile || newFile.file !== oldFile.file)) {
-        // eslint-disable-next-line no-param-reassign
-        newFile.url = '';
-        const URL = window.URL || window.webkitURL;
-        if (URL && URL.createObjectURL) {
-        // eslint-disable-next-line no-param-reassign
-          newFile.url = URL.createObjectURL(newFile.file);
-          //   console.log(this.files);
-          this.modal = true; // 显示 modal
+      const imgSize = () => {
+        if (newFile.file.size >= 0 && newFile.file.size > 1024 * 1024 * this.imgSize) {
+        // console.log(newFile.file.size);
+          this.$toasted.show(`请选择 ${this.imgSize}M 以内的图片`, {
+            position: 'top-center',
+            duration: 1500,
+            fitToScreen: true,
+          });
+          return prevent();
         }
-      }
+        return true;
+      };
+      // 图片预览
+      const modalImgView = () => {
+        if (newFile && (!oldFile || newFile.file !== oldFile.file)) {
+        // eslint-disable-next-line no-param-reassign
+          newFile.url = '';
+          const URL = window.URL || window.webkitURL;
+          if (URL && URL.createObjectURL) {
+          // eslint-disable-next-line no-param-reassign
+            newFile.url = URL.createObjectURL(newFile.file);
+            //   console.log(this.files);
+            this.modal = true; // 显示 modal
+          }
+        }
+      };
+
+      // 执行 限制大小方法和显示裁剪框
+      const limitAndShowView = () => {
+        imgSize();
+        modalImgView();
+      };
+
+      // 压缩方法
+      const compressorFunc = async () => {
+        await new Compressor(newFile.file, {
+          quality: this.compressorSetting.quality,
+          success(file) {
+            // eslint-disable-next-line no-param-reassign
+            newFile.file = file;
+            limitAndShowView();
+          },
+          error(err) {
+            console.log(err.message);
+            limitAndShowView();
+            this.$toasted.show('自动压缩图片失败', {
+              position: 'top-center',
+              duration: 1500,
+              fitToScreen: true,
+            });
+          },
+        });
+      };
+
+      if (this.compressorSetting.status) compressorFunc();
+      else limitAndShowView();
     },
     // 上传图片
     uploadButton() {
