@@ -89,7 +89,7 @@ export default {
       this.$router.push({
         name: 'AssetType',
         params: {
-          type: this.assetList[index].type,
+          type: this.assetList[index][itemIndex].type,
         },
       });
     },
