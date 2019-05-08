@@ -98,7 +98,7 @@ export default {
       await getAssets(username, 1).then((res) => {
         if (res.status === 200) {
           // 手动指定第一个list
-          this.assetList[0].total = (res.data.totalSignIncome + res.data.totalShareIncome) / 10000;
+          this.assetList[0][0].total = (res.data.totalSignIncome + res.data.totalShareIncome) / 10000;
         }
       }).catch((err) => {
         console.log(err);
@@ -110,7 +110,7 @@ export default {
       console.log('Connecting to EOS fetch player income...');
       const playerincome = await getPlayerIncome(name); // 从合约拿到支持收入和转发收入
       // 手动指定第一个list
-      this.assetList[0].withdraw = isEmptyArray(playerincome)
+      this.assetList[0][0].withdraw = isEmptyArray(playerincome)
         ? (playerincome[0].share_income + playerincome[0].sign_income) / 10000
         : 0;
       // 截止2019年3月24日中午12时合约拿过来的东西要除以10000才能正常显示
