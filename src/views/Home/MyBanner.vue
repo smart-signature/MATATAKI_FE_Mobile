@@ -46,9 +46,8 @@ export default {
     },
     displayName() {
       const { currentUserInfo, nickname } = this;
-      return nickname !== '' ? nickname
-        : currentUserInfo.name.length <= 12 ? currentUserInfo.name
-          : currentUserInfo.name.slice(0, 12);
+      const { name } = currentUserInfo;
+      return nickname || (name.length <= 12 ? name : name.slice(0, 12));
     },
     displayTokenSymbol() {
       return this.currentUserInfo.balance.slice(-4);
@@ -102,15 +101,13 @@ export default {
       if (!hash) this.avatar = require('../../assets/logo.png');
       else this.avatar = getAvatarImage(hash);
     },
-    refresh_user() {
+    async refresh_user() {
       const { name: username } = this.currentUserInfo;
       console.log(username);
-      getUser({ username }).then((response) => {
-        const { data } = response;
-        console.log(data);
-        this.nickname = data.nickname;
-        this.getAvatarImage(data.avatar);
-      });
+      const { data } = await getUser({ username });
+      console.log(data);
+      this.nickname = data.nickname;
+      this.getAvatarImage(data.avatar);
     },
   },
   mounted() {

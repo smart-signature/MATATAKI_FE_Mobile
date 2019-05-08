@@ -199,12 +199,10 @@ const Unfollow = ({ username, followed }) => accessBackend({
   data: { username, followed },
 });
 
-const getUser = ({ username }) => axiosforApiServer.get(`/user/${username}`);
-// todo: rename
-const oldgetUser = ({ username }) => accessBackend({
-  method: 'GET',
-  url: `/user/${username}`,
-});
+const getUser = ({ username }, needAccessToken = false) => {
+  const url = `/user/${username}`;
+  return !needAccessToken ? axiosforApiServer.get(url) : accessBackend({ method: 'GET', url, });
+};
 
 // Be used in User page.
 const setUserName = ({ newname }) => accessBackend({
@@ -304,7 +302,7 @@ export {
   auth, getAuth,
   publishArticle,
   getArticleDatafromIPFS, getArticleInfo, getArticlesList,
-  Follow, Unfollow, getUser, setUserName, getFansList, getFollowList, oldgetUser,
+  Follow, Unfollow, getUser, setUserName, getFansList, getFollowList,
   getSharesbysignid, addReadAmount, sendComment, getAssets, getAvatarImage,
   disassembleToken, delArticle, uploadAvatar, getArticleSupports, editArticle,
   getBackendData,

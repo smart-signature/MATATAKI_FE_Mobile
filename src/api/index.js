@@ -9,9 +9,8 @@ import defaultImagesUploader from './imagesUploader';
 export {
   getArticlesList, publishArticle,
   auth, getAuth,
-  getArticleDatafromIPFS,
-  getArticleInfo,
-  Follow, Unfollow, getUser, oldgetUser,
+  getArticleDatafromIPFS, getArticleInfo,
+  Follow, Unfollow, getUser,
   setUserName, getFansList, getFollowList,
   getSharesbysignid, sendComment, addReadAmount, getAssets,
   delArticle, uploadAvatar, getAvatarImage, getArticleSupports, editArticle,
