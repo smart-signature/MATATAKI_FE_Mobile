@@ -2,7 +2,7 @@
     <div class="asset mw">
         <BaseHeader :pageinfo="{ left: 'back', title: `我的账户`, rightPage: 'home', needLogin: false, }"/>
         <div class="asset-list" v-for="(itemAssetList, index) in assetList" :key="index">
-            <div class="list" v-for="(item, index) in itemAssetList" :key="index" @click="jumpTo(index)">
+            <div class="list" v-for="(item, itemIndex) in itemAssetList" :key="itemIndex" @click="jumpTo(index, itemIndex)">
                <div class="list-left">
                     <img class="list-icon" :src="item.imgUrl" :alt="item.type" />
                     <span class="list-type" :class="item.status || 'unbind'">{{item.type}}</span>
@@ -84,8 +84,8 @@ export default {
     this.getPlayerTotalIncome(this.username);
   },
   methods: {
-    jumpTo(index) {
-      if (!this.assetList[index].status) return;
+    jumpTo(index, itemIndex) {
+      if (!this.assetList[index][itemIndex].status) return;
       this.$router.push({
         name: 'AssetType',
         params: {
