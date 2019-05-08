@@ -5,9 +5,9 @@
     <div class="usercard" >
       <div class="user-avatar">
         <img class="userpic" :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png');}" />
-        <imgUpload :imgUploadDone="imgUploadDone" class="camera" v-if="editing" @doneImageUpload="doneImageUpload">
+        <img-upload :imgUploadDone="imgUploadDone" class="camera" v-if="editing" @doneImageUpload="doneImageUpload">
           <img slot="uploadButton" src="/img/camera.png" />
-        </imgUpload>
+        </img-upload>
       </div>
 
       <div class="texts">
@@ -123,12 +123,12 @@ import {
   uploadAvatar,
 } from '@/api';
 import ArticlesList from './ArticlesList.vue';
-import imgUpload from '@/components/imgUpload/index.vue';
+import ImgUpload from '@/components/ImgUpload/index.vue';
 
 export default {
   name: 'User',
   props: ['username'],
-  components: { ArticlesList, imgUpload },
+  components: { ArticlesList, ImgUpload },
   data() {
     return {
       playerincome: 0,

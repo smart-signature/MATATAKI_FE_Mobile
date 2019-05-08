@@ -26,3 +26,7 @@ function sendPost({
 
 // eslint-disable-next-line import/prefer-default-export
 export { sendPost };
+
+
+// 图片上传接口
+export const ifpsUpload = `${apiServer}/ipfs/upload`;
