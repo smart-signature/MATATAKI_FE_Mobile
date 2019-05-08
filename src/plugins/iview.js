@@ -14,7 +14,7 @@ Vue.component('Button', Button);
 Vue.component('Icon', Icon);
 Vue.component('Row', Row);
 Vue.component('Divider', Divider);
-Vue.component('message', message);
+Vue.component('Message', Message);
 Vue.component('Notice', Notice);
 Vue.component('Modal', Modal);
 Vue.component('Avatar', Avatar);
