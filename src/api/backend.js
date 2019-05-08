@@ -39,7 +39,7 @@ const sendArticle = async (url = '', {
     username,
   };
   return !needAccessToken ? axiosforApiServer.post(url, data)
-    : accessBackend({ method: 'POST', url, data, });
+    : accessBackend({ method: 'POST', url, data });
 };
 
 const publishArticle = ({
@@ -107,7 +107,9 @@ const setAccessToken = token => localStorage.setItem('ACCESS_TOKEN', token);
 // /根据用户名，公钥，客户端签名请求access_token
 // /</summary>
 const auth = ({ publicKey, signature, username }) => axiosforApiServer.post('/auth',
-  { platform: platform(), publickey: publicKey, sign: signature, username },
+  {
+    platform: platform(), publickey: publicKey, sign: signature, username,
+  },
   {
     headers: { Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==' },
   });
@@ -201,7 +203,7 @@ const Unfollow = ({ username, followed }) => accessBackend({
 
 const getUser = ({ username }, needAccessToken = false) => {
   const url = `/user/${username}`;
-  return !needAccessToken ? axiosforApiServer.get(url) : accessBackend({ method: 'GET', url, });
+  return !needAccessToken ? axiosforApiServer.get(url) : accessBackend({ method: 'GET', url });
 };
 
 // Be used in User page.

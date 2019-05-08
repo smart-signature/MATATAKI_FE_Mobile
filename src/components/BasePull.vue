@@ -143,7 +143,6 @@ export default {
         this.$Message.error('获取数据失败');
         this.busy = true;
         this.isTheEndOfTheScroll = true;
-        return;
       }
     },
     // 刷新
