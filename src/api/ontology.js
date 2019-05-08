@@ -50,10 +50,10 @@ const API = {
     if (!this.client) await this.setClient();
     const { client } = this;
     try {
-      if (isAPP) throw new Error('no getBalance func'); // done
+      if (isAPP) throw new Error('no getBalance in cyanobridge'); // done
       return client.api.network.getBalance({ address }); // done
     } catch(error) {
-      console.error('cyanobridge.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', error);
+      console.error('ontology.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', error);
       throw error;
     }
   },
@@ -75,7 +75,8 @@ const API = {
       }
       return address;
     } catch(error) {
-      console.error('cyanobridge.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', error);
+      console.error('ontology.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', error);
+      throw error;
     }
   },
   // Message
@@ -101,7 +102,8 @@ const API = {
       }
       return signature;
     } catch(error) {
-      console.error('cyanobridge.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', error);
+      console.error('ontology.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', error);
+      throw error;
     }
   },
   // SmartContract
@@ -130,8 +132,9 @@ const API = {
         : client.api.smartContract.invoke({
           scriptHash, operation, args, gasPrice, gasLimit, requireIdentity
         }); // done
-    } catch(err) {
-      console.error('cyanobridge.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', err);
+    } catch(error) {
+      console.error('ontology.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', error);
+      throw error;
     }
   },
 };

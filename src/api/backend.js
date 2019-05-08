@@ -168,8 +168,11 @@ const accessBackend = async (options) => {
   try { // 更新 Auth
     accessToken = await getAuth();
   } catch (error) {
-    console.error('getAuth() error:', error);
-    console.warn('將使用 access token 存檔');
+    console.warn(
+      'url :', options.url, 
+      '\ngetAuth error:', error.message,
+      '\n將使用 access token 存檔'
+      );
   }
   options.headers['x-access-token'] = accessToken;
 
