@@ -41,6 +41,18 @@ export default new Router({
       component: () => import(/* webpackChunkName: "user" */ './views/User/index.vue'),
     },
     {
+      path: '/user/edit/:username',
+      name: 'UserEdit',
+      props: true,
+      component: () => import(/* webpackChunkName: "user" */ './views/User/edit.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
+        // eslint-disable-next-line eqeqeq
+        if (to.params.username != tokenUserName) next(`/user/asset/${tokenUserName}`);
+        else { next(); }
+      },
+    },
+    {
       path: '/user/asset/:username',
       name: 'Asset',
       props: true,

@@ -1,117 +1,27 @@
 /* eslint-disable no-shadow */
 <template>
   <div class="user mw">
-    <BaseHeader :pageinfo="{ title: `编辑`, rightPage: 'home', needLogin: false, }" />
-    <div class="usercard" >
-      <div class="user-avatar">
-        <img class="userpic" :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png');}" />
-        <imgUpload :imgUploadDone="imgUploadDone" class="camera" v-if="editing" @doneImageUpload="doneImageUpload">
-          <img slot="uploadButton" src="/img/camera.png" />
+    <BaseHeader :pageinfo="{ title: `编辑`, rightPage: 'home', needLogin: false, }" >
+      <div slot="right">
+        <span class="send-button" @click="save">完成</span>
+      </div>
+    </BaseHeader>
+
+    <div class="centercard editCard">
+      <za-cell title="头像" class="imgcard">
+        <imgUpload :imgUploadDone="imgUploadDone" @doneImageUpload="doneImageUpload">
+          <div class="user-avatar" slot="uploadButton">
+            <img class="userpic" :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png');}" alt="" slot="description">
+          </div>
         </imgUpload>
-      </div>
-
-      <div class="texts">
-        <p v-if="!editing" class="username" :class="[!email ? 'username-email' : '']">{{nickname === "" ? username : nickname}}</p>
-        <p v-if="email" class="email">{{email}}</p>
-        <input class="userinput" :class="[!email ? 'username-email' : '']" v-if="editing" v-model='newname' />
-        <p class="userstatus">
-          <a @click="jumpTo({ name: 'FollowList', params: { listtype: '关注' }})">
-            关注：{{follows}}
-          </a>
-          <a @click="jumpTo({ name: 'FollowList', params: {  listtype: '粉丝'  }})">
-            粉丝：{{fans}}
-          </a>
-        </p>
-      </div>
-      <div class="user-button">
-        <template v-if="editing">
-          <a href="javascript:;" class="rightbutton" :class="[editing ? 'editing-button' : '']" @click="save">完成</a>
-        </template>
-      <template v-else>
-        <template v-if="isMe">
-          <a href="javascript:;" class="rightbutton" @click="jumpTo({ name: 'UserEdit', params: { username }})">编辑</a>
-        </template>
-        <template v-else>
-          <template v-if="!followed">
-            <a href="javascript:;" class="rightbutton" @click="follow_user">关注</a>
-          </template>
-          <template v-else>
-            <a href="javascript:;" class="rightbutton" @click="unfollow_user">取消关注</a>
-          </template>
-        </template>
-      </template>
-    </div>
-
-    </div>
-    <div class="centercard" v-if="isMe">
-      <za-cell is-link has-arrow @click='jumpTo({ name: "Asset", params: { username }})' description="已绑定1个账户">
-        我的账户
+      </za-cell>
+      <za-cell title="昵称">
+        <za-input v-model="nickname" placeholder="昵称1-12位，可包含中英文和数字"></za-input>
+      </za-cell>
+      <za-cell title="简介">
+        <za-input v-model="introduction" rows="3" type="textarea" placeholder="简介可设置5-20个字符"></za-input>
       </za-cell>
     </div>
-
-    <div class="centercard" v-if="isMe">
-      <za-cell is-link has-arrow @click='jumpTo({ name: "Original", params: { username }})' description="35篇">
-        原创文章
-      </za-cell>
-      <za-cell is-link has-arrow @click='jumpTo({ name: "Reward", params: { username }})' description="4篇">
-        赞赏文章
-      </za-cell>
-      <za-cell is-link has-arrow @click='jumpTo({ name: "DraftBox", params: { username }})' description="3篇">
-        私密文章
-      </za-cell>
-    </div>
-
-    <!--<div class="centercard" v-if="isMe">
-      <za-cell is-link has-arrow @click='jumpTo({ name: "DraftBox", params: { username }})'>
-        加入电报
-      </za-cell>
-    </div>-->
-    <!--<div class="topcard" v-if="isMe">
-      <Row type="flex" justify="center" class="code-row-bg">
-          <Col span="11">
-            <p class="centervalue">{{playerincome}} EOS</p>
-            <p class="centertext">历史总收入</p>
-          </Col>
-          <Col span="1"><Divider type="vertical" style="height:33px;margin-top:10px;" /></Col>
-          <Col span="11">
-            <Button class="detail" ghost
-              @click='jumpTo({ name: "Asset", params: { username }})'>
-              <div style="margin-top:-2px">资产明细</div>
-            </Button>
-            &lt;!&ndash; <p class="centervalue">{{myShareIncome}} EOS</p>
-            <p class="centertext">赞赏收益</p> &ndash;&gt;
-          </Col>
-      </Row>
-    </div>-->
-    <!-- todo(minakokojima): 顯示該作者發表的文章。-->
-    <!-- <ArticlesList ref="ArticlesList"/> -->
-    <!--<div class="centercard" v-if="isMe">
-      <za-cell is-link has-arrow @click='jumpTo({ name: "DraftBox", params: { username }})'>
-        草稿箱
-        &lt;!&ndash; <za-icon type='right' slot='icon'/> @click='jumpTo({ name: "DraftBox" })'&ndash;&gt;
-      </za-cell>
-      <za-cell is-link has-arrow @click='jumpTo({ name: "Original", params: { username }})'>
-        我的文章
-      </za-cell>
-      <za-cell is-link has-arrow @click='jumpTo({ name: "Reward", params: { username }})'>
-        赞赏文章
-      </za-cell>
-    </div>-->
-    <div class="centercard" v-if="isMe">
-      <za-cell is-link has-arrow @click='jumpTo({ name: "About" })'>
-        规则介绍
-      </za-cell>
-      <za-cell is-link has-arrow @click='() => {}'>
-        用户协议
-      </za-cell>
-      <za-cell is-link has-arrow @click='() => {}'>
-        隐私政策
-      </za-cell>
-    </div>
-    <div class="bottomcard" v-if="isMe">
-      <Button class="bottombutton" long @click="logoutScatterAsync">退出登录</Button>
-    </div>
-    <ArticlesList :listtype="'others'" ref='ArticlesList' :username='username' v-if="!isMe"/>
   </div>
 </template>
 
@@ -122,13 +32,12 @@ import {
   setUserName, getAssets, getAvatarImage,
   uploadAvatar,
 } from '@/api';
-import ArticlesList from './ArticlesList.vue';
 import imgUpload from '@/components/imgUpload/index.vue';
 
 export default {
   name: 'User',
   props: ['username'],
-  components: { ArticlesList, imgUpload },
+  components: { imgUpload },
   data() {
     return {
       playerincome: 0,
@@ -142,6 +51,7 @@ export default {
       // eslint-disable-next-line global-require
       avatar: require('../../assets/logo.png'),
       imgUploadDone: 0, // 图片是否上传完成
+      introduction: '',
     };
   },
   computed: {
@@ -227,6 +137,7 @@ export default {
         this.follows = data.follows;
         this.fans = data.fans;
         this.followed = data.is_follow;
+        this.introduction = data.introduction;
       };
       try {
         const response = await getUser({ username }, currentUsername);
@@ -266,17 +177,6 @@ export default {
       }
       this.refreshUser();
     },
-    // 获取历史总收入
-    async getAssets() {
-      await getAssets(this.username, 1).then((res) => {
-        if (res.status === 200) {
-          this.playerincome = (res.data.totalSignIncome + res.data.totalShareIncome) / 10000;
-        }
-      }).catch((err) => {
-        console.log(err);
-        this.$Message.error('获取历史收入错误请重试');
-      });
-    },
     setAvatarImage(hash) {
       // 空hash 显示默认Logo头像
       // eslint-disable-next-line global-require
@@ -299,13 +199,52 @@ export default {
     },
   },
   created() {
-    const { getAssets, refreshUser } = this;
-    getAssets();
+    const { refreshUser } = this;
     refreshUser();
-    const user = this.isMe ? '我' : this.username;
-    document.title = `${user}的个人主页 - SmartSignature`;
+    document.title = '编辑';
   },
 };
 </script>
 
 <style lang="less" scoped src="./index.less"></style>
+<style lang="less">
+  .editCard {
+    .za-cell-title {
+      text-align: left;
+    }
+    .za-input {
+      input, textarea {
+        text-align: right;
+      }
+    }
+    .za-cell-content {
+      justify-content: flex-end;
+    }
+    .za-cell-title {
+      color: #7E7E7E;
+    }
+  }
+  .imgcard {
+    padding: 10px  0;
+    .user-avatar {
+      width: 55px;
+      height: 55px;
+      flex: 0 0 55px;
+      border-radius: 50%;
+      overflow: hidden;
+      position: relative;
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+      .camera {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
+    }
+  }
+</style>
