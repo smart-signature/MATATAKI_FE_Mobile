@@ -169,10 +169,10 @@ const accessBackend = async (options) => {
     accessToken = await getAuth();
   } catch (error) {
     console.warn(
-      'url :', options.url, 
+      'url :', options.url,
       '\ngetAuth error:', error.message,
-      '\n將使用 access token 存檔'
-      );
+      '\n將使用 access token 存檔',
+    );
   }
   options.headers['x-access-token'] = accessToken;
 
