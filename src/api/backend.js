@@ -19,52 +19,39 @@ const platform = () => (store.getters.currentUserInfo.blockchain.toLowerCase());
 const getSignatureOfArticle = ({ author, hash }) => store.dispatch('getSignatureOfArticle', { author, hash });
 const getSignatureOfAuth = () => store.dispatch('getSignatureOfAuth');
 
-const publishArticle = async ({
-  author, title, hash, fissionFactor, cover,
-}) => {
-  const signature = await getSignatureOfArticle({ author, hash });
-  console.log('getSignatureOfArticle :', signature);
+const sendArticle = async (url = '', {
+  signId = null, author, hash, title, fissionFactor, cover,
+}, needAccessToken = false) => {
   // 若 getSignatureOfArticle reject(或內部 throw 被轉為reject)
-  // 則 publishArticle 會成為 Promise.reject()
-  const { publicKey: publickey, signature: sign, username } = signature;
-  return axiosforApiServer.post('/publish',
-    {
-      author,
-      fissionFactor,
-      hash,
-      platform: platform(),
-      publickey,
-      sign,
-      title,
-      username,
-      cover,
-    });
+  // 則 sendArticle 會成為 Promise.reject()
+  const { publicKey, signature, username } = await getSignatureOfArticle({ author, hash });
+  console.log('getSignatureOfArticle :', { publicKey, signature, username });
+  const data = {
+    author,
+    cover,
+    fissionFactor,
+    hash,
+    platform: platform(),
+    publickey: publicKey,
+    sign: signature,
+    signId,
+    title,
+    username,
+  };
+  return !needAccessToken ? axiosforApiServer.post(url, data)
+    : accessBackend({ method: 'POST', url, data, });
 };
 
-// 编辑
-const editArticle = async ({
-  signId, author, title, hash, fissionFactor, cover,
-}) => {
-  const signature = await getSignatureOfArticle({ author, hash });
-  console.log('签名成功后调', signature);
-  const { publicKey: publickey, signature: sign, username } = signature;
-  return accessBackend({
-    method: 'POST',
-    url: '/edit',
-    data: {
-      signId,
-      author,
-      fissionFactor,
-      hash,
-      platform: platform(),
-      publickey,
-      sign,
-      title,
-      username,
-      cover,
-    },
-  });
-};
+const publishArticle = ({
+  author, hash, title, fissionFactor, cover,
+}) => sendArticle('/publish', {
+  author, hash, title, fissionFactor, cover,
+});
+const editArticle = ({
+  signId, author, hash, title, fissionFactor, cover,
+}) => sendArticle('/edit', {
+  signId, author, hash, title, fissionFactor, cover,
+}, true);
 
 // todo: 等後端給參數
 /*
@@ -215,7 +202,6 @@ const Unfollow = ({ username, followed }) => accessBackend({
   data: { username, followed },
 });
 
-// Be used in User page.
 const getUser = ({ username }) => axiosforApiServer.get(`/user/${username}`);
 // todo: rename
 const oldgetUser = ({ username }) => accessBackend({
