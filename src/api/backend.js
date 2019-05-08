@@ -106,8 +106,8 @@ const setAccessToken = token => localStorage.setItem('ACCESS_TOKEN', token);
 // /<summary>
 // /根据用户名，公钥，客户端签名请求access_token
 // /</summary>
-const auth = ({ username, publicKey, sign }) => axiosforApiServer.post('/auth',
-  { username, publickey: publicKey, sign, platform: platform() },
+const auth = ({ publicKey, signature, username }) => axiosforApiServer.post('/auth',
+  { platform: platform(), publickey: publicKey, sign: signature, username },
   {
     headers: { Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==' },
   });
@@ -135,20 +135,17 @@ const getAuth = async () => {
     || username !== currentUsername) {
     try {
       console.log('Retake authtoken...');
-      const signature = await getSignatureOfAuth();
-      console.info('API.authSignature :', signature);
+      const result = await getSignatureOfAuth();
+      console.info('getSignatureOfAuth() :', result);
       // 将取得的签名和用户名和公钥post到服务端 获得accessToken
-      const { username: _username, publicKey, signature: sign } = signature;
-      const response = await auth({ username: _username, publicKey, sign });
-      if (response.status === 200) {
-        // 3. save accessToken
-        const accessToken = response.data;
-        console.info('got the access token :', accessToken);
-        setAccessToken(accessToken);
-        return accessToken;
-      }
-
-      throw new Error('auth 出錯');
+      const { username: _username, publicKey, signature } = result;
+      const response = await auth({ username: _username, publicKey, signature });
+      if (response.status !== 200) throw new Error('auth 出錯');
+      // 3. save accessToken
+      const accessToken = response.data;
+      console.info('got the access token :', accessToken);
+      setAccessToken(accessToken);
+      return accessToken;
     } catch (error) {
       console.warn('取得用戶新簽名出錯', error);
       throw error;
