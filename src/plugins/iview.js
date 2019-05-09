@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import {
   BackTop, Button, Icon,
-  Row, Divider, message,
+  Row, Divider, Message,
   Notice, Modal, Avatar,
   Tooltip, RadioGroup, Radio,
 } from 'iview';
