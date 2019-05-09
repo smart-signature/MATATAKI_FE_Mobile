@@ -1,17 +1,31 @@
 <template>
-  <za-tabs v-model="activeIndex" @change="changeTabs">
-    <za-tab-pane :label="item.label" :name="index" v-for="(item, index) in tabsData" :key="index">
+  <div class="mw">
+      <div class="head">
+          <Dropdown trigger="click" @on-click="dropdownClick" class="dropdown">
+            <span class="dropdown-text">
+                {{tabsData[activeIndex].label}}
+                <Icon class="dropdown-icon" size="22" type="md-arrow-dropdown" />
+            </span>
+            <DropdownMenu slot="list">
+                <DropdownItem class="dropdown-list" v-for="(item, index) in tabsData" :key="index" :name="index">{{item.label}}</DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+          <!-- <span class="des">规则介绍<Icon type="ios-arrow-forward" /></span> -->
+      </div>
       <BasePull
         :params="item.params"
         :apiUrl="item.apiUrl"
         :activeIndex="activeIndex"
         :nowIndex="index"
         @getListData="getListData"
+        v-for="(item, index) in tabsData"
+        :key="index"
+        v-show="index === activeIndex"
         >
           <ArticleCard :article="item" v-for="(item, index) in item.articles" :key="index"/>
       </BasePull>
-    </za-tab-pane>
-  </za-tabs>
+  </div>
+
 </template>
 
 <script>
@@ -20,32 +34,23 @@ import { ArticleCard } from '@/components/';
 export default {
   name: 'ArticlesRankings',
   components: { ArticleCard },
-  created() {},
-  methods: {
-    changeTabs(tab) {
-      this.activeIndex = tab.name;
-    },
-    getListData(res) {
-      this.tabsData[res.index].articles = res.data;
-    },
-  },
   data() {
     return {
       tabsData: [
         {
-          label: '最新发布',
+          label: '发布时间',
           params: {},
           apiUrl: 'posts',
           articles: [],
         },
         {
-          label: '最多赞赏金额',
+          label: '赞赏金额',
           params: {},
           apiUrl: 'getSupportAmountRanking',
           articles: [],
         },
         {
-          label: '最多赞赏次数',
+          label: '赞赏次数',
           params: {},
           apiUrl: 'getSupportTimesRanking',
           articles: [],
@@ -54,14 +59,51 @@ export default {
       activeIndex: 0,
     };
   },
+  created() {},
+  methods: {
+    getListData(res) {
+      this.tabsData[res.index].articles = res.data;
+    },
+    dropdownClick(name) {
+      console.log(name);
+      this.activeIndex = name;
+    },
+  },
+
 };
 </script>
 
-<style>
-  .za-tab-header {
-    position: sticky;
-    top: 0;
-    z-index: 22;
-    background: #F0F0F0;
+<style lang="less" scoped>
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px 0 20px;
+  .dropdown-text {
+    font-size:14px;
+    font-family:PingFangSC-Semibold;
+    font-weight:600;
+    color:#494949;
+    line-height:18px;
+    letter-spacing:1px;
   }
+  .dropdown-icon {
+    color: #AFAFAF;
+    margin-left: -6px;
+  }
+}
+
+.dropdown-list {
+  position: relative;
+  &:nth-child(n+2):after {
+    content: '';
+    display: block;
+    position: absolute;
+    height: 1px;
+    top: 0;
+    left: 20px;
+    right: 20px;
+    background-color: #F4F4F4;
+  }
+}
 </style>

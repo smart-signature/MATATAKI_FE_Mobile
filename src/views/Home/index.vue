@@ -21,10 +21,8 @@
           <Button class="title-button">加入电报</Button>
         </a>
       </div>
-
       <MyBanner/>
       <div class="head-bc"></div>
-
     </div>
     <ArticleRankings ref='ArticleRankings'/>
   </div>

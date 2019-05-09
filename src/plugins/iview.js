@@ -4,6 +4,7 @@ import {
   Row, Divider, Message,
   Notice, Modal, Avatar,
   Tooltip, RadioGroup, Radio,
+  Dropdown, DropdownMenu, DropdownItem,
 } from 'iview';
 
 import 'iview/dist/styles/iview.css';
@@ -24,3 +25,6 @@ Vue.component('Avatar', Avatar);
 Vue.component('Tooltip', Tooltip);
 Vue.component('RadioGroup', RadioGroup);
 Vue.component('Radio', Radio);
+Vue.component('Dropdown', Dropdown);
+Vue.component('DropdownMenu', DropdownMenu);
+Vue.component('DropdownItem', DropdownItem);

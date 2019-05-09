@@ -47,7 +47,7 @@ export default {
           },
           {
             type: 'ONT',
-            imgUrl: require('../../../assets/img/icon_ONT.png'),
+            imgUrl: require('../../../assets/img/icon_ONT.svg'),
             status: false,
             withdraw: 0,
             total: 0,
