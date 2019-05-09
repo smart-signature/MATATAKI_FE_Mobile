@@ -72,7 +72,7 @@ const reportShare = ({
     url: '/support',
     data: {
       signId,
-      contract, 
+      contract,
       symbol,
       amount: amount * 10000,
       platform,

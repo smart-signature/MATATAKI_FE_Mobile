@@ -104,7 +104,7 @@ export default new Vuex.Store({
       } catch (error) {
         console.warn('Failed to get ONT account :', error);
       }
-      
+
       if (getters.currentUserInfo.name) {
         console.log('Id check pass, id :', getters.currentUserInfo);
         try { // 更新 Auth
