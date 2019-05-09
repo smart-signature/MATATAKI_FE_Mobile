@@ -53,8 +53,33 @@ const editArticle = ({
   signId, author, hash, title, fissionFactor, cover,
 }, true);
 
-// todo: 等後端給參數
-const reportShare = ({ share }) => axiosforApiServer.post('', { share });
+const reportShare = ({
+  amount, signId, sponsor = null,
+}) => {
+  const platform = platform();
+  let contract = null;
+  let symbol = null;
+  if (platform === 'eos') {
+    contract = 'eosio.token';
+    symbol = 'EOS';
+  } else if (platform === 'ont') {
+    contract = 'AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV';
+    symbol = 'ONT';
+  }
+
+  return accessBackend({
+    method: 'GET',
+    url: '/support',
+    data: {
+      signId,
+      contract, 
+      symbol,
+      amount: amount * 10000,
+      platform,
+      referrer: sponsor,
+    },
+  });
+};
 
 
 // 获取支持过的文章列表 page user
