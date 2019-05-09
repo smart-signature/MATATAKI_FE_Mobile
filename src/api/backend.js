@@ -53,17 +53,34 @@ const editArticle = ({
   signId, author, hash, title, fissionFactor, cover,
 }, true);
 
-// todo: 等後端給參數
-/*
-const getShareKey = ({
-  signId, username, amount, referral
-}) => axiosforApiServer.post('', { signId, username, amount, referral });
-*/
+const reportShare = ({
+  amount, signId, sponsor = null,
+}) => {
+  const platform = platform();
+  let contract = null;
+  let symbol = null;
+  if (platform === 'eos') {
+    contract = 'eosio.token';
+    symbol = 'EOS';
+  } else if (platform === 'ont') {
+    contract = 'AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV';
+    symbol = 'ONT';
+  }
 
-// todo: 等後端給參數
-/*
-const reportShareRecord = ({ share }) => axiosforApiServer.post('', { share });
-*/
+  return accessBackend({
+    method: 'GET',
+    url: '/support',
+    data: {
+      signId,
+      contract, 
+      symbol,
+      amount: amount * 10000,
+      platform,
+      referrer: sponsor,
+    },
+  });
+};
+
 
 // 获取支持过的文章列表 page user
 const getArticleSupports = params => axiosforApiServer.get('/supports', { params });
@@ -168,8 +185,11 @@ const accessBackend = async (options) => {
   try { // 更新 Auth
     accessToken = await getAuth();
   } catch (error) {
-    console.error('getAuth() error:', error);
-    console.warn('將使用 access token 存檔');
+    console.warn(
+      'url :', options.url,
+      '\ngetAuth error:', error.message,
+      '\n將使用 access token 存檔',
+    );
   }
   options.headers['x-access-token'] = accessToken;
 
@@ -309,4 +329,5 @@ export {
   disassembleToken, delArticle, uploadAvatar, getArticleSupports, editArticle,
   getBackendData,
   draftList, createDraft, updateDraft, delDraft, getDraft,
+  reportShare,
 };

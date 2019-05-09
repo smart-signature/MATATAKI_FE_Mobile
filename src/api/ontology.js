@@ -1,5 +1,5 @@
 /* eslint-disable */
-import * as config from '@/config';
+import { dappName } from '@/config';
 
 // https://github.com/backslash47/OEPs/blob/oep-dapp-api/OEP-6/OEP-6.mediawiki
 
@@ -50,10 +50,10 @@ const API = {
     if (!this.client) await this.setClient();
     const { client } = this;
     try {
-      if (isAPP) throw new Error('no getBalance func'); // done
+      if (isAPP) throw new Error('no getBalance in cyanobridge'); // done
       return client.api.network.getBalance({ address }); // done
     } catch(error) {
-      console.error('cyanobridge.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', error);
+      console.error('ontology.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', error);
       throw error;
     }
   },
@@ -62,7 +62,7 @@ const API = {
     if (!this.client) await this.setClient();
     const { client } = this;
     const params = {
-      dappName: config.dappName,
+      dappName,
       dappIcon: '' // some url points to the dapp icon
     };
     try {
@@ -75,7 +75,8 @@ const API = {
       }
       return address;
     } catch(error) {
-      console.error('cyanobridge.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', error);
+      console.error('ontology.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', error);
+      throw error;
     }
   },
   // Message
@@ -84,7 +85,7 @@ const API = {
     const { client } = this;
     const params = {
       type: 'account', // account or identity that will sign the message
-      dappName: config.dappName, // dapp's name
+      dappName, // dapp's name
       dappIcon: '', // some url that points to the dapp's icon
       message, // message sent from dapp that will be signed by native client
       expired: new Date('2020-01-01').getTime(), // expired date of login // todo
@@ -101,7 +102,8 @@ const API = {
       }
       return signature;
     } catch(error) {
-      console.error('cyanobridge.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', error);
+      console.error('ontology.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', error);
+      throw error;
     }
   },
   // SmartContract
@@ -116,13 +118,12 @@ const API = {
       "url": ""  
     }
     const params = {
-          scriptHash,
-          operation,
-          args,
-          gasPrice,
-          gasLimit,
-          payer: await this.getAccount(),
-          config,
+      scriptHash,
+      operation,
+      args,
+      gasPrice, gasLimit,
+      payer: await this.getAccount(),
+      config,
     }
     try {
       return isAPP
@@ -130,12 +131,12 @@ const API = {
         : client.api.smartContract.invoke({
           scriptHash, operation, args, gasPrice, gasLimit, requireIdentity
         }); // done
-    } catch(err) {
-      console.error('cyanobridge.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', err);
+    } catch(error) {
+      console.error('ontology.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', error);
+      throw error;
     }
   },
 };
-
 
 
 export default API;

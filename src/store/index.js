@@ -23,8 +23,8 @@ export default new Vuex.Store({
         ? (currentUsername.length <= 12 ? 'EOS' : 'ONT')
         : null,
     }),
-    currentUsername: (state, { 'scatter/currentUsername': scatter }) => (
-      scatter || (state.ontology.account || null)
+    currentUsername: (state, { 'scatter/currentUsername': scatterUsername }) => (
+      scatterUsername || (state.ontology.account || null)
     ),
     currentBalance: (state, {
       'scatter/currentUsername': scatterUsername,
@@ -54,16 +54,15 @@ export default new Vuex.Store({
       return dispatch(actionName);
     },
     async idCheck({
-      commit, dispatch, state, getters,
+      dispatch, state, getters,
     }) {
-      const { ontology, scatter } = state;
       const {
         isConnected: isScatterConnected,
         isLoggingIn: isScatterLoggingIn,
-      } = scatter;
+      } = state.scatter;
       const {
         account: isOntologyConnected,
-      } = ontology;
+      } = state.ontology;
       const noId = (error) => {
         console.warn('Unable to get id, reason :', error);
         throw error;
@@ -88,12 +87,12 @@ export default new Vuex.Store({
         else return true;
       }
     },
-    async recordShare({ dispatch }, { amount, shareKey }) {
+    async recordShare({ dispatch, getters }, { amount, signId, sponsor = null }) {
       const { blockchain } = getters.currentUserInfo;
       let actionName = null;
-      if (blockchain === 'EOS') actionName = 'scatter/recordShare';
+      if (false && blockchain === 'EOS') actionName = 'scatter/recordShare';
       else if (blockchain === 'ONT') actionName = 'ontology/recordShare';
-      return dispatch(actionName, { amount, shareKey });
+      return dispatch(actionName, { amount, signId, sponsor });
     },
     async walletConnectionSetup({ dispatch }, { EOS, ONT }) {
       let meg = '';

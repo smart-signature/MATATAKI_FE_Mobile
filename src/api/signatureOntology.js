@@ -1,6 +1,31 @@
 import API from './ontology';
 import * as config from '@/config';
 
+const recordShare = async ({
+  amount = null, owner = null, signId = null, sponsor = null,
+}) => {
+  if (!amount) { throw new Error('amount cant be null'); }
+  if (!owner) { throw new Error('owner cant be null'); }
+  if (!signId) { throw new Error('signId cant be null'); }
+  const { scriptHash, gasLimit, gasPrice } = config.ontology;
+  const args = [
+    { type: 'String', value: owner },
+    { type: 'Integer', value: signId },
+    { type: 'Integer', value: amount },
+  ];
+  if (sponsor) args.push({ type: 'String', value: sponsor });
+  const response = await API.invoke({
+    scriptHash,
+    operation: 'RecordShare',
+    args,
+    gasLimit,
+    gasPrice,
+  });
+  console.log(response);
+  const { transaction } = response;
+  return transaction;
+};
+
 /*
 const getSign = async (signId) => {
   let result = null;
@@ -49,32 +74,6 @@ const getSign = async (signId) => {
     ]
 
 }; */
-
-const recordShare = async ({ amount = null, shareKey = null }) => {
-  // if (currentAccount() === null) { throw new Error('请先登录'); }
-  if (!amount) { throw new Error('amount cant be null'); }
-  if (!shareKey) { throw new Error('shareKey cant be null'); }
-  const { scriptHash, gasLimit, gasPrice } = config.ontology;
-  const response = await client.api.smartContract.invoke({
-    scriptHash,
-    operation: 'RecordShare',
-    args: [
-      {
-        type: 'Integer',
-        value: amount,
-      },
-      {
-        type: 'string',
-        value: shareKey,
-      },
-    ],
-    gasLimit,
-    gasPrice,
-  });
-  console.log(response);
-  const { transaction } = response;
-  return transaction;
-};
 
 export {
   recordShare,

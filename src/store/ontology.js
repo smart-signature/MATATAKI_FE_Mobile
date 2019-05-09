@@ -51,10 +51,12 @@ const actions = {
     if (!account) throw new Error('no account');
     return dispatch('getSignature', { signData: account });
   },
-  async recordShare({ state }, { amount, shareKey }) {
+  async recordShare({ state }, { amount, signId, sponsor }) {
     const { account } = state;
     if (!account) throw new Error('no account');
-    return recordShare({ amount, shareKey });
+    return recordShare({
+      amount, owner: account, signId, sponsor,
+    });
   },
 };
 

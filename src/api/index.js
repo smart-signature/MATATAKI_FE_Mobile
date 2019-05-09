@@ -15,5 +15,6 @@ export {
   getSharesbysignid, sendComment, addReadAmount, getAssets,
   delArticle, uploadAvatar, getAvatarImage, getArticleSupports, editArticle,
   draftList, createDraft, updateDraft, delDraft, getDraft,
+  reportShare,
 } from './backend';
 export { defaultImagesUploader };
