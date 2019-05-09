@@ -9,11 +9,11 @@
 
     <div class="centercard editCard">
       <za-cell title="头像" class="imgcard">
-        <imgUpload :imgUploadDone="imgUploadDone" @doneImageUpload="doneImageUpload">
+        <img-upload :imgUploadDone="imgUploadDone" @doneImageUpload="doneImageUpload">
           <div class="user-avatar" slot="uploadButton">
             <img class="userpic" :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png');}" alt="" slot="description">
           </div>
-        </imgUpload>
+        </img-upload>
       </za-cell>
       <za-cell title="昵称">
         <za-input v-model="nickname" placeholder="昵称1-12位，可包含中英文和数字"></za-input>
@@ -32,12 +32,12 @@ import {
   setUserName, getAssets, getAvatarImage,
   uploadAvatar,
 } from '@/api';
-import imgUpload from '@/components/imgUpload/index.vue';
+import ImgUpload from '@/components/ImgUpload/index.vue';
 
 export default {
   name: 'User',
   props: ['username'],
-  components: { imgUpload },
+  components: { ImgUpload },
   data() {
     return {
       playerincome: 0,
