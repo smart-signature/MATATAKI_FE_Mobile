@@ -2,7 +2,6 @@
 category: Components
 subtitle: 图片上传
 type: 上传图片
-title: ImgUpload
 ---
 
 上传图片
@@ -12,8 +11,8 @@ title: ImgUpload
 
 ```js
 // 导入
-import ImgUpload from '@/components/ImgUpload/index.vue';
-components: { ImgUpload },
+import imgUpload from '@/components/imgUpload/index.vue';
+components: { imgUpload },
 
 // 使用组件
 <img-upload 
@@ -30,7 +29,7 @@ components: { ImgUpload },
 | --- | --- | --- | --- | --- |
 | buttonText | 按钮文字 | string | 保存 | fasle |
 | imgSize | 显示上传图片大小 单位 M | Number | 2 | false |
-| imgUploadDone | 是否上传完成 | Number | 0 上传完成++改变数值 | true |
+| imgUploadDone | 是否上传完成 | Number | 0 上传完成++/+=1改变数值 | true |
 | compressorSetting | 压缩图片 | Object | status: true \| quality: 0.8 | false |
 
 接口地址

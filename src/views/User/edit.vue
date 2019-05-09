@@ -32,12 +32,12 @@ import {
   setUserName, getAssets, getAvatarImage,
   uploadAvatar,
 } from '@/api';
-import ImgUpload from '@/components/ImgUpload/index.vue';
+import imgUpload from '@/components/imgUpload/index.vue';
 
 export default {
   name: 'User',
   props: ['username'],
-  components: { ImgUpload },
+  components: { imgUpload },
   data() {
     return {
       playerincome: 0,

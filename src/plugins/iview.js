@@ -1,6 +1,9 @@
 import Vue from 'vue';
-import { 
-  BackTop, Button, Icon, Row, Divider, message, Notice, Modal, Avatar, Tooltip
+import {
+  BackTop, Button, Icon,
+  Row, Divider, message,
+  Notice, Modal, Avatar,
+  Tooltip, RadioGroup, Radio,
 } from 'iview';
 
 import 'iview/dist/styles/iview.css';
@@ -16,3 +19,5 @@ Vue.component('Notice', Notice);
 Vue.component('Modal', Modal);
 Vue.component('Avatar', Avatar);
 Vue.component('Tooltip', Tooltip);
+Vue.component('RadioGroup', RadioGroup);
+Vue.component('Radio', Radio);

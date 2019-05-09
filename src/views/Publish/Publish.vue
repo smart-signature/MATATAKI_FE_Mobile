@@ -1,6 +1,9 @@
 <template>
   <div class="new-post">
-    <BaseHeader :isCenter="false" :pageinfo="{ title: editorText, rightPage: 'home', needLogin: false, }">
+    <BaseHeader
+      :isCenter="false"
+      :pageinfo="{ title: editorText, rightPage: 'home', needLogin: false, }"
+>
       <div slot="right">
         <span class="send-button" @click="sendThePost">{{sendBtnText}}</span>
       </div>
@@ -62,7 +65,7 @@ import VueSlider from 'vue-slider-component';
 import 'vue-slider-component/theme/default.css';
 import { sleep } from '@/common/methods';
 import { toolbars } from './toolbars'; // 编辑器配置
-import ImgUpload from '@/components/ImgUpload/index.vue';
+import imgUpload from '@/components/imgUpload/index.vue';
 
 
 export default {
@@ -70,7 +73,7 @@ export default {
   components: {
     mavonEditor,
     VueSlider,
-    ImgUpload,
+    imgUpload,
   },
   created() {
     const { id } = this.$route.params;
@@ -328,9 +331,9 @@ export default {
       // 不要在页面组件写具体实现，谢谢合作 - Frank
       // 想要更换默认的 uploader， 请在 src/api/imagesUploader.js 修改 currentImagesUploader
       // 不要在页面组件写具体实现，谢谢合作 - Frank
-      let canvas = document.createElement('canvas');
-      let ctx = canvas.getContext("2d");
-      let image = new Image();
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const image = new Image();
       image.onload = () => {
         canvas.width = image.width;
         canvas.height = image.height;

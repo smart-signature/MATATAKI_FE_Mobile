@@ -52,7 +52,7 @@ import { ifpsUpload } from '@/api/ipfs';
 import Compressor from 'compressorjs';
 
 export default {
-  name: 'ImgUpload',
+  name: 'imgUpload',
   components: { FileUpload: VueUploadComponent },
   props: {
     // 按钮文字

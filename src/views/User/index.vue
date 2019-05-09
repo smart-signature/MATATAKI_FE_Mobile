@@ -123,12 +123,12 @@ import {
   uploadAvatar,
 } from '@/api';
 import ArticlesList from './ArticlesList.vue';
-import ImgUpload from '@/components/ImgUpload/index.vue';
+import imgUpload from '@/components/imgUpload/index.vue';
 
 export default {
   name: 'User',
   props: ['username'],
-  components: { ArticlesList, ImgUpload },
+  components: { ArticlesList, imgUpload },
   data() {
     return {
       playerincome: 0,
