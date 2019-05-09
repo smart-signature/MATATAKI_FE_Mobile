@@ -67,10 +67,6 @@ export default {
   },
   methods: {
     ...mapGetters(['isLogined']),
-    ...mapActions('scatter', [
-      'connect',
-      'login',
-    ]),
     loginScatterAsync() { return this.login(); },
     // 返回
     goBack() {

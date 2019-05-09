@@ -168,7 +168,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['idCheck']),
+    ...mapActions(['idCheckandgetAuth']),
     // 设置文章数据 by hash
     async setArticleData(hash) {
       const articleData = await getArticleDatafromIPFS(hash);
@@ -283,7 +283,7 @@ export default {
     async sendThePost() {
       try {
         // this.$Message.info('帐号检测中...');
-        await this.idCheck();
+        await this.idCheckandgetAuth();
         // this.$Message.success('检测通过');
       } catch (error) {
         console.error(error);
