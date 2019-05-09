@@ -3,14 +3,14 @@ import https from 'https';
 import store from '@/store';
 import { Base64 } from 'js-base64';
 
-// https://github.com/axios/axios
+// Doc : https://github.com/axios/axios
 
 export const apiServer = process.env.VUE_APP_API;
 // https://github.com/axios/axios/issues/535
 const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 const axiosforApiServer = axios.create({
   baseURL: apiServer,
-  headers: { Accept: '*/*' },
+  headers: { Accept: '*/*', lang: 'zh' },
   httpsAgent,
 });
 
