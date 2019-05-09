@@ -24,3 +24,15 @@ body {
 .markdown-body strong {
   font-weight: bolder !important;
 }
+
+
+/* modal居中，单独的全局css才能覆盖 */
+.modalCenter{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .ivu-modal{
+        top: 0;
+    }
+}

@@ -3,7 +3,10 @@
     <BaseHeader
       :isCenter="false"
       :pageinfo="{ title: editorText, rightPage: 'home', needLogin: false, }"
->
+      :customizeBackFunc="true"
+      :customizeHomeFunc="true"
+      @headerBackFunc="headerBackFunc"
+      @headerHomeFunc="headerHomeFunc">
       <div slot="right">
         <span class="send-button" @click="sendThePost">{{sendBtnText}}</span>
       </div>
@@ -46,6 +49,12 @@
         <Radio size="large" label="draft">保存到草稿箱</Radio>
       </RadioGroup>
     </div>
+
+    <modal-prompt
+      :showModal="showModal"
+      :modalText="modalText"
+      @changeInfo="changeInfo"
+      @modalCancel="modalCancel" />
   </div>
 </template>
 
@@ -65,8 +74,8 @@ import VueSlider from 'vue-slider-component';
 import 'vue-slider-component/theme/default.css';
 import { sleep } from '@/common/methods';
 import { toolbars } from './toolbars'; // 编辑器配置
-import imgUpload from '@/components/imgUpload/index.vue';
-
+import imgUpload from '@/components/imgUpload/index.vue'; // 图片上传
+import modalPrompt from './components/modalPrompt.vue'; // 弹出框提示
 
 export default {
   name: 'NewPost',
@@ -74,6 +83,7 @@ export default {
     mavonEditor,
     VueSlider,
     imgUpload,
+    modalPrompt,
   },
   created() {
     const { id } = this.$route.params;
@@ -113,6 +123,12 @@ export default {
     editorMode: 'create', // 默认是创建文章
     saveType: 'public', // 发布文章模式， 公开 || 草稿
     imgUploadDone: 0,
+    showModal: false, // 弹框显示
+    modalText: {
+      text: ['文章尚未保存，是否退出？'], // 退出
+      button: ['再想想', '退出'],
+    },
+    modalMode: null, // header 判断点击的 back 还是 home
   }),
   computed: {
     ...mapState('scatter', {
@@ -368,6 +384,27 @@ export default {
     // 删除cover
     removeCover() {
       this.cover = '';
+    },
+    // head 返回
+    headerBackFunc() {
+      this.showModal = true;
+      this.modalMode = 'back';
+    },
+    // head 返回首页
+    headerHomeFunc() {
+      this.showModal = true;
+      this.modalMode = 'home';
+    },
+    // 关闭modal
+    changeInfo(status) {
+      this.showModal = status;
+      this.modalMode = null;
+    },
+    // modal 同意
+    modalCancel() {
+      if (this.modalMode === 'back') this.$router.go(-1);
+      else if (this.modalMode === 'home') this.$router.push({ name: 'home' });
+      else this.$router.go(-1);
     },
   },
   watch: {

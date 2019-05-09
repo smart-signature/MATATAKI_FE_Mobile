@@ -2,7 +2,7 @@
   <Modal
     v-model="infoModaCopy"
     footer-hide @on-visible-change="change"
-    class-name="articleInfo">
+    class-name="modalCenter">
       <p
         slot="header"
         style="text-align: center;
@@ -96,17 +96,5 @@ export default {
       width: 80%;
     }
   }
-}
-</style>
-<style lang="less">
-// 文章攻略modal居中，单独的全局css才能覆盖
-.articleInfo{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    .ivu-modal{
-        top: 0;
-    }
 }
 </style>

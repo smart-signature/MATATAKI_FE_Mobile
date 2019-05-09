@@ -13,21 +13,30 @@
 </template>
 
 <script>
-// eslint-disable-next-line no-unused-vars
 import { mapState, mapActions, mapGetters } from 'vuex'; // mapGetters 未使用
-import {
-  getAuth,
-} from '@/api';
+// import { getAuth } from '@/api';
 
 export default {
   name: 'BaseHeader',
   props: {
+    // 页面信息
     pageinfo: {
       type: Object,
     },
+    // 是否居中显示 是否添加 class mw
     isCenter: {
       type: Boolean,
       default: true,
+    },
+    // 自定义返回方法
+    customizeBackFunc: {
+      type: Boolean,
+      default: false,
+    },
+    // 自定义Home方法
+    customizeHomeFunc: {
+      type: Boolean,
+      default: false,
     },
   },
   computed: {
@@ -51,11 +60,21 @@ export default {
       'login',
     ]),
     loginScatterAsync() { return this.login(); },
+    // 返回
     goBack() {
-      this.$router.go(-1);
+      if (this.customizeBackFunc) {
+        this.$emit('headerBackFunc');
+      } else {
+        this.$router.go(-1);
+      }
     },
+    // 回到首页
     goHome() {
-      this.$router.push({ name: 'home' });
+      if (this.customizeHomeFunc) {
+        this.$emit('headerHomeFunc');
+      } else {
+        this.$router.push({ name: 'home' });
+      }
     },
   },
   watch: {
@@ -119,11 +138,13 @@ export default {
 }
 .back-icon {
   width: 16px;
+  cursor: pointer;
 }
 
 .home-icon {
   width: 22px;
   margin-left: 6px;
+  cursor: pointer;
 }
 
 </style>
