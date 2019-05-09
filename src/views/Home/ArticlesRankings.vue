@@ -1,7 +1,7 @@
 <template>
   <div class="mw">
-      <div class="head">
-          <Dropdown trigger="click" @on-click="dropdownClick" class="dropdown">
+      <div class="head" ref="head" :class="isFixedHead && 'fixed'">
+            <Dropdown trigger="click" @on-click="dropdownClick" class="dropdown">
             <span class="dropdown-text">
                 {{tabsData[activeIndex].label}}
                 <Icon class="dropdown-icon" size="22" type="md-arrow-dropdown" />
@@ -30,6 +30,7 @@
 
 <script>
 import { ArticleCard } from '@/components/';
+import _ from 'lodash';
 
 export default {
   name: 'ArticlesRankings',
@@ -57,9 +58,15 @@ export default {
         },
       ],
       activeIndex: 0,
+      isFixedHead: false,
     };
   },
-  created() {},
+  created() {
+    this.addHandleScroll();
+  },
+  destroyed() {
+    this.removeHandleScroll();
+  },
   methods: {
     getListData(res) {
       this.tabsData[res.index].articles = res.data;
@@ -68,6 +75,18 @@ export default {
       console.log(name);
       this.activeIndex = name;
     },
+    addHandleScroll() {
+      window.addEventListener('scroll', _.throttle(this.handleScroll, 150));
+    },
+    handleScroll() {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+      // console.log(scrollTop);
+      if (scrollTop > 296) this.isFixedHead = true;
+      else this.isFixedHead = false;
+    },
+    removeHandleScroll() {
+      window.removeEventListener('scroll', this.handleScroll);
+    },
   },
 
 };
@@ -75,10 +94,21 @@ export default {
 
 <style lang="less" scoped>
 .head {
+  padding: 10px 20px;
+  transition: all .3s;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px 0 20px;
+  &.fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    max-width: 750px;
+    margin: 0 auto;
+    background-color: #f0f0f0;
+  }
   .dropdown-text {
     font-size:14px;
     font-family:PingFangSC-Semibold;

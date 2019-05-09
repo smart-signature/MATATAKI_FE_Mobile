@@ -1,5 +1,5 @@
 <template>
-  <div class="header" :class="isCenter && 'mw'">
+  <div class="header" :class="[isCenter && 'mw', isToggleBc && 'bc']">
     <div class="header-left" slot="left">
       <img src="@/assets/img/icon_back.svg" alt="home" @click="goBack" class="back-icon">
       <img src="@/assets/img/icon_home.svg" alt="home" @click="goHome" class="home-icon">
@@ -15,6 +15,7 @@
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex'; // mapGetters 未使用
 // import { getAuth } from '@/api';
+import _ from 'lodash';
 
 export default {
   name: 'BaseHeader',
@@ -44,6 +45,17 @@ export default {
       isScatterConnected: state => state.isConnected,
       isScatterLoggingIn: state => state.isLoggingIn,
     }),
+  },
+  data() {
+    return {
+      isToggleBc: false,
+    };
+  },
+  created() {
+    this.addHandleScroll();
+  },
+  destroyed() {
+    this.removeHandleScroll();
   },
   // 依據 https://blog.csdn.net/m0_37728716/article/details/81289317
   // 從 crearted 改成 mounted
@@ -76,6 +88,21 @@ export default {
         this.$router.push({ name: 'home' });
       }
     },
+    addHandleScroll() {
+      window.addEventListener('scroll', _.throttle(this.handleScroll, 150));
+    },
+    handleScroll() {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+      // console.log(scrollTop);
+      if (scrollTop > 10) {
+        this.isToggleBc = true;
+      } else {
+        this.isToggleBc = false;
+      }
+    },
+    removeHandleScroll() {
+      window.removeEventListener('scroll', this.handleScroll);
+    },
   },
   watch: {
     isLogined(newState) {
@@ -102,7 +129,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .header {
   background-color: transparent;
   padding: 10px 20px;
@@ -115,6 +142,11 @@ export default {
   left: 0;
   right: 0;
   z-index: 999;
+  transition: all .3s;
+  &.bc {
+    background-color: #fff;
+    box-shadow: 0 0 4px 0 rgba(0, 0, 0, .1);
+  }
 }
 .header-left {
   position: absolute;

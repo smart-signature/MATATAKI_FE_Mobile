@@ -11,7 +11,6 @@ import router from './router';
 import store from './store';
 import './registerServiceWorker';
 
-
 // Vue plugins
 import './plugins/iview';
 import './plugins/vue-toasted';
