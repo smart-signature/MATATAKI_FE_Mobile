@@ -151,6 +151,13 @@ export default {
       return username === currentUsername;
     },
   },
+  created() {
+    const { getAssets, refreshUser } = this;
+    getAssets();
+    refreshUser();
+    const user = this.isMe ? '我' : this.username;
+    document.title = `${user}的个人主页 - SmartSignature`;
+  },
   methods: {
     ...mapActions('scatter', [
       'logout',
@@ -297,13 +304,6 @@ export default {
         this.$Message.error('上传失败请重试');
       }
     },
-  },
-  created() {
-    const { getAssets, refreshUser } = this;
-    getAssets();
-    refreshUser();
-    const user = this.isMe ? '我' : this.username;
-    document.title = `${user}的个人主页 - SmartSignature`;
   },
 };
 </script>

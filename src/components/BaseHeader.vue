@@ -46,10 +46,6 @@ export default {
   },
   methods: {
     ...mapGetters(['isLogined']),
-    ...mapActions('scatter', [
-      'connect',
-      'login',
-    ]),
     loginScatterAsync() { return this.login(); },
     goBack() {
       this.$router.go(-1);

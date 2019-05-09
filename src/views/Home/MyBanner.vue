@@ -18,13 +18,13 @@
         <p class="login-notification">即刻登录</p>
         <p class="login-notification">开始智能签名之旅 </p>
       </div>
-      <a class="my-user-page" href="javascript:;" @click="loginWithWallet">立即登录</a>
+      <a class="my-user-page" href="javascript:;" @click="idCheckandgetAuth && refresh_user">立即登录</a>
     </template>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import {
   getUser,
   getAssets,
@@ -34,9 +34,6 @@ import {
 export default {
   name: 'My-Banner',
   computed: {
-    ...mapState('scatter', {
-      isScatterConnected: state => state.isConnected,
-    }),
     ...mapGetters(['currentUserInfo', 'isLogined']),
     displayBalance() {
       return this.currentUserInfo.balance.slice(0, -4);
@@ -64,33 +61,9 @@ export default {
     if (isLogined) { refresh_user(); }
   },
   methods: {
-    ...mapActions('scatter', [
-      'connect',
-      'login',
-    ]),
-    connectScatterAsync() { return this.connect(); },
-    loginScatterAsync() { return this.login(); },
+    ...mapActions(['idCheckandgetAuth']),
     toUserPage(username) {
       this.$router.push({ name: 'User', params: { username } });
-    },
-    async loginWithWallet() {
-      if (!this.isScatterConnected) {
-        this.$Modal.error({
-          title: '无法与你的钱包建立链接',
-          content: '请检查钱包是否打开并解锁',
-        });
-        return;
-      }
-      try {
-        // await this.connectScatterAsync();
-        await this.loginScatterAsync();
-      } catch (e) {
-        console.warn('Unable to connect wallets');
-        this.$Modal.error({
-          title: '无法与你的钱包建立链接',
-          content: '请检查钱包是否打开并解锁',
-        });
-      }
     },
     handleClick(tab, event) {
       console.log(tab, event);

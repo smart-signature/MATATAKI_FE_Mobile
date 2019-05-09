@@ -1,4 +1,3 @@
-/* eslint-disable */
 <template>
   <div class='home' @click='addShow=false'>
     <div class='head'>
