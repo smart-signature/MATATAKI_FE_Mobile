@@ -54,16 +54,8 @@ const editArticle = ({
 }, true);
 
 // todo: 等後端給參數
-/*
-const getShareKey = ({
-  signId, username, amount, referral
-}) => axiosforApiServer.post('', { signId, username, amount, referral });
-*/
+const reportShare = ({ share }) => axiosforApiServer.post('', { share });
 
-// todo: 等後端給參數
-/*
-const reportShareRecord = ({ share }) => axiosforApiServer.post('', { share });
-*/
 
 // 获取支持过的文章列表 page user
 const getArticleSupports = params => axiosforApiServer.get('/supports', { params });
@@ -312,4 +304,5 @@ export {
   disassembleToken, delArticle, uploadAvatar, getArticleSupports, editArticle,
   getBackendData,
   draftList, createDraft, updateDraft, delDraft, getDraft,
+  reportShare,
 };

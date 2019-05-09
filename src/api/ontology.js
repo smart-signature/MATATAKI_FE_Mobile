@@ -1,5 +1,5 @@
 /* eslint-disable */
-import * as config from '@/config';
+import { dappName } from '@/config';
 
 // https://github.com/backslash47/OEPs/blob/oep-dapp-api/OEP-6/OEP-6.mediawiki
 
@@ -62,7 +62,7 @@ const API = {
     if (!this.client) await this.setClient();
     const { client } = this;
     const params = {
-      dappName: config.dappName,
+      dappName,
       dappIcon: '' // some url points to the dapp icon
     };
     try {
@@ -85,7 +85,7 @@ const API = {
     const { client } = this;
     const params = {
       type: 'account', // account or identity that will sign the message
-      dappName: config.dappName, // dapp's name
+      dappName, // dapp's name
       dappIcon: '', // some url that points to the dapp's icon
       message, // message sent from dapp that will be signed by native client
       expired: new Date('2020-01-01').getTime(), // expired date of login // todo
@@ -118,13 +118,12 @@ const API = {
       "url": ""  
     }
     const params = {
-          scriptHash,
-          operation,
-          args,
-          gasPrice,
-          gasLimit,
-          payer: await this.getAccount(),
-          config,
+      scriptHash,
+      operation,
+      args,
+      gasPrice, gasLimit,
+      payer: await this.getAccount(),
+      config,
     }
     try {
       return isAPP
@@ -138,7 +137,6 @@ const API = {
     }
   },
 };
-
 
 
 export default API;

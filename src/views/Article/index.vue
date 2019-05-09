@@ -111,6 +111,7 @@ import {
   getArticleInfo,
   addReadAmount, sendComment,
   delArticle, getAuth,
+  reportShare,
 } from '@/api';
 import { support } from '@/api/signature';
 import 'mavon-editor/dist/css/index.css';
@@ -397,11 +398,8 @@ export default {
         const makeShare = async () => {
           if (blockchain === 'EOS') return support({ amount, signId, referrer });
           if (blockchain === 'ONT') {
-            const shareKey = await getShareKey({
-              signId, username, amount, referral: referrer,
-            });
-            const contractResult = await recordShare({ amount, shareKey });
-            // return reportShareRecord({ contractResult });
+            const share = await recordShare({ amount, signId, sponsor: referrer });
+            return reportShare({ share });
           }
         };
         const backendResult = await makeShare();
