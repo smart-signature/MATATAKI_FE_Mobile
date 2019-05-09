@@ -2,6 +2,7 @@
 category: Components
 subtitle: 图片上传
 type: 上传图片
+title: imgUpload
 ---
 
 上传图片
