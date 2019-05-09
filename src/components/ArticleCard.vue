@@ -44,18 +44,20 @@ export default {
 
 <style scoped>
 .article-text {
-  width: 70%;
-  min-width: 70%;
+  flex: 1;
+  overflow: hidden;
 }
 .img-outer {
+  flex: 0 0 80px;
   width: 80px;
   height: 80px;
+  margin-left: 10px;
 }
 .img-inner {
   width: 100%;
   height: 100%;
   display: block;
-  border-radius: 5px;
+  border-radius: 3px;
   object-fit: cover;
 }
 /* 文章card */
@@ -67,7 +69,7 @@ export default {
   border: 1px solid #f1f1f1;
   box-sizing: border-box;
   background-color: #fff;
-  padding: 18px;
+  padding: 14px 20px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -90,14 +92,13 @@ export default {
 
 .card .avatar {
   color: #4D4D4D;
-  font-size:16px;
-  font-family:PingFangSC-Regular;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  font-size: 18px;
+  font-size:14px;
   font-weight:400;
   letter-spacing:1px;
+  margin-top: 4px;
 }
 .card .date {
   font-size:14px;
@@ -107,6 +108,7 @@ export default {
   color: #A5A5A5;
   display: flex;
   align-items: center;
+  margin-top: 2px;
 }
 .card .date img {
   width: 12px;
