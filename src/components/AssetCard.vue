@@ -74,7 +74,7 @@ export default {
 }
 .asset-quantity {
   font-size:22px;
-  font-family:PingFangSC-Semibold;
+  // font-family:PingFangSC-Semibold;
   font-weight:600;
   line-height:30px;
 }

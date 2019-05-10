@@ -25,7 +25,7 @@
       <header class="ta_header">
         <div class="avatar-info">
           <div class="avatar" @click="() => $router.push({ name: 'User', params: { username:article.author }})">
-            <img src="@/assets/logo.png" class="avatar-size" alt="avatar">
+            <img :src="articleAvatar" @error="() => { this.avatar = require('../../assets/logo.png'); }" class="avatar-size" alt="avatar">
           </div>
           <div class="avatar-right">
             <p class="author" @click="() => $router.push({ name: 'User', params: { username:article.author }})">
@@ -53,11 +53,13 @@
     </div>
 
     <div class="decoration">
-      <div class="pocket">
-        <a data-pocket-label="pocket" data-pocket-count="horizontal" class="pocket-btn" data-lang="en"></a>
-      </div>
-
-      <!-- <span class="is-original">本文发布于智能签名<br />未经授权禁止转载</span> -->
+      <a data-pocket-label="pocket" data-pocket-count="horizontal" class="pocket-btn" data-lang="en"></a>
+      <span class="is-original">
+        本文发布于智能签名<br />
+        <template v-if="false">
+          未经授权禁止转载
+        </template>
+      </span>
     </div>
 
     <div class="comments-list">
@@ -136,8 +138,8 @@ import {
   getArticleDatafromIPFS,
   getArticleInfo,
   addReadAmount, sendComment,
-  delArticle, getAuth,
-  reportShare,
+  delArticle, getAuth, getUser,
+  reportShare, getAvatarImage,
 } from '@/api';
 import { support } from '@/api/signature';
 import 'mavon-editor/dist/css/index.css';
@@ -175,6 +177,8 @@ export default {
         create_time: '',
         fission_factor: 0,
       },
+      // eslint-disable-next-line global-require
+      articleAvatar: require('../../assets/logo.png'),
       amount: '',
       comment: '',
       isSupported: RewardStatus.NOT_LOGGINED,
@@ -246,7 +250,7 @@ export default {
       return isNDaysAgo(2, time) ? time.format('MMMDo HH:mm') : time.fromNow();
     },
     isMe() {
-      console.log('isme', this.article, this.currentUsername);
+      // console.log('isme', this.article, this.currentUsername);
       return this.article.author === this.currentUsername;
     },
   },
@@ -357,6 +361,7 @@ export default {
         // 默认会执行获取文章方法，更新文章调用则不需要获取内容
         if (!supportDialog) {
           this.getArticleDatafromIPFS(response.data.hash);
+          this.getUser(response.data.author);
         }
       } catch (error) {
         this.$Message.error('获取文章信息失败请重试');
@@ -366,6 +371,7 @@ export default {
     // 获取文章内容 from ipfs
     async getArticleDatafromIPFS(hash) {
       await getArticleDatafromIPFS(hash).then(({ data }) => {
+        console.log(data);
         this.setPost(data.data);
       }).catch((err) => {
         console.log(err);
@@ -518,6 +524,14 @@ export default {
         },
       });
     },
+    // 获取用户 得到头像
+    async getUser(username) {
+      const response = await getUser({ username }, this.currentUsername);
+      if (response.status !== 200) throw new Error('getUser error');
+      if (!response.data.avatar) return;
+      this.articleAvatar = getAvatarImage(response.data.avatar);
+    },
+
   },
 };
 </script>
