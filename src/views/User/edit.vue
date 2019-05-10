@@ -102,7 +102,9 @@ export default {
           console.log(error.response.data);
           console.log(error.response.status);
           console.log(error.response.headers);
-          if (error.response.status === 500) {
+          if (error.response.status === 401) {
+            this.$Notice.error({ title: '登录信息已过期，请将内容保存后，重新登录并编辑' });
+          } else if (error.response.status === 500) {
             this.$Notice.error({ title: '昵称已存在，请重新设置' });
             this.nickname = this.newname;
           } else {

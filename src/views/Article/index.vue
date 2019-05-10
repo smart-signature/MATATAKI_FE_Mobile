@@ -292,7 +292,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['idCheck', 'recordShare']),
+    ...mapActions(['idCheckandgetAuth', 'recordShare']),
     // 分享功能
     initClipboard() {
       this.clipboard = new Clipboard('.button-share');
@@ -369,7 +369,7 @@ export default {
     async b4support() {
       try {
         // this.$Message.info('帐号检测中...');
-        await this.idCheck();
+        await this.idCheckandgetAuth();
         // this.$Message.success('检测通过');
         this.getArticleInfo(this.hash, true);
       } catch (error) {
@@ -392,8 +392,6 @@ export default {
 
       try {
         this.isSupported = RewardStatus.LOADING;
-        // 問用戶要 acceess token
-        await getAuth();
         // 發轉帳 action 到合約
         // 1. EOS 照舊
         // 2. ONT 用新流程
@@ -433,7 +431,7 @@ export default {
     },
     share() {
       try {
-        this.idCheck();
+        this.idCheckandgetAuth();
       } catch (error) {
         // console.log(error);
         // this.$Message.error('失败');
