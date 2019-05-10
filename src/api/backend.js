@@ -6,6 +6,7 @@ import { Base64 } from 'js-base64';
 // Doc : https://github.com/axios/axios
 
 export const apiServer = process.env.VUE_APP_API;
+console.log(process.env);
 // https://github.com/axios/axios/issues/535
 const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 const axiosforApiServer = axios.create({
@@ -196,7 +197,7 @@ const accessBackend = async (options) => {
   return axiosforApiServer(options);
 };
 
-const getArticleDatafromIPFS = hash => axiosforApiServer.get(`/ipfs/catJSON/${hash}`);
+const getArticleDatafromIPFS = hash => axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
 
 // 获取单篇文章的信息 by hash or id  需要 token 否则无法获取赞赏状态
 const getArticleInfo = (hashOrId) => {

@@ -18,7 +18,7 @@
         <p class="login-notification">即刻登录</p>
         <p class="login-notification">开始智能签名之旅 </p>
       </div>
-      <a class="my-user-page" href="javascript:;" @click="idCheckandgetAuth && refresh_user">立即登录</a>
+      <a class="my-user-page" href="javascript:;" @click="login">立即登录</a>
     </template>
   </div>
 </template>
@@ -81,6 +81,9 @@ export default {
       console.log(data);
       this.nickname = data.nickname;
       this.getAvatarImage(data.avatar);
+    },
+    login() {
+      this.idCheckandgetAuth() && this.refresh_user();
     },
   },
   mounted() {
