@@ -6,7 +6,6 @@ import { Base64 } from 'js-base64';
 // Doc : https://github.com/axios/axios
 
 export const apiServer = process.env.VUE_APP_API;
-console.log(process.env);
 // https://github.com/axios/axios/issues/535
 const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 const axiosforApiServer = axios.create({
