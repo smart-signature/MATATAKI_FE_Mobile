@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --mode development ",
-    "build-dev": "vue-cli-service build --mode development",
+    "build-dev": "vue-cli-service build --mode test",
     "build-prod": "vue-cli-service build --mode production",
     "lint": "vue-cli-service lint",
     "build-for-netlify": "npm run build-dev && npm run fix-netlify-cs-routing",
