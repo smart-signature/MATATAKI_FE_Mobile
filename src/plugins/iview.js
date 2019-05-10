@@ -5,6 +5,7 @@ import {
   Notice, Modal, Avatar,
   Tooltip, RadioGroup, Radio,
   Dropdown, DropdownMenu, DropdownItem,
+  Checkbox,
 } from 'iview';
 
 import 'iview/dist/styles/iview.css';
@@ -28,3 +29,4 @@ Vue.component('Radio', Radio);
 Vue.component('Dropdown', Dropdown);
 Vue.component('DropdownMenu', DropdownMenu);
 Vue.component('DropdownItem', DropdownItem);
+Vue.component('Checkbox', Checkbox);

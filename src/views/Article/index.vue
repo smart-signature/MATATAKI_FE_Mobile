@@ -39,9 +39,13 @@
     </template>
 
 
-    <div class="pocket">
-      <a data-pocket-label="pocket" data-pocket-count="horizontal" class="pocket-btn" data-lang="en"></a>
+    <div class="decoration">
+      <div class="pocket">
+        <a data-pocket-label="pocket" data-pocket-count="horizontal" class="pocket-btn" data-lang="en"></a>
+      </div>
     </div>
+
+
     <div class="commentslist-title">赞赏队列 ({{article.ups || 0}})</div>
     <CommentsList class="comments" :signId="signId" :isRequest="isRequest" @stopAutoRequest="(status) => isRequest = status" />
     <footer class="footer">

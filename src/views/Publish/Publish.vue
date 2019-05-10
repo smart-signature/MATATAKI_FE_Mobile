@@ -50,6 +50,10 @@
       </RadioGroup>
     </div>
 
+    <div class="is-original">
+      <Checkbox size="large" v-model="isOriginal">&nbsp;确认为原创</Checkbox>
+    </div>
+
     <modal-prompt
       :showModal="showModal"
       :modalText="modalText"
@@ -122,6 +126,7 @@ export default {
     id: '',
     editorMode: 'create', // 默认是创建文章
     saveType: 'public', // 发布文章模式， 公开 || 草稿
+    isOriginal: true, // 是否原创
     imgUploadDone: 0,
     showModal: false, // 弹框显示
     modalText: {
