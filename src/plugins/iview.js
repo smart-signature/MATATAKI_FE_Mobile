@@ -12,7 +12,7 @@ import 'iview/dist/styles/iview.css';
 
 Vue.prototype.$Message = Message;
 Vue.prototype.$Modal = Modal;
-
+Vue.prototype.$Notice = Notice;
 // Vue.use(iView);
 Vue.component('BackTop', BackTop);
 Vue.component('Button', Button);

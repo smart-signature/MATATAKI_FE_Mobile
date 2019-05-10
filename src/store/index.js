@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import ontology from './ontology';
 import scatter from './scatter';
+import { getAuth } from '@/api/index';
 
 Vue.use(Vuex);
 
