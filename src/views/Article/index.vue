@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 <template>
   <div class="article">
-    <BaseHeader :pageinfo="{ title: `Smart Signature`, rightPage: 'home', needLogin: false, }">
+    <BaseHeader :pageinfo="{ title: `文章详情`, needLogin: false, }">
       <img class="more" src="@/assets/more.svg" alt="more" slot="right" @click="opr = !opr" v-if="isMe">
       <div class="information" slot="info" @click="infoModa = true">
         <img src="@/assets/information.svg" alt="information">
@@ -23,31 +23,53 @@
     </ContentLoader>
     <template v-else>
       <header class="ta_header">
-        <h1 dir="auto">{{post.title}}</h1>
-        <p>
-          <Avatar icon="ios-person" class="avatar-size" size="small" />
-          <router-link class="author"
-            :to="{ name: 'User', params: { username:post.author }}">
-            {{article.nickname || post.author}}
-          </router-link>
-          {{articleCreateTimeComputed}} | {{article.read || 0}}阅读
-        </p>
-        <p class="break_all">IPFS Hash: {{article.hash}}</p>
+        <div class="avatar-info">
+          <div class="avatar" @click="() => $router.push({ name: 'User', params: { username:article.author }})">
+            <img src="@/assets/logo.png" class="avatar-size" alt="avatar">
+          </div>
+          <div class="avatar-right">
+            <p class="author" @click="() => $router.push({ name: 'User', params: { username:article.author }})">
+              {{article.nickname || post.author}}
+            </p>
+            <p class="other">
+              <img src="@/assets/img/icon_date.svg" class="avatar-date" alt="avatar">
+              {{articleCreateTimeComputed}}
+              <img src="@/assets/img/icon_read.svg" class="avatar-read" alt="avatar">
+              {{article.read || 0}}阅读
+            </p>
+          </div>
+        </div>
+        <h1>{{post.title}}</h1>
       </header>
       <mavon-editor v-show="false" style="display: none;"/>
       <div class="markdown-body" v-html="compiledMarkdown"></div>
     </template>
 
+    <div class="ipfs-hash">
+        <img src="@/assets/img/icon_copy.svg" class="copy-hash" alt="hash" :data-clipboard-text="getCopyIpfsHash">
+        <span >
+          IPFS Hash: {{article.hash || 'Loading...'}}
+        </span>
+    </div>
 
     <div class="decoration">
       <div class="pocket">
         <a data-pocket-label="pocket" data-pocket-count="horizontal" class="pocket-btn" data-lang="en"></a>
       </div>
+
+      <!-- <span class="is-original">本文发布于智能签名<br />未经授权禁止转载</span> -->
+    </div>
+
+    <div class="comments-list">
+      <div class="commentslist-title">
+        <span>
+          赞赏队列 {{article.ups || 0}}
+        </span>
+      </div>
+      <CommentsList class="comments" :signId="signId" :isRequest="isRequest" @stopAutoRequest="(status) => isRequest = status" />
     </div>
 
 
-    <div class="commentslist-title">赞赏队列 ({{article.ups || 0}})</div>
-    <CommentsList class="comments" :signId="signId" :isRequest="isRequest" @stopAutoRequest="(status) => isRequest = status" />
     <footer class="footer">
       <div class="footer-block">
         <Tooltip content="本文收到的赞赏总额" placement="top-start">
@@ -187,6 +209,9 @@ export default {
         : articleUrl;
       return `《${article.title}》by ${article.username} \n${shareLink}\n赞赏好文，分享有收益 ！`;
     },
+    getCopyIpfsHash() {
+      return `您的Hash地址为: ${this.article.hash}`;
+    },
     getDisplayedFissionFactor() {
       return this.article.fission_factor / 1000;
     },
@@ -228,6 +253,7 @@ export default {
   created() {
     document.title = '正在加载文章 - Smart Signature';
     this.initClipboard(); // 分享按钮功能需要放在前面 保证功能的正常执行
+    this.copyHash(); // 复制 hash
     this.getArticleInfo(this.hash); // 得到文章信息
   },
 
@@ -296,6 +322,21 @@ export default {
     // 分享功能
     initClipboard() {
       this.clipboard = new Clipboard('.button-share');
+      this.clipboard.on('success', (e) => {
+        this.$toasted.show('复制成功', {
+          position: 'top-center',
+          duration: 1000,
+          fitToScreen: true,
+        });
+        e.clearSelection();
+      });
+      this.clipboard.on('error', () => {
+        this.$Message.error('该浏览器不支持自动复制');
+      });
+    },
+    // 复制hash
+    copyHash() {
+      this.clipboard = new Clipboard('.copy-hash');
       this.clipboard.on('success', (e) => {
         this.$toasted.show('复制成功', {
           position: 'top-center',

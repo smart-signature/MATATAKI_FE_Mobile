@@ -50,9 +50,9 @@
       </RadioGroup>
     </div>
 
-    <div class="is-original">
+    <!-- <div class="is-original">
       <Checkbox size="large" v-model="isOriginal">&nbsp;确认为原创</Checkbox>
-    </div>
+    </div> -->
 
     <modal-prompt
       :showModal="showModal"
