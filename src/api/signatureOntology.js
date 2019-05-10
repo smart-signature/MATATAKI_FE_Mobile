@@ -10,7 +10,7 @@ const recordShare = async ({
   const { scriptHash, gasLimit, gasPrice } = config.ontology;
   const args = [
     { type: 'String', value: owner },
-    { type: 'Integer', value: signId },
+    { type: 'String', value: signId },
     { type: 'Integer', value: amount },
   ];
   if (sponsor) args.push({ type: 'String', value: sponsor });
