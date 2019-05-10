@@ -62,10 +62,10 @@ export default {
     };
   },
   created() {
-    this.addHandleScroll();
+    // this.addHandleScroll();
   },
   destroyed() {
-    this.removeHandleScroll();
+    // this.removeHandleScroll();
   },
   methods: {
     getListData(res) {
@@ -75,18 +75,18 @@ export default {
       console.log(name);
       this.activeIndex = name;
     },
-    addHandleScroll() {
-      window.addEventListener('scroll', _.throttle(this.handleScroll, 150));
-    },
-    handleScroll() {
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
-      // console.log(scrollTop);
-      if (scrollTop > 296) this.isFixedHead = true;
-      else this.isFixedHead = false;
-    },
-    removeHandleScroll() {
-      window.removeEventListener('scroll', this.handleScroll);
-    },
+    // addHandleScroll() {
+    //   window.addEventListener('scroll', _.throttle(this.handleScroll, 150));
+    // },
+    // handleScroll() {
+    //   const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+    //   // console.log(scrollTop);
+    //   if (scrollTop > 296) this.isFixedHead = true;
+    //   else this.isFixedHead = false;
+    // },
+    // removeHandleScroll() {
+    //   window.removeEventListener('scroll', this.handleScroll);
+    // },
   },
 
 };
