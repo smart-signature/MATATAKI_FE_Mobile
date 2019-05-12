@@ -453,7 +453,7 @@ export default {
           }
         };
         const backendResult = await makeShare();
-
+        // console.log('F');
         try { // 發 comment 到後端
           console.log('Send comment...');
           const response = await sendComment({ comment, signId });
@@ -471,7 +471,7 @@ export default {
         this.isRequest = true; // 自动请求
         this.visible3 = false; // 关闭dialog
       } catch (error) {
-        console.log(JSON.stringify(error));
+        console.error(JSON.stringify(error));
         this.$Message.error('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额');
         this.isSupported = RewardStatus.NOT_REWARD_YET;
       }

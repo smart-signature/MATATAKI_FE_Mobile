@@ -56,26 +56,25 @@ const editArticle = ({
 const reportShare = ({
   amount, signId, sponsor = null,
 }) => {
-  const platform = platform();
+  const _platform = platform();
   let contract = null;
   let symbol = null;
-  if (platform === 'eos') {
+  if (_platform === 'eos') {
     contract = 'eosio.token';
     symbol = 'EOS';
-  } else if (platform === 'ont') {
+  } else if (_platform === 'ont') {
     contract = 'AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV';
     symbol = 'ONT';
   }
-
   return accessBackend({
-    method: 'GET',
+    method: 'POST',
     url: '/support',
     data: {
       signId,
       contract,
       symbol,
       amount: amount * 10000,
-      platform,
+      platform: _platform,
       referrer: sponsor,
     },
   });
@@ -192,7 +191,6 @@ const accessBackend = async (options) => {
     );
   }
   options.headers['x-access-token'] = accessToken;
-
   return axiosforApiServer(options);
 };
 
