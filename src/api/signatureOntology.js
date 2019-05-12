@@ -8,9 +8,10 @@ const recordShare = async ({
   if (!owner) { throw new Error('owner cant be null'); }
   if (!signId) { throw new Error('signId cant be null'); }
   const { scriptHash, gasLimit, gasPrice } = config.ontology;
+  console.debug(signId.toString());
   const args = [
     { type: 'String', value: owner },
-    { type: 'String', value: signId },
+    { type: 'String', value: signId.toString() },
     { type: 'Integer', value: amount },
   ];
   if (sponsor) args.push({ type: 'String', value: sponsor });

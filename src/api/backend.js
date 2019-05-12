@@ -57,9 +57,11 @@ const reportShare = ({
   amount, signId, sponsor = null,
 }) => {
   const _platform = platform();
+  let _amount = amount;
   let contract = null;
   let symbol = null;
   if (_platform === 'eos') {
+    _amount = amount * 10000;
     contract = 'eosio.token';
     symbol = 'EOS';
   } else if (_platform === 'ont') {
@@ -73,7 +75,7 @@ const reportShare = ({
       signId,
       contract,
       symbol,
-      amount: amount * 10000,
+      amount: _amount,
       platform: _platform,
       referrer: sponsor,
     },
