@@ -15,7 +15,7 @@
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex'; // mapGetters 未使用
 // import { getAuth } from '@/api';
-import _ from 'lodash';
+import throttle from 'lodash/throttle';
 
 export default {
   name: 'BaseHeader',
@@ -85,7 +85,7 @@ export default {
       }
     },
     addHandleScroll() {
-      window.addEventListener('scroll', _.throttle(this.handleScroll, 150));
+      window.addEventListener('scroll', throttle(this.handleScroll, 150));
     },
     handleScroll() {
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;

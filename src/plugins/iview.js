@@ -8,7 +8,7 @@ import {
   Checkbox,
 } from 'iview';
 
-import 'iview/dist/styles/iview.css';
+// import 'iview/dist/styles/iview.css';
 
 Vue.prototype.$Message = Message;
 Vue.prototype.$Modal = Modal;
