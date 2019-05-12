@@ -22,8 +22,7 @@ const recordShare = async ({
     gasPrice,
   });
   console.log(response);
-  const { transaction } = response;
-  return transaction;
+  return response;
 };
 
 /*
