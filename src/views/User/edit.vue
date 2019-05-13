@@ -16,10 +16,10 @@
         </img-upload>
       </za-cell>
       <za-cell title="昵称">
-        <za-input v-model="nickname" placeholder="昵称1-12位，可包含中英文和数字"></za-input>
+        <za-input v-model="newname" placeholder="昵称1-12位，可包含中英文和数字"></za-input>
       </za-cell>
       <za-cell title="简介">
-        <za-input v-model="introduction" rows="3" type="textarea" placeholder="简介可设置5-20个字符"></za-input>
+        <za-input v-model="newIntroduction" rows="3" type="textarea" placeholder="简介可设置5-20个字符"></za-input>
       </za-cell>
     </div>
   </div>
@@ -52,6 +52,7 @@ export default {
       avatar: require('../../assets/logo.png'),
       imgUploadDone: 0, // 图片是否上传完成
       introduction: '',
+      newIntroduction: '',
     };
   },
   computed: {
@@ -74,6 +75,44 @@ export default {
     },
     cancel() {
       this.editing = !this.editing;
+    },
+    async saveIntro() {
+      // 中文 字母 数字 1-12
+      const reg = /^[\u4E00-\u9FA5A-Za-z0-9]{5,20}$/;
+      if (!reg.test(this.newIntroduction)) {
+        this.$toasted.show('<p style="margin: 8px 0;line-height: 1.5;">简介可设置5-20个字符</p>', {
+          position: 'top-center',
+          duration: 1500,
+          fitToScreen: true,
+        });
+        return;
+      }
+      try {
+        await setIntroduction({ introduction: this.newIntroduction });
+        this.$Notice.success({ title: '保存成功' });
+        this.introduction = this.newIntroduction;
+      } catch (error) {
+        if (error.response) {
+          if (error.response.status === 401) {
+            this.$Notice.error({ title: '登录信息已过期，请将内容保存后，重新登录并编辑' });
+          } else if (error.response.status === 500) {
+            this.$Notice.error({ title: '昵称已存在，请重新设置' });
+            this.introduction = this.newIntroduction;
+          } else {
+            this.$Notice.error({
+              title: '保存失败',
+              desc: '简介可设置5-20个字符',
+            });
+            this.newIntroduction = this.introduction;
+          }
+        } else if (error.request) {
+          console.log(error.request);
+        } else {
+          console.log('Error', error.message);
+        }
+        console.log(error.config);
+      }
+      this.refreshUser();
     },
     async save() {
       if (this.newname === this.nickname) {
@@ -140,6 +179,7 @@ export default {
         this.fans = data.fans;
         this.followed = data.is_follow;
         this.introduction = data.introduction;
+        this.newIntroduction = data.introduction;
       };
       try {
         const response = await getUser({ username }, currentUsername);
