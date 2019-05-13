@@ -41,13 +41,6 @@
           <img class="cover-right-remove" @click.prevent="removeCover" src="@/assets/img/icon_remove.svg" alt="remove">
         </div>
       </div>
-
-      <!--<div class="original">
-        <p>确认原创</p>
-        <div class="cover-right">
-          <Checkbox size="large" v-model="isOriginal"></Checkbox>
-        </div>
-      </div>-->
     </div>
     <div class="radio" v-if="isShowEditorMode">
       <RadioGroup v-model="saveType" vertical class="save-type">
