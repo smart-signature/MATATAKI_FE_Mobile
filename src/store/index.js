@@ -21,7 +21,7 @@ export default new Vuex.Store({
     userInfo: {
       nickname: '',
     },
-  },  
+  },
   getters: {
     // rule: 帳號優先級 EOS > ONT
     // rule: EOS 帳號最長 12 位， ONT 帳號(地址)一定是 20 位

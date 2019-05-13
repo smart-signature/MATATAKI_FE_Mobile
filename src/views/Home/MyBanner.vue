@@ -72,7 +72,7 @@ export default {
     if (isLogined) { refreshUser(); }
   },
   methods: {
-    ...mapActions(['idCheckandgetAuth','getUser']),
+    ...mapActions(['idCheckandgetAuth', 'getUser']),
     toUserPage(username) {
       this.$router.push({ name: 'User', params: { username } });
     },
@@ -88,7 +88,7 @@ export default {
     },
     async signIn() {
       this.modal1 = false;
-      
+
       const { blockchin } = this.userConfig;
       const usingBlockchain = {
         EOS: blockchin === 'EOS',
