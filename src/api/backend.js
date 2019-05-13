@@ -38,7 +38,8 @@ const sendArticle = async (url = '', {
     title,
     username,
   };
-  return !needAccessToken ? axiosforApiServer.post(url, data)
+  return !needAccessToken
+    ? axiosforApiServer.post(url, data)
     : accessBackend({ method: 'POST', url, data });
 };
 

@@ -30,7 +30,7 @@
 
 <script>
 import { ArticleCard } from '@/components/';
-// import _ from 'lodash';
+// import throttle from 'lodash/throttle';
 
 export default {
   name: 'ArticlesRankings',
@@ -76,7 +76,7 @@ export default {
       this.activeIndex = name;
     },
     // addHandleScroll() {
-    //   window.addEventListener('scroll', _.throttle(this.handleScroll, 150));
+    //   window.addEventListener('scroll', throttle(this.handleScroll, 150));
     // },
     // handleScroll() {
     //   const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
