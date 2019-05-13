@@ -41,8 +41,16 @@
           <img class="cover-right-remove" @click.prevent="removeCover" src="@/assets/img/icon_remove.svg" alt="remove">
         </div>
       </div>
-    </div>
 
+      <div class="original">
+        <p>确认原创</p>
+        <div class="cover-right" @click="original = !original">
+          <div class="icon-container" :class="{'active': original}">
+            <za-icon type="right" class="icon"></za-icon>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="radio" v-if="isShowEditorMode">
       <RadioGroup v-model="saveType" vertical class="save-type">
         <Radio size="large" label="public">公开发布</Radio>
@@ -134,6 +142,7 @@ export default {
       button: ['再想想', '退出'],
     },
     modalMode: null, // header 判断点击的 back 还是 home
+    original: false,
   }),
   computed: {
     ...mapState('scatter', {

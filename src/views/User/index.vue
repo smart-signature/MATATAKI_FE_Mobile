@@ -58,7 +58,7 @@
               <span class="statusNumber">{{fans}}</span> <span class="statusKey">粉丝</span>
             </a>
           </p>
-          <p>简介：巴拉巴拉八零八</p>
+          <p>简介：暂无</p>
           <p v-if="email" class="email">{{email}}</p>
         </div>
       </div>

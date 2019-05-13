@@ -12,6 +12,7 @@
         <img-upload :imgUploadDone="imgUploadDone" @doneImageUpload="doneImageUpload">
           <div class="user-avatar" slot="uploadButton">
             <img class="userpic" :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png');}" alt="" slot="description">
+            <img class="camera" src="/img/camera.png" />
           </div>
         </img-upload>
       </za-cell>
