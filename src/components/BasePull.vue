@@ -72,6 +72,11 @@ export default {
       type: Number,
       default: 0,
     },
+    // 是否需要token
+    needAccessToken: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     displayAboutScroll() {
@@ -115,7 +120,7 @@ export default {
     },
     async getApiData({ url, params }, isEmptyArray) {
       try {
-        const { data } = await getBackendData({ url, params });
+        const { data } = await getBackendData({ url, params }, this.needAccessToken);
         if (isEmptyArray) this.articles.length = 0;
         if (this.isObj.type === 'Array') {
           // 如果返回的数据是 Array 返回整个 data

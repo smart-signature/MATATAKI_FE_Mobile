@@ -7,6 +7,7 @@
         noArticles: '无草稿', }"
     :params="params"
     :apiUrl="apiUrl"
+    :needAccessToken="true"
     @getListData="getListData">
     <DraftBoxList :draftbox="item" :index="index"  v-for="(item, index) in draftBoxList" :key="index" @delId="delId"/>
   </BasePull>

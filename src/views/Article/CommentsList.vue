@@ -9,6 +9,7 @@
     :apiUrl="apiUrl"
     :isRefresh="false"
     :autoRequestTime="autoRequestTime"
+    :needAccessToken="true"
     @getListData="getListData"
     >
       <CommentCard :comment="item" v-for="(item, index) in articles" :key="index"/>
