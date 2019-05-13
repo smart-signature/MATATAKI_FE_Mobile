@@ -47,8 +47,8 @@ export default {
     },
     white: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   computed: {
     ...mapState('scatter', {
