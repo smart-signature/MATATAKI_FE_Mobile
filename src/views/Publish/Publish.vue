@@ -42,12 +42,12 @@
         </div>
       </div>
 
-      <div class="original">
+      <!--<div class="original">
         <p>确认原创</p>
         <div class="cover-right">
-          <Checkbox label="西瓜"></Checkbox>
+          <Checkbox size="large" v-model="isOriginal"></Checkbox>
         </div>
-      </div>
+      </div>-->
     </div>
     <div class="radio" v-if="isShowEditorMode">
       <RadioGroup v-model="saveType" vertical class="save-type">
@@ -56,10 +56,9 @@
       </RadioGroup>
     </div>
 
-     <!--<div class="is-original">
+     <div class="is-original">
       <Checkbox size="large" v-model="isOriginal">&nbsp;确认为原创</Checkbox>
     </div>
--->
     <modal-prompt
       :showModal="showModal"
       :modalText="modalText"
@@ -140,7 +139,6 @@ export default {
       button: ['再想想', '退出'],
     },
     modalMode: null, // header 判断点击的 back 还是 home
-    original: false,
   }),
   computed: {
     ...mapState('scatter', {
