@@ -44,10 +44,8 @@
 
       <div class="original">
         <p>确认原创</p>
-        <div class="cover-right" @click="original = !original">
-          <div class="icon-container" :class="{'active': original}">
-            <za-icon type="right" class="icon"></za-icon>
-          </div>
+        <div class="cover-right">
+          <Checkbox label="西瓜"></Checkbox>
         </div>
       </div>
     </div>
@@ -58,10 +56,10 @@
       </RadioGroup>
     </div>
 
-    <!-- <div class="is-original">
+     <!--<div class="is-original">
       <Checkbox size="large" v-model="isOriginal">&nbsp;确认为原创</Checkbox>
-    </div> -->
-
+    </div>
+-->
     <modal-prompt
       :showModal="showModal"
       :modalText="modalText"
