@@ -1,8 +1,14 @@
 <template>
   <div class="header" :class="[isCenter && 'mw', isToggleBc && 'bc']">
     <div class="header-left" slot="left">
-      <img src="@/assets/img/icon_back.svg" alt="home" @click="goBack" class="back-icon">
-      <img src="@/assets/img/icon_home.svg" alt="home" @click="goHome" class="home-icon">
+      <template v-if="white">
+        <img src="@/assets/img/icon_back_white.svg" alt="home" @click="goBack" class="back-icon">
+        <img src="@/assets/img/icon_home_white.svg" alt="home" @click="goHome" class="home-icon">
+      </template>
+      <template v-else>
+        <img src="@/assets/img/icon_back.svg" alt="home" @click="goBack" class="back-icon">
+        <img src="@/assets/img/icon_home.svg" alt="home" @click="goHome" class="home-icon">
+      </template>
     </div>
     <p slot="title" class="title"> {{pageinfo.title}} </p>
     <div class="header-right" slot="right">
@@ -39,6 +45,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    white: {
+      type: Boolean,
+      default: false
+    }
   },
   computed: {
     ...mapState('scatter', {
@@ -127,6 +137,7 @@ export default {
 
 <style lang="less" scoped>
 .header {
+  min-height: 45px;
   background-color: transparent;
   padding: 10px 20px;
   display: flex;

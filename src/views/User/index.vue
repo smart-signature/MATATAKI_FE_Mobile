@@ -1,15 +1,24 @@
 /* eslint-disable no-shadow */
 <template>
   <div class="user mw">
-    <BaseHeader :pageinfo="{ title: `编辑`, rightPage: 'home', needLogin: false, }" />
-    <div class="usercard" >
+    <BaseHeader :pageinfo="{ title: `编辑`, rightPage: 'home', needLogin: false, }" v-if="isMe" />
+    <BaseHeader :pageinfo="{ title: ``, rightPage: 'home', needLogin: false, }" v-else style="background-color: #478970" :white="true">
+      <div slot="right" v-if="!isMe">
+        <template v-if="!followed">
+          <span class="darkBtn" @click="follow_user">关注</span>
+        </template>
+        <template v-else>
+          <span class="darkBtn" @click="unfollow_user">取消关注</span>
+        </template>
+      </div>
+    </BaseHeader>
+    <div class="usercard" v-if="isMe">
       <div class="user-avatar">
         <img class="userpic" :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png');}" />
         <img-upload :imgUploadDone="imgUploadDone" class="camera" v-if="editing" @doneImageUpload="doneImageUpload">
           <img slot="uploadButton" src="/img/camera.png" />
         </img-upload>
       </div>
-
       <div class="texts">
         <p v-if="!editing" class="username" :class="[!email ? 'username-email' : '']">{{nickname === "" ? username : nickname}}</p>
         <p v-if="email" class="email">{{email}}</p>
@@ -27,21 +36,32 @@
         <template v-if="editing">
           <a href="javascript:;" class="rightbutton" :class="[editing ? 'editing-button' : '']" @click="save">完成</a>
         </template>
-      <template v-else>
-        <template v-if="isMe">
+        <template v-else>
           <a href="javascript:;" class="rightbutton" @click="jumpTo({ name: 'UserEdit', params: { username }})">编辑</a>
         </template>
-        <template v-else>
-          <template v-if="!followed">
-            <a href="javascript:;" class="rightbutton" @click="follow_user">关注</a>
-          </template>
-          <template v-else>
-            <a href="javascript:;" class="rightbutton" @click="unfollow_user">取消关注</a>
-          </template>
-        </template>
-      </template>
+      </div>
     </div>
-
+    <div v-else>
+      <div class="otherUser">
+        <div class="user-avatar">
+          <img class="userpic" :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png');}" />
+        </div>
+      </div>
+      <div class="otherUsertextsOutter">
+        <div class="otherUsertexts">
+          <p v-if="!editing" class="username" :class="[!email ? 'username-email' : '']">{{nickname === "" ? username : nickname}}</p>
+          <p class="userstatus">
+            <a @click="jumpTo({ name: 'FollowList', params: { listtype: '关注' }})">
+              <span class="statusNumber">{{follows}}</span> <span class="statusKey">关注</span>
+            </a>
+            <a @click="jumpTo({ name: 'FollowList', params: {  listtype: '粉丝'  }})">
+              <span class="statusNumber">{{fans}}</span> <span class="statusKey">粉丝</span>
+            </a>
+          </p>
+          <p>简介：巴拉巴拉八零八</p>
+          <p v-if="email" class="email">{{email}}</p>
+        </div>
+      </div>
     </div>
     <div class="centercard" v-if="isMe">
       <za-cell is-link has-arrow @click='jumpTo({ name: "Asset", params: { username }})' description="已绑定1个账户">
