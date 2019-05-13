@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import ontology from './ontology';
 import scatter from './scatter';
-import { getAuth } from '@/api/index';
+import { getAuth, getUser } from '@/api';
 
 Vue.use(Vuex);
 
@@ -68,14 +68,14 @@ export default new Vuex.Store({
       };
 
       const { blockchin } = state.userConfig;
-      if (!blockchin) { // 1st time 
-        if (!EOS && !ONT) EOS = ONT = true; // 不該到這
-        else commit('setUserConfig', { EOS, ONT });
-      } else {
-        if (!EOS && !ONT) {
-          EOS = blockchin === 'EOS';
-          ONT = blockchin === 'ONT';
-        }
+      if (!blockchin) { // 1st time
+        if (!EOS && !ONT) { // 不該到這
+          EOS = true;
+          ONT = true;
+        } else commit('setUserConfig', { EOS, ONT });
+      } else if (!EOS && !ONT) {
+        EOS = blockchin === 'EOS';
+        ONT = blockchin === 'ONT';
       }
 
       console.log('Start id check ...');
@@ -141,9 +141,15 @@ export default new Vuex.Store({
     async recordShare({ dispatch, getters }, { amount, signId, sponsor = null }) {
       const { blockchain } = getters.currentUserInfo;
       let actionName = null;
+      // eslint-disable-next-line no-constant-condition
       if (false && blockchain === 'EOS') actionName = 'scatter/recordShare';
       else if (blockchain === 'ONT') actionName = 'ontology/recordShare';
       return dispatch(actionName, { amount, signId, sponsor });
+    },
+    async getUser({ getters }) {
+      const { data } = await getUser({ username: getters.currentUserInfo.name });
+      console.log(data);
+      return data;
     },
     async walletConnectionSetup({ dispatch }, { EOS, ONT }) {
       let meg = '';

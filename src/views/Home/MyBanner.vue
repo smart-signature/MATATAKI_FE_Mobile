@@ -24,7 +24,7 @@
     </template>
     <Modal v-model="modal1"
       title="选择登录钱包类型"
-      @on-ok="ok"
+      @on-ok="signIn"
       @on-cancel="cancel">
       <RadioGroup v-model="userConfig.blockchin">
         <Radio label="EOS">
@@ -41,11 +41,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import {
-  getUser,
-  getAssets,
-  getAvatarImage,
-} from '@/api';
+import { getAvatarImage } from '@/api';
 
 export default {
   name: 'My-Banner',
@@ -62,9 +58,6 @@ export default {
       const { name } = currentUserInfo;
       return nickname || (name.length <= 12 ? name : name.slice(0, 12));
     },
-    displayTokenSymbol() {
-      return this.currentUserInfo.balance.slice(-4);
-    },
   },
   data() {
     return {
@@ -77,16 +70,13 @@ export default {
     };
   },
   created() {
-    const { isLogined, refresh_user } = this;
-    if (isLogined) { refresh_user(); }
+    const { isLogined, refreshUser } = this;
+    if (isLogined) { refreshUser(); }
   },
   methods: {
-    ...mapActions(['idCheckandgetAuth']),
+    ...mapActions(['idCheckandgetAuth','getUser']),
     toUserPage(username) {
       this.$router.push({ name: 'User', params: { username } });
-    },
-    handleClick(tab, event) {
-      console.log(tab, event);
     },
     async getAvatarImage(hash) {
       // 空hash 显示默认Logo头像
@@ -94,39 +84,29 @@ export default {
       if (!hash) this.avatar = require('../../assets/logo.png');
       else this.avatar = getAvatarImage(hash);
     },
-    async refresh_user() {
-      const { name: username } = this.currentUserInfo;
-      console.log(username);
-      const { data } = await getUser({ username });
-      console.log(data);
-      this.nickname = data.nickname;
-      this.getAvatarImage(data.avatar);
+    async refreshUser() {
+      const { avatar, nickname } = await this.getUser();
+      this.nickname = nickname;
+      this.getAvatarImage(avatar);
     },
-    async ok() {
+    async signIn() {
       this.modal1 = false;
+      
       const { blockchin } = this.userConfig;
       const usingBlockchain = {
         EOS: blockchin === 'EOS',
         ONT: blockchin === 'ONT',
       };
       await this.idCheckandgetAuth(usingBlockchain);
-      await this.refresh_user();
     },
     cancel() {
       this.modal1 = false;
-      this.$Modal.remove();
     },
-    // login() {
-    //   this.modal1 = true;
-    //   this.idCheckandgetAuth() && this.refresh_user();
-    // },
-  },
-  mounted() {
   },
   watch: {
-    isLogined() {
-      if (this.isLogined) {
-        this.refresh_user();
+    isLogined(newState) {
+      if (newState) {
+        this.refreshUser();
       }
     },
   },
