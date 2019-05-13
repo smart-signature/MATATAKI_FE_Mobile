@@ -20,8 +20,22 @@
         <p class="login-notification">即刻登录</p>
         <p class="login-notification">开始智能签名之旅 </p>
       </div>
-      <a class="my-user-page" href="javascript:;" @click="login">立即登录</a>
+      <a class="my-user-page" href="javascript:;" @click="modal1 = true">立即登录</a>
     </template>
+    <Modal v-model="modal1"
+      title="选择登录钱包类型"
+      @on-ok="ok"
+      @on-cancel="cancel">
+      <RadioGroup v-model="userConfig.blockchin">
+        <Radio label="EOS">
+          <img class="amount-img" src="@/assets/img/icon_amount.png" />
+          <span>EOS</span>
+        </Radio>
+        <Radio label="ONT">
+          <span>ONT</span>
+        </Radio>
+      </RadioGroup>
+    </Modal>
   </div>
 </template>
 
@@ -54,6 +68,10 @@ export default {
   },
   data() {
     return {
+      modal1: false,
+      userConfig: {
+        blockchin: 'EOS',
+      },
       avatar: require('../../assets/logo.png'),
       nickname: '',
     };
@@ -84,9 +102,24 @@ export default {
       this.nickname = data.nickname;
       this.getAvatarImage(data.avatar);
     },
-    login() {
-      this.idCheckandgetAuth() && this.refresh_user();
+    async ok() {
+      this.modal1 = false;
+      const { blockchin } = this.userConfig;
+      const usingBlockchain = {
+        EOS: blockchin === 'EOS',
+        ONT: blockchin === 'ONT',
+      };
+      await this.idCheckandgetAuth(usingBlockchain);
+      await this.refresh_user();
     },
+    cancel() {
+      this.modal1 = false;
+      this.$Modal.remove();
+    },
+    // login() {
+    //   this.modal1 = true;
+    //   this.idCheckandgetAuth() && this.refresh_user();
+    // },
   },
   mounted() {
   },
