@@ -2,7 +2,9 @@
   <div class="my-banner">
     <template v-if="isLogined">
       <div class="banner-text">
-         <img :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png'); }" class="round_icon">
+        <div class="round_icon">
+           <img :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png'); }">
+        </div>
          <div>
             <p class="username">{{displayName}}</p>
             <p class="my-balance">
@@ -118,9 +120,16 @@ export default {
   flex: 1;
   margin-right: 10px;
   .round_icon {
+    flex: 0 0 50px;
     width: 50px;
     height: 50px;
     border-radius: 50%;
+    overflow: hidden;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
   }
   .username {
     font-size: 14px;
