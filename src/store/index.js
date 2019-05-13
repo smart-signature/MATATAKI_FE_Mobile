@@ -18,6 +18,9 @@ export default new Vuex.Store({
     userConfig: {
       blockchin: null,
     },
+    userInfo: {
+      nickname: '',
+    },
   },  
   getters: {
     // rule: 帳號優先級 EOS > ONT
@@ -28,6 +31,7 @@ export default new Vuex.Store({
       blockchain: currentUsername
         ? (currentUsername.length <= 12 ? 'EOS' : 'ONT')
         : null,
+      nickname: state.userInfo.nickname,
     }),
     currentUsername: (state, { 'scatter/currentUsername': scatterUsername }) => (
       scatterUsername || (state.ontology.account || null)
@@ -146,9 +150,10 @@ export default new Vuex.Store({
       else if (blockchain === 'ONT') actionName = 'ontology/recordShare';
       return dispatch(actionName, { amount, signId, sponsor });
     },
-    async getUser({ getters }) {
+    async getUser({ commit, getters }) {
       const { data } = await getUser({ username: getters.currentUserInfo.name });
       console.log(data);
+      commit('setNickname', data.nickname);
       return data;
     },
     async walletConnectionSetup({ dispatch }, { EOS, ONT }) {
@@ -182,6 +187,9 @@ export default new Vuex.Store({
   mutations: {
     setUserConfig(state, config) {
       state.userConfig.blockchin = config.EOS ? 'EOS' : 'ONT';
+    },
+    setNickname(state, nickname) {
+      state.userInfo.nickname = nickname;
     },
   },
 });

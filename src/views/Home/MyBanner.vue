@@ -54,8 +54,7 @@ export default {
       return this.currentUserInfo.balance.slice(-4);
     },
     displayName() {
-      const { currentUserInfo, nickname } = this;
-      const { name } = currentUserInfo;
+      const { name, nickname } = this.currentUserInfo;
       return nickname || (name.length <= 12 ? name : name.slice(0, 12));
     },
   },
@@ -66,7 +65,6 @@ export default {
         blockchin: 'EOS',
       },
       avatar: require('../../assets/logo.png'),
-      nickname: '',
     };
   },
   created() {
@@ -85,8 +83,7 @@ export default {
       else this.avatar = getAvatarImage(hash);
     },
     async refreshUser() {
-      const { avatar, nickname } = await this.getUser();
-      this.nickname = nickname;
+      const { avatar } = await this.getUser();
       this.getAvatarImage(avatar);
     },
     async signIn() {
