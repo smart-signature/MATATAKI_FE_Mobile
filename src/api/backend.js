@@ -331,6 +331,11 @@ const setProfile = ({ nickname, introduction }) => accessBackend({
   data: { nickname, introduction },
 });
 
+const getMyPost = (id) => accessBackend({
+  method: 'GET',
+  url: `/mypost/${id}`,
+});
+
 
 // 每天浪費時間寫這個，不對吧，像隔壁用 API 一起輸出呀
 export {
@@ -342,5 +347,5 @@ export {
   disassembleToken, delArticle, uploadAvatar, getArticleSupports, editArticle,
   getBackendData,
   draftList, createDraft, updateDraft, delDraft, getDraft,
-  reportShare, getMyUserData, setProfile,
+  reportShare, getMyUserData, setProfile, getMyPost,
 };

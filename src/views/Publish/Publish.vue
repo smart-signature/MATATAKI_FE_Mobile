@@ -67,7 +67,7 @@ import { mavonEditor } from 'mavon-editor';
 import {
   defaultImagesUploader, publishArticle, createDraft,
   editArticle, getArticleDatafromIPFS, getArticleInfo,
-  getDraft, updateDraft, delDraft,
+  getDraft, updateDraft, delDraft, getMyPost,
   getAvatarImage,
 } from '@/api/index';
 
@@ -96,7 +96,8 @@ export default {
     } else if (from === 'edit') {
       // console.log('编辑文章');
       this.editorMode = 'edit';
-      this.setArticleData(hash);
+      //this.setArticleData(hash);
+      this.setArticleDataById(hash, id);
     } else if (from === 'draft') {
       // console.log('草稿箱');
       this.editorMode = 'draft';
@@ -171,9 +172,34 @@ export default {
     },
   },
   methods: {
+    // 通过ID拿数据
+    async setArticleDataById(hash, id) {
+      const articleData = await getArticleDatafromIPFS(hash);
+      try { // 获取文章信息
+        const { data } = await getMyPost(id);
+        if (data.code === 0) {
+          this.fissionNum = data.data.fission_factor / 1000;
+          this.signature = data.data.sign;
+          this.cover = data.data.cover;
+          this.signId = data.data.id;
+          this.isOriginal = Boolean(data.data.is_original);
+        } else {
+          this.$Notice.error({ title: data.message });
+          this.$router.push({name: 'home'});
+        }
+      } catch (error) {
+        console.log(error);
+        this.$Notice.error({ title: '获取文章信息发生错误' });
+        this.$router.push({name: 'home'});
+      }
+      // 设置文章内容
+      const { data } = articleData.data;
+      this.title = data.title;
+      this.markdownData = data.content;
+    },
     ...mapActions(['idCheckandgetAuth']),
     // 设置文章数据 by hash
-    async setArticleData(hash) {
+    /*async setArticleData(hash) {
       const articleData = await getArticleDatafromIPFS(hash);
       try { // 获取文章信息
         const { data } = await getArticleInfo(hash);
@@ -190,7 +216,7 @@ export default {
       const { data } = articleData.data;
       this.title = data.title;
       this.markdownData = data.content;
-    },
+    },*/
     // 得到草稿箱内容 by id
     async getDraft(id) {
       const { data } = await getDraft({ id });
