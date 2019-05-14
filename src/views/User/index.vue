@@ -58,7 +58,7 @@
               <span class="statusNumber">{{fans}}</span> <span class="statusKey">粉丝</span>
             </a>
           </p>
-          <p>简介：暂无</p>
+          <p>简介：{{introduction || '暂无'}}</p>
           <p v-if="email" class="email">{{email}}</p>
         </div>
       </div>
@@ -162,6 +162,7 @@ export default {
       // eslint-disable-next-line global-require
       avatar: require('../../assets/logo.png'),
       imgUploadDone: 0, // 图片是否上传完成
+      introduction: '',
       stats: {
         accounts: 0,
         articles: 0,
@@ -253,7 +254,7 @@ export default {
       if (!this.username) this.username = this.currentUsername;
       const { username, currentUsername } = this;
       const setUser = ({
-        avatar, email, fans, follows, is_follow, nickname, accounts, articles, supports, drafts
+        avatar, email, fans, follows, is_follow, nickname, introduction, accounts, articles, supports, drafts
       }) => {
         this.nickname = nickname;
         this.email = email;
@@ -262,6 +263,7 @@ export default {
         this.follows = follows;
         this.fans = fans;
         this.followed = is_follow;
+        this.introduction = introduction;
         this.stats = {
           accounts,
           articles,

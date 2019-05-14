@@ -20,7 +20,7 @@ const getSignatureOfArticle = ({ author, hash }) => store.dispatch('getSignature
 const getSignatureOfAuth = () => store.dispatch('getSignatureOfAuth');
 
 const sendArticle = async (url = '', {
-  signId = null, author, hash, title, fissionFactor, cover,
+  signId = null, author, hash, title, fissionFactor, cover, is_original,
 }, needAccessToken = false) => {
   // 若 getSignatureOfArticle reject(或內部 throw 被轉為reject)
   // 則 sendArticle 會成為 Promise.reject()
@@ -37,6 +37,7 @@ const sendArticle = async (url = '', {
     signId,
     title,
     username,
+    is_original,
   };
   return !needAccessToken
     ? axiosforApiServer.post(url, data)
@@ -44,14 +45,14 @@ const sendArticle = async (url = '', {
 };
 
 const publishArticle = ({
-  author, hash, title, fissionFactor, cover,
+  author, hash, title, fissionFactor, cover, is_original,
 }) => sendArticle('/publish', {
-  author, hash, title, fissionFactor, cover,
+  author, hash, title, fissionFactor, cover, is_original,
 });
 const editArticle = ({
-  signId, author, hash, title, fissionFactor, cover,
+  signId, author, hash, title, fissionFactor, cover, is_original,
 }) => sendArticle('/edit', {
-  signId, author, hash, title, fissionFactor, cover,
+  signId, author, hash, title, fissionFactor, cover, is_original,
 }, true);
 
 const reportShare = ({
@@ -295,22 +296,22 @@ const draftList = ({ page }) => accessBackend({
 });
 
 const createDraft = ({
-  title, content, cover, fissionFactor,
+  title, content, cover, fissionFactor, is_original,
 }) => accessBackend({
   method: 'POST',
   url: '/draft/save',
   data: {
-    title, content, cover, fissionFactor,
+    title, content, cover, fissionFactor, is_original,
   },
 });
 
 const updateDraft = ({
-  id, title, content, cover, fissionFactor,
+  id, title, content, cover, fissionFactor, is_original,
 }) => accessBackend({
   method: 'POST',
   url: '/draft/save',
   data: {
-    id, title, content, cover, fissionFactor,
+    id, title, content, cover, fissionFactor, is_original,
   },
 });
 
@@ -328,6 +329,11 @@ const setProfile = ({ nickname, introduction }) => accessBackend({
   method: 'POST',
   url: '/user/setProfile',
   data: { nickname, introduction },
+});
+
+const getMyPost = id => accessBackend({
+  method: 'GET',
+  url: `/mypost/${id}`,
 });
 
 
@@ -348,5 +354,5 @@ export {
   getBackendData,
   draftList, createDraft, updateDraft, delDraft, getDraft,
   reportShare, getMyUserData, setProfile,
-  getBalance,
+  getMyPost, getBalance,
 };
