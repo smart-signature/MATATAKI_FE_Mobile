@@ -61,9 +61,9 @@ export default {
     window.updateNotify = updateNotify;
 
     const usingBlockchain = { EOS: true, ONT: true };
-    walletConnectionSetup(usingBlockchain).then((meg) => {
-      if (meg !== '') this.$Message.success(`${meg}登录成功！`);
-    });
+    // walletConnectionSetup(usingBlockchain).then((meg) => {
+    //   if (meg !== '') this.$Message.success(`${meg}登录成功！`);
+    // });
   },
 };
 </script>

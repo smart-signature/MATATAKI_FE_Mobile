@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import ontology from './ontology';
 import scatter from './scatter';
-import { getAuth } from '@/api/index';
+import { getAuth, getUser } from '@/api';
 
 Vue.use(Vuex);
 
@@ -14,6 +14,14 @@ export default new Vuex.Store({
     ontology,
     scatter,
   },
+  state: {
+    userConfig: {
+      blockchin: null,
+    },
+    userInfo: {
+      nickname: '',
+    },
+  },
   getters: {
     // rule: 帳號優先級 EOS > ONT
     // rule: EOS 帳號最長 12 位， ONT 帳號(地址)一定是 20 位
@@ -23,6 +31,7 @@ export default new Vuex.Store({
       blockchain: currentUsername
         ? (currentUsername.length <= 12 ? 'EOS' : 'ONT')
         : null,
+      nickname: state.userInfo.nickname,
     }),
     currentUsername: (state, { 'scatter/currentUsername': scatterUsername }) => (
       scatterUsername || (state.ontology.account || null)
@@ -55,12 +64,23 @@ export default new Vuex.Store({
       return dispatch(actionName);
     },
     async idCheckandgetAuth({
-      dispatch, state, getters,
-    }) {
+      commit, dispatch, state, getters,
+    }, { EOS, ONT }) {
       const noId = (error) => {
         console.warn('Unable to get id, reason :', error);
         throw error;
       };
+
+      const { blockchin } = state.userConfig;
+      if (!blockchin) { // 1st time
+        if (!EOS && !ONT) { // 不該到這
+          EOS = true;
+          ONT = true;
+        } else commit('setUserConfig', { EOS, ONT });
+      } else if (!EOS && !ONT) {
+        EOS = blockchin === 'EOS';
+        ONT = blockchin === 'ONT';
+      }
 
       console.log('Start id check ...');
       console.info('Ontology status :', state.ontology.account);
@@ -77,33 +97,36 @@ export default new Vuex.Store({
       }
 
       // Scatter
-      try {
-        if (!state.scatter.isConnected) {
-          const result = await dispatch('scatter/connect');
-          if (!result) throw new Error('faild connect to scatter');
-        }
-        if (state.scatter.isConnected && !state.scatter.isLoggingIn) {
-          const result = await dispatch('scatter/login');
-          if (!result) new Error('scatter login faild');
-        }
-      } catch (error) {
-        console.warn(error);
-      }
-
-      // Ontology
-      try {
-        if (!state.ontology.account) {
-          const address = await dispatch('ontology/getAccount');
-          let balance = null;
-          try {
-            balance = await dispatch('ontology/getBalance');
-          } catch (error) {
-            console.warn('Failed to get balance :', error);
+      if (EOS) {
+        try {
+          if (!state.scatter.isConnected) {
+            const result = await dispatch('scatter/connect');
+            if (!result) throw new Error('faild connect to scatter');
           }
-          console.info('ONT address :', address, 'balance :', balance);
+          if (state.scatter.isConnected && !state.scatter.isLoggingIn) {
+            const result = await dispatch('scatter/login');
+            if (!result) new Error('scatter login faild');
+          }
+        } catch (error) {
+          console.warn(error);
         }
-      } catch (error) {
-        console.warn('Failed to get ONT account :', error);
+      }
+      // Ontology
+      if (ONT) {
+        try {
+          if (!state.ontology.account) {
+            const address = await dispatch('ontology/getAccount');
+            let balance = null;
+            try {
+              balance = await dispatch('ontology/getBalance');
+            } catch (error) {
+              console.warn('Failed to get balance :', error);
+            }
+            console.info('ONT address :', address, 'balance :', balance);
+          }
+        } catch (error) {
+          console.warn('Failed to get ONT account :', error);
+        }
       }
 
       if (getters.currentUserInfo.name) {
@@ -122,9 +145,16 @@ export default new Vuex.Store({
     async recordShare({ dispatch, getters }, { amount, signId, sponsor = null }) {
       const { blockchain } = getters.currentUserInfo;
       let actionName = null;
+      // eslint-disable-next-line no-constant-condition
       if (false && blockchain === 'EOS') actionName = 'scatter/recordShare';
       else if (blockchain === 'ONT') actionName = 'ontology/recordShare';
       return dispatch(actionName, { amount, signId, sponsor });
+    },
+    async getUser({ commit, getters }) {
+      const { data } = await getUser({ username: getters.currentUserInfo.name });
+      console.log(data);
+      commit('setNickname', data.nickname);
+      return data;
     },
     async walletConnectionSetup({ dispatch }, { EOS, ONT }) {
       let meg = '';
@@ -152,6 +182,14 @@ export default new Vuex.Store({
         }
       }
       return meg;
+    },
+  },
+  mutations: {
+    setUserConfig(state, config) {
+      state.userConfig.blockchin = config.EOS ? 'EOS' : 'ONT';
+    },
+    setNickname(state, nickname) {
+      state.userInfo.nickname = nickname;
     },
   },
 });

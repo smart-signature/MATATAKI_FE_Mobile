@@ -77,7 +77,6 @@ export default {
   },
   methods: {
     ...mapGetters(['isLogined']),
-    loginScatterAsync() { return this.login(); },
     // 返回
     goBack() {
       if (this.customizeBackFunc) {

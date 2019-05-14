@@ -82,7 +82,6 @@ export default {
       newName: '',
     };
   },
-  computed: { },
   methods: {
     async getPlayerTotalIncome(name) {
       console.log('Connecting to EOS fetch player income...');
@@ -99,8 +98,8 @@ export default {
       console.log('Connecting to EOS fetch data...');
       await withdraw(name)
         .then(() => this.$Message.success('提现成功!'))
-        .catch((err) => {
-          console.log(err);
+        .catch((error) => {
+          console.error(error);
           this.$Message.error('提现失败!');
         });
       this.visible = false; // 成功和失败都关闭弹窗

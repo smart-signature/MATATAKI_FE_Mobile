@@ -1,8 +1,8 @@
 /* eslint-disable no-shadow */
 <template>
   <div class="user mw">
-    <BaseHeader :pageinfo="{ title: `编辑`, rightPage: 'home', needLogin: false, }" v-if="isMe" />
-    <BaseHeader :pageinfo="{ title: ``, rightPage: 'home', needLogin: false, }" v-else style="background-color: #478970" :white="true">
+    <BaseHeader v-if="isMe" :pageinfo="{ title: `编辑`, rightPage: 'home', needLogin: false, }"  />
+    <BaseHeader v-else :pageinfo="{ title: ``, rightPage: 'home', needLogin: false, }"  style="background-color: #478970" :white="true">
       <div slot="right" v-if="!isMe">
         <template v-if="!followed">
           <span class="darkBtn" @click="follow_user">关注</span>
@@ -244,16 +244,18 @@ export default {
       this.editing = !this.editing;
     },
     async refreshUser() {
-      if (this.username === null) this.username = this.currentUsername;
+      if (!this.username) this.username = this.currentUsername;
       const { username, currentUsername } = this;
-      const setUser = (data) => {
-        this.nickname = data.nickname;
-        this.email = data.email;
+      const setUser = ({
+        avatar, email, fans, follows, is_follow, nickname,
+      }) => {
+        this.nickname = nickname;
+        this.email = email;
         this.newname = this.nickname === '' ? this.username : this.nickname;
-        this.setAvatarImage(data.avatar);
-        this.follows = data.follows;
-        this.fans = data.fans;
-        this.followed = data.is_follow;
+        this.setAvatarImage(avatar);
+        this.follows = follows;
+        this.fans = fans;
+        this.followed = is_follow;
       };
       try {
         const response = await getUser({ username }, currentUsername);
