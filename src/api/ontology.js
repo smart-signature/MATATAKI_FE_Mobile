@@ -3,8 +3,7 @@ import { dappName } from '@/config';
 
 // https://github.com/backslash47/OEPs/blob/oep-dapp-api/OEP-6/OEP-6.mediawiki
 
-const isAPP = /Firefox|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-// const isAPP = !/Chrome/i.test(navigator.userAgent);
+const isAPP = /Edge|Firefox|Opera|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 // try...catch 放在 npm 包的使用入口的位置
 
 const toolkit = {
