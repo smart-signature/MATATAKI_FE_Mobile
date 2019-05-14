@@ -119,7 +119,7 @@
         </div>
         <div class="support-input">
           <input class="support-input__amount"
-            placeholder="请输入 EOS" v-model="amount" type="text"  @input="handleChange"/>
+            :placeholder="displayPlaceholder" v-model="amount" type="text"  @input="handleChange"/>
         </div>
         <button class="support-button" @click="support">赞赏</button>
     </za-modal>
@@ -164,6 +164,9 @@ export default {
   components: {
     CommentsList, ArticleInfo, ContentLoader, mavonEditor,
   },
+  beforeDestroy() {
+    this.clipboard.destroy(); // 组件销毁之前 销毁clipboard
+  },
   data() {
     return {
       signId: null,
@@ -193,12 +196,9 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['currentUserInfo']),
-    currentUsername() {
-      return this.currentUserInfo.name;
-    },
-    isLogined() {
-      return this.currentUsername !== null;
+    ...mapGetters(['currentUserInfo', 'currentUsername', 'isLogined']),
+    displayPlaceholder() {
+      return `请输入 ${this.currentUserInfo.balance.slice(-4)} 赞赏金额`;
     },
     compiledMarkdown() {
       return markdownIt.render(this.post.content);
@@ -259,10 +259,6 @@ export default {
     this.initClipboard(); // 分享按钮功能需要放在前面 保证功能的正常执行
     this.copyHash(); // 复制 hash
     this.getArticleInfo(this.hash); // 得到文章信息
-  },
-
-  beforeDestroy() {
-    this.clipboard.destroy(); // 组件销毁之前 销毁clipboard
   },
   head: {
     title() {
@@ -401,8 +397,13 @@ export default {
       this.articleLoading = false; // 文章加载状态隐藏
     },
     handleChange(e) {
-      // 小数点后三位 如果后面需要解除限制修改正则  {0,3}
-      e.target.value = (e.target.value.match(/^\d*(\.?\d{0,3})/g)[0]) || null;
+      const { blockchain } = this.currentUserInfo;
+      if (blockchain === 'EOS') {
+        // 小数点后三位 如果后面需要解除限制修改正则  {0,3}
+        e.target.value = (e.target.value.match(/^\d*(\.?\d{0,3})/g)[0]) || null;
+      } else if (blockchain === 'ONT') {
+        e.target.value = (e.target.value.match(/^\d*/g)[0]) || null;
+      }
       this.amount = e.target.value;
     },
     setisSupported() {
