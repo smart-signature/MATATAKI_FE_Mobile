@@ -198,7 +198,7 @@ export default {
   computed: {
     ...mapGetters(['currentUserInfo', 'currentUsername', 'isLogined']),
     displayPlaceholder() {
-      return `请输入 ${this.currentUserInfo.balance.slice(-4)} 数量`;
+      return `请输入 ${this.currentUserInfo.balance.slice(-4)} 赞赏金额`;
     },
     compiledMarkdown() {
       return markdownIt.render(this.post.content);
