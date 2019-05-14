@@ -124,7 +124,7 @@ export default {
     id: '',
     editorMode: 'create', // 默认是创建文章
     saveType: 'public', // 发布文章模式， 公开 || 草稿
-    isOriginal: true, // 是否原创
+    isOriginal: false, // 是否原创
     imgUploadDone: 0,
     showModal: false, // 弹框显示
     modalText: {
@@ -181,6 +181,7 @@ export default {
         this.signature = data.sign;
         this.cover = data.cover;
         this.signId = data.id;
+        this.isOriginal = Boolean(data.is_original);
       } catch (error) {
         console.log(error);
         this.$Message.error('获取文章信息发生错误');
@@ -198,6 +199,7 @@ export default {
       this.title = data.title;
       this.markdownData = data.content;
       this.id = id;
+      this.isOriginal = Boolean(data.is_original);
     },
     // 错误提示
     failed(error) {
@@ -284,7 +286,7 @@ export default {
     },
     // 发布||修改按钮
     async sendThePost() {
-      try {
+      /*try {
         // this.$Message.info('帐号检测中...');
         await this.idCheckandgetAuth();
         // this.$Message.success('检测通过');
@@ -292,7 +294,7 @@ export default {
         console.error(error);
         this.$Message.error('本功能需登录');
         return;
-      }
+      }*/
 
       if (this.title === '' || this.markdownData === '') { // 标题或内容为空时
         this.$Message.error('标题或正文不能为空');
@@ -308,16 +310,17 @@ export default {
         cover,
         editorMode, saveType,
       } = this;
+      const is_original = Number(this.isOriginal);
       console.log('sendThePost mode :', editorMode, saveType);
       if (editorMode === 'create' && saveType === 'public') { // 发布文章
         const { hash } = await this.sendPost({ title, author, content });
         console.log('sendPost result :', hash);
         this.publishArticle({
-          author, title, hash, fissionFactor, cover,
+          author, title, hash, fissionFactor, cover, is_original,
         });
       } else if (editorMode === 'create' && saveType === 'draft') { // 发布到草稿箱
         this.createDraft({
-          title, content, fissionFactor, cover,
+          title, content, fissionFactor, cover, is_original,
         });
       } else if (editorMode === 'edit') { // 编辑文章
         const { hash } = await this.sendPost({ title, author, content });
@@ -329,11 +332,12 @@ export default {
           fissionFactor,
           signature: this.signature,
           cover,
+          is_original,
         });
       } else if (editorMode === 'draft' && saveType === 'public') { // 草稿箱编辑 发布
         const { hash } = await this.sendPost({ title, author, content });
         this.publishArticle({
-          author, title, hash, fissionFactor, cover,
+          author, title, hash, fissionFactor, cover, is_original,
         }).then(() => {
           this.delDraft(this.id);
         }).catch(() => {
@@ -341,7 +345,7 @@ export default {
         });
       } else if (editorMode === 'draft' && saveType === 'draft') { // 草稿箱编辑 更新
         await this.updateDraft({
-          id: this.id, title, content, fissionFactor, cover,
+          id: this.id, title, content, fissionFactor, cover, is_original,
         });
       }
     },
