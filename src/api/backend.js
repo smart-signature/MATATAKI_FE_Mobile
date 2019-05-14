@@ -227,6 +227,11 @@ const getUser = ({ username }, needAccessToken = false) => {
   return !needAccessToken ? axiosforApiServer.get(url) : accessBackend({ method: 'GET', url });
 };
 
+const getMyUserData = () => {
+  const url = `/user/stats`;
+  return accessBackend({ method: 'GET', url });
+};
+
 // Be used in User page.
 const setUserName = ({ newname }) => accessBackend({
   method: 'POST',
@@ -318,6 +323,13 @@ const getDraft = ({ id }) => accessBackend({
   method: 'GET',
   url: `/draft/${id}`,
 });
+// Be used in User page.
+const setProfile = ({ nickname, introduction }) => accessBackend({
+  method: 'POST',
+  url: '/user/setProfile',
+  data: { nickname, introduction },
+});
+
 
 // 每天浪費時間寫這個，不對吧，像隔壁用 API 一起輸出呀
 export {
@@ -329,5 +341,5 @@ export {
   disassembleToken, delArticle, uploadAvatar, getArticleSupports, editArticle,
   getBackendData,
   draftList, createDraft, updateDraft, delDraft, getDraft,
-  reportShare,
+  reportShare, getMyUserData, setProfile,
 };
