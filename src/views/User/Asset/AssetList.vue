@@ -5,7 +5,8 @@
         noArticles: '无明细', }"
     :params="params"
     :apiUrl="apiUrl"
-    :isObj="{ type: 'Object', key: 'history' }"
+    :needAccessToken="needAccessToken"
+    :isObj="isObj"
     @getListData="getListData">
       <AssetCard :asset="item" v-for="(item, index) in asset" :key="index" />
   </BasePull>
@@ -16,23 +17,18 @@ import { AssetCard } from '@/components/';
 
 export default {
   name: 'AssetList',
-  props: ['username', 'type'],
+  props: ['type'],
   components: { AssetCard },
-  beforeCreate() {
-    console.log(this.username, this.type);
-    console.log(this.apiUrl);
-  },
-  created() {
-    console.log(this.username, this.type);
-    console.log(this.apiUrl);
-  },
+  created() { },
   data() {
     return {
       params: {
-        user: this.username,
+        smybol: this.type,
       },
-      apiUrl: 'assets',
+      apiUrl: 'tokens',
       asset: [],
+      isObj: { type: 'Object', key: 'data' },
+      needAccessToken: true,
     };
   },
   computed: { },
