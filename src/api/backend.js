@@ -228,7 +228,7 @@ const getUser = ({ username }, needAccessToken = false) => {
 };
 
 const getMyUserData = () => {
-  const url = `/user/stats`;
+  const url = '/user/stats';
   return accessBackend({ method: 'GET', url });
 };
 
@@ -331,6 +331,12 @@ const setProfile = ({ nickname, introduction }) => accessBackend({
 });
 
 
+// 获取账户资产列表 暂时没有EOS数据
+const getBalance = () => accessBackend({
+  method: 'GET',
+  url: '/balance',
+});
+
 // 每天浪費時間寫這個，不對吧，像隔壁用 API 一起輸出呀
 export {
   auth, getAuth,
@@ -342,4 +348,5 @@ export {
   getBackendData,
   draftList, createDraft, updateDraft, delDraft, getDraft,
   reportShare, getMyUserData, setProfile,
+  getBalance,
 };

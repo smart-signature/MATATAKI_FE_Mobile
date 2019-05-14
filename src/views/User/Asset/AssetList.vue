@@ -16,9 +16,15 @@ import { AssetCard } from '@/components/';
 
 export default {
   name: 'AssetList',
-  props: ['username'],
+  props: ['username', 'type'],
   components: { AssetCard },
+  beforeCreate() {
+    console.log(this.username, this.type);
+    console.log(this.apiUrl);
+  },
   created() {
+    console.log(this.username, this.type);
+    console.log(this.apiUrl);
   },
   data() {
     return {
