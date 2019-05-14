@@ -56,7 +56,7 @@
       <a data-pocket-label="pocket" data-pocket-count="horizontal" class="pocket-btn" data-lang="en"></a>
       <span class="is-original">
         本文发布于智能签名<br />
-        <template v-if="false">
+        <template v-if="is_original">
           未经授权禁止转载
         </template>
       </span>
@@ -193,6 +193,7 @@ export default {
       infoModa: false,
       isRequest: false,
       articleLoading: true, // 文章加载状态
+      is_original: false,
     };
   },
   computed: {
@@ -386,6 +387,7 @@ export default {
       this.totalSupportedAmount = article.value;
       this.signId = article.id;
       this.articleLoading = false; // 文章加载状态隐藏
+      this.is_original = Boolean(article.is_original);
       // 未登录下点击赞赏会自动登陆并且重新获取文章信息 如果没有打赏并且是点击赞赏 则显示赞赏框
       if (!article.support && supportDialog) {
         this.visible3 = true;
