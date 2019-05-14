@@ -1,6 +1,8 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Home from './views/Home/index.vue';
+import { disassembleToken } from './api/backend';
+
 
 Vue.use(Router);
 
@@ -27,12 +29,6 @@ export default new Router({
       props: true,
       component: () => import(/* webpackChunkName: "article" */ './views/Article/index.vue'),
     },
-    {
-      path: '/article/:hash/comments',
-      name: 'Comments',
-      props: true,
-      component: () => import(/* webpackChunkName: "article-comments" */ './views/Article/CommentsList.vue'),
-    },
     // {
     //   path: '/login',
     //   name: 'Login',
@@ -48,25 +44,60 @@ export default new Router({
       path: '/user/:username/asset',
       name: 'Asset',
       props: true,
-      component: () => import(/* webpackChunkName: "user-asset" */ './views/User/Asset.vue'),
+      component: () => import(/* webpackChunkName: "user" */ './views/User/Asset/Asset.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
+        // eslint-disable-next-line eqeqeq
+        if (to.params.username != tokenUserName) next(`/user/${tokenUserName}/asset`);
+        else { next(); }
+      }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
     },
     {
       path: '/user/:username/original',
       name: 'Original',
       props: true,
-      component: () => import(/* webpackChunkName: "user-original" */ './views/User/Original.vue'),
+      component: () => import(/* webpackChunkName: "user" */ './views/User/Original.vue'),
     },
     {
       path: '/user/:username/reward',
       name: 'Reward',
       props: true,
-      component: () => import(/* webpackChunkName: "user-reward" */ './views/User/Reward.vue'),
+      component: () => import(/* webpackChunkName: "user" */ './views/User/Reward.vue'),
     },
     {
-      path: '/publish',
+      // id 用于编辑文章或者草稿的时候动态传值使用
+      // 发布文章后面可以为  publish/create
+      // 编辑文章后面接id publish/id？from=”edit“ 通过query来区分
+      // 草稿箱编辑 publish/id？from=”draft“ 通过query来区分
+      // 统一发布、编辑、草稿箱，解决出现多套样式和重复代码的问题，并且减少工作量和不必要的错误
+      path: '/publish/:id',
       name: 'Publish',
       props: true,
-      component: () => import(/* webpackChunkName: "new-post" */ './views/Publish.vue'),
+      component: () => import(/* webpackChunkName: "article-edit" */ './views/Publish.vue'),
+    },
+    {
+      path: '/followlist/:username',
+      name: 'FollowList',
+      props: true,
+      component: () => import(/* webpackChunkName: "user" */ './views/User/FollowList/FollowList.vue'),
+    },
+    {
+      path: '/draftbox/:username',
+      name: 'DraftBox',
+      props: true,
+      component: () => import(/* webpackChunkName: "user" */ './views/User/DraftBox.vue'),
+    },
+    {
+      path: '/avatar',
+      name: 'AvatarUploader',
+      props: true,
+      component: () => import(/* webpackChunkName: "user" */ './views/User/AvatarUploader.vue'),
+    },
+    {
+      path: '/_easter-egg',
+      name: 'EasterEgg',
+      props: true,
+      component: () => import(/* webpackChunkName: "easter-egg" */ './views/EasterEgg.vue'),
     },
   ],
 });

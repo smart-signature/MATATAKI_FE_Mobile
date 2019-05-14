@@ -4,46 +4,28 @@
     <div class='head'>
       <link rel='icon' type='image/png' sizes='32x32' href='./img/Andoromeda logo@2x.png'>
       <link rel='icon' type='image/png' sizes='16x16' href='./img/Andoromeda logo.png'>
-      <!-- <div style='float:left'>
-        <img src='/img/Andoromeda logo.png' alt='Andoromeda logo'>
-      Andoromeda</div>-->
-      <!-- <Button class='publish' @click='$router.push({name: 'Publish'})'>
-        <za-icon class='publish-icon' type='add'/>1
-      </Button>-->
-      <div class='add' @click.stop='addShow=!addShow'>
-        <Button class='publish'>
+      <div class='add'>
+        <Button class='publish' @click.stop='addShow=!addShow'>
           <za-icon class='publish-icon' type='add' />
         </Button>
         <div v-show='addShow' class='add-menu'>
           <a href='javascript:void(0);'>搬运</a>
-          <a href='javascript:void(0);' @click="$router.push({name: 'Publish'})">创作</a>
+          <a href='javascript:void(0);' @click="$router.push({name: 'Publish', params: {id: 'create'}})">创作</a>
         </div>
       </div>
-
-      <!-- <div class='logined' v-if='isLogined'>
-          <p
-            @click='$router.push({ name: 'User', params: {username: currentUsername } })'
-            class='username'
-          >{{currentUsername}}</p>
-      </div>-->
-      <!-- <div class='not-login-yet' style='float:right' v-else>
-          <za-button
-            size='xs'
-            @click='loginWithWallet'>登录
-          </za-button>
-          <za-button size='xs' slot='description' @click='visible1 = true'>En</za-button>
-          <za-actionsheet
-            :visible.sync='visible1' :actions='actions1'
-            :showCancel='false' @cancel='cancelCb'>
-          </za-actionsheet>
-      </div>-->
       <div class='titles'>
         <h1 class='title'>-SmartSignature-</h1>
         <h2 class='subtitle'>赞赏好文，分享有收益！</h2>
-        <Button @click="$router.push({name: 'About'})" style='margin-top: 17px;'>投资攻略</Button>
+        <Button class="title-button" @click="$router.push({name: 'About'})">投资攻略</Button>
+        <a href="https://t.me/smartsignature_io" target="_blank">
+          <Button class="title-button">加入电报</Button>
+        </a>
       </div>
+
+      <MyBanner/>
+      <div class="head-bc"></div>
+
     </div>
-    <MyBanner/>
     <ArticleRankings ref='ArticleRankings'/>
   </div>
 </template>
@@ -60,11 +42,6 @@ export default {
     document.title = '首页 - SmartSignature';
   },
   computed: {
-    ...mapState(['scatterAccount']),
-    ...mapGetters(['currentUsername']),
-    isLogined() {
-      return this.scatterAccount !== null;
-    },
   },
   data() {
     return {
@@ -92,20 +69,18 @@ export default {
     };
   },
   methods: {
-    ...mapActions([
-      'connectScatterAsync',
-      'suggestNetworkAsync',
-      'loginScatterAsync',
-      'logoutScatterAsync',
+    ...mapActions('scatter', [
+      'connect',
+      'login',
     ]),
+    connectScatterAsync() { return this.connect(); },
+    loginScatterAsync() { return this.login(); },
     cancelCb(reason, event) {
       console.log(reason, event);
     },
     async loginWithWallet() {
       try {
         // await this.connectScatterAsync();
-        // Scatter 10.0 need to suggestNetwork, if not, scatter is not working on login
-        await this.suggestNetworkAsync();
         await this.loginScatterAsync();
       } catch (e) {
         console.warn('Unable to connect wallets');
@@ -119,19 +94,26 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="less">
 .head {
-  background: #478970;
   color: #fff;
   padding-top: 10px;
-  height: 205px;
   text-align: center;
   align-items: center;
   vertical-align: middle;
-  margin-bottom: 28px;
+  position: relative;
+  &-bc{
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 55px;
+    left: 0;
+    z-index: -1;
+    background: #478970;
+  }
 }
 .titles {
-  margin: 63px auto;
+  margin: 40px auto 24px;
 }
 h1.title {
   font-size: 32px;
@@ -151,6 +133,10 @@ h2.subtitle {
   line-height: 18px;
   letter-spacing: 1px;
   margin-top: 6px;
+  margin: 6px 0 18px;
+}
+.title-button {
+  margin: 0 4px;
 }
 button.publish {
   background: #478970;

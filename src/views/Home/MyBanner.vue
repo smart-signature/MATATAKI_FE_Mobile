@@ -1,57 +1,73 @@
 <template>
-    <div class="my-banner">
-      <div class="my-stat">
-        <div class="logined" v-if="isLogined">
-          <img src="../../assets/logo.png" class="round_icon">
-          <Button class="my-user-page" ghost type="text"
-              @click="toUserPage(currentUsername)">我的主页</Button>
-          <p class="username">{{currentUsername}}</p>
-          <p class="my-balance">
-            {{eosBalance}}
-            <span class="coin-symbol">EOS</span>
-          </p>
-
-        </div>
-        <div class="not-login-yet" v-else>
-         <Row>
-            <Col span="14"><p class="login-notification">即刻登录，<br/>开始智能签名之旅</p></Col>
-            <Col span="10">
-              <Button class="login-btn" ghost type="text"
-              @click="loginWithWallet"
-              style="float: right">立即登录</Button>
-            </Col>
-          </Row>
-        </div>
-
+  <div class="my-banner">
+    <template v-if="isLogined">
+      <div class="banner-text">
+         <img :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png'); }" class="round_icon">
+         <div>
+            <p class="username">{{displayName}}</p>
+            <p class="my-balance">
+              {{displayBalance}}
+              <span class="coin-symbol">EOS</span>
+            </p>
+         </div>
       </div>
-
-    </div>
+      <a class="my-user-page" href="javascript:;" @click="toUserPage(currentUserInfo.name)">我的主页</a>
+    </template>
+    <template v-else>
+      <div>
+        <p class="login-notification">即刻登录</p>
+        <p class="login-notification">开始智能签名之旅 </p>
+      </div>
+      <a class="my-user-page" href="javascript:;" @click="loginWithWallet">立即登录</a>
+    </template>
+  </div>
 </template>
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
+import {
+  getUser,
+  getAssets,
+  getAvatarImage,
+} from '@/api';
 
 export default {
   name: 'My-Banner',
   computed: {
-    ...mapState(['scatterAccount', 'balances', 'isScatterConnected']),
-    ...mapGetters(['currentUsername']),
-    eosBalance() {
-      return this.balances.eos.slice(0, -4);
+    ...mapState('scatter', {
+      isScatterConnected: state => state.isConnected,
+    }),
+    ...mapGetters(['currentUserInfo', 'isLogined']),
+    displayBalance() {
+      return this.currentUserInfo.balance.slice(0, -4);
     },
-    isLogined() {
-      return this.scatterAccount !== null;
+    displayName() {
+      const { currentUserInfo, nickname } = this;
+      return nickname !== '' ? nickname
+        : currentUserInfo.name.length <= 12 ? currentUserInfo.name
+          : currentUserInfo.name.slice(0, 12);
     },
+    displayTokenSymbol() {
+      return this.currentUserInfo.balance.slice(-4);
+    },
+  },
+  data() {
+    return {
+      avatar: require('../../assets/logo.png'),
+      nickname: '',
+    };
   },
   created() {
-
+    const { isLogined, refresh_user } = this;
+    if (isLogined) { refresh_user(); }
   },
   methods: {
-    ...mapActions([
-      'connectScatterAsync',
-      'suggestNetworkAsync',
-      'loginScatterAsync',
-      'logoutScatterAsync']),
+    ...mapActions('scatter', [
+      'connect',
+      'login',
+    ]),
+    connectScatterAsync() { return this.connect(); },
+    loginScatterAsync() { return this.login(); },
     toUserPage(username) {
       this.$router.push({ name: 'User', params: { username } });
     },
@@ -65,8 +81,6 @@ export default {
       }
       try {
         // await this.connectScatterAsync();
-        // Scatter 10.0 need to suggestNetwork, if not, scatter is not working on login
-        await this.suggestNetworkAsync();
         await this.loginScatterAsync();
       } catch (e) {
         console.warn('Unable to connect wallets');
@@ -79,77 +93,99 @@ export default {
     handleClick(tab, event) {
       console.log(tab, event);
     },
+    async getAvatarImage(hash) {
+      // 空hash 显示默认Logo头像
+      // eslint-disable-next-line global-require
+      if (!hash) this.avatar = require('../../assets/logo.png');
+      else this.avatar = getAvatarImage(hash);
+    },
+    refresh_user() {
+      const { name: username } = this.currentUserInfo;
+      console.log(username);
+      getUser({ username }).then((response) => {
+        const { data } = response;
+        console.log(data);
+        this.nickname = data.nickname;
+        this.getAvatarImage(data.avatar);
+      });
+    },
   },
-  data: () => ({}),
+  mounted() {
+  },
+  watch: {
+    isLogined() {
+      if (this.isLogined) {
+        this.refresh_user();
+      }
+    },
+  },
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .my-banner {
-  margin: auto;
-  margin-top: -32px;
-  text-align: center;
+  margin: 0 auto;
   max-width: 335px;
-  max-height: 76px;
-  /* margin: -32px 20px 0 20px; */
-  padding: 8px;
+  padding: 22px 16px;
   background: rgba(255, 255, 255, 1);
-  box-shadow: 0px 5px 5px 0px rgba(213, 213, 213, 0.5);
-  border-radius: 4px;
-}
-
-.my-stat {
-  text-align: left;
-  /* float: left; */
-  margin-left: 12px;
-  margin-top: 16px;
-  margin-bottom: 19px;
-}
-.round_icon{
-  float: left;
-
-  width: 38px;
-  height: 38px;
+  box-shadow: 0px 0 10px 0px rgba(0,0,0, 0.1);
+  border-radius: 3px;
   display: flex;
-  border-radius: 50%;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
+  text-align: left;
+}
+.banner-text {
+  display: flex;
+  align-items: center;
   overflow: hidden;
+  flex: 1;
+  margin-right: 10px;
+  .round_icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+  }
+  .username {
+    font-size: 14px;
+    font-weight: bold;
+    font-family:PingFangSC-Regular;
+    color:rgba(0,0,0,1);
+    letter-spacing:1px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    margin-left: 8px;
+  }
+
+  .my-balance {
+    font-size: 14px;
+    font-family: PingFang SC, STHeitiSC-Light, Helvetica-Light, arial, sans-serif;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 1);
+    line-height: 22px;
+    letter-spacing: 1px;
+    margin-left: 8px;
+  }
 }
-Button.my-user-page {
-  background-color: #000;
-  float: right;
-  margin-right: 18px;
-}
-.coin-symbol {
-  color: #999999;
-}
-.username {
-  margin-left: 12px;
-  font-size: 12px;
-  font-weight: bold;
-}
-.my-balance {
-  margin-left: 12px;
-  font-size: 16px;
-  font-family: PingFang SC, STHeitiSC-Light, Helvetica-Light, arial, sans-serif;
-  font-weight: 600;
-  color: rgba(0, 0, 0, 1);
-  line-height: 22px;
-  letter-spacing: 1px;
+
+.my-user-page {
+    background-color: #000;
+    color: #fff;
+    padding: 8px 20px;
+    border-radius: 3px;
+    font-size: 14px;
+    font-family:PingFangSC-Regular;
+    font-weight:400;
+    letter-spacing:1px;
+    min-width: 100px;
 }
 
 .login-notification {
   font-size: 14px;
-  font-weight:bold;
-  /* line-height:10px; */
-  color:rgba(39,39,39,1);
-}
-.login-btn, .login-btn:focus, .login-btn:hover {
-  color: #FFF;
-  background-color: #000;
-  border-radius: 2px;
-  font-size:16px;
-  letter-spacing: 2px;
+  font-family: PingFang SC, STHeitiSC-Light, Helvetica-Light, arial, sans-serif;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 1);
+  text-align: left;
 }
 </style>

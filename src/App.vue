@@ -1,19 +1,25 @@
 <template>
   <div id="app">
     <router-view/>
+    <BackTop :bottom="80"></BackTop>
   </div>
 </template>
 
 <script>
+import Konami from 'konami';
 import { mapActions, mapState } from 'vuex';
+import { version } from '../package.json';
+// import { getSign } from '@/api/signatureOntology';
 
 export default {
   data: () => ({}),
   methods: {
-    ...mapActions([
-      'connectScatterAsync',
-      'suggestNetworkAsync',
-      'loginScatterAsync',
+    ...mapActions('ontology', [
+      'getAccount',
+    ]),
+    ...mapActions('scatter', [
+      'connect',
+      'login',
     ]),
     updateNotify(desc) {
       const btnCommonStyle = {
@@ -37,49 +43,47 @@ export default {
         duration: 0,
       });
     },
+    triggerEasterEgg() {
+      // 当用户在键盘输入 ⬆️⬆️⬇️⬇️⬅️➡️⬅️➡️BA 时触发这个函数
+      this.$Message.info('恭喜你找到了隐藏彩蛋！');
+      this.$router.push({ name: 'EasterEgg' });
+    },
+  },
+  mounted() {
+    const easterEgg = new Konami(() => { this.triggerEasterEgg(); });
   },
   computed: {
-    ...mapState(['scatterAccount']),
   },
-  async created() { // https://juejin.im/post/5bfa4bb951882558ae3c171e
+  created() { // https://juejin.im/post/5bfa4bb951882558ae3c171e
     window.updateNotify = this.updateNotify;
+    console.info('Smart Signature version :', version);
+    const { getAccount: getOntologyAccount, connect: connectScatter } = this;
     try {
-      // Scatter 10.0 need to suggestNetwork, if not, scatter is not working on login
-      await this.connectScatterAsync()
-        // eslint-disable-next-line no-unused-vars
-        .then(v => ( // v 未使用
-        // https://get-scatter.com/docs/api-suggest-network
-          this.suggestNetworkAsync()
-            .then(added => (console.log('Suggest network result: ', added)))
-        ));
+      connectScatter();
       // if (!this.scatterAccount) await this.loginScatterAsync();
     } catch (e) {
       console.warn('Unable to connect wallets');
       this.$Message.error('钱包连接失败，钱包需打开并解锁');
     }
+
+    getOntologyAccount().then((address) => {
+      console.info('ONT address :', address);
+      this.$Message.success(`ONT address : ${address} ，登陸成功`);
+      // getSign(999);
+    }).catch(result => console.warn('Failed to get ONT account :', result));
   },
 };
 </script>
 
 
-<style>
-body {
-  background: #f7f7f7;
-}
+<style scoped>
 #app {
   margin: auto;
+  height: 100%;
   text-align: center;
   font-family: PingFang SC, STHeitiSC-Light, Helvetica-Light, arial, sans-serif;
 }
-.card {
-  margin: 10px;
-  text-align: left;
-  /* max-width: 335px; */
-  background: rgba(255, 255, 255, 1);
-  box-shadow: 0px 2px 5px 3px rgba(233, 233, 233, 0.5);
-  border-radius: 8px;
-  padding: 18px;
-}
+
 /* #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

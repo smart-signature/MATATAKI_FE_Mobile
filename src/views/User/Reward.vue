@@ -1,18 +1,20 @@
 <template>
   <div class="original">
-    <za-nav-bar>
+    <BaseHeader
+            :pageinfo="{ left: 'back', title: userTitle, rightPage: 'home',
+                   needLogin: false, }"/>
+    <!--<za-nav-bar>
       <div slot="left">
         <za-icon theme="primary" type="arrow-left" @click="goBack"></za-icon>
       </div>
       <div slot="title">{{userTitle}}</div>
-    </za-nav-bar>
+    </za-nav-bar>-->
     <ArticlesList :listtype="'reward'" :username='username' ref='ArticlesList'/>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
-import { getPlayerIncome } from '../../api/signature';
 import ArticlesList from './ArticlesList.vue';
 
 export default {
@@ -29,9 +31,6 @@ export default {
   },
   computed: {
     ...mapGetters(['currentUsername']),
-    ifLogined() {
-      return this.currentUsername !== null;
-    },
     isMe() {
       const { username, currentUsername } = this;
       return username === currentUsername;
@@ -42,16 +41,14 @@ export default {
       this.$router.go(-1);
     },
   },
-  async created() {
-    const playerincome = await getPlayerIncome(this.username);
-    this.playerincome = playerincome[0] || 0;
+  created() {
     this.user = this.isMe ? '我的用户页' : `${this.username} 的用户页`;
     this.userTitle = this.isMe ? '我赞助的文章' : `${this.username} 赞助的文章`;
     document.title = `${this.user} - SmartSignature`;
   },
 };
 </script>
-<style>
+<style scoped>
 a {
   color: #000;
   text-decoration: none; /* no underline */
@@ -59,5 +56,6 @@ a {
 .original{
   background-color: #F7F7F7;
   padding-bottom: 20px;
+  padding-top: 45px;
 }
 </style>

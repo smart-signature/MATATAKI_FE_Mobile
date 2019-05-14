@@ -1,74 +1,67 @@
 <template>
-  <div class="articles">
-    <za-tabs v-model="activeNameSwipe" @change="handleClick">
-      <za-tab-pane :label="tab.label" :name="tab.label" v-for="tab in tabs" :key="tab.label">
-        <ArticlesRanking :orderType="tab.label" />
-      </za-tab-pane>
-    </za-tabs>
-  </div>
+  <za-tabs v-model="activeIndex" @change="changeTabs">
+    <za-tab-pane :label="item.label" :name="index" v-for="(item, index) in tabsData" :key="index">
+      <BasePull
+        :params="item.params"
+        :apiUrl="item.apiUrl"
+        :activeIndex="activeIndex"
+        :nowIndex="index"
+        @getListData="getListData"
+        >
+          <ArticleCard :article="item" v-for="(item, index) in item.articles" :key="index"/>
+      </BasePull>
+    </za-tab-pane>
+  </za-tabs>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import ArticlesRanking from './ArticlesRanking';
-import { OrderBy } from '@/api/backend';
+import { ArticleCard } from '@/components/';
 
 export default {
-  name: 'home',
-  computed: {
-    ...mapGetters(['currentUsername']),
-    displayAboutScroll() {
-      if (this.isTheEndOfTheScroll) {
-        return '🎉 哇，你真勤奋，所有文章已经加载完了～ 🎉';
-      }
-      return '😄 勤奋地加载更多精彩内容 😄';
-    },
-  },
-  components: { ArticlesRanking },
-  created() {
-  },
+  name: 'ArticlesRankings',
+  components: { ArticleCard },
+  created() {},
   methods: {
-    handleClick(tab, event) {
-      console.log(tab, event);
+    changeTabs(tab) {
+      this.activeIndex = tab.name;
+    },
+    getListData(res) {
+      this.tabsData[res.index].articles = res.data;
     },
   },
   data() {
     return {
-      orderBy: OrderBy, // <template> 只认 data 内的变量
-      activeNameSwipe: OrderBy.TimeLine,
-      selectedLabelDefault: OrderBy.TimeLine,
-      tabs: [
+      tabsData: [
         {
-          label: OrderBy.TimeLine,
+          label: '最新发布',
+          params: {},
+          apiUrl: 'posts',
+          articles: [],
         },
         {
-          label: OrderBy.SupportAmount,
+          label: '最多赞赏金额',
+          params: {},
+          apiUrl: 'getSupportAmountRanking',
+          articles: [],
         },
         {
-          label: OrderBy.SupportTimes,
+          label: '最多赞赏次数',
+          params: {},
+          apiUrl: 'getSupportTimesRanking',
+          articles: [],
         },
       ],
+      activeIndex: 0,
     };
   },
 };
 </script>
 
-<style scoped>
-.articles {
-  /* background: rgba(240, 240, 240, 1); */
-  margin-top: -100px;
-  padding-top: 100px;
-  font-weight: bold;
-}
-.article {
-  text-align: left;
-}
-.card {
-  margin: 5px;
-}
-.loading-stat {
-  margin: 10px;
-  color: #999;
-  font-size: 13px;
-}
+<style>
+  .za-tab-header {
+    position: sticky;
+    top: 0;
+    z-index: 22;
+    background: #F0F0F0;
+  }
 </style>

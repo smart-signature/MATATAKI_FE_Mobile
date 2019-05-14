@@ -1,6 +1,8 @@
+/* eslint-disable */
 import Vue from 'vue';
 import Vuex from 'vuex';
 import api, { currentEOSAccount } from './api/scatter';
+import cyanobridgeAPI from './api/cyanobridge';
 
 Vue.use(Vuex);
 
@@ -9,16 +11,29 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    cyanobridge: {
+      account: null,
+      balance: '... ONT',
+    },
     isScatterConnected: false,
     scatterAccount: null,
     balances: {
       eos: '... EOS',
     },
     isScatterLoggingIn: false,
-    isLoadingData: false,
   },
   getters: {
-    currentUsername: ({ scatterAccount }) => (scatterAccount ? scatterAccount.name : null),
+    currentUserInfo: (state, { currentUsername, currentBalance }) => ({
+      name: currentUsername,
+      balance: currentBalance,
+    }),
+    currentUsername: ({ scatterAccount, cyanobridge }) => (
+      scatterAccount ? scatterAccount.name : (cyanobridge.account ? cyanobridge.account : null)
+    ),
+    currentBalance: ({ scatterAccount, balances, cyanobridge }) => (
+      scatterAccount ? balances.eos : (cyanobridge.account ? cyanobridge.balance : null)
+    ),
+    isLogined: (state, { currentUserInfo }) => currentUserInfo.name !== null,
   },
   mutations: {
     setIsScatterLoggingIn(state, isScatterLoggingIn) {
@@ -33,8 +48,25 @@ export default new Vuex.Store({
     setMyBalance(state, { symbol, balance }) {
       state.balances[symbol] = balance;
     },
+    setCyanobridgeAccount(state, account) {
+      state.cyanobridge.account = account;
+    },
   },
   actions: {
+    cyanobridgegetAccount({ commit, dispatch }) {
+      return new Promise((resolve, reject) => {
+        console.log('Connecting to wallet ...');
+        cyanobridgeAPI.getAccount()
+          .then((result) => {
+            // const { result: address } = result;
+            const address = result;
+            commit('setCyanobridgeAccount', address);
+            console.log('1.');
+            resolve(address);
+          })
+          .catch(result => reject(result));
+      });
+    },
     async connectScatterAsync({ commit, dispatch }) {
       console.log('Connecting to wallet or Scatter desktop...');
       // try {
@@ -70,19 +102,6 @@ export default new Vuex.Store({
     async suggestNetworkAsync() {
       await api.suggestNetworkAsync();
     },
-    // 這不該是 async
-    // 理由:只有一個 await api.loginScatterAsync() ，
-    // 那直接讓他接.catch 彈框表示'无法与你的钱包建立链接'就好
-    // 而外層使用的 loginScatterAsync 的場景並沒有需要 .then .catch
-    // 而是都是登錄與操作分開的場景，最需要的是自動登陸，而不是按下按鈕在執行前的登陸
-    // 而且此 async 並沒有任何 return ，
-    // 唯一依靠是內層 await api.loginScatterAsync() return 的 Promise
-    // 又被 try catch 接走，等於此 func 外頭沒有接到任何 return 的 Promise
-    // =====
-    // 又由於引用此 func 的數量過多，重構不太好
-    // 因此會新分出一個新的非 async 的 loginScatter 先做使用於新更動的地方
-    // 再逐一去除 loginScatterAsync 的依賴，或是整體調用 loginScatter 的位置重配優先
-    // 以上 todo
     // 參考 https://es6.ruanyifeng.com/#docs/async
     async loginScatterAsync({ commit, dispatch }) {
       console.log('Start log in...');
@@ -100,6 +119,7 @@ export default new Vuex.Store({
           dispatch('getMyBalances');
         } catch (err) {
           console.error('Failed to log in Scatter :', err);
+          reject(false);
         }
         commit('setIsScatterLoggingIn', false);
         resolve(this.scatterAccount ? account : false);
@@ -108,6 +128,7 @@ export default new Vuex.Store({
     async logoutScatterAsync({ commit }) {
       try {
         await api.logoutScatterAsync();
+        localStorage.removeItem('ACCESS_TOKEN');
       } catch (err) {
         console.error('Failed to logout Scatter', err);
       }

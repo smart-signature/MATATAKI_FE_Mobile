@@ -2,21 +2,27 @@
   <div class="BaseHeader">
     <za-nav-bar>
       <div slot="left">
-          <za-icon v-if="pageinfo.left==='back'"
+        <img src="@/assets/back.svg" alt="home" @click="goBack" class="back-icon">
+        <router-link :to="{ name: 'home' }">
+          <img src="@/assets/home.svg" alt="home" class="home-icon">
+        </router-link>
+          <!--<za-icon v-if="pageinfo.left==='back'"
             theme="primary" type="arrow-left" @click="goBack"/>
           <router-link v-else :to="{ name: 'home' }">
             <Icon type="ios-home" :size="24" />
-          </router-link>
+          </router-link>-->
       </div>
-      <div slot="title">
+      <div slot="title" style="font-size: 16px;">
         <!--<router-link tag="my-Header" :to="{ name: 'home' }">-->
           {{pageinfo.title}}
         <!--</router-link>-->
       </div>
-      <div slot="right">
-        <router-link :to="{ name: pageinfo.rightPage }">
-          <!--<Icon type="ios-share-alt" :size="24" />-->
-        </router-link>
+      <div class="right-slot" slot="right">
+        <slot name='info'></slot>
+        <slot name="right"></slot>
+        <!--<router-link :to="{ name: pageinfo.rightPage }">
+          &lt;!&ndash;<Icon type="ios-share-alt" :size="24" />&ndash;&gt;
+        </router-link>-->
       </div>
     </za-nav-bar>
 </div>
@@ -33,7 +39,10 @@ export default {
   name: 'BaseHeader',
   props: ['pageinfo'],
   computed: {
-    ...mapState(['currentUsername', 'isScatterConnected', 'isScatterLoggingIn']),
+    ...mapState('scatter', {
+      isScatterConnected: state => state.isConnected,
+      isScatterLoggingIn: state => state.isLoggingIn,
+    }),
   },
   // 依據 https://blog.csdn.net/m0_37728716/article/details/81289317
   // 從 crearted 改成 mounted
@@ -44,29 +53,28 @@ export default {
     console.log('Does this page need to log in?:', this.pageinfo.needLogin);
   },
   methods: {
-    ...mapActions([
-      'connectScatterAsync',
-      'suggestNetworkAsync',
-      'loginScatterAsync',
+    ...mapGetters(['isLogined']),
+    ...mapActions('scatter', [
+      'connect',
+      'login',
     ]),
+    loginScatterAsync() { return this.login(); },
     goBack() {
       this.$router.go(-1);
     },
   },
   watch: {
+    isLogined(newState) {
+      if (newState) this.$Message.success('自动登录成功');
+    },
     isScatterConnected(newState) {
-      const { pageinfo, currentUsername, isScatterLoggingIn } = this;
+      const { pageinfo, isScatterLoggingIn } = this;
       if (pageinfo.needLogin !== undefined && pageinfo.needLogin) {
         if (newState && !isScatterLoggingIn) {
           console.log('auto log in');
           this.loginScatterAsync()
             .then((id) => {
               this.$Message.success('自动登录成功');
-              try {
-                getAuth();
-              } catch (error) {
-
-              }
             })
             .catch(() => {
               console.log('Unable to log in wallet');
@@ -91,5 +99,25 @@ a:hover a:active {
 }
 a:active {
   color: black;
+}
+.back-icon {
+  width: 16px;
+}
+.home-icon {
+  width: 22px;
+  margin-left: 14px;
+}
+.BaseHeader {
+  border-bottom: 1px solid #eaeaea;
+  box-sizing: border-box;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+}
+.right-slot{
+  display: flex;
+  align-items: center;
 }
 </style>

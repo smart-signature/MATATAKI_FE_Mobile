@@ -1,64 +1,69 @@
+/* eslint-disable no-shadow */
 <template>
   <div class="user">
-    <za-nav-bar>
-      <div slot="left">
-        <za-icon theme="primary" type="arrow-left" @click="goBack"></za-icon>
-      </div>
-      <div slot="title" v-if="isMe">个人主页</div>
-    </za-nav-bar>
+    <BaseHeader :pageinfo="{ title: `个人主页`, rightPage: 'home', needLogin: false, }" />
     <div class="usercard" >
-      <img width="50px" class="userpic" src="../../assets/logo.png" />
-      <img style="position:absolute; z-index:1;left:40px;"
-           width="50px" src="/img/camera.png" v-if="editing"/>
+      <div class="user-avatar">
+        <img class="userpic" :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png');}" />
+        <img class="camera" src="/img/camera.png" @click="editingavatar = true" v-if="editing" />
+      </div>
+
       <div class="texts">
-        <p class="username">{{username}}</p>
-        <p class="userstatu">关注：{{follows}} 粉丝：{{fans}}</p>
+        <p v-if="!editing" class="username" :class="[!email ? 'username-email' : '']">{{nickname === "" ? username : nickname}}</p>
+        <p v-if="email" class="email">{{email}}</p>
+        <input class="userinput" :class="[!email ? 'username-email' : '']" v-if="editing" v-model='newname' />
+        <p class="userstatus">
+          <a @click="jumpTo({ name: 'FollowList', params: { listtype: '关注' }})">
+            关注：{{follows}}
+          </a>
+          <a @click="jumpTo({ name: 'FollowList', params: {  listtype: '粉丝'  }})">
+            粉丝：{{fans}}
+          </a>
+        </p>
       </div>
-      <div v-if="editing">
-        <Button class="rightbutton" size="small" type="success"
-                ghost @click="save">
-          <div>完成</div>
-        </Button>
-      </div>
-      <div v-else>
-        <div v-if="isMe">
-          <Button class="rightbutton" size="small" type="success" ghost @click="edit">
-            <div>编辑</div>
-          </Button>
-        </div>
-        <div v-else>
-          <div v-if="!followed">
-            <Button class="rightbutton" size="small" type="success" ghost @click="follow_user">
-              <div>关注</div>
-            </Button>
-          </div>
-          <div v-else>
-            <Button class="rightbutton" size="small" type="success" ghost @click="unfollow_user">
-              <div>取消关注</div>
-            </Button>
-          </div>
-        </div>
-      </div>
+      <div class="user-button">
+        <template v-if="editing">
+          <a href="javascript:;" class="rightbutton" :class="[editing ? 'editing-button' : '']" @click="save">完成</a>
+        </template>
+      <template v-else>
+        <template v-if="isMe">
+          <a href="javascript:;" class="rightbutton" @click="edit">编辑</a>
+        </template>
+        <template v-else>
+          <template v-if="!followed">
+            <a href="javascript:;" class="rightbutton" @click="follow_user">关注</a>
+          </template>
+          <template v-else>
+            <a href="javascript:;" class="rightbutton" @click="unfollow_user">取消关注</a>
+          </template>
+        </template>
+      </template>
+    </div>
+
     </div>
     <div class="topcard" v-if="isMe">
       <Row type="flex" justify="center" class="code-row-bg">
           <Col span="11">
-            <p class="centervalue">{{mySignIncome}} EOS</p>
-            <p class="centertext">创作收益</p>
+            <p class="centervalue">{{playerincome}} EOS</p>
+            <p class="centertext">历史总收入</p>
           </Col>
           <Col span="1"><Divider type="vertical" style="height:33px;margin-top:10px;" /></Col>
           <Col span="11">
-            <p class="centervalue">{{myShareIncome}} EOS</p>
-            <p class="centertext">赞赏收益</p>
+            <Button class="detail" ghost
+              @click='jumpTo({ name: "Asset", params: { username }})'>
+              <div style="margin-top:-2px">资产明细</div>
+            </Button>
+            <!-- <p class="centervalue">{{myShareIncome}} EOS</p>
+            <p class="centertext">赞赏收益</p> -->
           </Col>
       </Row>
     </div>
     <!-- todo(minakokojima): 顯示該作者發表的文章。-->
     <!-- <ArticlesList ref="ArticlesList"/> -->
     <div class="centercard" v-if="isMe">
-      <za-cell is-link has-arrow @click='jumpTo({ name: "Asset", params: { username }})'>
-        资产明细
-        <!-- <za-icon type='right' slot='icon'/> -->
+      <za-cell is-link has-arrow @click='jumpTo({ name: "DraftBox", params: { username }})'>
+        草稿箱
+        <!-- <za-icon type='right' slot='icon'/> @click='jumpTo({ name: "DraftBox" })'-->
       </za-cell>
       <za-cell is-link has-arrow @click='jumpTo({ name: "Original", params: { username }})'>
         我的文章
@@ -82,88 +87,62 @@
       <Button class="bottombutton" long @click="logoutScatterAsync">退出登录</Button>
     </div>
     <ArticlesList :listtype="'others'" ref='ArticlesList' :username='username' v-if="!isMe"/>
+
+    <!-- ⬇头像编辑 -->
+    <za-modal :visible.sync='editingavatar' title="编辑头像" :show-close='true'>
+      <Avatar @setDone="setDone" />
+    </za-modal>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { getPlayerIncome } from '@/api/signature';
 import {
-  Follow, Unfollow, getUser, auth,
-} from '../../api';
+  Follow, Unfollow, getUser, oldgetUser,
+  setUserName, getAssets, getAvatarImage,
+} from '@/api';
 import ArticlesList from './ArticlesList.vue';
-import API from '@/api/scatter';
-import { isEmptyArray } from '@/common/methods';
+import Avatar from './AvatarUploader.vue';
 
 export default {
   name: 'User',
   props: ['username'],
-  components: { ArticlesList },
+  components: { Avatar, ArticlesList },
   data() {
     return {
-      playerincome: {
-        sign_income: 0,
-        share_income: 0,
-      },
+      playerincome: 0,
       editing: false,
       followed: false,
       follows: 0,
       fans: 0,
+      nickname: '',
+      newname: '',
+      email: '',
+      avatar: require('../../assets/logo.png'),
+      editingavatar: false,
     };
   },
   computed: {
     ...mapGetters(['currentUsername']),
-    mySignIncome() {
-      return this.playerincome.sign_income / 10000;
-    },
-    myShareIncome() {
-      return this.playerincome.share_income / 10000;
-    },
-    ifLogined() {
-      return this.currentUsername !== null;
-    },
     isMe() {
       const { username, currentUsername } = this;
       return username === currentUsername;
     },
   },
   methods: {
-    ...mapActions(['logoutScatterAsync']),
-    async authDemo() { // 示例代码。。请随便改。。。
-      // 1. 取得签名
-      let accessvalid = false;
-      const nowtime = new Date().getTime();
-      if (localStorage.getItem('ACCESS_TOKEN') != null) {
-        const accesstime = localStorage.getItem('ACCESS_TIME');
-        if (accesstime != null) {
-          if (nowtime - accesstime < 604800000) {
-            accessvalid = true;
-          }
-        }
-      }
-      if (!accessvalid) {
-        API.authSignature(({username, publicKey, signature}) => {
-          console.log(username, publicKey, signature);
-          // 2. post到服务端 获得accessToken并保存
-          auth({ username, publicKey, sign: signature }, (error, response, body) => {
-            console.log(body);
-            if (!error) {
-              // 3. save accessToken
-              const accessToken = body;
-              localStorage.setItem('ACCESS_TOKEN', accessToken);
-              localStorage.setItem('ACCESS_TIME', nowtime);
-            }
-          });
-        });
-      }
-    },
+    ...mapActions('scatter', [
+      'logout',
+    ]),
+    logoutScatterAsync() { return this.logout(); },
     goBack() {
       this.$router.go(-1);
     },
     edit() {
-      console.log('editing');
       this.editing = !this.editing;
     },
+    // clickCamera(){
+    //   console.log("clicked.");
+    // },
     jumpTo(params) {
       this.$router.push(params);
     },
@@ -171,22 +150,80 @@ export default {
       this.editing = !this.editing;
     },
     save() {
-      this.$Message.success('保存');
-      this.editing = !this.editing;
-    },
-    refresh_user() {
-      getUser({
-        username: this.username,
-      }, (error, response, body) => {
-        this.follows = body.follows;
-        this.fans = body.fans;
-        this.followed = body.is_follow;
+      if (this.newname === this.nickname) {
+        this.editing = !this.editing;
+        return;
+      }
+      // 中文 字母 数字 1-12
+      const reg = /^[\u4E00-\u9FA5A-Za-z0-9]{1,12}$/;
+      if (!reg.test(this.newname)) {
+        // this.$Message.error('昵称长度为1-12位，中文、英文、数字但不包括下划线等符号');
+        this.$toasted.show('<p style="margin: 8px 0;line-height: 1.5;">昵称长度为1-12位，中文、英文、数字但不包括下划线等符号</p>', {
+          position: 'top-center',
+          duration: 1500,
+          fitToScreen: true,
+        });
+        return;
+      }
+      setUserName({ newname: this.newname }, ({ error, response }) => {
+        if (!error) {
+          if (response.status === 500) {
+            this.$Notice.error({
+              title: '昵称已存在，请重新设置',
+            });
+          } else {
+            this.$Notice.success({
+              title: '保存成功',
+            });
+          }
+          this.nickname = this.newname;
+        } else {
+          this.$Notice.error({
+            title: '保存失败',
+            desc: '昵称长度为1-12位，中文、英文、数字但不包括下划线等符号',
+          });
+          console.log(response.data);
+          this.newname = this.nickname === '' ? this.username : this.nickname;
+        }
+        this.refreshUser();
+        this.editing = !this.editing;
       });
     },
-    follow_user() {
-      // alert('follow');
+    refreshUser() {
+      if (this.username === null) this.username = this.currentUsername;
       const { username, currentUsername } = this;
-      if (!currentUsername || !username) {
+      const setUser = (data) => {
+        this.nickname = data.nickname;
+        this.email = data.email;
+        this.newname = this.nickname === '' ? this.username : this.nickname;
+        this.setAvatarImage(data.avatar);
+        this.follows = data.follows;
+        this.fans = data.fans;
+        this.followed = data.is_follow;
+      };
+      
+      // todo(minakokojima): deprecate oldgetUser
+      if (currentUsername !== null) {
+        if (currentUsername.length > 12) return;
+        oldgetUser({ username }, ({ error, response }) => {
+          console.log(error, response);
+          if (!error) {
+            if (response.status !== 200) throw error;
+            const { data } = response;
+            setUser(data);
+          } else throw error;
+        });
+      } else {
+        getUser({ username }).then((response) => {
+          console.log(response);
+          const { data } = response;
+          setUser(data);
+        });
+      }
+    },
+    follow_user() {
+      const { username, currentUsername } = this;
+      if (!currentUsername || !username || currentUsername.length > 12) {
         this.$Notice.error({
           title: '账号信息无效，关注失败',
         });
@@ -194,138 +231,69 @@ export default {
       }
       Follow({
         followed: username, username: currentUsername,
-      // eslint-disable-next-line no-unused-vars
-      }, (error, response, body) => { // body 未使用
-        console.log(response);
+      }, ({ error, response }) => {
+        console.log(error);
         if (!error) {
-          this.$Notice.success({
-            title: '关注成功',
-          });
+          this.$Notice.success({ title: '关注成功' });
           this.followed = true;
         } else {
           this.$Notice.error({
             title: '关注失败',
           });
         }
-        this.refresh_user();
+        this.refreshUser();
       });
     },
     unfollow_user() {
-      // alert('follow');
       const { username, currentUsername } = this;
-      if (!currentUsername || !username) {
-        this.$Notice.error({
-          title: '账号信息无效，取消关注失败',
-        });
+      if (!currentUsername || !username || currentUsername.length > 12) {
+        this.$Notice.error({ title: '账号信息无效，取消关注失败' });
         return;
       }
       Unfollow({
         followed: username, username: currentUsername,
-      // eslint-disable-next-line no-unused-vars
-      }, (error, response, body) => { // response body 未使用
+      }, ({ error, response }) => {
         if (!error) {
-          this.$Notice.success({
-            title: '已取消关注',
-          });
+          this.$Notice.success({ title: '已取消关注' });
           this.followed = false;
         } else {
-          this.$Notice.error({
-            title: '取消关注失败',
-          });
+          this.$Notice.error({ title: '取消关注失败' });
         }
-        this.refresh_user();
+        this.refreshUser();
       });
     },
+    // 获取历史总收入
+    async getAssets() {
+      await getAssets(this.username, 1).then((res) => {
+        if (res.status === 200) {
+          this.playerincome = (res.data.totalSignIncome + res.data.totalShareIncome) / 10000;
+        }
+      }).catch((err) => {
+        console.log(err);
+        this.$Message.error('获取历史收入错误请重试');
+      });
+    },
+    setAvatarImage(hash) {
+      // 空hash 显示默认Logo头像
+      // eslint-disable-next-line global-require
+      if (!hash) this.avatar = require('../../assets/logo.png');
+      else this.avatar = getAvatarImage(hash);
+    },
+    // 设置头像完成 子组件与夫组件通信
+    setDone(status) {
+      console.log(status);
+      this.editingavatar = status;
+      this.refreshUser();
+    },
   },
-  async created() {
-    const playerincome = await getPlayerIncome(this.username);
-    this.playerincome = isEmptyArray(playerincome) ? playerincome[0] : this.playerincome;
-    this.refresh_user();
+  created() {
+    const { getAssets, refreshUser } = this;
+    getAssets();
+    refreshUser();
     const user = this.isMe ? '我' : this.username;
     document.title = `${user}的个人主页 - SmartSignature`;
-    await this.authDemo();
   },
 };
 </script>
-<style>
-a {
-  color: #000;
-  text-decoration: none; /* no underline */
-}
-.user{
-  background-color: #F7F7F7;
-  padding-bottom: 20px;
-}
-.usercard{
-  box-shadow: 0px 2px 5px 3px rgba(233, 233, 233, 0.5);
-  background-color: #ffffff;
-  padding: 20px;
-  margin: 20px;
-  /* display: inline-block; */
-  border-radius: 8px;
-  height: 99px;
-}
-.userpic{
-  float: left;
-}
-.username{
-  font-size: 22px;
-  font-weight: bolder;
-}
-.userstatu{
-  font-size: 14px;
-  opacity: 0.4;
-  float:left;
-}
-.texts{
-  float: left;
-  padding-left: 11px;
-}
-.rightbutton{
-  float: right;
-  margin-top: 6px;
-  width: 62px;
-  height: 19px;
-  vertical-align: middle;
-}
-.topcard{
-  background-color: #ffffff;
-  margin-left: 20px;
-  margin-right: 20px;
-  margin-bottom: 20px;
-  padding: 10px;
-  background: rgba(255, 255, 255, 1);
-  box-shadow: 0px 2px 5px 3px rgba(233, 233, 233, 0.5);
-  border-radius: 8px;
-}
-.centercard{
-  background-color: #ffffff;
-  margin-left: 20px;
-  margin-right: 20px;
-  margin-bottom: 20px;
-  background: rgba(255, 255, 255, 1);
-  box-shadow: 0px 2px 5px 3px rgba(233, 233, 233, 0.5);
-  border-radius: 8px;
-}
-.bottomcard{
-  background-color: #ffffff;
-  margin-left: 20px;
-  margin-right: 20px;
-  background: rgba(255, 255, 255, 1);
-  box-shadow: 0px 2px 5px 3px rgba(233, 233, 233, 0.5);
-  border-radius: 8px;
-}
-.bottombutton{
-  height: 55px;
-  font-size: 14px;
-}
-.centervalue{
-  font-size: 22px;
-  font-weight: bolder;
-}
-.centertext{
-  font-size: 14px;
-  font-weight: bold;
-  opacity: 0.4;
-}
-</style>
+
+<style lang="less" scoped src="./index.less"></style>
