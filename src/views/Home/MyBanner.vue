@@ -20,31 +20,26 @@
         <p class="login-notification">即刻登录</p>
         <p class="login-notification">开始智能签名之旅 </p>
       </div>
-      <a class="my-user-page" href="javascript:;" @click="modal1 = true">立即登录</a>
+      <a class="my-user-page" href="javascript:;" @click="showModal = true">立即登录</a>
     </template>
-    <Modal v-model="modal1"
-      title="选择登录钱包类型"
-      @on-ok="signIn"
-      @on-cancel="cancel">
-      <RadioGroup v-model="userConfig.blockchin">
-        <Radio label="EOS">
-          <img class="amount-img" src="@/assets/img/icon_amount.png" />
-          <span>EOS</span>
-        </Radio>
-        <Radio label="ONT">
-          <span>ONT</span>
-        </Radio>
-      </RadioGroup>
-    </Modal>
+    <modal-prompt
+    :showModal="showModal"
+    :modalText="modalText"
+    @changeInfo="changeInfo"
+    @modalSuccess="modalSuccess" />
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import { getAvatarImage } from '@/api';
+import modalPrompt from './components/modalPrompt.vue';
 
 export default {
   name: 'My-Banner',
+  components: {
+    modalPrompt,
+  },
   computed: {
     ...mapGetters(['currentUserInfo', 'isLogined']),
     displayBalance() {
@@ -60,7 +55,11 @@ export default {
   },
   data() {
     return {
-      modal1: false,
+      showModal: false,
+      modalText: {
+        text: '选择登录账号',
+        button: ['确认', '取消'],
+      },
       userConfig: {
         blockchin: 'EOS',
       },
@@ -87,8 +86,7 @@ export default {
       this.getAvatarImage(avatar);
     },
     async signIn() {
-      this.modal1 = false;
-
+      this.showModal = false;
       const { blockchin } = this.userConfig;
       const usingBlockchain = {
         EOS: blockchin === 'EOS',
@@ -96,8 +94,15 @@ export default {
       };
       await this.idCheckandgetAuth(usingBlockchain);
     },
-    cancel() {
-      this.modal1 = false;
+    // 改变modal
+    changeInfo(status) {
+      this.showModal = status;
+    },
+    // modal 确认按钮
+    modalSuccess(type) {
+      this.userConfig.blockchin = type;
+      this.signIn();
+      // console.log(type);
     },
   },
   watch: {
