@@ -42,7 +42,6 @@
         </div>
       </div>
     </div>
-
     <div class="radio" v-if="isShowEditorMode">
       <RadioGroup v-model="saveType" vertical class="save-type">
         <Radio size="large" label="public">公开发布</Radio>
@@ -50,10 +49,9 @@
       </RadioGroup>
     </div>
 
-    <!-- <div class="is-original">
+     <div class="is-original">
       <Checkbox size="large" v-model="isOriginal">&nbsp;确认为原创</Checkbox>
-    </div> -->
-
+    </div>
     <modal-prompt
       :showModal="showModal"
       :modalText="modalText"

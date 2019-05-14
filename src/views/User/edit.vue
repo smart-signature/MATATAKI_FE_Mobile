@@ -12,6 +12,7 @@
         <img-upload :imgUploadDone="imgUploadDone" @doneImageUpload="doneImageUpload">
           <div class="user-avatar" slot="uploadButton">
             <img class="userpic" :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png');}" alt="" slot="description">
+            <img class="camera" src="/img/camera.png" />
           </div>
         </img-upload>
       </za-cell>
@@ -29,7 +30,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import {
   Follow, Unfollow, getUser,
-  setUserName, getAssets, getAvatarImage,
+  setUserName, getAssets, getAvatarImage, setProfile,
   uploadAvatar,
 } from '@/api';
 import imgUpload from '@/components/imgUpload/index.vue';
@@ -115,10 +116,6 @@ export default {
       this.refreshUser();
     },
     async save() {
-      if (this.newname === this.nickname) {
-        this.editing = !this.editing;
-        return;
-      }
       // 中文 字母 数字 1-12
       const reg = /^[\u4E00-\u9FA5A-Za-z0-9]{1,12}$/;
       if (!reg.test(this.newname)) {
@@ -130,8 +127,27 @@ export default {
         });
         return;
       }
+      const introReg = /^[\u4E00-\u9FA5A-Za-z0-9]{5,20}$/;
+      if (!introReg.test(this.newIntroduction)) {
+        this.$toasted.show('<p style="margin: 8px 0;line-height: 1.5;">简介可设置5-20个字符</p>', {
+          position: 'top-center',
+          duration: 1500,
+          fitToScreen: true,
+        });
+        return;
+      }
       try {
-        const response = await setUserName({ newname: this.newname });
+        const requestData = {
+          nickname: this.newname,
+          introduction: this.newIntroduction
+        }
+        if (this.newname === this.nickname) {
+          delete requestData.nickname
+        }
+        if (this.introduction === this.newIntroduction) {
+          delete requestData.introduction
+        }
+        const response = await setProfile(requestData);
         this.$Notice.success({ title: '保存成功' });
         this.nickname = this.newname;
       } catch (error) {

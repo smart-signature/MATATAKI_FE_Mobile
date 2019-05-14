@@ -42,9 +42,6 @@ export default new Router({
       name: 'User',
       props: true,
       component: () => import(/* webpackChunkName: "user" */ './views/User/index.vue'),
-      meta: {
-        keepAlive: true, // 缓存
-      },
     },
     {
       path: '/user/edit/:username',

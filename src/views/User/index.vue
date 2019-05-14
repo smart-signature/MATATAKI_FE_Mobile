@@ -58,25 +58,25 @@
               <span class="statusNumber">{{fans}}</span> <span class="statusKey">粉丝</span>
             </a>
           </p>
-          <p>简介：巴拉巴拉八零八</p>
+          <p>简介：暂无</p>
           <p v-if="email" class="email">{{email}}</p>
         </div>
       </div>
     </div>
     <div class="centercard" v-if="isMe">
-      <za-cell is-link has-arrow @click='jumpTo({ name: "Asset", params: { username }})' description="已绑定1个账户">
+      <za-cell is-link has-arrow @click='jumpTo({ name: "Asset", params: { username }})' :description="`已绑定${stats.accounts}个账户`">
         我的账户
       </za-cell>
     </div>
 
     <div class="centercard" v-if="isMe">
-      <za-cell is-link has-arrow @click='jumpTo({ name: "Original", params: { username }})' description="35篇">
+      <za-cell is-link has-arrow @click='jumpTo({ name: "Original", params: { username }})' :description="`${stats.articles}篇`">
         原创文章
       </za-cell>
-      <za-cell is-link has-arrow @click='jumpTo({ name: "Reward", params: { username }})' description="4篇">
+      <za-cell is-link has-arrow @click='jumpTo({ name: "Reward", params: { username }})' :description="`${stats.supports}篇`">
         赞赏文章
       </za-cell>
-      <za-cell is-link has-arrow @click='jumpTo({ name: "DraftBox", params: { username }})' description="3篇">
+      <za-cell is-link has-arrow @click='jumpTo({ name: "DraftBox", params: { username }})' :description="`${stats.drafts}篇`">
         私密文章
       </za-cell>
     </div>
@@ -140,7 +140,7 @@ import { mapGetters, mapActions } from 'vuex';
 import {
   Follow, Unfollow, getUser,
   setUserName, getAssets, getAvatarImage,
-  uploadAvatar,
+  uploadAvatar, getMyUserData,
 } from '@/api';
 import ArticlesList from './ArticlesList.vue';
 import imgUpload from '@/components/imgUpload/index.vue';
@@ -162,6 +162,12 @@ export default {
       // eslint-disable-next-line global-require
       avatar: require('../../assets/logo.png'),
       imgUploadDone: 0, // 图片是否上传完成
+      stats: {
+        accounts: 0,
+        articles: 0,
+        supports: 0,
+        drafts: 0
+      }
     };
   },
   computed: {
@@ -247,7 +253,7 @@ export default {
       if (!this.username) this.username = this.currentUsername;
       const { username, currentUsername } = this;
       const setUser = ({
-        avatar, email, fans, follows, is_follow, nickname,
+        avatar, email, fans, follows, is_follow, nickname, accounts, articles, supports, drafts
       }) => {
         this.nickname = nickname;
         this.email = email;
@@ -256,11 +262,23 @@ export default {
         this.follows = follows;
         this.fans = fans;
         this.followed = is_follow;
+        this.stats = {
+          accounts,
+          articles,
+          supports,
+          drafts
+        };
       };
       try {
-        const response = await getUser({ username }, currentUsername);
-        if (response.status !== 200) throw new Error('getUser error');
-        setUser(response.data);
+        if (this.isMe) {
+          const response = await getMyUserData();
+          if (response.status !== 200) throw new Error('getUser error');
+          setUser(response.data.data);
+        } else {
+          const response = await getUser({ username }, currentUsername);
+          if (response.status !== 200) throw new Error('getUser error');
+          setUser(response.data);
+        }
       } catch (error) {
         throw error;
       }
