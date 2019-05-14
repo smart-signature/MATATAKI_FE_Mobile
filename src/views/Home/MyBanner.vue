@@ -86,13 +86,26 @@ export default {
       this.getAvatarImage(avatar);
     },
     async signIn() {
-      this.showModal = false;
       const { blockchin } = this.userConfig;
       const usingBlockchain = {
         EOS: blockchin === 'EOS',
         ONT: blockchin === 'ONT',
       };
-      await this.idCheckandgetAuth(usingBlockchain);
+      await this.idCheckandgetAuth(usingBlockchain).then(() => {
+        this.$toasted.show('登陆成功', {
+          position: 'top-center',
+          duration: 1000,
+          fitToScreen: true,
+        });
+      }).catch((err) => {
+        console.log(err);
+        this.$toasted.show('登陆失败', {
+          position: 'top-center',
+          duration: 1000,
+          fitToScreen: true,
+        });
+      });
+      this.showModal = false;
     },
     // 改变modal
     changeInfo(status) {
