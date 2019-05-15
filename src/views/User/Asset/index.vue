@@ -100,9 +100,6 @@ export default {
     };
   },
   created() {
-    this.getAssets(this.username);
-    this.getPlayerTotalIncome(this.username);
-
     this.getBalance();
   },
   methods: {
@@ -115,37 +112,28 @@ export default {
         },
       });
     },
-    // 获取历史总收入 暂时没有接口 先用已有的接口数据  -- copy from /user/index.vue
-    async getAssets(username) {
-      await getAssets(username, 1).then((res) => {
-        if (res.status === 200) {
-          // 手动指定第一个list
-          this.assetList[0].total = (res.data.totalSignIncome + res.data.totalShareIncome) / 10000;
-        }
-      }).catch((err) => {
-        console.log(err);
-        this.$Message.error('获取历史收入错误请重试');
-      });
-    },
-    // 获取可提现 暂时没有接口 先用已有的接口数据 -- copy from /user/asset/asset.vue
-    async getPlayerTotalIncome(name) {
-      console.log('Connecting to EOS fetch player income...');
-      const playerincome = await getPlayerIncome(name); // 从合约拿到支持收入和转发收入
-      // 手动指定第一个list
-      this.assetList[0].withdraw = isEmptyArray(playerincome)
-        ? (playerincome[0].share_income + playerincome[0].sign_income) / 10000
-        : 0;
-      // 截止2019年3月24日中午12时合约拿过来的东西要除以10000才能正常显示
-    },
     // 获取账户资产列表 暂时没有EOS数据
     async getBalance() {
       await getBalance().then((res) => {
-        console.log(res);
         if (res.status === 200 && res.data.code === 0) {
           if (res.data.data.length === 0) return;
-          // 暂时没有总收益 先统一用一个数据
-          this.assetList[1].withdraw = res.data.data[0].amount;
-          this.assetList[1].total = res.data.data[0].amount;
+          // 筛选数据
+          const filterArr = symbol => res.data.data.filter(i => (i.symbol === symbol));
+          const filterArrEOS = filterArr('EOS');
+          const filterArrONT = filterArr('ONT');
+
+          // console.log(filterArrEOS);
+          // console.log(filterArrONT);
+
+          if (filterArrEOS.length !== 0) { // eos
+            this.assetList[0].withdraw = filterArrEOS[0].amount / 10000;
+            this.assetList[0].total = filterArrEOS[0].totalIncome / 10000;
+          }
+
+          if (filterArrONT.length !== 0) { // ont
+            this.assetList[1].withdraw = filterArrONT[0].amount;
+            this.assetList[1].total = filterArrONT[0].totalIncome;
+          }
         } else {
           this.$toasted.show(`${res.data.message}`, {
             position: 'top-center',
