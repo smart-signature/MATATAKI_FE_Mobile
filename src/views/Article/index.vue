@@ -388,8 +388,8 @@ export default {
       }
       this.article = article;
       this.articleCreateTime = article.create_time;
-      this.totalSupportedAmount.show = article.value ? (article.value / 10000).toFixed(4) : 0; // 用于默认显示
-      this.totalSupportedAmount.eos = article.value ? (article.value / 10000).toFixed(4) : 0;
+      this.totalSupportedAmount.show = article.value ? (article.value / 10000) : 0; // 用于默认显示
+      this.totalSupportedAmount.eos = article.value ? (article.value / 10000) : 0;
       this.totalSupportedAmount.ont = article.ontvalue;
       this.signId = article.id;
       this.articleLoading = false; // 文章加载状态隐藏
