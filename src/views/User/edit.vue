@@ -34,6 +34,7 @@ import {
   uploadAvatar,
 } from '@/api';
 import imgUpload from '@/components/imgUpload/index.vue';
+import { isNull } from '@/common/methods';
 
 export default {
   name: 'User',
@@ -189,7 +190,7 @@ export default {
       const setUser = (data) => {
         this.nickname = data.nickname;
         this.email = data.email;
-        this.newname = this.nickname === '' ? this.username : this.nickname;
+        this.newname = isNull(this.nickname) ? this.username : this.nickname;
         this.setAvatarImage(data.avatar);
         this.follows = data.follows;
         this.fans = data.fans;
