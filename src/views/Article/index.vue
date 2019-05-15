@@ -75,15 +75,23 @@
     <footer class="footer">
       <div class="footer-block">
           <div class="amount">
-            <Dropdown trigger="click">
+            <Dropdown trigger="click" @on-click="toggleAmount">
               <div>
-                <img class="amount-img" src="@/assets/img/icon_amount.png" />
-                {{computedTotalSupportedAmount}}
-                <Icon type="ios-arrow-down"></Icon>
+                <div
+                  :class="totalSupportedAmount.showName === 'eos' ? 'eos' : 'ont'"
+                  class="amount-img"></div>
+                {{totalSupportedAmount.show}}
+                <Icon type="ios-arrow-up" />
               </div>
               <DropdownMenu slot="list">
-                <DropdownItem>驴打滚</DropdownItem>
-                <DropdownItem>炸酱面</DropdownItem>
+                <DropdownItem name="eos" class="amount-icon">
+                  <img src="@/assets/img/icon_eos_article.svg" alt="eos">
+                  {{totalSupportedAmount.eos}}
+                </DropdownItem>
+                <DropdownItem name="ont" class="amount-icon">
+                  <img src="@/assets/img/icon_ont_article.svg" alt="ont">
+                  {{totalSupportedAmount.ont}}
+                </DropdownItem>
               </DropdownMenu>
             </Dropdown>
             <Tooltip content="本文收到的赞赏总额" placement="top-start">
@@ -192,7 +200,12 @@ export default {
       amount: '',
       comment: '',
       isSupported: RewardStatus.NOT_LOGGINED,
-      totalSupportedAmount: 0,
+      totalSupportedAmount: {
+        show: 0, // 用于默认数据显示
+        showName: 'eos', // 用于默认数据显示
+        eos: 0,
+        ont: 0,
+      },
       visible3: false,
       clipboard: null,
       articleCreateTime: '',
@@ -232,10 +245,6 @@ export default {
       const { protocol, host } = window.location;
       return `${protocol}//${host}/article/${article.id}`;
     },
-    computedTotalSupportedAmount() {
-      // 如果为 0 个EOS 显示为 0 比 0.0000 适合
-      return this.totalSupportedAmount ? (this.totalSupportedAmount / 10000).toFixed(4) : 0;
-    },
     getInvite() {
       const { invite } = this.$route.query;
       return !invite ? null : invite;
@@ -265,26 +274,26 @@ export default {
         complement: 'Smart Signature',
       };
     },
-    // Meta tags
-    meta() {
-      const { article, getUrl, post } = this;
-      return [
-        // Open Graph
-        { p: 'og:url', c: getUrl },
-        { p: 'og:site_name', c: 'Smart Signature' },
-        { p: 'og:type', c: 'article' },
-        { p: 'og:title', c: post.title },
-        { p: 'og:description', c: post.desc },
-        { p: 'article:author', c: post.author },
-        { p: 'article:published_time', c: article.create_time },
-        { p: 'og:image', c: 'https://example.com/image.jpg' },
-        //  Twitter
-        { n: 'twitter:card', c: post.desc },
-        // { n: 'twitter:site', c: '@Smart Signature' },
-        // { n: 'twitter:creator', c: '@article' }, // @username for the content creator / author.
-        // 未來支持推特連接後， 可以顯示其推特帳號在推特 card 預覽裡
-      ];
-    },
+    // Meta tags // 做ssr 再使用
+    // meta() {
+    // const { article, getUrl, post } = this;
+    // return [
+    // Open Graph
+    // { p: 'og:url', c: getUrl },
+    // { p: 'og:site_name', c: 'Smart Signature' },
+    // { p: 'og:type', c: 'article' },
+    // { p: 'og:title', c: post.title },
+    // { p: 'og:description', c: post.desc },
+    // { p: 'article:author', c: post.author },
+    // { p: 'article:published_time', c: article.create_time },
+    // { p: 'og:image', c: 'https://example.com/image.jpg' },
+    //  Twitter
+    // { n: 'twitter:card', c: post.desc },
+    // { n: 'twitter:site', c: '@Smart Signature' },
+    // { n: 'twitter:creator', c: '@article' }, // @username for the content creator / author.
+    // 未來支持推特連接後， 可以顯示其推特帳號在推特 card 預覽裡
+    // ];
+    // },
     script() {
       return [
         {
@@ -379,7 +388,9 @@ export default {
       }
       this.article = article;
       this.articleCreateTime = article.create_time;
-      this.totalSupportedAmount = article.value;
+      this.totalSupportedAmount.show = article.value ? (article.value / 10000).toFixed(4) : 0; // 用于默认显示
+      this.totalSupportedAmount.eos = article.value ? (article.value / 10000).toFixed(4) : 0;
+      this.totalSupportedAmount.ont = article.ontvalue;
       this.signId = article.id;
       this.articleLoading = false; // 文章加载状态隐藏
       this.is_original = Boolean(article.is_original);
@@ -529,7 +540,16 @@ export default {
       if (!response.data.avatar) return;
       this.articleAvatar = getAvatarImage(response.data.avatar);
     },
-
+    // 切换赞赏总额显示
+    toggleAmount(name) {
+      if (name === 'eos') {
+        this.totalSupportedAmount.show = this.totalSupportedAmount.eos;
+        this.totalSupportedAmount.showName = 'eos';
+      } else if (name === 'ont') {
+        this.totalSupportedAmount.show = this.totalSupportedAmount.ont;
+        this.totalSupportedAmount.showName = 'ont';
+      }
+    },
   },
 };
 </script>
