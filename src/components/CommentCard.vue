@@ -3,8 +3,8 @@
     <div class="comment-info">
       <Avatar icon="ios-person" class="comment-avatar" />
         <div class="comment-head">
-          <router-link class="comment-author" :to="{ name: 'User', params: { username: comment.author }}">
-            {{comment.nickname || comment.author }}
+          <router-link class="comment-author" :to="{ name: 'User', params: { username: comment.username }}">
+            {{comment.nickname || comment.username }}
           </router-link>
           赞赏了
           <span class="comment-quantity">{{`${parseFloat(comment.amount) / 10000} EOS`}}</span>
@@ -57,6 +57,7 @@ export default {
 }
 .comment-avatar {
   margin-right: 12px;
+  flex: 0 0 32px;
 }
 .comment-author {
   color: rgba(0,0,0,0.70);

@@ -1,7 +1,7 @@
 <template>
   <BasePull
     :loadingText="{ start: '😄 勤奋地加载更多精彩内容 😄',
-        end: '🎉 哇，你真勤奋，所有明细已经加载完了～ 🎉',
+        end: '',
         noArticles: '无明细', }"
     :params="params"
     :apiUrl="apiUrl"
@@ -23,18 +23,18 @@ export default {
   data() {
     return {
       params: {
-        smybol: this.type,
+        symbol: this.type,
       },
       apiUrl: 'tokens',
       asset: [],
-      isObj: { type: 'Object', key: 'data' },
+      isObj: { type: 'newObject', key: 'logs' },
       needAccessToken: true,
     };
   },
   computed: { },
   methods: {
     getListData(res) {
-      // console.log(res);
+      console.log(res);
       const historyFilter = res.list.filter(i => i.amount !== 0); // 过滤金额为0
       this.asset = historyFilter;
       this.$emit('getOtherAsset', res);

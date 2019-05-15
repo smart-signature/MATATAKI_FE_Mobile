@@ -74,15 +74,22 @@
 
     <footer class="footer">
       <div class="footer-block">
-        <Tooltip content="本文收到的赞赏总额" placement="top-start">
           <div class="amount">
-            <div>
-              <img class="amount-img" src="@/assets/img/icon_amount.png" />
-              {{computedTotalSupportedAmount}}
-            </div>
-            <div class="amount-text">赞赏总额</div>
+            <Dropdown trigger="click">
+              <div>
+                <img class="amount-img" src="@/assets/img/icon_amount.png" />
+                {{computedTotalSupportedAmount}}
+                <Icon type="ios-arrow-down"></Icon>
+              </div>
+              <DropdownMenu slot="list">
+                <DropdownItem>驴打滚</DropdownItem>
+                <DropdownItem>炸酱面</DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+            <Tooltip content="本文收到的赞赏总额" placement="top-start">
+              <div class="amount-text">赞赏总额</div>
+            </Tooltip>
           </div>
-        </Tooltip>
         <Tooltip content="最高回报=赞赏额*裂变系数">
           <div class="fission">
             <div>
@@ -228,18 +235,6 @@ export default {
     computedTotalSupportedAmount() {
       // 如果为 0 个EOS 显示为 0 比 0.0000 适合
       return this.totalSupportedAmount ? (this.totalSupportedAmount / 10000).toFixed(4) : 0;
-    /* // countTotalSupportedAmount, old version, dont del
-        const { actions } = await getContractActions();
-        // console.log(actions.map(a => a.action_trace));
-        const actions2 = actions.filter(a => a.action_trace.act.account === 'eosio.token'
-          && a.action_trace.act.name === 'transfer'
-          && a.action_trace.act.data.memo.indexOf(`support ${signid}`) !== -1);
-        // console.log(actions2);
-        const actions3 = actions2.map(a => ({
-          quantity: a.action_trace.act.data.quantity.replace(' EOS', ''),
-        }));
-        console.log(actions3);
-      */
     },
     getInvite() {
       const { invite } = this.$route.query;
