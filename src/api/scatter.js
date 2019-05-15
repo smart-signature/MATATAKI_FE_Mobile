@@ -81,6 +81,7 @@ const API = {
     return ScatterJS.scatter.identity.accounts.find(x => x.blockchain === 'eos');
   },
   getArbitrarySignature(publicKey, data, memo) { 
+    console.log(ScatterJS)
     return ScatterJS.scatter.getArbitrarySignature(publicKey, data, memo);
   },
   getPublicKey() {

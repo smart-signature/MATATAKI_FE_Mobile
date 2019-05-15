@@ -12,7 +12,7 @@
 
 <script>
 import Konami from 'konami';
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import { version } from '../package.json';
 // import { getSign } from '@/api/signatureOntology';
 
@@ -20,6 +20,7 @@ export default {
   data: () => ({}),
   methods: {
     ...mapActions(['walletConnectionSetup']),
+    ...mapGetters(['isLogined']),
     updateNotify(desc) {
       const btnCommonStyle = {
         type: 'default',
@@ -64,6 +65,13 @@ export default {
     // walletConnectionSetup(usingBlockchain).then((meg) => {
     //   if (meg !== '') this.$Message.success(`${meg}登录成功！`);
     // });
+
+    const { isLogined } = this;
+    console.log(isLogined);
+    if (!isLogined) {
+      this.userConfig.blockchin = 'EOS';
+      this.signIn();
+    }
   },
 };
 </script>
@@ -74,26 +82,5 @@ export default {
   margin: auto;
   height: 100%;
   text-align: center;
-  font-family: PingFang SC, STHeitiSC-Light, Helvetica-Light, arial, sans-serif;
 }
-
-/* #app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
-} */
 </style>

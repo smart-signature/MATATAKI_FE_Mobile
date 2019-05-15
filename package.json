@@ -38,6 +38,7 @@
     "vue-toasted": "^1.1.26",
     "vue-upload-component": "^2.8.20",
     "vuex": "^3.0.1",
+    "vuex-persistedstate": "^2.5.4",
     "wangeditor": "^3.1.1",
     "zarm-vue": "2.0.0-alpha.8"
   },
