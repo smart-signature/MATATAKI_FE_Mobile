@@ -425,7 +425,15 @@ export default {
     async b4support() {
       try {
         // this.$Message.info('帐号检测中...');
-        await this.idCheckandgetAuth();
+        const { blockchin } = this.currentUserInfo;
+        // console.log(this.currentUserInfo);
+        const usingBlockchain = {
+          EOS: blockchin === 'EOS',
+          ONT: blockchin === 'ONT',
+        };
+        await this.idCheckandgetAuth(
+          usingBlockchain,
+        );
         // this.$Message.success('检测通过');
         this.getArticleInfo(this.hash, true);
       } catch (error) {

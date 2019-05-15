@@ -144,6 +144,14 @@ export default {
     withdrawButton() {
       // 目前只支持EOS提现 所以其他不允许弹出
       if (this.type !== 'EOS') return;
+      if (this.playerincome <= 0) {
+        this.$toasted.show('没有可以提现的余额', {
+          position: 'top-center',
+          duration: 1000,
+          fitToScreen: true,
+        });
+        return;
+      }
       this.visible = true;
     },
   },
