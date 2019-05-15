@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import createPersistedState from 'vuex-persistedstate';
 import ontology from './ontology';
 import scatter from './scatter';
 import { getAuth, getUser } from '@/api';
@@ -11,7 +10,6 @@ Vue.use(Vuex);
 /* eslint-disable no-param-reassign */
 
 export default new Vuex.Store({
-  // plugins: [createPersistedState()],
   modules: {
     ontology,
     scatter,

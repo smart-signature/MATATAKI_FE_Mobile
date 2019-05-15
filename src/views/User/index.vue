@@ -190,7 +190,9 @@ export default {
       'logout',
     ]),
     logoutScatterAsync() {
-      this.logout();
+      window.localStorage.clear();
+      // this.logout();
+      this.$router.push({ name: 'home' });
     },
     edit() {
       this.editing = !this.editing;
