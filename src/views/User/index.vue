@@ -168,8 +168,8 @@ export default {
         accounts: 0,
         articles: 0,
         supports: 0,
-        drafts: 0
-      }
+        drafts: 0,
+      },
     };
   },
   computed: {
@@ -193,7 +193,9 @@ export default {
     ...mapActions('scatter', [
       'logout',
     ]),
-    logoutScatterAsync() { return this.logout(); },
+    logoutScatterAsync() {
+      this.logout();
+    },
     edit() {
       this.editing = !this.editing;
     },
@@ -258,7 +260,7 @@ export default {
       if (!this.username) this.username = this.currentUsername;
       const { username, currentUsername } = this;
       const setUser = ({
-        avatar, email, fans, follows, is_follow, nickname, introduction, accounts, articles, supports, drafts
+        avatar, email, fans, follows, is_follow, nickname, introduction, accounts, articles, supports, drafts,
       }) => {
         this.nickname = nickname;
         this.email = email;
@@ -272,7 +274,7 @@ export default {
           accounts,
           articles,
           supports,
-          drafts
+          drafts,
         };
       };
       try {

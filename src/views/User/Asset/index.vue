@@ -142,6 +142,7 @@ export default {
       await getBalance().then((res) => {
         console.log(res);
         if (res.status === 200 && res.data.code === 0) {
+          if (res.data.data.length === 0) return;
           // 暂时没有总收益 先统一用一个数据
           this.assetList[1].withdraw = res.data.data[0].amount;
           this.assetList[1].total = res.data.data[0].amount;

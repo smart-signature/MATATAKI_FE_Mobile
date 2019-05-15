@@ -39,7 +39,7 @@ export default {
       if (this.comment.platform !== 'eos') {
         return this.comment.amount + (this.comment.platform).toUpperCase();
       }
-      return this.comment.amount / 1000 + (this.comment.platform).toUpperCase();
+      return this.comment.amount / 10000 + (this.comment.platform).toUpperCase();
     },
   },
 };

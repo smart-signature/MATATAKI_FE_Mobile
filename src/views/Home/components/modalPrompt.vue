@@ -44,7 +44,7 @@ export default {
       blockchin: {
         name: [
           {
-            name: 'EOS账号登陆',
+            name: 'EOS账号登录',
             type: 'EOS',
           },
           {
