@@ -81,6 +81,7 @@
                   :class="totalSupportedAmount.showName === 'eos' ? 'eos' : 'ont'"
                   class="amount-img"></div>
                 {{totalSupportedAmount.show}}
+                &nbsp;
                 <Icon type="ios-arrow-up" />
               </div>
               <DropdownMenu slot="list">
