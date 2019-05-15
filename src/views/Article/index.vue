@@ -98,16 +98,15 @@
               <div class="amount-text">赞赏总额</div>
             </Tooltip>
           </div>
+        <Tooltip content="最高回报=赞赏额*裂变系数">
           <div class="fission">
             <div>
               <img class="amount-img" src="@/assets/img/icon_fission.png" />
               {{getDisplayedFissionFactor}}
             </div>
-            <Tooltip content="最高回报=赞赏额*裂变系数">
-              <div class="amount-text">裂变系数</div>
-            </Tooltip>
-
+            <div class="amount-text">裂变系数</div>
           </div>
+        </Tooltip>
       </div>
       <div class="footer-block">
         <Tooltip content="赞赏获收益">
