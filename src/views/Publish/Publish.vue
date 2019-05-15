@@ -96,7 +96,7 @@ export default {
     } else if (from === 'edit') {
       // console.log('编辑文章');
       this.editorMode = 'edit';
-      //this.setArticleData(hash);
+      // this.setArticleData(hash);
       this.setArticleDataById(hash, id);
     } else if (from === 'draft') {
       // console.log('草稿箱');
@@ -185,12 +185,12 @@ export default {
           this.isOriginal = Boolean(data.data.is_original);
         } else {
           this.$Notice.error({ title: data.message });
-          this.$router.push({name: 'home'});
+          this.$router.push({ name: 'home' });
         }
       } catch (error) {
         console.log(error);
         this.$Notice.error({ title: '获取文章信息发生错误' });
-        this.$router.push({name: 'home'});
+        this.$router.push({ name: 'home' });
       }
       // 设置文章内容
       const { data } = articleData.data;
@@ -216,7 +216,7 @@ export default {
       const { data } = articleData.data;
       this.title = data.title;
       this.markdownData = data.content;
-    },*/
+    }, */
     // 得到草稿箱内容 by id
     async getDraft(id) {
       const { data } = await getDraft({ id });
@@ -261,14 +261,14 @@ export default {
       const { failed, success } = this;
       try {
         const response = await publishArticle(data);
-        if (response.data.msg !== 'success') {
-          throw new Error('失败请重试');
+        if (response.data.code !== 0) {
+          throw new Error(response.data.message);
         }
-        success(data.hash);
+        success(response.data.data);
         return 'success';
       } catch (error) {
         console.error(error);
-        failed('失败请重试');
+        failed(error);
         throw error;
       }
     },
@@ -320,7 +320,7 @@ export default {
         console.error(error);
         this.$Message.error('本功能需登录');
         return;
-      }*/
+      } */
 
       if (this.title === '' || this.markdownData === '') { // 标题或内容为空时
         this.$Message.error('标题或正文不能为空');
