@@ -122,14 +122,23 @@ export default {
     getOtherAsset(res) {
       // console.log(res);
       const {
+        balance,
         totalSignIncome: sign,
         totalShareIncome: shareIn,
         totalShareExpenses: shareExp,
-      } = res.data;
+      } = res.data.data;
       const { assetsRewards } = this;
-      assetsRewards.totalSignIncome = sign > 0 ? `+${sign / 10000}` : sign / 10000;
-      assetsRewards.totalShareIncome = shareIn > 0 ? `+${shareIn / 10000}` : shareIn / 10000;
-      assetsRewards.totalShareExpenses = shareExp > 0 ? `+${shareExp / 10000}` : shareExp / 10000;
+      // EOS
+      if (this.type !== 'EOS') {
+        this.playerincome = balance;
+        assetsRewards.totalSignIncome = sign > 0 ? `+${sign}` : sign;
+        assetsRewards.totalShareIncome = shareIn > 0 ? `+${shareIn}` : shareIn;
+        assetsRewards.totalShareExpenses = shareExp > 0 ? `+${shareExp}` : shareExp;
+      } else {
+        assetsRewards.totalSignIncome = sign > 0 ? `+${sign / 10000}` : sign / 10000;
+        assetsRewards.totalShareIncome = shareIn > 0 ? `+${shareIn / 10000}` : shareIn / 10000;
+        assetsRewards.totalShareExpenses = shareExp > 0 ? `+${shareExp / 10000}` : shareExp / 10000;
+      }
     },
     // 提现按钮单击
     withdrawButton() {

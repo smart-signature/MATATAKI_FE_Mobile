@@ -1,6 +1,6 @@
 <template>
   <div class="card">
-    <h2 class="card-pricing" :style='{ color: `${assetColor}` }'>{{assetAmount}}EOS</h2>
+    <h2 class="card-pricing" :style='{ color: `${assetColor}` }'>{{assetAmount}}</h2>
     <div class="card-info">
       <p class="card-title">{{asset.title}}</p>
       <p class="card-date">{{friendlyDate}}</p>
@@ -28,7 +28,13 @@ export default {
       return isNDaysAgo(2, timeZoneOffset) ? timeZoneOffset.format('MMMDo HH:mm') : timeZoneOffset.fromNow();
     },
     assetAmount() {
-      return this.asset.amount > 0 ? `+${this.asset.amount / 10000}` : this.asset.amount / 10000;
+      let amount = '';
+      if (this.asset.symbol !== 'EOS') {
+        amount = this.asset.amount > 0 ? `+${this.asset.amount}` : this.asset.amount;
+        return amount + this.asset.symbol;
+      }
+      amount = this.asset.amount > 0 ? `+${this.asset.amount / 10000}` : this.asset.amount / 10000;
+      return amount + this.asset.symbol;
     },
     assetColor() {
       // eslint-disable-next-line no-nested-ternary

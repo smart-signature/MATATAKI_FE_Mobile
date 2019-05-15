@@ -133,6 +133,7 @@ export default {
         } else if (this.isObj.type === 'Object') {
           // 如果返回的是 Object 根据传进来的字段获取相应的 list
           const resData = data[this.isObj.key];
+          console.log(resData, this.isObj.key);
           this.articles = [...this.articles, ...resData];
           this.$emit('getListData', {
             data,
@@ -140,6 +141,20 @@ export default {
             index: this.nowIndex,
           });
           if (resData.length >= 0 && resData.length < 20) this.isTheEndOfTheScroll = true;
+        } else if (this.isObj.type === 'newObject') { // 接口新格式  后面统一格式就能去掉一个判断
+          // 如果返回的是 Object 根据传进来的字段获取相应的 list
+          const resData = data.data[this.isObj.key];
+          if (data.code === 0) {
+            this.articles = [...this.articles, ...resData];
+            this.$emit('getListData', {
+              data,
+              list: this.articles,
+              index: this.nowIndex,
+            });
+            if (resData.length >= 0 && resData.length < 20) this.isTheEndOfTheScroll = true;
+          } else {
+            throw new Error(data.message);
+          }
         }
         this.page += 1;
         this.busy = false;
