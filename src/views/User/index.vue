@@ -20,7 +20,7 @@
         </img-upload>
       </div>
       <div class="texts">
-        <p v-if="!editing" class="username" :class="[!email ? 'username-email' : '']">{{nickname === "" ? username : nickname}}</p>
+        <p v-if="!editing" class="username" :class="[!email ? 'username-email' : '']">{{displayName}}</p>
         <p v-if="email" class="email">{{email}}</p>
         <input class="userinput" :class="[!email ? 'username-email' : '']" v-if="editing" v-model='newname' />
         <p class="userstatus">
@@ -144,6 +144,7 @@ import {
 } from '@/api';
 import ArticlesList from './ArticlesList.vue';
 import imgUpload from '@/components/imgUpload/index.vue';
+import { isNull } from '@/common/methods';
 
 export default {
   name: 'User',
@@ -177,6 +178,9 @@ export default {
       const { username, currentUsername } = this;
       return username === currentUsername;
     },
+    displayName() {
+      return isNull(this.nickname) ? this.username : this.nickname;
+    }
   },
   created() {
     const { getAssets, refreshUser } = this;
@@ -258,7 +262,7 @@ export default {
       }) => {
         this.nickname = nickname;
         this.email = email;
-        this.newname = this.nickname === '' ? this.username : this.nickname;
+        this.newname = isNull(this.nickname) ? this.username : this.nickname;
         this.setAvatarImage(avatar);
         this.follows = follows;
         this.fans = fans;
