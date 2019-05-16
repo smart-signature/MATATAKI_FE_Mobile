@@ -306,3 +306,13 @@ export default {
 </script>
 
 <style lang="less" scoped src="./index.less"></style>
+<style lang="less">
+  .centercard .za-cell:first-child {
+    &:after {
+      border-top: none;
+    }
+  }
+  .bottomcard .bottombutton {
+    border: 0 solid transparent;
+  }
+</style>

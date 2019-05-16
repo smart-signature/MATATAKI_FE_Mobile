@@ -43,7 +43,7 @@ export default {
   },
   created() {
     this.user = this.isMe ? '我的用户页' : `${this.username} 的用户页`;
-    this.userTitle = this.isMe ? '我赞助的文章' : `${this.username} 赞助的文章`;
+    this.userTitle = this.isMe ? '我赞赏的文章' : `${this.username} 赞赏的文章`;
     document.title = `${this.user} - SmartSignature`;
   },
 };
