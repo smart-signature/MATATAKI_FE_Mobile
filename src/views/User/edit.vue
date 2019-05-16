@@ -124,8 +124,7 @@ export default {
         this.myToasted('昵称长度为1-12位，中文、英文、数字但不包括下划线等符号');
         canSetProfile = false;
       }
-      const introReg = /^[\u4E00-\u9FA5A-Za-z0-9]{5,20}$/;
-      if (!introReg.test(this.newIntroduction)) {
+      if (this.newIntroduction.length < 5 || this.newIntroduction.length > 20) {
         this.myToasted('简介可设置5-20个字符');
         canSetProfile = false;
       }
