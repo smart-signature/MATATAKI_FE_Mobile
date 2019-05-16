@@ -34,7 +34,7 @@ export default {
   computed: { },
   methods: {
     getListData(res) {
-      console.log(res);
+      // console.log(res);
       const historyFilter = res.list.filter(i => i.amount !== 0); // 过滤金额为0
       this.asset = historyFilter;
       this.$emit('getOtherAsset', res);

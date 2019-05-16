@@ -29,13 +29,13 @@ export default {
     },
     friendlyDate() {
       // const isAppleSlave = navigator.platform.includes('iPhone');
-      const newTime = new Date(this.comment.create_time);
-      const time = moment(newTime.getTime() - newTime.getTimezoneOffset()
-                   * 60000);// 返回的数据带了时区
+      const time = moment(this.comment.create_time);
+      // const time = moment(newTime.getTime() - newTime.getTimezoneOffset()
+      //              * 60000);// 返回的数据带了时区
       return isNDaysAgo(2, time) ? time.format('MMMDo HH:mm') : time.fromNow();
     },
     amount() {
-      console.log(this.comment);
+      // console.log(this.comment);
       if (this.comment.platform !== 'eos') {
         return this.comment.amount + (this.comment.platform).toUpperCase();
       }

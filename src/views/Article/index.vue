@@ -367,7 +367,7 @@ export default {
     // 获取文章内容 from ipfs
     async getArticleDatafromIPFS(hash) {
       await getArticleDatafromIPFS(hash).then(({ data }) => {
-        console.log(data);
+        // console.log(data);
         this.setPost(data.data);
       }).catch((err) => {
         console.log(err);

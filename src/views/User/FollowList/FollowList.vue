@@ -13,6 +13,7 @@
           :params="item.params"
           :apiUrl="item.apiUrl"
           :activeIndex="activeIndex"
+          :needAccessToken="true"
           :nowIndex="index"
           :isObj="{ type: 'Object', key: 'list' }"
           @getListData="getListData"
