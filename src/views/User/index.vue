@@ -65,7 +65,7 @@
     </div>
     <div class="centercard" v-if="isMe">
       <za-cell is-link has-arrow @click='jumpTo({ name: "Asset", params: { username }})' :description="`已绑定${stats.accounts}个账户`">
-        我的账户
+        账户资产
       </za-cell>
     </div>
 
@@ -77,46 +77,9 @@
         赞赏文章
       </za-cell>
       <za-cell is-link has-arrow @click='jumpTo({ name: "DraftBox", params: { username }})' :description="`${stats.drafts}篇`">
-        私密文章
+        草稿箱
       </za-cell>
     </div>
-
-    <!--<div class="centercard" v-if="isMe">
-      <za-cell is-link has-arrow @click='jumpTo({ name: "DraftBox", params: { username }})'>
-        加入电报
-      </za-cell>
-    </div>-->
-    <!--<div class="topcard" v-if="isMe">
-      <Row type="flex" justify="center" class="code-row-bg">
-          <Col span="11">
-            <p class="centervalue">{{playerincome}} EOS</p>
-            <p class="centertext">历史总收入</p>
-          </Col>
-          <Col span="1"><Divider type="vertical" style="height:33px;margin-top:10px;" /></Col>
-          <Col span="11">
-            <Button class="detail" ghost
-              @click='jumpTo({ name: "Asset", params: { username }})'>
-              <div style="margin-top:-2px">资产明细</div>
-            </Button>
-            &lt;!&ndash; <p class="centervalue">{{myShareIncome}} EOS</p>
-            <p class="centertext">赞赏收益</p> &ndash;&gt;
-          </Col>
-      </Row>
-    </div>-->
-    <!-- todo(minakokojima): 顯示該作者發表的文章。-->
-    <!-- <ArticlesList ref="ArticlesList"/> -->
-    <!--<div class="centercard" v-if="isMe">
-      <za-cell is-link has-arrow @click='jumpTo({ name: "DraftBox", params: { username }})'>
-        草稿箱
-        &lt;!&ndash; <za-icon type='right' slot='icon'/> @click='jumpTo({ name: "DraftBox" })'&ndash;&gt;
-      </za-cell>
-      <za-cell is-link has-arrow @click='jumpTo({ name: "Original", params: { username }})'>
-        我的文章
-      </za-cell>
-      <za-cell is-link has-arrow @click='jumpTo({ name: "Reward", params: { username }})'>
-        赞赏文章
-      </za-cell>
-    </div>-->
     <div class="centercard" v-if="isMe">
       <za-cell is-link has-arrow @click='jumpTo({ name: "About" })'>
         规则介绍
@@ -139,7 +102,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import {
   Follow, Unfollow, getUser,
-  setUserName, getAssets, getAvatarImage,
+  setUserName, getAvatarImage,
   uploadAvatar, getMyUserData,
 } from '@/api';
 import ArticlesList from './ArticlesList.vue';
@@ -152,7 +115,6 @@ export default {
   components: { ArticlesList, imgUpload },
   data() {
     return {
-      playerincome: 0,
       editing: false,
       followed: false,
       follows: 0,
@@ -183,8 +145,7 @@ export default {
     },
   },
   created() {
-    const { getAssets, refreshUser } = this;
-    getAssets();
+    const { refreshUser } = this;
     refreshUser();
     const user = this.isMe ? '我' : this.username;
     document.title = `${user}的个人主页 - SmartSignature`;
@@ -324,17 +285,6 @@ export default {
         this.$Notice.error({ title: '取消关注失败' });
       }
       this.refreshUser();
-    },
-    // 获取历史总收入
-    async getAssets() {
-      await getAssets(this.username, 1).then((res) => {
-        if (res.status === 200) {
-          this.playerincome = (res.data.totalSignIncome + res.data.totalShareIncome) / 10000;
-        }
-      }).catch((err) => {
-        console.log(err);
-        this.$Message.error('获取历史收入错误请重试');
-      });
     },
     setAvatarImage(hash) {
       // 空hash 显示默认Logo头像
