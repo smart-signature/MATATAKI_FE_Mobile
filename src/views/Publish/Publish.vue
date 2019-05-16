@@ -65,8 +65,8 @@ import { mapGetters, mapActions, mapState } from 'vuex';
 import { sendPost } from '@/api/ipfs';
 import { mavonEditor } from 'mavon-editor';
 import {
-  defaultImagesUploader, publishArticle, createDraft,
-  editArticle, getArticleDatafromIPFS, getArticleInfo,
+  defaultImagesUploader, backendAPI, createDraft,
+  getArticleDatafromIPFS, getArticleInfo,
   getDraft, updateDraft, delDraft, getMyPost,
   getAvatarImage,
 } from '@/api';
@@ -260,7 +260,7 @@ export default {
     async publishArticle(data) {
       const { failed, success } = this;
       try {
-        const response = await publishArticle(data);
+        const response = await backendAPI.publishArticle(data);
         if (response.data.code !== 0) {
           throw new Error(response.data.message);
         }
@@ -281,7 +281,7 @@ export default {
     },
     // 编辑文章
     async editArticle(data) {
-      const response = await editArticle(data);
+      const response = await backendAPI.editArticle(data);
       console.log(response);
       if (response.data.msg !== 'success') this.failed('失败请重试');
       this.success(data.hash);
