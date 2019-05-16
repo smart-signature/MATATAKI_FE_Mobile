@@ -265,7 +265,7 @@ const API = {
     });
   },
   // 获取头像
-  async getAvatarImage(hash) {
+  getAvatarImage(hash) {
     return `${apiServer}/image/${hash}`;
   },
   // 供基础组件 BasePull 使用的方法

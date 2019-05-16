@@ -34,12 +34,12 @@ export default {
     isRequest(newVal) {
       if (newVal) {
         this.timer = setInterval(() => {
-          if (this.autoRequestTime >= 30) {
+          if (this.autoRequestTime >= 2) {
             clearInterval(this.timer);
             this.$emit('stopAutoRequest', false);
           }
           this.autoRequestTime += 1;
-        }, 500);
+        }, 2000);
       } else {
         clearInterval(this.timer);
       }

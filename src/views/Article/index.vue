@@ -228,7 +228,7 @@ export default {
       return `《${article.title}》by ${article.username} \n${shareLink}\n赞赏好文，分享有收益 ！`;
     },
     getCopyIpfsHash() {
-      return `您的Hash地址为: ${this.article.hash}`;
+      return `${this.article.hash}`;
     },
     getDisplayedFissionFactor() {
       return this.article.fission_factor / 1000;
