@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { getBackendData } from '@/api/backend';
+import { getBackendData } from '@/api';
 
 export default {
   name: 'BasePull',

@@ -69,7 +69,7 @@ import {
   editArticle, getArticleDatafromIPFS, getArticleInfo,
   getDraft, updateDraft, delDraft, getMyPost,
   getAvatarImage,
-} from '@/api/index';
+} from '@/api';
 
 import 'mavon-editor/dist/css/index.css'; // editor css
 import VueSlider from 'vue-slider-component';
