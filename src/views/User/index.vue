@@ -302,6 +302,11 @@ export default {
       }
     },
   },
+  watch: {
+    isMe() {
+      this.refreshUser()
+    }
+  }
 };
 </script>
 
