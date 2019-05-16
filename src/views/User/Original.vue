@@ -23,11 +23,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['currentUsername']),
-    isMe() {
-      const { username, currentUsername } = this;
-      return username === currentUsername;
-    },
+    ...mapGetters(['currentUsername', 'isMe']),
   },
   methods: {
     goBack() {
@@ -35,8 +31,9 @@ export default {
     },
   },
   created() {
-    this.user = this.isMe ? '我的用户页' : `${this.username} 的用户页`;
-    this.userTitle = this.isMe ? '我的原创文章' : `${this.username} 的原创文章`;
+    const { isMe, username } = this;
+    this.user = isMe(username) ? '我的用户页' : `${username} 的用户页`;
+    this.userTitle = isMe(username) ? '我的原创文章' : `${username} 的原创文章`;
     document.title = `${this.user} - SmartSignature`;
   },
 };
