@@ -147,8 +147,8 @@ export default {
           // const filterArrEOS = filterArr('EOS');
           const filterArrONT = filterArr('ONT');
 
-          // console.log(filterArrEOS);
-          // console.log(filterArrONT);
+          // console.debug(filterArrEOS);
+          // console.debug(filterArrONT);
 
           // if (filterArrEOS.length !== 0) { // eos
           //   this.assetList[0].withdraw = filterArrEOS[0].amount / 10000;
