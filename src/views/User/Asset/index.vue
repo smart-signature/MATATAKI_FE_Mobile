@@ -46,8 +46,7 @@
 </template>
 
 <script>
-import { getAssets } from '@/api';
-import { getBalance } from '@/api/backend';
+import { getAssets, getBalance } from '@/api';
 import { getPlayerIncome } from '@/api/signature';
 import { isEmptyArray } from '@/common/methods';
 import { mapGetters } from 'vuex';
