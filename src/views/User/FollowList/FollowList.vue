@@ -26,7 +26,7 @@
 
 <script>
 import list from './list.vue';
-import { getAvatarImage } from '@/api/backend';
+import { getAvatarImage } from '@/api';
 
 export default {
   name: 'DeaftBox',

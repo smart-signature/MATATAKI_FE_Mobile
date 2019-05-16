@@ -91,24 +91,27 @@ export default {
         EOS: blockchin === 'EOS',
         ONT: blockchin === 'ONT',
       };
-      try {
-        await this.idCheckandgetAuth(usingBlockchain);
-        localStorage.setItem('blockchin', blockchin); // 成功存储登陆方式
-        this.$toasted.show('登陆成功', {
-          position: 'top-center',
-          duration: 1000,
-          fitToScreen: true,
-        });
-      } catch (error) {
-        console.log(error);
-        this.$toasted.show('登陆失败', {
-          position: 'top-center',
-          duration: 1000,
-          fitToScreen: true,
-        });
-      }
 
-      this.showModal = false;
+      const success = () => {
+        localStorage.setItem('blockchin', blockchin); // 成功存储登陆方式
+        this.showModal = false;
+      };
+
+      await this.idCheckandgetAuth(usingBlockchain).then(() => {
+        success();
+      }).catch(async () => {
+        await this.idCheckandgetAuth(usingBlockchain).then(() => {
+          success();
+        }).catch((err) => {
+          console.log(err);
+          this.showModal = false;
+          this.$toasted.show('登陆失败', {
+            position: 'top-center',
+            duration: 1000,
+            fitToScreen: true,
+          });
+        });
+      });
     },
     // 改变modal
     changeInfo(status) {

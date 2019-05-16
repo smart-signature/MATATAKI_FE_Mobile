@@ -52,9 +52,23 @@ export default {
   },
   created() { // https://juejin.im/post/5bfa4bb951882558ae3c171e
     console.info('Smart Signature version :', version);
-
-
     const { updateNotify, walletConnectionSetup } = this;
+
+
+    // 根据本地存储的状态来自动登陆
+    const blockchin = localStorage.getItem('blockchin');
+    // console.debug(blockchin);
+    if (blockchin) {
+      const usingBlockchain = {
+        EOS: blockchin === 'EOS',
+        ONT: blockchin === 'ONT',
+      };
+      this.idCheckandgetAuth(usingBlockchain).then().catch(() => {
+        this.idCheckandgetAuth(usingBlockchain).catch(() => { // 失败之后再重试一次
+          this.$Notice.error({ title: '自动登陆失败' });
+        });
+      });
+    }
 
     window.updateNotify = updateNotify;
 
@@ -66,17 +80,6 @@ export default {
   mounted() {
     // eslint-disable-next-line no-unused-vars
     const easterEgg = new Konami(() => { this.triggerEasterEgg(); });
-
-    // 根据本地存储的状态来自动登陆
-    const blockchin = localStorage.getItem('blockchin');
-    // console.debug(blockchin);
-    if (blockchin) {
-      const usingBlockchain = {
-        EOS: blockchin === 'EOS',
-        ONT: blockchin === 'ONT',
-      };
-      this.idCheckandgetAuth(usingBlockchain);
-    }
   },
 };
 </script>

@@ -2,12 +2,27 @@
 // 使用例子
 // 之前: `import { xxx } from '@/api/backend'`
 // 之后: `import { xxx } from '@/api/'`
+import API, { disassembleToken } from './backend';
 import defaultImagesUploader from './imagesUploader';
 
-// This line below is exports
+const {
+  publishArticle,
+  getArticlesList,
+  auth, getAuth,
+  getArticleDatafromIPFS, getArticleInfo,
+  getUser,
+  Follow, Unfollow,
+  setUserName, getFansList, getFollowList,
+  getSharesbysignid, sendComment, addReadAmount, getAssets,
+  delArticle, uploadAvatar, getAvatarImage, getArticleSupports, editArticle,
+  draftList, createDraft, updateDraft, delDraft, getDraft,
+  reportShare, getMyUserData, setProfile, getMyPost,
+  getBackendData, getBalance,
+} = API;
 
 export {
-  getArticlesList, publishArticle,
+  publishArticle,
+  getArticlesList,
   auth, getAuth,
   getArticleDatafromIPFS, getArticleInfo,
   Follow, Unfollow, getUser,
@@ -16,5 +31,7 @@ export {
   delArticle, uploadAvatar, getAvatarImage, getArticleSupports, editArticle,
   draftList, createDraft, updateDraft, delDraft, getDraft,
   reportShare, getMyUserData, setProfile, getMyPost,
-} from './backend';
-export { defaultImagesUploader };
+  getBackendData, getBalance,
+  // 額外項
+  disassembleToken, defaultImagesUploader,
+};

@@ -1,8 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Home from './views/Home/index.vue';
-import { disassembleToken } from './api/backend';
-
+import { disassembleToken } from '@/api';
 
 Vue.use(Router);
 
