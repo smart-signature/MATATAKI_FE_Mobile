@@ -30,7 +30,7 @@ const mutations = {
   setAccount(state, account = null) {
     state.account = account;
   },
-  setBalance(state, { symbol = 'eos', balance = '... EOS' }) {
+  setBalance(state, { symbol, balance }) {
     state.balances[symbol] = balance;
   },
 };
@@ -120,7 +120,7 @@ const actions = {
       console.error('Failed to logout Scatter', err);
     }
     commit('setAccount');
-    commit('setBalance');
+    commit('setBalance', { symbol: 'eos', balance: '... EOS' });
     commit('setIsLoggingIn');
   },
 };
