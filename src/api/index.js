@@ -7,7 +7,7 @@ import defaultImagesUploader from './imagesUploader';
 
 const {
   publishArticle,
-  getArticlesList, 
+  getArticlesList,
   auth, getAuth,
   getArticleDatafromIPFS, getArticleInfo,
   getUser,
@@ -22,7 +22,7 @@ const {
 
 export {
   publishArticle,
-  getArticlesList, 
+  getArticlesList,
   auth, getAuth,
   getArticleDatafromIPFS, getArticleInfo,
   Follow, Unfollow, getUser,

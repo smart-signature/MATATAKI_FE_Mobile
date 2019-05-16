@@ -91,7 +91,7 @@ const API = {
   },
   async editArticle({
     signId, author, hash, title, fissionFactor, cover, is_original,
-  }) { 
+  }) {
     return this.sendArticle('/edit', {
       signId, author, hash, title, fissionFactor, cover, is_original,
     }, true);
@@ -133,7 +133,7 @@ const API = {
   */
   async getArticlesList(params) { return axiosforApiServer('/posts', { params }); },
   // 获取资产明细
-  async getAssets(user, page){ return axiosforApiServer('/assets', { params: { user, page } }); },
+  async getAssets(user, page) { return axiosforApiServer('/assets', { params: { user, page } }); },
   /*
     amount: 2000
     author: "minakokojima"
@@ -205,7 +205,7 @@ const API = {
       data: { username, followed },
     });
   },
-  async Unfollow({ username, followed }) { 
+  async Unfollow({ username, followed }) {
     return accessBackend({
       method: 'POST',
       url: '/unfollow',
@@ -221,7 +221,7 @@ const API = {
     return accessBackend({ url });
   },
   // Be used in User page.
-  async setUserName({ newname }){
+  async setUserName({ newname }) {
     return accessBackend({
       method: 'POST',
       url: '/user/setNickname',
@@ -234,7 +234,7 @@ const API = {
   async getFollowList({ username }) {
     return accessBackend({ url: `/follows?user=${username}` });
   },
-  async sendComment({ comment, signId }){
+  async sendComment({ comment, signId }) {
     return accessBackend({
       method: 'POST',
       url: '/post/comment',
@@ -274,10 +274,10 @@ const API = {
   // 所有用 BasePull 调用的接口 都带了 token 修改了 header，所以会请求两次 后续可以升级此方法来根据传进来的参数判断是否需要token
   // 存储所有的 basepull 接口地址, 移除接口地址写在组件内
   // const basePullList = {};
-  async getBackendData({ url, params }, needAccessToken = false){
+  async getBackendData({ url, params }, needAccessToken = false) {
     return !needAccessToken
       ? axiosforApiServer(url, { params })
-      : accessBackend({  url: `/${url}`, params });
+      : accessBackend({ url: `/${url}`, params });
   },
   // 草稿箱api
   async draftList({ page }) {
@@ -325,7 +325,7 @@ const API = {
   },
   async getMyPost(id) { return accessBackend({ url: `/mypost/${id}` }); },
   // 获取账户资产列表 暂时没有EOS数据
-  async getBalance() { return accessBackend({  url: '/balance' }); },
+  async getBalance() { return accessBackend({ url: '/balance' }); },
 };
 
 export default API;
