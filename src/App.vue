@@ -53,20 +53,8 @@ export default {
   },
   created() { // https://juejin.im/post/5bfa4bb951882558ae3c171e
     console.info('Smart Signature version :', version);
-
-
     const { updateNotify, walletConnectionSetup } = this;
 
-    window.updateNotify = updateNotify;
-
-    // const usingBlockchain = { EOS: true, ONT: true };
-    // walletConnectionSetup(usingBlockchain).then((meg) => {
-    //   if (meg !== '') this.$Message.success(`${meg}登录成功！`);
-    // });
-  },
-  mounted() {
-    // eslint-disable-next-line no-unused-vars
-    const easterEgg = new Konami(() => { this.triggerEasterEgg(); });
 
     //  const { blockchin } = this.userConfig;
     const blockchin = localStorage.getItem('blockchin');
@@ -78,6 +66,17 @@ export default {
       };
       this.idCheckandgetAuth(usingBlockchain);
     }
+
+    window.updateNotify = updateNotify;
+
+    // const usingBlockchain = { EOS: true, ONT: true };
+    // walletConnectionSetup(usingBlockchain).then((meg) => {
+    //   if (meg !== '') this.$Message.success(`${meg}登录成功！`);
+    // });
+  },
+  mounted() {
+    // eslint-disable-next-line no-unused-vars
+    const easterEgg = new Konami(() => { this.triggerEasterEgg(); });
   },
 };
 </script>
