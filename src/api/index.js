@@ -6,14 +6,13 @@ import API, { disassembleToken } from './backend';
 import defaultImagesUploader from './imagesUploader';
 
 const {
-  publishArticle,
   getArticlesList,
   getArticleDatafromIPFS, getArticleInfo,
   getUser,
   Follow, Unfollow,
   setUserName, getFansList, getFollowList,
   getSharesbysignid, sendComment, addReadAmount, getAssets,
-  delArticle, uploadAvatar, getAvatarImage, getArticleSupports, editArticle,
+  delArticle, uploadAvatar, getAvatarImage, getArticleSupports,
   draftList, createDraft, updateDraft, delDraft, getDraft,
   reportShare, getMyUserData, setProfile, getMyPost,
   getBackendData, getBalance,
@@ -21,13 +20,12 @@ const {
 
 export {
   API as backendAPI,
-  publishArticle,
   getArticlesList,
   getArticleDatafromIPFS, getArticleInfo,
   Follow, Unfollow, getUser,
   setUserName, getFansList, getFollowList,
   getSharesbysignid, sendComment, addReadAmount, getAssets,
-  delArticle, uploadAvatar, getAvatarImage, getArticleSupports, editArticle,
+  delArticle, uploadAvatar, getAvatarImage, getArticleSupports,
   draftList, createDraft, updateDraft, delDraft, getDraft,
   reportShare, getMyUserData, setProfile, getMyPost,
   getBackendData, getBalance,
