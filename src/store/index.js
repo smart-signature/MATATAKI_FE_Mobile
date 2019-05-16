@@ -156,6 +156,17 @@ export default new Vuex.Store({
       commit('setNickname', data.nickname);
       return data;
     },
+    signOut({ commit, dispatch, state }) {
+      const { blockchin } = state.userConfig;
+      const EOS = blockchin === 'EOS';
+      const ONT = blockchin === 'ONT';
+      if (EOS) dispatch('scatter/logout');
+      if (ONT) dispatch('ontology/signOut');
+      commit('setUserConfig');
+      commit('setNickname');
+
+      localStorage.clear();
+    },
     async walletConnectionSetup({ dispatch }, { EOS, ONT }) {
       let meg = '';
       if (EOS) {
@@ -185,10 +196,11 @@ export default new Vuex.Store({
     },
   },
   mutations: {
-    setUserConfig(state, config) {
-      state.userConfig.blockchin = config.EOS ? 'EOS' : 'ONT';
+    setUserConfig(state, config = null) {
+      if (config) state.userConfig.blockchin = config.EOS ? 'EOS' : 'ONT';
+      else state.userConfig.blockchin = null;
     },
-    setNickname(state, nickname) {
+    setNickname(state, nickname = '') {
       state.userInfo.nickname = nickname;
     },
   },

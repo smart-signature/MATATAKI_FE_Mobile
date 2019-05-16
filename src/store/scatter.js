@@ -21,16 +21,16 @@ const getters = {
 };
 
 const mutations = {
-  setIsLoggingIn(state, isLoggingIn) {
+  setIsLoggingIn(state, isLoggingIn = false) {
     state.isLoggingIn = isLoggingIn;
   },
   setIsConnected(state, isConnected) {
     state.isConnected = isConnected;
   },
-  setAccount(state, account) {
+  setAccount(state, account = null) {
     state.account = account;
   },
-  setBalance(state, { symbol, balance }) {
+  setBalance(state, { symbol = 'eos', balance = '... EOS' }) {
     state.balances[symbol] = balance;
   },
 };
@@ -97,18 +97,18 @@ const actions = {
     try {
       const identity = await api.loginScatterAsync();
       if (!identity) { // 失敗若是走了 catch ，這條也不會 run
-        commit('setAccount', null);
-        commit('setIsLoggingIn', false);
+        commit('setAccount');
+        commit('setIsLoggingIn');
         throw new Error('Failed to get identity in Scatter');
       }
       const account = identity.accounts.find(({ blockchain }) => blockchain === 'eos');
       commit('setAccount', account);
       console.log(account, 'log in successful.');
       dispatch('setBalances');
-      commit('setIsLoggingIn', false);
+      commit('setIsLoggingIn');
       return account;
     } catch (error) {
-      commit('setIsLoggingIn', false);
+      commit('setIsLoggingIn');
       console.error('Failed to log in Scatter :', error);
       throw error;
     }
@@ -116,11 +116,12 @@ const actions = {
   async logout({ commit }) {
     try {
       await api.logoutScatterAsync();
-      localStorage.removeItem('ACCESS_TOKEN');
     } catch (err) {
       console.error('Failed to logout Scatter', err);
     }
-    commit('setAccount', null);
+    commit('setAccount');
+    commit('setBalance');
+    commit('setIsLoggingIn');
   },
 };
 

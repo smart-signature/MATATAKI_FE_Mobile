@@ -58,13 +58,17 @@ const actions = {
       amount, owner: account, signId, sponsor,
     });
   },
+  signOut({ commit }) {
+    commit('setAccount');
+    commit('setBalance');
+  },
 };
 
 const mutations = {
-  setAccount(state, account) {
+  setAccount(state, account = null) {
     state.account = account;
   },
-  setBalance(state, balance) {
+  setBalance(state, balance = { ONG: 0, ONT: 0 }) {
     state.balance = balance;
   },
 };
