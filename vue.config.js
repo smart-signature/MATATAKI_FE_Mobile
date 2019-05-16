@@ -41,4 +41,16 @@ module.exports = {
     },
   },
   productionSourceMap: NODE_ENV === 'development', // 去掉map文件
+  chainWebpack: (config) => {
+    // 移除 prefetch 插件
+    config.plugins.delete('prefetch');
+  },
+  // 代理
+  // devServer: {
+  //   proxy: {
+  //     '/': {
+  //       target: 'https://apitest.smartsignature.io',
+  //     },
+  //   },
+  // },
 };
