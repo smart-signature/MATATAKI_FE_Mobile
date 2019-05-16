@@ -94,7 +94,7 @@ export default {
 
 <style lang="less" scoped>
 .head {
-  padding: 10px 20px;
+  padding: 20px 20px 0;
   transition: all .3s;
   display: flex;
   justify-content: space-between;
