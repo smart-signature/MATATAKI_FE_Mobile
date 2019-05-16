@@ -180,7 +180,7 @@ export default {
     },
     displayName() {
       return isNull(this.nickname) ? this.username : this.nickname;
-    }
+    },
   },
   created() {
     const { getAssets, refreshUser } = this;
@@ -194,7 +194,11 @@ export default {
       'logout',
     ]),
     logoutScatterAsync() {
-      this.logout();
+      this.logout(); // scatter 退出
+      localStorage.clear(); // 清空本地所有数据
+      // 缺一个ont退出登陆
+
+      this.$router.push({ name: 'home' }); // 回到首页
     },
     edit() {
       this.editing = !this.editing;

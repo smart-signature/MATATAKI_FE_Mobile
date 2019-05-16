@@ -92,6 +92,7 @@ export default {
         ONT: blockchin === 'ONT',
       };
       await this.idCheckandgetAuth(usingBlockchain).then(() => {
+        localStorage.setItem('blockchin', blockchin); // 成功存储登陆方式
         this.$toasted.show('登陆成功', {
           position: 'top-center',
           duration: 1000,
