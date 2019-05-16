@@ -74,6 +74,7 @@ export default {
   color:rgba(0,0,0,1);
   line-height:20px;
   letter-spacing:1px;
+  word-break: break-word;
 }
 .comment-quantity {
   font-family:PingFangSC-Medium;
