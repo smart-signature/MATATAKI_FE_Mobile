@@ -1,7 +1,7 @@
 <template>
   <BasePull
     :loadingText="{
-      start: '更多...',
+      start: '',
       end: '',
       noArticles: '暂无赞赏评论',
     }"

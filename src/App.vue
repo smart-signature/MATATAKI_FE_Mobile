@@ -64,10 +64,8 @@ export default {
         EOS: blockchin === 'EOS',
         ONT: blockchin === 'ONT',
       };
-      this.idCheckandgetAuth(usingBlockchain).then().catch(() => {
-        this.idCheckandgetAuth(usingBlockchain).catch(() => { // 失败之后再重试一次
-          this.$Notice.error({ title: '自动登陆失败' });
-        });
+      this.idCheckandgetAuth(usingBlockchain).catch(() => {
+        this.idCheckandgetAuth(usingBlockchain);// 失败之后再重试一次
       });
     }
 
