@@ -14,9 +14,9 @@ export default new Router({
       path: '/',
       name: 'home',
       component: Home,
-      meta: {
-        keepAlive: true, // 缓存
-      },
+      // meta: {
+      //   keepAlive: true, // 缓存
+      // },
     },
     {
       path: '/about',

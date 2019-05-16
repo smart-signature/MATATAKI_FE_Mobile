@@ -68,11 +68,10 @@ export default {
 };
 </script>
 
-
 <style scoped>
 #app {
+  text-align: center;
   margin: auto;
   height: 100%;
-  text-align: center;
 }
 </style>

@@ -8,13 +8,13 @@
       <div class="topcard-head">
         <div>
           <p class="topcard-title">待提现</p>
-          <p class="topcard-playerincome">{{playerincome.toFixed(4)}}</p>
+          <p class="topcard-playerincome">{{playerincome}}</p>
         </div>
         <!-- 控制提现样式 如果修改记得修改class样式 -->
-        <div class="withdraw" :class="type !== 'EOS' && 'disabled'" @click="withdrawButton">
+        <div class="withdraw" :class="!isWithdrawButton && 'disabled'" @click="withdrawButton">
           <!-- 控制提现文字 根据不同情况修改 -->
           {{
-            type === 'EOS' ?
+            isWithdrawButton ?
             '全部提现' :
             '提现未开放'
           }}
@@ -65,6 +65,7 @@
 import { getPlayerIncome, withdraw } from '@/api/signature';
 import { isEmptyArray } from '@/common/methods';
 import AssetList from './AssetList.vue';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'AssetType',
@@ -76,9 +77,16 @@ export default {
     if (!assetTypeArr.includes(this.type)) {
       this.$router.push({ name: 'home' });
     }
+
+    const { blockchain } = this.currentUserInfo;
+    // console.log(blockchain);
     // EOS
-    if (this.type === 'EOS') {
+    // 如果是EOS账号并且是进入的EOS列表从链上查询余额
+    if (blockchain === 'EOS' && this.type === 'EOS') {
       this.getPlayerTotalIncome(this.username);
+      this.isWithdrawButton = true; // 可以提现
+    } else {
+      this.isWithdrawButton = false; // 不能提现
     }
   },
   data() {
@@ -91,7 +99,11 @@ export default {
         totalShareExpenses: 0,
       },
       visible: false,
+      isWithdrawButton: true,
     };
+  },
+  computed: {
+    ...mapGetters(['currentUserInfo']),
   },
   methods: {
     // 得到待提现
@@ -120,7 +132,6 @@ export default {
     },
     // 得到明细数据
     getOtherAsset(res) {
-      // console.log(res);
       const {
         balance,
         totalSignIncome: sign,
@@ -135,6 +146,7 @@ export default {
         assetsRewards.totalShareIncome = shareIn > 0 ? `+${shareIn}` : shareIn;
         assetsRewards.totalShareExpenses = shareExp > 0 ? `+${shareExp}` : shareExp;
       } else {
+        // this.playerincome = balance / 10000;
         assetsRewards.totalSignIncome = sign > 0 ? `+${sign / 10000}` : sign / 10000;
         assetsRewards.totalShareIncome = shareIn > 0 ? `+${shareIn / 10000}` : shareIn / 10000;
         assetsRewards.totalShareExpenses = shareExp > 0 ? `+${shareExp / 10000}` : shareExp / 10000;
@@ -143,7 +155,7 @@ export default {
     // 提现按钮单击
     withdrawButton() {
       // 目前只支持EOS提现 所以其他不允许弹出
-      if (this.type !== 'EOS') return;
+      if (!this.isWithdrawButton) return;
       if (this.playerincome <= 0) {
         this.$toasted.show('没有可以提现的余额', {
           position: 'top-center',
