@@ -174,7 +174,7 @@ const API = {
         console.info('getSignatureOfAuth() :', result);
         // 将取得的签名和用户名和公钥post到服务端 获得accessToken
         const { username: _username, publicKey, signature } = result;
-        const response = await auth({ username: _username, publicKey, signature });
+        const response = await this.auth({ username: _username, publicKey, signature });
         if (response.status !== 200) throw new Error('auth 出錯');
         // 3. save accessToken
         const accessToken = response.data;
