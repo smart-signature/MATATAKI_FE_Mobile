@@ -329,9 +329,10 @@ export default {
     initClipboard() {
       this.clipboard = new Clipboard('.button-share');
       this.clipboard.on('success', (e) => {
+        this.$toasted.clear();
         this.$toasted.show('复制成功', {
           position: 'top-center',
-          duration: 1000,
+          duration: 500,
           fitToScreen: true,
         });
         e.clearSelection();
@@ -344,9 +345,10 @@ export default {
     copyHash() {
       this.clipboard = new Clipboard('.copy-hash');
       this.clipboard.on('success', (e) => {
+        this.$toasted.clear();
         this.$toasted.show('复制成功', {
           position: 'top-center',
-          duration: 1000,
+          duration: 500,
           fitToScreen: true,
         });
         e.clearSelection();
