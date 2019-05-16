@@ -25,25 +25,21 @@ export default new Vuex.Store({
   getters: {
     // rule: 帳號優先級 EOS > ONT
     // rule: EOS 帳號最長 12 位， ONT 帳號(地址)一定是 20 位
-    currentUserInfo: (state, { currentUsername, currentBalance }) => ({
-      name: currentUsername,
-      balance: currentBalance,
-      blockchain: currentUsername
-        ? (currentUsername.length <= 12 ? 'EOS' : 'ONT')
-        : null,
-      nickname: state.userInfo.nickname,
-    }),
-    currentUsername: (state, { 'scatter/currentUsername': scatterUsername }) => (
-      scatterUsername || (state.ontology.account || null)
-    ),
-    currentBalance: (state, {
+    currentUserInfo: (state, {
+      currentUsername,
       'scatter/currentUsername': scatterUsername,
       'scatter/currentBalance': scatterBalance,
       'ontology/currentBalance': ontologyBalance,
-    }) => (
-      scatterUsername
+    }) => ({
+      name: currentUsername,
+      balance: scatterUsername
         ? scatterBalance
-        : (state.ontology.account ? ontologyBalance : '... XXX')
+        : (state.ontology.account ? ontologyBalance : '... XXX'),
+      blockchain: currentUsername ? (currentUsername.length <= 12 ? 'EOS' : 'ONT') : null,
+      nickname: state.userInfo.nickname,
+    }),
+    currentUsername: (state, { 'scatter/currentUsername': scatterUsername }) => (
+      scatterUsername || state.ontology.account || null
     ),
     isLogined: (state, { currentUserInfo }) => currentUserInfo.name !== null,
   },
