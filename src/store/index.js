@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import ontology from './ontology';
 import scatter from './scatter';
-import { getAuth, getUser } from '@/api';
+import { backendAPI, getUser } from '@/api';
 
 Vue.use(Vuex);
 
@@ -88,7 +88,7 @@ export default new Vuex.Store({
       if (getters.currentUserInfo.name) {
         console.log('Id check pass, id :', getters.currentUserInfo);
         try { // 更新 Auth
-          await getAuth();
+          await backendAPI.getAuth();
         } catch (error) {
           console.error('getAuth error:', error.message);
           throw new Error('更新 Auth 失敗');
@@ -132,7 +132,7 @@ export default new Vuex.Store({
       if (getters.currentUserInfo.name) {
         console.log('Id check pass, id :', getters.currentUserInfo);
         try { // 更新 Auth
-          await getAuth();
+          await backendAPI.getAuth();
         } catch (error) {
           console.error('getAuth error:', error.message);
           throw new Error('更新 Auth 失敗');
