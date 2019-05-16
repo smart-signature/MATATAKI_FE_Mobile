@@ -108,7 +108,6 @@ export default {
     // EOS
     // 如果是EOS账号从链上查询余额
     if (blockchain === 'EOS') {
-      this.getAssets(this.username);
       this.getPlayerTotalIncome(this.username);
     }
   },
@@ -120,18 +119,6 @@ export default {
         params: {
           type: this.assetList[index].type,
         },
-      });
-    },
-    // 获取历史总收入 暂时没有接口 先用已有的接口数据  -- copy from /user/index.vue
-    async getAssets(username) {
-      await getAssets(username, 1).then((res) => {
-        if (res.status === 200) {
-          // 手动指定第一个list
-          this.assetList[0].total = (res.data.totalSignIncome + res.data.totalShareIncome) / 10000;
-        }
-      }).catch((err) => {
-        console.log(err);
-        this.$Message.error('获取历史收入错误请重试');
       });
     },
     // 获取可提现 暂时没有接口 先用已有的接口数据 -- copy from /user/asset/asset.vue
@@ -152,15 +139,18 @@ export default {
           // 筛选数据
           const filterArr = symbol => res.data.data.filter(i => (i.symbol === symbol));
           const filterArrONT = filterArr('ONT');
+          const filterArrEOS = filterArr('EOS');
 
           const { blockchain } = this.currentUserInfo;
           // 如果不是是EOS账号使用接口余额
           if (blockchain !== 'EOS') {
-            const filterArrEOS = filterArr('EOS');
             if (filterArrEOS.length !== 0) { // eos
               this.assetList[0].withdraw = filterArrEOS[0].amount / 10000;
-              this.assetList[0].total = filterArrEOS[0].totalIncome / 10000;
             }
+          }
+
+          if (filterArrEOS.length !== 0) { // eos
+            this.assetList[0].total = filterArrEOS[0].totalIncome / 10000;
           }
 
           if (filterArrONT.length !== 0) { // ont
