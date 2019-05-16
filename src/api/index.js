@@ -8,7 +8,6 @@ import defaultImagesUploader from './imagesUploader';
 const {
   publishArticle,
   getArticlesList,
-  auth, getAuth,
   getArticleDatafromIPFS, getArticleInfo,
   getUser,
   Follow, Unfollow,
@@ -21,9 +20,9 @@ const {
 } = API;
 
 export {
+  API as backendAPI,
   publishArticle,
   getArticlesList,
-  auth, getAuth,
   getArticleDatafromIPFS, getArticleInfo,
   Follow, Unfollow, getUser,
   setUserName, getFansList, getFollowList,
