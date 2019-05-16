@@ -47,9 +47,7 @@ export default {
       this.$router.push({ name: 'EasterEgg' });
     },
   },
-  mounted() {
-    const easterEgg = new Konami(() => { this.triggerEasterEgg(); });
-  },
+
   computed: {
   },
   created() { // https://juejin.im/post/5bfa4bb951882558ae3c171e
@@ -64,6 +62,10 @@ export default {
     // walletConnectionSetup(usingBlockchain).then((meg) => {
     //   if (meg !== '') this.$Message.success(`${meg}登录成功！`);
     // });
+  },
+  mounted() {
+    // eslint-disable-next-line no-unused-vars
+    const easterEgg = new Konami(() => { this.triggerEasterEgg(); });
 
     // 根据本地存储的状态来自动登陆
     const blockchin = localStorage.getItem('blockchin');

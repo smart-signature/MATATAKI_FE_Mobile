@@ -230,6 +230,7 @@ a:active {
   display: flex;
   align-items: center;
   .avatar {
+    flex: 0 0 40px;
     width: 40px;
     height: 40px;
     overflow: hidden;
@@ -252,6 +253,7 @@ a:active {
     margin: 2px 0;
     line-height: 1.5;
     cursor: pointer;
+    word-break: break-word;
   }
   .other {
     font-size:14px;
@@ -424,7 +426,7 @@ a:active {
   }
 }
 .footer-block .amount-img {
-  width: 14px;
+  width: 16px;
   height: 20px;
   margin-right: 4px;
   background-size: contain;
@@ -435,6 +437,9 @@ a:active {
   }
   &.ont {
     background-image: url(../../assets/img/icon_ont_article.svg);
+  }
+  &.fission {
+    background-image: url(../../assets/img/icon_fission.png);
   }
 }
 .footer-block .amount-text {

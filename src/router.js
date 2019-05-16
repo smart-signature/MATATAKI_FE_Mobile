@@ -84,18 +84,18 @@ export default new Router({
       name: 'Original',
       props: true,
       component: () => import(/* webpackChunkName: "user" */ './views/User/Original.vue'),
-      meta: {
-        keepAlive: true, // 缓存
-      },
+      // meta: {
+      //   keepAlive: true, // 缓存
+      // },
     },
     {
       path: '/user/:username/reward',
       name: 'Reward',
       props: true,
       component: () => import(/* webpackChunkName: "user" */ './views/User/Reward.vue'),
-      meta: {
-        keepAlive: true, // 缓存
-      },
+      // meta: {
+      //   keepAlive: true, // 缓存
+      // },
     },
     {
       // id 用于编辑文章或者草稿的时候动态传值使用

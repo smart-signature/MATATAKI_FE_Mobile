@@ -116,6 +116,8 @@ h2.subtitle {
 }
 .title-button {
   margin: 0 4px;
+  border-radius: 3px;
+  border: none;
 }
 button.publish {
   background: #478970;

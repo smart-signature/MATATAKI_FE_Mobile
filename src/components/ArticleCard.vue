@@ -64,9 +64,8 @@ export default {
 .card {
   margin: 10px 20px;
   text-align: left;
-  box-shadow: 0px 2px 8px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 1px 4px 0 rgba(0, 0, 0, 0.1);
   border-radius: 3px;
-  border: 1px solid #f1f1f1;
   box-sizing: border-box;
   background-color: #fff;
   padding: 14px 20px;
