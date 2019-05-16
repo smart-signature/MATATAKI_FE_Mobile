@@ -91,21 +91,23 @@ export default {
         EOS: blockchin === 'EOS',
         ONT: blockchin === 'ONT',
       };
-      await this.idCheckandgetAuth(usingBlockchain).then(() => {
+      try {
+        await this.idCheckandgetAuth(usingBlockchain);
         localStorage.setItem('blockchin', blockchin); // 成功存储登陆方式
         this.$toasted.show('登陆成功', {
           position: 'top-center',
           duration: 1000,
           fitToScreen: true,
         });
-      }).catch((err) => {
-        console.log(err);
+      } catch (error) {
+        console.log(error);
         this.$toasted.show('登陆失败', {
           position: 'top-center',
           duration: 1000,
           fitToScreen: true,
         });
-      });
+      }
+
       this.showModal = false;
     },
     // 改变modal

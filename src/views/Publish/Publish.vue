@@ -199,7 +199,7 @@ export default {
     },
     ...mapActions(['idCheckandgetAuth']),
     // 设置文章数据 by hash
-    /*async setArticleData(hash) {
+    /* async setArticleData(hash) {
       const articleData = await getArticleDatafromIPFS(hash);
       try { // 获取文章信息
         const { data } = await getArticleInfo(hash);
@@ -312,7 +312,7 @@ export default {
     },
     // 发布||修改按钮
     async sendThePost() {
-      /*try {
+      /* try {
         // this.$Message.info('帐号检测中...');
         await this.idCheckandgetAuth();
         // this.$Message.success('检测通过');
