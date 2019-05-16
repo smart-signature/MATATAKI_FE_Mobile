@@ -116,48 +116,50 @@ export default {
       }
       this.refreshUser();
     },
-    async save() {
+    checkSaveParams() {
       // 中文 字母 数字 1-12
       const reg = /^[\u4E00-\u9FA5A-Za-z0-9]{1,12}$/;
+      let canSetProfile = true;
       if (!reg.test(this.newname)) {
-        // this.$Message.error('昵称长度为1-12位，中文、英文、数字但不包括下划线等符号');
-        this.$toasted.show('<p style="margin: 8px 0;line-height: 1.5;">昵称长度为1-12位，中文、英文、数字但不包括下划线等符号</p>', {
-          position: 'top-center',
-          duration: 1500,
-          fitToScreen: true,
-        });
-        return;
+        this.myToasted('昵称长度为1-12位，中文、英文、数字但不包括下划线等符号');
+        canSetProfile = false;
       }
       const introReg = /^[\u4E00-\u9FA5A-Za-z0-9]{5,20}$/;
       if (!introReg.test(this.newIntroduction)) {
-        this.$toasted.show('<p style="margin: 8px 0;line-height: 1.5;">简介可设置5-20个字符</p>', {
-          position: 'top-center',
-          duration: 1500,
-          fitToScreen: true,
-        });
-        return;
+        this.myToasted('简介可设置5-20个字符');
+        canSetProfile = false;
       }
+      return canSetProfile;
+    },
+    myToasted(notice) {
+      this.$toasted.show(`<p style="margin: 8px 0;line-height: 1.5;">${notice}</p>`, {
+        position: 'top-center',
+        duration: 1500,
+        fitToScreen: true,
+      });
+    },
+    async save() {
+      if (!this.checkSaveParams()) return;
       try {
         const requestData = {
           nickname: this.newname,
           introduction: this.newIntroduction,
         };
-        if (this.newname === this.nickname) {
-          delete requestData.nickname;
-        }
-        if (this.introduction === this.newIntroduction) {
-          delete requestData.introduction;
+        if (this.newname === this.nickname) delete requestData.nickname;
+        if (this.introduction === this.newIntroduction) delete requestData.introduction;
+        if (JSON.stringify(requestData) === '{}') {
+          this.myToasted('请至少修改一项');
+          return;
         }
         const response = await setProfile(requestData);
-        this.$Notice.success({ title: '保存成功' });
-        this.nickname = this.newname;
+        if (response.data.code === 0) {
+          this.$Notice.success({ title: '保存成功' });
+          this.nickname = this.newname;
+        } else {
+          this.myToasted('昵称重复，请重新填写');
+        }
       } catch (error) {
         if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          console.log(error.response.data);
-          console.log(error.response.status);
-          console.log(error.response.headers);
           if (error.response.status === 401) {
             this.$Notice.error({ title: '登录信息已过期，请将内容保存后，重新登录并编辑' });
           } else if (error.response.status === 500) {
@@ -171,18 +173,13 @@ export default {
             this.newname = this.nickname === '' ? this.username : this.nickname;
           }
         } else if (error.request) {
-          // The request was made but no response was received
-          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-          // http.ClientRequest in node.js
           console.log(error.request);
         } else {
-          // Something happened in setting up the request that triggered an Error
           console.log('Error', error.message);
         }
         console.log(error.config);
       }
-      this.refreshUser();
-      this.editing = !this.editing;
+      //this.refreshUser();
     },
     async refreshUser() {
       if (this.username === null) this.username = this.currentUsername;
