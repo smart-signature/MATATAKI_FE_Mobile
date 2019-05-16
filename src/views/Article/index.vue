@@ -95,11 +95,8 @@
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
-            <Tooltip content="本文收到的赞赏总额" placement="top-start">
-              <div class="amount-text">赞赏总额</div>
-            </Tooltip>
+            <div class="amount-text">赞赏总额</div>
           </div>
-        <Tooltip content="最高回报=赞赏额*裂变系数">
           <div class="fission">
             <div>
               <div class="amount-img fission"></div>
@@ -107,18 +104,13 @@
             </div>
             <div class="amount-text">裂变系数</div>
           </div>
-        </Tooltip>
       </div>
       <div class="footer-block">
-        <Tooltip content="赞赏获收益">
           <button class="button-support" v-if="isSupported===-1" @click="b4support">赞赏<img src="@/assets/img/icon_support.png"/></button>
           <button class="button-support" v-if="isSupported===0" disabled>赞赏中<img src="@/assets/img/icon_support.png"/></button>
           <button class="button-support" v-else-if="isSupported===1" @click="visible3 = true">赞赏<img src="@/assets/img/icon_support.png"/></button>
           <button class="button-support" v-else-if="isSupported===2" disabled>已赞赏<img src="@/assets/img/icon_support.png"/></button>
-        </Tooltip>
-        <Tooltip content="先赞赏后分享" placement="top-end">
           <button class="button-share" :data-clipboard-text="getClipboard" @click="share">分享<img src="@/assets/img/icon_share.png" /></button>
-        </Tooltip>
       </div>
     </footer>
     <!-- 赞赏对话框 zarm -->

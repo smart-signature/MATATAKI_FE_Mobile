@@ -50,6 +50,7 @@ import { getAssets } from '@/api';
 import { getBalance } from '@/api/backend';
 import { getPlayerIncome } from '@/api/signature';
 import { isEmptyArray } from '@/common/methods';
+import { mapGetters } from 'vuex';
 
 
 export default {
@@ -99,11 +100,18 @@ export default {
       ],
     };
   },
+  computed: {
+    ...mapGetters(['currentUserInfo']),
+  },
   created() {
-    this.getAssets(this.username);
-    this.getPlayerTotalIncome(this.username);
-
     this.getBalance();
+    const { blockchain } = this.currentUserInfo;
+    // EOS
+    // 如果是EOS账号从链上查询余额
+    if (blockchain === 'EOS') {
+      this.getAssets(this.username);
+      this.getPlayerTotalIncome(this.username);
+    }
   },
   methods: {
     jumpTo(index) {
@@ -144,16 +152,17 @@ export default {
           if (res.data.data.length === 0) return;
           // 筛选数据
           const filterArr = symbol => res.data.data.filter(i => (i.symbol === symbol));
-          // const filterArrEOS = filterArr('EOS');
           const filterArrONT = filterArr('ONT');
 
-          // console.log(filterArrEOS);
-          // console.log(filterArrONT);
-
-          // if (filterArrEOS.length !== 0) { // eos
-          //   this.assetList[0].withdraw = filterArrEOS[0].amount / 10000;
-          //   this.assetList[0].total = filterArrEOS[0].totalIncome / 10000;
-          // }
+          const { blockchain } = this.currentUserInfo;
+          // 如果不是是EOS账号使用接口余额
+          if (blockchain !== 'EOS') {
+            const filterArrEOS = filterArr('EOS');
+            if (filterArrEOS.length !== 0) { // eos
+              this.assetList[0].withdraw = filterArrEOS[0].amount / 10000;
+              this.assetList[0].total = filterArrEOS[0].totalIncome / 10000;
+            }
+          }
 
           if (filterArrONT.length !== 0) { // ont
             this.assetList[1].withdraw = filterArrONT[0].amount;
