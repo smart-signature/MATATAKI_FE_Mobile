@@ -140,13 +140,13 @@ export default {
       try {
         const requestData = {
           nickname: this.newname,
-          introduction: this.newIntroduction
-        }
+          introduction: this.newIntroduction,
+        };
         if (this.newname === this.nickname) {
-          delete requestData.nickname
+          delete requestData.nickname;
         }
         if (this.introduction === this.newIntroduction) {
-          delete requestData.introduction
+          delete requestData.introduction;
         }
         const response = await setProfile(requestData);
         this.$Notice.success({ title: '保存成功' });

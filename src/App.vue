@@ -17,7 +17,6 @@ import { version } from '../package.json';
 // import { getSign } from '@/api/signatureOntology';
 
 export default {
-  data: () => ({}),
   methods: {
     ...mapActions(['walletConnectionSetup', 'idCheckandgetAuth']),
     updateNotify(desc) {
@@ -56,10 +55,10 @@ export default {
     const { updateNotify, walletConnectionSetup } = this;
 
 
-    //  const { blockchin } = this.userConfig;
+    // 根据本地存储的状态来自动登陆
     const blockchin = localStorage.getItem('blockchin');
-    // console.log(blockchin);
-    if (blockchin) { // 根据本地存储的状态来自动登陆
+    // console.debug(blockchin);
+    if (blockchin) {
       const usingBlockchain = {
         EOS: blockchin === 'EOS',
         ONT: blockchin === 'ONT',

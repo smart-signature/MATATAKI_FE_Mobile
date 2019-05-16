@@ -92,7 +92,7 @@
       </za-cell>
     </div>
     <div class="bottomcard" v-if="isMe">
-      <Button class="bottombutton" long @click="logoutScatterAsync">退出登录</Button>
+      <Button class="bottombutton" long @click="btnsignOut">退出登录</Button>
     </div>
     <ArticlesList :listtype="'others'" ref='ArticlesList' :username='username' v-if="!isMe"/>
   </div>
@@ -151,15 +151,10 @@ export default {
     document.title = `${user}的个人主页 - SmartSignature`;
   },
   methods: {
-    ...mapActions('scatter', [
-      'logout',
-    ]),
-    logoutScatterAsync() {
-      this.logout(); // scatter 退出
-      localStorage.clear(); // 清空本地所有数据
-      // 缺一个ont退出登陆
-
-      this.$router.push({ name: 'home' }); // 回到首页
+    ...mapActions(['signOut']),
+    btnsignOut() {
+      this.signOut();
+      this.$router.push({ name: 'home' });
     },
     edit() {
       this.editing = !this.editing;
@@ -311,3 +306,13 @@ export default {
 </script>
 
 <style lang="less" scoped src="./index.less"></style>
+<style lang="less">
+  .centercard .za-cell:first-child {
+    &:after {
+      border-top: none;
+    }
+  }
+  .bottomcard .bottombutton {
+    border: 0 solid transparent;
+  }
+</style>
