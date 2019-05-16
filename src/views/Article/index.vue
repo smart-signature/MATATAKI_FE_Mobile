@@ -2,7 +2,7 @@
 <template>
   <div class="article">
     <BaseHeader :pageinfo="{ title: `文章详情`, needLogin: false, }">
-      <img class="more" src="@/assets/more.svg" alt="more" slot="right" @click="opr = !opr" v-if="isMe">
+      <img class="more" src="@/assets/more.svg" alt="more" slot="right" @click="opr = !opr" v-if="isMe(article.author)">
       <div class="information" slot="info" @click="infoModa = true">
         <img src="@/assets/information.svg" alt="information">
         <span>攻略</span>
@@ -139,7 +139,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
 import {
@@ -210,7 +210,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['currentUserInfo', 'currentUsername', 'isLogined']),
+    ...mapGetters(['currentUserInfo', 'currentUsername', 'isLogined', 'isMe']),
     displayPlaceholder() {
       return `请输入 ${this.currentUserInfo.balance.slice(-4)} 赞赏金额`;
     },
@@ -246,10 +246,6 @@ export default {
       if (!this.articleCreateTime) return '';
       const time = moment(this.articleCreateTime);
       return isNDaysAgo(2, time) ? time.format('MMMDo HH:mm') : time.fromNow();
-    },
-    isMe() {
-      // console.log('isme', this.article, this.currentUsername);
-      return this.article.author === this.currentUsername;
     },
   },
   created() {

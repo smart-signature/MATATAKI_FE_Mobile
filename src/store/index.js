@@ -42,6 +42,7 @@ export default new Vuex.Store({
       scatterUsername || state.ontology.account || null
     ),
     isLogined: (state, { currentUserInfo }) => currentUserInfo.name !== null,
+    isMe: (state, { currentUserInfo }) => target => currentUserInfo.name === target,
   },
   actions: {
     // output: { publicKey, signature, username }
