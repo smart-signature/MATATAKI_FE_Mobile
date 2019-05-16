@@ -18,7 +18,8 @@ import { version } from '../package.json';
 
 export default {
   methods: {
-    ...mapActions(['walletConnectionSetup', 'idCheckandgetAuth']),
+    // ...mapActions(['walletConnectionSetup']),
+    ...mapActions(['idCheckandgetAuth']),
     updateNotify(desc) {
       const btnCommonStyle = {
         type: 'default',
@@ -52,7 +53,7 @@ export default {
   },
   created() { // https://juejin.im/post/5bfa4bb951882558ae3c171e
     console.info('Smart Signature version :', version);
-    const { updateNotify, walletConnectionSetup } = this;
+    const { updateNotify } = this;
 
 
     // 根据本地存储的状态来自动登陆
@@ -71,7 +72,7 @@ export default {
     }
 
     window.updateNotify = updateNotify;
-
+    // const { walletConnectionSetup } = this;
     // const usingBlockchain = { EOS: true, ONT: true };
     // walletConnectionSetup(usingBlockchain).then((meg) => {
     //   if (meg !== '') this.$Message.success(`${meg}登录成功！`);
