@@ -140,7 +140,8 @@ export default {
       } = res.data.data;
       const { assetsRewards } = this;
       // EOS
-      if (this.type !== 'EOS') {
+      const { blockchain } = this.currentUserInfo;
+      if (blockchain !== 'EOS' || this.type !== 'EOS') {
         this.playerincome = precision(balance, this.type);
       }
 
