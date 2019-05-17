@@ -104,7 +104,6 @@
   display: block;
   font-size:12px;
   border-radius: 3px;
-  font-family:PingFangSC-Regular;
   font-weight:400;
   color:rgba(71,137,112,1);
   line-height:16px;
@@ -112,6 +111,7 @@
   border: 1px solid rgba(71,137,112,1);
   padding: 2px 0;
   text-decoration: none;
+  text-align: center;
 }
 .editing-button {
   background-color: #D8D8D8;
@@ -171,4 +171,73 @@ Button.detail, Button.detail:focus, Button.detail:hover {
   text-align: center;
   padding-left: 12px;
   /* margin-right: 0px; */
+}
+.darkBtn {
+  padding: 4px 10px;
+  text-align: center;
+  min-width: 60px;
+  color: #ffffff;
+  display: block;
+  background: #202020;
+  border-radius: 40px;
+  cursor: pointer;
+}
+.greyBtn {
+  background: #cccccc;
+}
+
+.otherUser {
+  background-color: rgb(71, 137, 112);
+  .user-avatar {
+    width: 55px;
+    height: 55px;
+    flex: 0 0 55px;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    transform: translate(-50%, 0);
+    margin-left: 50%;
+    border: 2px solid #fff;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+}
+.otherUsertextsOutter {
+  background: linear-gradient(rgb(71, 137, 112) 50%, #F0F0F0 0);
+  padding: 20px;
+  .otherUsertexts {
+    box-shadow: 0px 2px 5px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    padding: 10px 20px;
+    color: #000000;
+    background: #ffffff;
+    p {
+      margin-bottom: 5px;
+    }
+    p:last-child {
+      margin-bottom: 0;
+    }
+    .username {
+      font-size: 18px;
+      font-weight: 700;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .statusKey {
+      color: #868686;
+    }
+    .userstatus {
+      a:first-child {
+        margin-right: 20px;
+      }
+    }
+    .statusNumber {
+      color: #000000;
+      font-weight: 700;
+      margin-right: 5px;
+    }
+  }
 }

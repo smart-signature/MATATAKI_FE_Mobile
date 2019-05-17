@@ -1,10 +1,11 @@
-import api, { currentEOSAccount } from '@/api/scatter';
+import api, { eosClient, currentEOSAccount } from '@/api/scatter';
 
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-shadow */
 
 // initial state
 const state = {
+  // account 是個物件, .name 才是帳號名
   account: null,
   balances: {
     eos: '... EOS',
@@ -20,13 +21,13 @@ const getters = {
 };
 
 const mutations = {
-  setIsLoggingIn(state, isLoggingIn) {
+  setIsLoggingIn(state, isLoggingIn = false) {
     state.isLoggingIn = isLoggingIn;
   },
   setIsConnected(state, isConnected) {
     state.isConnected = isConnected;
   },
-  setAccount(state, account) {
+  setAccount(state, account = null) {
     state.account = account;
   },
   setBalance(state, { symbol, balance }) {
@@ -54,7 +55,30 @@ const actions = {
         ));
         return true;
       }
-    } else return false;
+    }
+    return false;
+  },
+  async getSignature({ state }, { signData, memo = '' }) {
+    const { account } = state;
+    const result = await eosClient.getAccount(account.name);
+    // 获取当前权限
+    const permissions = result.permissions.find(x => x.perm_name === account.authority);
+    // 获取当前权限的public key
+    const publicKey = permissions.required_auth.keys[0].key;
+    // 申请签名
+    const signature = await api.getArbitrarySignature(publicKey, signData, memo);
+    console.log('got signature: ', signature);
+    return ({ publicKey, signature, username: account.name });
+  },
+  async getSignatureOfArticle({ dispatch }, { author, hash }) {
+    const hashPiece = [
+      hash.slice(0, 12), hash.slice(12, 24), hash.slice(24, 36), hash.slice(36, 48),
+    ];
+    const signData = `${author} ${hashPiece[0]} ${hashPiece[1]} ${hashPiece[2]} ${hashPiece[3]}`;
+    return dispatch('getSignature', { signData, memo: 'Smart Signature' });
+  },
+  async getSignatureOfAuth({ dispatch }) {
+    return dispatch('getSignature', { signData: state.account.name, memo: 'Auth' });
   },
   async setBalances({ commit, state }) {
     const { name } = state.account;
@@ -70,35 +94,34 @@ const actions = {
   async login({ commit, dispatch }) {
     console.log('Start log in...');
     commit('setIsLoggingIn', true);
-    return new Promise(async (resolve, reject) => {
-      try {
-        const identity = await api.loginScatterAsync();
-        if (!identity) { // 失敗若是走了 catch ，這條也不會 run
-          commit('setAccount', null);
-          commit('setIsLoggingIn', false);
-          reject(new Error('Failed to get identity in Scatter'));
-        }
-        const account = identity.accounts.find(({ blockchain }) => blockchain === 'eos');
-        commit('setAccount', account);
-        console.log(account, 'log in successful.');
-        dispatch('setBalances');
-        commit('setIsLoggingIn', false);
-        resolve(account);
-      } catch (err) {
-        commit('setIsLoggingIn', false);
-        console.error('Failed to log in Scatter :', err);
-        reject(err);
+    try {
+      const identity = await api.loginScatterAsync();
+      if (!identity) { // 失敗若是走了 catch ，這條也不會 run
+        commit('setAccount');
+        commit('setIsLoggingIn');
+        throw new Error('Failed to get identity in Scatter');
       }
-    });
+      const account = identity.accounts.find(({ blockchain }) => blockchain === 'eos');
+      commit('setAccount', account);
+      console.log(account, 'log in successful.');
+      dispatch('setBalances');
+      commit('setIsLoggingIn');
+      return account;
+    } catch (error) {
+      commit('setIsLoggingIn');
+      console.error('Failed to log in Scatter :', error);
+      throw error;
+    }
   },
   async logout({ commit }) {
     try {
       await api.logoutScatterAsync();
-      localStorage.removeItem('ACCESS_TOKEN');
     } catch (err) {
       console.error('Failed to logout Scatter', err);
     }
-    commit('setAccount', null);
+    commit('setAccount');
+    commit('setBalance', { symbol: 'eos', balance: '... EOS' });
+    commit('setIsLoggingIn');
   },
 };
 

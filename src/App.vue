@@ -1,26 +1,25 @@
 <template>
   <div id="app">
-    <router-view/>
+    <!-- 缓存组件 回到上一页 -->
+    <keep-alive>
+        <router-view v-if="$route.meta.keepAlive"></router-view>
+    </keep-alive>
+    <router-view v-if="!$route.meta.keepAlive"></router-view>
+    <!-- 缓存组件 回到上一页 end -->
     <BackTop :bottom="80"></BackTop>
   </div>
 </template>
 
 <script>
 import Konami from 'konami';
-import { mapActions, mapState } from 'vuex';
+import { mapActions } from 'vuex';
 import { version } from '../package.json';
 // import { getSign } from '@/api/signatureOntology';
 
 export default {
-  data: () => ({}),
   methods: {
-    ...mapActions('ontology', [
-      'getAccount',
-    ]),
-    ...mapActions('scatter', [
-      'connect',
-      'login',
-    ]),
+    // ...mapActions(['walletConnectionSetup']),
+    ...mapActions(['idCheckandgetAuth']),
     updateNotify(desc) {
       const btnCommonStyle = {
         type: 'default',
@@ -49,58 +48,45 @@ export default {
       this.$router.push({ name: 'EasterEgg' });
     },
   },
-  mounted() {
-    const easterEgg = new Konami(() => { this.triggerEasterEgg(); });
-  },
+
   computed: {
   },
   created() { // https://juejin.im/post/5bfa4bb951882558ae3c171e
-    window.updateNotify = this.updateNotify;
     console.info('Smart Signature version :', version);
-    const { getAccount: getOntologyAccount, connect: connectScatter } = this;
-    try {
-      connectScatter();
-      // if (!this.scatterAccount) await this.loginScatterAsync();
-    } catch (e) {
-      console.warn('Unable to connect wallets');
-      this.$Message.error('钱包连接失败，钱包需打开并解锁');
+    const { updateNotify } = this;
+
+
+    // 根据本地存储的状态来自动登陆
+    const blockchin = localStorage.getItem('blockchin');
+    // console.debug(blockchin);
+    if (blockchin) {
+      const usingBlockchain = {
+        EOS: blockchin === 'EOS',
+        ONT: blockchin === 'ONT',
+      };
+      this.idCheckandgetAuth(usingBlockchain).catch(() => {
+        this.idCheckandgetAuth(usingBlockchain);// 失败之后再重试一次
+      });
     }
 
-    getOntologyAccount().then((address) => {
-      console.info('ONT address :', address);
-      this.$Message.success(`ONT address : ${address} ，登陸成功`);
-      // getSign(999);
-    }).catch(result => console.warn('Failed to get ONT account :', result));
+    window.updateNotify = updateNotify;
+    // const { walletConnectionSetup } = this;
+    // const usingBlockchain = { EOS: true, ONT: true };
+    // walletConnectionSetup(usingBlockchain).then((meg) => {
+    //   if (meg !== '') this.$Message.success(`${meg}登录成功！`);
+    // });
+  },
+  mounted() {
+    // eslint-disable-next-line no-unused-vars
+    const easterEgg = new Konami(() => { this.triggerEasterEgg(); });
   },
 };
 </script>
 
-
 <style scoped>
 #app {
+  text-align: center;
   margin: auto;
   height: 100%;
-  text-align: center;
-  font-family: PingFang SC, STHeitiSC-Light, Helvetica-Light, arial, sans-serif;
 }
-
-/* #app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
-} */
 </style>

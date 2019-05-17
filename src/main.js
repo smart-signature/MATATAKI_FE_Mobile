@@ -6,17 +6,18 @@ import clipboard from 'clipboard';
 import moment from 'moment';
 import infiniteScroll from 'vue-infinite-scroll';
 import App from './App.vue';
-import './zarm';
 import router from './router';
 import store from './store';
 import './registerServiceWorker';
 
 // Vue plugins
+import './zarm';
 import './plugins/iview';
 import './plugins/vue-toasted';
 
 // global css
-import '@/assets/css/index.css';
+import '@/assets/css/index.less';
+
 
 [
   VueHead, infiniteScroll,

@@ -11,3 +11,5 @@ export const isNDaysAgo = (n, time) => {
   const timeFormat = moment(time).format('YYYY-MM-DD');
   return moment(nowTime).isAfter(timeFormat);
 };
+
+export const isNull = v => v === '' || v === null || v === undefined;

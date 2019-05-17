@@ -1,15 +1,26 @@
 /* eslint-disable no-shadow */
 <template>
-  <div class="user">
-    <BaseHeader :pageinfo="{ title: `个人主页`, rightPage: 'home', needLogin: false, }" />
-    <div class="usercard" >
+  <div class="user mw">
+    <BaseHeader v-if="isMe" :pageinfo="{ title: `编辑`, rightPage: 'home', needLogin: false, }"  />
+    <BaseHeader v-else :pageinfo="{ title: ``, rightPage: 'home', needLogin: false, }"  style="background-color: #478970" :white="true">
+      <div slot="right" v-if="!isMe">
+        <template v-if="!followed">
+          <span class="darkBtn" @click="follow_user">关注</span>
+        </template>
+        <template v-else>
+          <span class="darkBtn" @click="unfollow_user">取消关注</span>
+        </template>
+      </div>
+    </BaseHeader>
+    <div class="usercard" v-if="isMe">
       <div class="user-avatar">
         <img class="userpic" :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png');}" />
-        <img class="camera" src="/img/camera.png" @click="editingavatar = true" v-if="editing" />
+        <img-upload :imgUploadDone="imgUploadDone" class="camera" v-if="editing" @doneImageUpload="doneImageUpload">
+          <img slot="uploadButton" src="/img/camera.png" />
+        </img-upload>
       </div>
-
       <div class="texts">
-        <p v-if="!editing" class="username" :class="[!email ? 'username-email' : '']">{{nickname === "" ? username : nickname}}</p>
+        <p v-if="!editing" class="username" :class="[!email ? 'username-email' : '']">{{displayName}}</p>
         <p v-if="email" class="email">{{email}}</p>
         <input class="userinput" :class="[!email ? 'username-email' : '']" v-if="editing" v-model='newname' />
         <p class="userstatus">
@@ -25,51 +36,48 @@
         <template v-if="editing">
           <a href="javascript:;" class="rightbutton" :class="[editing ? 'editing-button' : '']" @click="save">完成</a>
         </template>
-      <template v-else>
-        <template v-if="isMe">
-          <a href="javascript:;" class="rightbutton" @click="edit">编辑</a>
-        </template>
         <template v-else>
-          <template v-if="!followed">
-            <a href="javascript:;" class="rightbutton" @click="follow_user">关注</a>
-          </template>
-          <template v-else>
-            <a href="javascript:;" class="rightbutton" @click="unfollow_user">取消关注</a>
-          </template>
+          <a href="javascript:;" class="rightbutton" @click="jumpTo({ name: 'UserEdit', params: { username }})">编辑</a>
         </template>
-      </template>
+      </div>
+    </div>
+    <div v-else>
+      <div class="otherUser">
+        <div class="user-avatar">
+          <img class="userpic" :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png');}" />
+        </div>
+      </div>
+      <div class="otherUsertextsOutter">
+        <div class="otherUsertexts">
+          <p v-if="!editing" class="username" :class="[!email ? 'username-email' : '']">{{nickname === "" ? username : nickname}}</p>
+          <p class="userstatus">
+            <a @click="jumpTo({ name: 'FollowList', params: { listtype: '关注' }})">
+              <span class="statusNumber">{{follows}}</span> <span class="statusKey">关注</span>
+            </a>
+            <a @click="jumpTo({ name: 'FollowList', params: {  listtype: '粉丝'  }})">
+              <span class="statusNumber">{{fans}}</span> <span class="statusKey">粉丝</span>
+            </a>
+          </p>
+          <p>简介：{{introduction || '暂无'}}</p>
+          <p v-if="email" class="email">{{email}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="centercard" v-if="isMe">
+      <za-cell is-link has-arrow @click='jumpTo({ name: "Asset", params: { username }})' :description="`已绑定${stats.accounts}个账户`">
+        账户资产
+      </za-cell>
     </div>
 
-    </div>
-    <div class="topcard" v-if="isMe">
-      <Row type="flex" justify="center" class="code-row-bg">
-          <Col span="11">
-            <p class="centervalue">{{playerincome}} EOS</p>
-            <p class="centertext">历史总收入</p>
-          </Col>
-          <Col span="1"><Divider type="vertical" style="height:33px;margin-top:10px;" /></Col>
-          <Col span="11">
-            <Button class="detail" ghost
-              @click='jumpTo({ name: "Asset", params: { username }})'>
-              <div style="margin-top:-2px">资产明细</div>
-            </Button>
-            <!-- <p class="centervalue">{{myShareIncome}} EOS</p>
-            <p class="centertext">赞赏收益</p> -->
-          </Col>
-      </Row>
-    </div>
-    <!-- todo(minakokojima): 顯示該作者發表的文章。-->
-    <!-- <ArticlesList ref="ArticlesList"/> -->
     <div class="centercard" v-if="isMe">
-      <za-cell is-link has-arrow @click='jumpTo({ name: "DraftBox", params: { username }})'>
-        草稿箱
-        <!-- <za-icon type='right' slot='icon'/> @click='jumpTo({ name: "DraftBox" })'-->
+      <za-cell is-link has-arrow @click='jumpTo({ name: "Original", params: { username }})' :description="`${stats.articles}篇`">
+        原创文章
       </za-cell>
-      <za-cell is-link has-arrow @click='jumpTo({ name: "Original", params: { username }})'>
-        我的文章
-      </za-cell>
-      <za-cell is-link has-arrow @click='jumpTo({ name: "Reward", params: { username }})'>
+      <za-cell is-link has-arrow @click='jumpTo({ name: "Reward", params: { username }})' :description="`${stats.supports}篇`">
         赞赏文章
+      </za-cell>
+      <za-cell is-link has-arrow @click='jumpTo({ name: "DraftBox", params: { username }})' :description="`${stats.drafts}篇`">
+        草稿箱
       </za-cell>
     </div>
     <div class="centercard" v-if="isMe">
@@ -84,33 +92,29 @@
       </za-cell>
     </div>
     <div class="bottomcard" v-if="isMe">
-      <Button class="bottombutton" long @click="logoutScatterAsync">退出登录</Button>
+      <Button class="bottombutton" long @click="btnsignOut">退出登录</Button>
     </div>
     <ArticlesList :listtype="'others'" ref='ArticlesList' :username='username' v-if="!isMe"/>
-
-    <!-- ⬇头像编辑 -->
-    <za-modal :visible.sync='editingavatar' title="编辑头像" :show-close='true'>
-      <Avatar @setDone="setDone" />
-    </za-modal>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import {
-  Follow, Unfollow, getUser, oldgetUser,
-  setUserName, getAssets, getAvatarImage,
+  Follow, Unfollow, getUser,
+  setUserName, getAvatarImage,
+  uploadAvatar, getMyUserData,
 } from '@/api';
 import ArticlesList from './ArticlesList.vue';
-import Avatar from './AvatarUploader.vue';
+import imgUpload from '@/components/imgUpload/index.vue';
+import { isNull } from '@/common/methods';
 
 export default {
   name: 'User',
   props: ['username'],
-  components: { Avatar, ArticlesList },
+  components: { ArticlesList, imgUpload },
   data() {
     return {
-      playerincome: 0,
       editing: false,
       followed: false,
       follows: 0,
@@ -118,8 +122,16 @@ export default {
       nickname: '',
       newname: '',
       email: '',
+      // eslint-disable-next-line global-require
       avatar: require('../../assets/logo.png'),
-      editingavatar: false,
+      imgUploadDone: 0, // 图片是否上传完成
+      introduction: '',
+      stats: {
+        accounts: 0,
+        articles: 0,
+        supports: 0,
+        drafts: 0,
+      },
     };
   },
   computed: {
@@ -128,28 +140,32 @@ export default {
       const { username, currentUsername } = this;
       return username === currentUsername;
     },
+    displayName() {
+      return isNull(this.nickname) ? this.username : this.nickname;
+    },
+  },
+  created() {
+    const { refreshUser } = this;
+    refreshUser();
+    const user = this.isMe ? '我' : this.username;
+    document.title = `${user}的个人主页 - SmartSignature`;
   },
   methods: {
-    ...mapActions('scatter', [
-      'logout',
-    ]),
-    logoutScatterAsync() { return this.logout(); },
-    goBack() {
-      this.$router.go(-1);
+    ...mapActions(['signOut']),
+    btnsignOut() {
+      this.signOut();
+      this.$router.push({ name: 'home' });
     },
     edit() {
       this.editing = !this.editing;
     },
-    // clickCamera(){
-    //   console.log("clicked.");
-    // },
     jumpTo(params) {
       this.$router.push(params);
     },
     cancel() {
       this.editing = !this.editing;
     },
-    save() {
+    async save() {
       if (this.newname === this.nickname) {
         this.editing = !this.editing;
         return;
@@ -165,113 +181,105 @@ export default {
         });
         return;
       }
-      setUserName({ newname: this.newname }, ({ error, response }) => {
-        if (!error) {
-          if (response.status === 500) {
-            this.$Notice.error({
-              title: '昵称已存在，请重新设置',
-            });
+      try {
+        const response = await setUserName({ newname: this.newname });
+        this.$Notice.success({ title: '保存成功' });
+        this.nickname = this.newname;
+      } catch (error) {
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+          if (error.response.status === 500) {
+            this.$Notice.error({ title: '昵称已存在，请重新设置' });
+            this.nickname = this.newname;
           } else {
-            this.$Notice.success({
-              title: '保存成功',
+            this.$Notice.error({
+              title: '保存失败',
+              desc: '昵称长度为1-12位，中文、英文、数字但不包括下划线等符号',
             });
+            this.newname = this.nickname === '' ? this.username : this.nickname;
           }
-          this.nickname = this.newname;
+        } else if (error.request) {
+          // The request was made but no response was received
+          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+          // http.ClientRequest in node.js
+          console.log(error.request);
         } else {
-          this.$Notice.error({
-            title: '保存失败',
-            desc: '昵称长度为1-12位，中文、英文、数字但不包括下划线等符号',
-          });
-          console.log(response.data);
-          this.newname = this.nickname === '' ? this.username : this.nickname;
+          // Something happened in setting up the request that triggered an Error
+          console.log('Error', error.message);
         }
-        this.refreshUser();
-        this.editing = !this.editing;
-      });
+        console.log(error.config);
+      }
+      this.refreshUser();
+      this.editing = !this.editing;
     },
-    refreshUser() {
-      if (this.username === null) this.username = this.currentUsername;
+    async refreshUser() {
+      if (!this.username) this.username = this.currentUsername;
       const { username, currentUsername } = this;
-      const setUser = (data) => {
-        this.nickname = data.nickname;
-        this.email = data.email;
-        this.newname = this.nickname === '' ? this.username : this.nickname;
-        this.setAvatarImage(data.avatar);
-        this.follows = data.follows;
-        this.fans = data.fans;
-        this.followed = data.is_follow;
+      const setUser = ({
+        avatar, email, fans, follows, is_follow, nickname, introduction, accounts, articles, supports, drafts,
+      }) => {
+        this.nickname = nickname;
+        this.email = email;
+        this.newname = isNull(this.nickname) ? this.username : this.nickname;
+        this.setAvatarImage(avatar);
+        this.follows = follows;
+        this.fans = fans;
+        this.followed = is_follow;
+        this.introduction = introduction;
+        this.stats = {
+          accounts,
+          articles,
+          supports,
+          drafts,
+        };
       };
-      
-      // todo(minakokojima): deprecate oldgetUser
-      if (currentUsername !== null) {
-        if (currentUsername.length > 12) return;
-        oldgetUser({ username }, ({ error, response }) => {
-          console.log(error, response);
-          if (!error) {
-            if (response.status !== 200) throw error;
-            const { data } = response;
-            setUser(data);
-          } else throw error;
-        });
-      } else {
-        getUser({ username }).then((response) => {
-          console.log(response);
-          const { data } = response;
-          setUser(data);
-        });
+      try {
+        if (this.isMe) {
+          const response = await getMyUserData();
+          if (response.status !== 200) throw new Error('getUser error');
+          setUser(response.data.data);
+        } else {
+          const response = await getUser({ username }, currentUsername);
+          if (response.status !== 200) throw new Error('getUser error');
+          setUser(response.data);
+        }
+      } catch (error) {
+        throw error;
       }
     },
-    follow_user() {
+    async follow_user() {
       const { username, currentUsername } = this;
-      if (!currentUsername || !username || currentUsername.length > 12) {
-        this.$Notice.error({
-          title: '账号信息无效，关注失败',
-        });
+      if (!currentUsername || !username) {
+        this.$Notice.error({ title: '账号信息无效，关注失败' });
         return;
       }
-      Follow({
-        followed: username, username: currentUsername,
-      }, ({ error, response }) => {
-        console.log(error);
-        if (!error) {
-          this.$Notice.success({ title: '关注成功' });
-          this.followed = true;
-        } else {
-          this.$Notice.error({
-            title: '关注失败',
-          });
-        }
-        this.refreshUser();
-      });
+      try {
+        await Follow({ followed: username, username: currentUsername });
+        this.$Notice.success({ title: '关注成功' });
+        this.followed = true;
+      } catch (error) {
+        this.$Notice.error({ title: '关注失败' });
+      }
+      this.refreshUser();
     },
-    unfollow_user() {
+    async unfollow_user() {
       const { username, currentUsername } = this;
-      if (!currentUsername || !username || currentUsername.length > 12) {
+      if (!currentUsername || !username) {
         this.$Notice.error({ title: '账号信息无效，取消关注失败' });
         return;
       }
-      Unfollow({
-        followed: username, username: currentUsername,
-      }, ({ error, response }) => {
-        if (!error) {
-          this.$Notice.success({ title: '已取消关注' });
-          this.followed = false;
-        } else {
-          this.$Notice.error({ title: '取消关注失败' });
-        }
-        this.refreshUser();
-      });
-    },
-    // 获取历史总收入
-    async getAssets() {
-      await getAssets(this.username, 1).then((res) => {
-        if (res.status === 200) {
-          this.playerincome = (res.data.totalSignIncome + res.data.totalShareIncome) / 10000;
-        }
-      }).catch((err) => {
-        console.log(err);
-        this.$Message.error('获取历史收入错误请重试');
-      });
+      try {
+        await Unfollow({ followed: username, username: currentUsername });
+        this.$Notice.success({ title: '已取消关注' });
+        this.followed = false;
+      } catch (error) {
+        this.$Notice.error({ title: '取消关注失败' });
+      }
+      this.refreshUser();
     },
     setAvatarImage(hash) {
       // 空hash 显示默认Logo头像
@@ -279,21 +287,37 @@ export default {
       if (!hash) this.avatar = require('../../assets/logo.png');
       else this.avatar = getAvatarImage(hash);
     },
-    // 设置头像完成 子组件与夫组件通信
-    setDone(status) {
-      console.log(status);
-      this.editingavatar = status;
-      this.refreshUser();
+    // 完成上传
+    async doneImageUpload(res) {
+      const avatar = res.hash;
+      try {
+        // 更新图像
+        const response = await uploadAvatar({ avatar });
+        if (response.status !== 201) throw new Error('201');
+        this.refreshUser();
+        this.imgUploadDone += 1;
+      } catch (error) {
+        console.log(error);
+        this.$Message.error('上传失败请重试');
+      }
     },
   },
-  created() {
-    const { getAssets, refreshUser } = this;
-    getAssets();
-    refreshUser();
-    const user = this.isMe ? '我' : this.username;
-    document.title = `${user}的个人主页 - SmartSignature`;
-  },
+  watch: {
+    isMe() {
+      this.refreshUser()
+    }
+  }
 };
 </script>
 
 <style lang="less" scoped src="./index.less"></style>
+<style lang="less">
+  .centercard .za-cell:first-child {
+    &:after {
+      border-top: none;
+    }
+  }
+  .bottomcard .bottombutton {
+    border: 0 solid transparent;
+  }
+</style>

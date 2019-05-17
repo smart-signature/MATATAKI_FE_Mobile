@@ -1,11 +1,9 @@
 <template>
   <div class="card">
-    <div>
-      <h2 class="asset-quantity" :style='{ color: `${assetColor}` }'>{{assetAmount}} EOS</h2>
-      <p class="asset-information">{{friendlyDate}}</p>
-    </div>
-    <div class="detailright">
-      <p v-clampy="3">{{asset.title}}</p>
+    <h2 class="card-pricing" :style='{ color: `${assetColor}` }'>{{assetAmount}}</h2>
+    <div class="card-info">
+      <p class="card-title">{{asset.title}}</p>
+      <p class="card-date">{{friendlyDate}}</p>
     </div>
   </div>
 </template>
@@ -15,6 +13,7 @@ import moment from 'moment';
 // https://github.com/clampy-js/vue-clampy
 import clampy from '@clampy-js/vue-clampy';
 import { isNDaysAgo } from '@/common/methods';
+import { precision } from '@/common/precisionConversion';
 
 export default {
   name: 'AssetCard',
@@ -24,13 +23,17 @@ export default {
   },
   computed: {
     friendlyDate() {
-      const isAppleSlave = navigator.platform.includes('iPhone');
-      const time = new Date(this.asset.create_time);
-      const timeZoneOffset = moment(time.getTime() - time.getTimezoneOffset() * 60000 * (isAppleSlave ? 0 : 1));
-      return isNDaysAgo(2, timeZoneOffset) ? timeZoneOffset.format('MMMDo HH:mm') : timeZoneOffset.fromNow();
+      // const isAppleSlave = navigator.platform.includes('iPhone');
+      const time = moment(this.asset.create_time);
+      // const timeZoneOffset = moment(time.getTime() - time.getTimezoneOffset() * 60000 * (isAppleSlave ? 0 : 1));
+      return isNDaysAgo(2, time) ? time.format('MMMDo HH:mm') : time.fromNow();
     },
     assetAmount() {
-      return this.asset.amount > 0 ? `+${this.asset.amount / 10000}` : this.asset.amount / 10000;
+      const precisionFunc = (amount) => {
+        const amountType = amount > 0 ? '+' : '';
+        return amountType + amount + this.asset.symbol;
+      };
+      return precisionFunc(precision(this.asset.amount, this.asset.symbol));
     },
     assetColor() {
       // eslint-disable-next-line no-nested-ternary
@@ -49,9 +52,9 @@ export default {
     background-color: #fff;
     padding: 10px 20px;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
     position: relative;
+    text-align: left;
     &::after {
       content: '';
       display: block;
@@ -71,35 +74,27 @@ export default {
         display: none;
       }
     }
+    &-pricing {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    &-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    &-title {
+      font-size:12px;
+      font-weight:bold;
+      color:#A6A6A6;
+      color:rgba(0,0,0,.7);
+      letter-spacing:1px;
+    }
+    &-date {
+      font-size:12px;
+      font-weight:400;
+      color:rgba(0,0,0,.44);
+    }
 }
-.asset-quantity {
-  font-size:22px;
-  font-family:PingFangSC-Semibold;
-  font-weight:600;
-  line-height:30px;
-}
-.asset-information {
-  font-size:11px;
-  font-family:PingFangSC-Regular;
-  font-weight:400;
-  color:#A6A6A6;
-  line-height:16px;
-  letter-spacing:1px;
-}
-.detailright{
-    width: 60px;
-    height: 60px;
-    background-color: #ecebeb;
-    color: #777777;
-    font-size: 12px;
-    font-weight: normal;
-    padding: 5px;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-    word-wrap: break-word;
-    font-family:PingFangSC-Regular;
-    font-weight:400;
-    color:rgba(119,119,119,1);
-    line-height:15px;
-}
+
 </style>

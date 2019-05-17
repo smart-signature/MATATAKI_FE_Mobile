@@ -2,12 +2,14 @@
   <div class="my-banner">
     <template v-if="isLogined">
       <div class="banner-text">
-         <img :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png'); }" class="round_icon">
+        <div class="round_icon">
+           <img :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png'); }">
+        </div>
          <div>
             <p class="username">{{displayName}}</p>
             <p class="my-balance">
               {{displayBalance}}
-              <span class="coin-symbol">EOS</span>
+              <span class="coin-symbol">{{displayBalanceSymbol}}</span>
             </p>
          </div>
       </div>
@@ -18,80 +20,60 @@
         <p class="login-notification">即刻登录</p>
         <p class="login-notification">开始智能签名之旅 </p>
       </div>
-      <a class="my-user-page" href="javascript:;" @click="loginWithWallet">立即登录</a>
+      <a class="my-user-page" href="javascript:;" @click="showModal = true">立即登录</a>
     </template>
+    <modal-prompt
+    :showModal="showModal"
+    :modalText="modalText"
+    @changeInfo="changeInfo"
+    @modalSuccess="modalSuccess" />
   </div>
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from 'vuex';
-import {
-  getUser,
-  getAssets,
-  getAvatarImage,
-} from '@/api';
+import { mapActions, mapGetters } from 'vuex';
+import { getAvatarImage } from '@/api';
+import modalPrompt from './components/modalPrompt.vue';
 
 export default {
   name: 'My-Banner',
+  components: {
+    modalPrompt,
+  },
   computed: {
-    ...mapState('scatter', {
-      isScatterConnected: state => state.isConnected,
-    }),
     ...mapGetters(['currentUserInfo', 'isLogined']),
     displayBalance() {
       return this.currentUserInfo.balance.slice(0, -4);
     },
-    displayName() {
-      const { currentUserInfo, nickname } = this;
-      return nickname !== '' ? nickname
-        : currentUserInfo.name.length <= 12 ? currentUserInfo.name
-          : currentUserInfo.name.slice(0, 12);
-    },
-    displayTokenSymbol() {
+    displayBalanceSymbol() {
       return this.currentUserInfo.balance.slice(-4);
+    },
+    displayName() {
+      const { name, nickname } = this.currentUserInfo;
+      return nickname || (name.length <= 12 ? name : name.slice(0, 12));
     },
   },
   data() {
     return {
+      showModal: false,
+      modalText: {
+        text: '选择登录账号',
+        button: ['确认', '取消'],
+      },
+      userConfig: {
+        blockchin: 'EOS',
+      },
       avatar: require('../../assets/logo.png'),
-      nickname: '',
     };
   },
   created() {
-    const { isLogined, refresh_user } = this;
-    if (isLogined) { refresh_user(); }
+    const { isLogined, refreshUser } = this;
+    if (isLogined) { refreshUser(); }
   },
   methods: {
-    ...mapActions('scatter', [
-      'connect',
-      'login',
-    ]),
-    connectScatterAsync() { return this.connect(); },
-    loginScatterAsync() { return this.login(); },
+    ...mapActions(['idCheckandgetAuth', 'getUser']),
     toUserPage(username) {
       this.$router.push({ name: 'User', params: { username } });
-    },
-    async loginWithWallet() {
-      if (!this.isScatterConnected) {
-        this.$Modal.error({
-          title: '无法与你的钱包建立链接',
-          content: '请检查钱包是否打开并解锁',
-        });
-        return;
-      }
-      try {
-        // await this.connectScatterAsync();
-        await this.loginScatterAsync();
-      } catch (e) {
-        console.warn('Unable to connect wallets');
-        this.$Modal.error({
-          title: '无法与你的钱包建立链接',
-          content: '请检查钱包是否打开并解锁',
-        });
-      }
-    },
-    handleClick(tab, event) {
-      console.log(tab, event);
     },
     async getAvatarImage(hash) {
       // 空hash 显示默认Logo头像
@@ -99,23 +81,53 @@ export default {
       if (!hash) this.avatar = require('../../assets/logo.png');
       else this.avatar = getAvatarImage(hash);
     },
-    refresh_user() {
-      const { name: username } = this.currentUserInfo;
-      console.log(username);
-      getUser({ username }).then((response) => {
-        const { data } = response;
-        console.log(data);
-        this.nickname = data.nickname;
-        this.getAvatarImage(data.avatar);
+    async refreshUser() {
+      const { avatar } = await this.getUser();
+      this.getAvatarImage(avatar);
+    },
+    async signIn() {
+      const { blockchin } = this.userConfig;
+      const usingBlockchain = {
+        EOS: blockchin === 'EOS',
+        ONT: blockchin === 'ONT',
+      };
+
+      const success = () => {
+        localStorage.setItem('blockchin', blockchin); // 成功存储登陆方式
+        this.showModal = false;
+      };
+
+      await this.idCheckandgetAuth(usingBlockchain).then(() => {
+        success();
+      }).catch(async () => {
+        await this.idCheckandgetAuth(usingBlockchain).then(() => {
+          success();
+        }).catch((err) => {
+          console.log(err);
+          this.showModal = false;
+          this.$toasted.show('登陆失败', {
+            position: 'top-center',
+            duration: 1000,
+            fitToScreen: true,
+          });
+        });
       });
     },
-  },
-  mounted() {
+    // 改变modal
+    changeInfo(status) {
+      this.showModal = status;
+    },
+    // modal 确认按钮
+    modalSuccess(type) {
+      this.userConfig.blockchin = type;
+      this.signIn();
+      // console.log(type);
+    },
   },
   watch: {
-    isLogined() {
-      if (this.isLogined) {
-        this.refresh_user();
+    isLogined(newState) {
+      if (newState) {
+        this.refreshUser();
       }
     },
   },
@@ -142,9 +154,16 @@ export default {
   flex: 1;
   margin-right: 10px;
   .round_icon {
+    flex: 0 0 50px;
     width: 50px;
     height: 50px;
     border-radius: 50%;
+    overflow: hidden;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
   }
   .username {
     font-size: 14px;

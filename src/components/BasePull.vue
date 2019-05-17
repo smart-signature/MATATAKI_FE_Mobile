@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { getBackendData } from '@/api/backend';
+import { getBackendData } from '@/api';
 
 export default {
   name: 'BasePull',
@@ -72,6 +72,11 @@ export default {
       type: Number,
       default: 0,
     },
+    // 是否需要token
+    needAccessToken: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     displayAboutScroll() {
@@ -114,17 +119,8 @@ export default {
       }, isEmptyArray);
     },
     async getApiData({ url, params }, isEmptyArray) {
-      await getBackendData({ url, params }, ({ error, response }) => {
-        // console.log(error, response);
-        if (error) {
-          console.log(error);
-          this.$Message.error('获取数据失败');
-          this.busy = true;
-          this.isTheEndOfTheScroll = true;
-          return;
-        }
-        const { data } = response;
-
+      try {
+        const { data } = await getBackendData({ url, params }, this.needAccessToken);
         if (isEmptyArray) this.articles.length = 0;
         if (this.isObj.type === 'Array') {
           // 如果返回的数据是 Array 返回整个 data
@@ -137,6 +133,7 @@ export default {
         } else if (this.isObj.type === 'Object') {
           // 如果返回的是 Object 根据传进来的字段获取相应的 list
           const resData = data[this.isObj.key];
+          console.log(resData, this.isObj.key);
           this.articles = [...this.articles, ...resData];
           this.$emit('getListData', {
             data,
@@ -144,10 +141,29 @@ export default {
             index: this.nowIndex,
           });
           if (resData.length >= 0 && resData.length < 20) this.isTheEndOfTheScroll = true;
+        } else if (this.isObj.type === 'newObject') { // 接口新格式  后面统一格式就能去掉一个判断
+          // 如果返回的是 Object 根据传进来的字段获取相应的 list
+          const resData = data.data[this.isObj.key];
+          if (data.code === 0) {
+            this.articles = [...this.articles, ...resData];
+            this.$emit('getListData', {
+              data,
+              list: this.articles,
+              index: this.nowIndex,
+            });
+            if (resData.length >= 0 && resData.length < 20) this.isTheEndOfTheScroll = true;
+          } else {
+            throw new Error(data.message);
+          }
         }
         this.page += 1;
         this.busy = false;
-      });
+      } catch (error) {
+        console.log(error);
+        this.$Message.error('获取数据失败');
+        this.busy = true;
+        this.isTheEndOfTheScroll = true;
+      }
     },
     // 刷新
     async refresh() {

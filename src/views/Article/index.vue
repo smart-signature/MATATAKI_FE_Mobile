@@ -1,8 +1,8 @@
 /* eslint-disable no-shadow */
 <template>
   <div class="article">
-    <BaseHeader :pageinfo="{ title: `Smart Signature`, rightPage: 'home', needLogin: false, }">
-      <img class="more" src="@/assets/more.svg" alt="more" slot="right" @click="opr = !opr" v-if="isMe">
+    <BaseHeader :pageinfo="{ title: `文章详情`, needLogin: false, }">
+      <img class="more" src="@/assets/more.svg" alt="more" slot="right" @click="opr = !opr" v-if="isMe(article.author)">
       <div class="information" slot="info" @click="infoModa = true">
         <img src="@/assets/information.svg" alt="information">
         <span>攻略</span>
@@ -11,60 +11,106 @@
     </BaseHeader>
     <transition name="fade" mode="out-in">
       <div class="dropdown" v-show="opr">
-        <div class="dropdown-item" @click="$router.push({name: 'Publish', params: { id: article.id }, query: { from: 'edit', hash: hash }})">编辑</div>
+        <div class="dropdown-item" @click="$router.push({name: 'Publish', params: { id: article.id }, query: { from: 'edit', hash: article.hash }})">编辑</div>
         <div class="dropdown-item" @click="delArticleButton">删除</div>
       </div>
     </transition>
-    <header class="ta_header">
-      <h1 dir="auto">{{post.title}}</h1>
-      <p>
-        <Avatar icon="ios-person" class="avatar-size" size="small" />
-        <router-link class="author"
-          :to="{ name: 'User', params: { username:post.author }}">
-          {{article.nickname || post.author}}
-        </router-link>
-        {{articleCreateTimeComputed}} | {{article.read || 0}}阅读
-      </p>
-      <p class="break_all">IPFS Hash: {{article.hash}}</p>
-    </header>
-    <mavon-editor v-show="false" style="display: none;"/>
-    <div class="markdown-body" v-html="compiledMarkdown"></div>
-    <div class="pocket">
-      <a data-pocket-label="pocket" data-pocket-count="horizontal" class="pocket-btn" data-lang="en"></a>
+    <ContentLoader v-if="articleLoading">
+        <circle cx="36.98272" cy="24.082720000000002" r="11.98272" />
+        <rect x="54" y="14.8" rx="0" ry="0" width="63.8" height="7.0666" />
+        <rect x="54" y="25.8" rx="0" ry="0" width="30.83" height="5.759600000000001" />
+        <rect x="26" y="47.8" rx="0" ry="0" width="334.43" height="120" />
+    </ContentLoader>
+    <template v-else>
+      <header class="ta_header">
+        <div class="avatar-info">
+          <div class="avatar" @click="() => $router.push({ name: 'User', params: { username:article.author }})">
+            <img :src="articleAvatar" @error="() => { this.avatar = require('../../assets/logo.png'); }" class="avatar-size" alt="avatar">
+          </div>
+          <div class="avatar-right">
+            <p class="author" @click="() => $router.push({ name: 'User', params: { username:article.author }})">
+              {{article.nickname || post.author}}
+            </p>
+            <p class="other">
+              <img src="@/assets/img/icon_date.svg" class="avatar-date" alt="avatar">
+              {{articleCreateTimeComputed}}
+              <img src="@/assets/img/icon_read.svg" class="avatar-read" alt="avatar">
+              {{article.read || 0}}阅读
+            </p>
+          </div>
+        </div>
+        <h1>{{post.title}}</h1>
+      </header>
+      <mavon-editor v-show="false" style="display: none;"/>
+      <div class="markdown-body" v-html="compiledMarkdown"></div>
+    </template>
+
+    <div class="ipfs-hash">
+        <img src="@/assets/img/icon_copy.svg" class="copy-hash" alt="hash" :data-clipboard-text="getCopyIpfsHash">
+        <span >
+          IPFS Hash: {{article.hash || 'Loading...'}}
+        </span>
     </div>
-    <div class="commentslist-title">赞赏队列 ({{article.ups || 0}})</div>
-    <CommentsList class="comments" :signId="signId" :isRequest="isRequest" @stopAutoRequest="(status) => isRequest = status" />
+
+    <div class="decoration">
+      <a data-pocket-label="pocket" data-pocket-count="horizontal" class="pocket-btn" data-lang="en"></a>
+      <span class="is-original">
+        本文发布于智能签名<br />
+        <template v-if="is_original">
+          未经授权禁止转载
+        </template>
+      </span>
+    </div>
+
+    <div class="comments-list">
+      <div class="commentslist-title">
+        <span>
+          赞赏队列 {{article.ups || 0}}
+        </span>
+      </div>
+      <CommentsList class="comments" :signId="signId" :isRequest="isRequest" @stopAutoRequest="(status) => isRequest = status" />
+    </div>
+
+
     <footer class="footer">
       <div class="footer-block">
-        <Tooltip content="本文收到的赞赏总额" placement="top-start">
           <div class="amount">
-            <div>
-              <img class="amount-img" src="@/assets/img/icon_amount.png" />
-              {{computedTotalSupportedAmount}}
-            </div>
+            <Dropdown trigger="click" @on-click="toggleAmount">
+              <div>
+                <div
+                  :class="totalSupportedAmount.showName === 'eos' ? 'eos' : 'ont'"
+                  class="amount-img"></div>
+                {{totalSupportedAmount.show}}
+                &nbsp;
+                <Icon type="ios-arrow-up" />
+              </div>
+              <DropdownMenu slot="list">
+                <DropdownItem name="eos" class="amount-icon">
+                  <img src="@/assets/img/icon_eos_article.svg" alt="eos">
+                  {{totalSupportedAmount.eos}}
+                </DropdownItem>
+                <DropdownItem name="ont" class="amount-icon">
+                  <img src="@/assets/img/icon_ont_article.svg" alt="ont">
+                  {{totalSupportedAmount.ont}}
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
             <div class="amount-text">赞赏总额</div>
           </div>
-        </Tooltip>
-        <Tooltip content="最高回报=赞赏额*裂变系数">
           <div class="fission">
             <div>
-              <img class="amount-img" src="@/assets/img/icon_fission.png" />
+              <div class="amount-img fission"></div>
               {{getDisplayedFissionFactor}}
             </div>
             <div class="amount-text">裂变系数</div>
           </div>
-        </Tooltip>
       </div>
       <div class="footer-block">
-        <Tooltip content="赞赏获收益">
           <button class="button-support" v-if="isSupported===-1" @click="b4support">赞赏<img src="@/assets/img/icon_support.png"/></button>
           <button class="button-support" v-if="isSupported===0" disabled>赞赏中<img src="@/assets/img/icon_support.png"/></button>
           <button class="button-support" v-else-if="isSupported===1" @click="visible3 = true">赞赏<img src="@/assets/img/icon_support.png"/></button>
           <button class="button-support" v-else-if="isSupported===2" disabled>已赞赏<img src="@/assets/img/icon_support.png"/></button>
-        </Tooltip>
-        <Tooltip content="先赞赏后分享" placement="top-end">
           <button class="button-share" :data-clipboard-text="getClipboard" @click="share">分享<img src="@/assets/img/icon_share.png" /></button>
-        </Tooltip>
       </div>
     </footer>
     <!-- 赞赏对话框 zarm -->
@@ -81,7 +127,7 @@
         </div>
         <div class="support-input">
           <input class="support-input__amount"
-            placeholder="请输入 EOS" v-model="amount" type="text"  @input="handleChange"/>
+            :placeholder="displayPlaceholder" v-model="amount" type="text"  @input="handleChange"/>
         </div>
         <button class="support-button" @click="support">赞赏</button>
     </za-modal>
@@ -93,22 +139,26 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
 import {
   getArticleDatafromIPFS,
   getArticleInfo,
   addReadAmount, sendComment,
-  delArticle, getAuth,
+  delArticle, getAuth, getUser,
+  reportShare, getAvatarImage,
 } from '@/api';
 import { support } from '@/api/signature';
 import 'mavon-editor/dist/css/index.css';
 import moment from 'moment';
+import { ContentLoader } from 'vue-content-loader';
 import CommentsList from './CommentsList.vue';
 import { sleep, isNDaysAgo } from '@/common/methods';
-import ArticleInfo from './ArticleInfo.vue';
+import { isAddress } from '@/common/reg';
+import { precision } from '@/common/precisionConversion';
 
+import ArticleInfo from './ArticleInfo.vue';
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
 
@@ -120,52 +170,17 @@ const RewardStatus = { // 0=加载中,1=未打赏 2=已打赏, -1未登录
 };
 
 export default {
-  async beforeRouteEnter(to, from, next) {
-    const { hash } = to.params; // url 传进来的 hash 或者是 id
-    let article = null; // 文章信息
-    let post = null; // 文章内容
-
-    // 获取文章内容 from ipfs
-    const getArticleDatafromIPFSFunc = async (hash) => {
-      await getArticleDatafromIPFS(hash).then(({ data }) => {
-        post = data.data;
-        next((vm) => { // 通过 `vm` 访问组件实例
-          // console.info('article :', article, 'post :', post);
-          vm.setArticle(article);
-          vm.setPost(post);
-          vm.$emit('updateHead');
-        });
-      }).catch((err) => {
-        console.log(err, '获取文章内容失败请重试');
-        next((vm) => {
-          vm.$Message.error('获取文章内容失败请重试');
-        });
-      });
-    };
-    // 获取文章信息
-    const getArticleInfoFunc = async (hashOrId) => {
-      await getArticleInfo(hashOrId, ({ error, response }) => {
-        if (error) {
-          console.log(error, '获取文章信息失败请重试');
-          next((vm) => {
-            vm.$Message.error('获取文章信息失败请重试');
-          });
-        } else {
-          article = response.data;
-          getArticleDatafromIPFSFunc(response.data.hash);
-        }
-      });
-    };
-    getArticleInfoFunc(hash);
-  },
   name: 'Article',
   props: ['hash'],
-  components: { mavonEditor, CommentsList, ArticleInfo },
+  components: {
+    CommentsList, ArticleInfo, ContentLoader, mavonEditor,
+  },
+  beforeDestroy() {
+    this.clipboard.destroy(); // 组件销毁之前 销毁clipboard
+  },
   data() {
     return {
       signId: null,
-      comments: [],
-      // refreshing: false,
       post: {
         author: 'Loading...',
         title: 'Loading...',
@@ -176,22 +191,31 @@ export default {
         create_time: '',
         fission_factor: 0,
       },
+      // eslint-disable-next-line global-require
+      articleAvatar: require('../../assets/logo.png'),
       amount: '',
       comment: '',
       isSupported: RewardStatus.NOT_LOGGINED,
-      totalSupportedAmount: 0,
+      totalSupportedAmount: {
+        show: 0, // 用于默认数据显示
+        showName: 'eos', // 用于默认数据显示
+        eos: 0,
+        ont: 0,
+      },
       visible3: false,
       clipboard: null,
       articleCreateTime: '',
       opr: false,
       infoModa: false,
       isRequest: false,
+      articleLoading: true, // 文章加载状态
+      is_original: false,
     };
   },
   computed: {
-    ...mapGetters(['currentUsername']),
-    isLogined() {
-      return this.currentUsername !== null;
+    ...mapGetters(['currentUserInfo', 'currentUsername', 'isLogined', 'isMe']),
+    displayPlaceholder() {
+      return `请输入 ${this.currentUserInfo.balance.slice(-4)} 赞赏金额`;
     },
     compiledMarkdown() {
       return markdownIt.render(this.post.content);
@@ -206,6 +230,9 @@ export default {
         : articleUrl;
       return `《${article.title}》by ${article.username} \n${shareLink}\n赞赏好文，分享有收益 ！`;
     },
+    getCopyIpfsHash() {
+      return `${this.article.hash}`;
+    },
     getDisplayedFissionFactor() {
       return this.article.fission_factor / 1000;
     },
@@ -213,22 +240,6 @@ export default {
       const { article } = this;
       const { protocol, host } = window.location;
       return `${protocol}//${host}/article/${article.id}`;
-    },
-    computedTotalSupportedAmount() {
-      // 如果为 0 个EOS 显示为 0 比 0.0000 适合
-      return this.totalSupportedAmount ? (this.totalSupportedAmount / 10000).toFixed(4) : 0;
-    /* // countTotalSupportedAmount, old version, dont del
-        const { actions } = await getContractActions();
-        // console.log(actions.map(a => a.action_trace));
-        const actions2 = actions.filter(a => a.action_trace.act.account === 'eosio.token'
-          && a.action_trace.act.name === 'transfer'
-          && a.action_trace.act.data.memo.indexOf(`support ${signid}`) !== -1);
-        // console.log(actions2);
-        const actions3 = actions2.map(a => ({
-          quantity: a.action_trace.act.data.quantity.replace(' EOS', ''),
-        }));
-        console.log(actions3);
-      */
     },
     getInvite() {
       const { invite } = this.$route.query;
@@ -239,28 +250,12 @@ export default {
       const time = moment(this.articleCreateTime);
       return isNDaysAgo(2, time) ? time.format('MMMDo HH:mm') : time.fromNow();
     },
-    isMe() {
-      console.log('isme', this.article, this.currentUsername);
-      return this.article.author === this.currentUsername;
-    },
   },
   created() {
     document.title = '正在加载文章 - Smart Signature';
     this.initClipboard(); // 分享按钮功能需要放在前面 保证功能的正常执行
-  },
-  mounted() {
-    !(function (d, i) {
-      if (!d.getElementById(i)) {
-        const j = d.createElement('script');
-        j.id = i;
-        j.src = 'https://widgets.getpocket.com/v1/j/btn.js?v=1';
-        const w = d.getElementById(i);
-        d.body.appendChild(j);
-      }
-    }(document, 'pocket-btn-js'));
-  },
-  beforeDestroy() {
-    this.clipboard.destroy(); // 组件销毁之前 销毁clipboard
+    this.copyHash(); // 复制 hash
+    this.getArticleInfo(this.hash); // 得到文章信息
   },
   head: {
     title() {
@@ -271,24 +266,33 @@ export default {
         complement: 'Smart Signature',
       };
     },
-    // Meta tags
-    meta() {
-      const { article, getUrl, post } = this;
+    // Meta tags // 做ssr 再使用
+    // meta() {
+    // const { article, getUrl, post } = this;
+    // return [
+    // Open Graph
+    // { p: 'og:url', c: getUrl },
+    // { p: 'og:site_name', c: 'Smart Signature' },
+    // { p: 'og:type', c: 'article' },
+    // { p: 'og:title', c: post.title },
+    // { p: 'og:description', c: post.desc },
+    // { p: 'article:author', c: post.author },
+    // { p: 'article:published_time', c: article.create_time },
+    // { p: 'og:image', c: 'https://example.com/image.jpg' },
+    //  Twitter
+    // { n: 'twitter:card', c: post.desc },
+    // { n: 'twitter:site', c: '@Smart Signature' },
+    // { n: 'twitter:creator', c: '@article' }, // @username for the content creator / author.
+    // 未來支持推特連接後， 可以顯示其推特帳號在推特 card 預覽裡
+    // ];
+    // },
+    script() {
       return [
-        // Open Graph
-        { p: 'og:url', c: getUrl },
-        { p: 'og:site_name', c: 'Smart Signature' },
-        { p: 'og:type', c: 'article' },
-        { p: 'og:title', c: post.title },
-        { p: 'og:description', c: post.desc },
-        { p: 'article:author', c: post.author },
-        { p: 'article:published_time', c: article.create_time },
-        { p: 'og:image', c: 'https://example.com/image.jpg' },
-        //  Twitter
-        { n: 'twitter:card', c: post.desc },
-        // { n: 'twitter:site', c: '@Smart Signature' },
-        // { n: 'twitter:creator', c: '@article' }, // @username for the content creator / author.
-        // 未來支持推特連接後， 可以顯示其推特帳號在推特 card 預覽裡
+        {
+          type: 'text/javascript',
+          id: 'pocket-btn-js', // id 不知道作用 生成的 script 有id就带着好了
+          src: 'https://widgets.getpocket.com/v1/j/btn.js?v=1',
+        },
       ];
     },
   },
@@ -311,42 +315,58 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['idCheck']),
+    ...mapActions(['idCheckandgetAuth', 'recordShare']),
     // 分享功能
     initClipboard() {
       this.clipboard = new Clipboard('.button-share');
       this.clipboard.on('success', (e) => {
-        this.$Modal.info({
-          title: '提示',
-          content: '复制成功',
+        this.$toasted.clear();
+        this.$toasted.show('复制成功', {
+          position: 'top-center',
+          duration: 500,
+          fitToScreen: true,
         });
         e.clearSelection();
       });
       this.clipboard.on('error', () => {
-        this.$Modal.error({
-          title: '提示',
-          content: '该浏览器不支持自动复制',
+        this.$Message.error('该浏览器不支持自动复制');
+      });
+    },
+    // 复制hash
+    copyHash() {
+      this.clipboard = new Clipboard('.copy-hash');
+      this.clipboard.on('success', (e) => {
+        this.$toasted.clear();
+        this.$toasted.show('复制成功', {
+          position: 'top-center',
+          duration: 500,
+          fitToScreen: true,
         });
+        e.clearSelection();
+      });
+      this.clipboard.on('error', () => {
+        this.$Message.error('该浏览器不支持自动复制');
       });
     },
     // 得到文章信息 hash id, supportDialog 为 true 则只更新文章信息
     async getArticleInfo(hash, supportDialog = false) {
-      await getArticleInfo(hash, ({ error, response }) => {
-        if (error) {
-          this.$Message.error('获取文章信息失败请重试');
-          console.log(error);
-        } else {
-          this.setArticle(response.data, supportDialog);
-          // 默认会执行获取文章方法，更新文章调用则不需要获取内容
-          if (!supportDialog) {
-            this.getArticleDatafromIPFS(response.data.hash);
-          }
+      try {
+        const response = await getArticleInfo(hash);
+        this.setArticle(response.data, supportDialog);
+        // 默认会执行获取文章方法，更新文章调用则不需要获取内容
+        if (!supportDialog) {
+          this.getArticleDatafromIPFS(response.data.hash);
+          this.getUser(response.data.author);
         }
-      });
+      } catch (error) {
+        this.$Message.error('获取文章信息失败请重试');
+        console.log(error);
+      }
     },
     // 获取文章内容 from ipfs
     async getArticleDatafromIPFS(hash) {
       await getArticleDatafromIPFS(hash).then(({ data }) => {
+        // console.log(data);
         this.setPost(data.data);
       }).catch((err) => {
         console.log(err);
@@ -355,12 +375,20 @@ export default {
     },
     // 设置文章
     async setArticle(article, supportDialog = false) {
-      // console.log(article);
-      await addReadAmount({ articlehash: article.hash }); // 增加文章阅读量
+      try {
+        await addReadAmount({ articlehash: article.hash }); // 增加文章阅读量
+      } catch (error) {
+        console.error('addReadAmount :', error);
+      }
       this.article = article;
       this.articleCreateTime = article.create_time;
-      this.totalSupportedAmount = article.value;
+      this.totalSupportedAmount.show = article.value ? precision(article.value, 'eos') : 0; // 用于默认显示
+      this.totalSupportedAmount.eos = article.value ? precision(article.value, 'eos') : 0; // eos
+      this.totalSupportedAmount.ont = precision(article.ontvalue, 'ont'); // ont
+
       this.signId = article.id;
+      this.articleLoading = false; // 文章加载状态隐藏
+      this.is_original = Boolean(article.is_original);
       // 未登录下点击赞赏会自动登陆并且重新获取文章信息 如果没有打赏并且是点击赞赏 则显示赞赏框
       if (!article.support && supportDialog) {
         this.visible3 = true;
@@ -369,10 +397,16 @@ export default {
     // 设置文章内容
     setPost(post) {
       this.post = post;
+      this.articleLoading = false; // 文章加载状态隐藏
     },
     handleChange(e) {
-      // 小数点后三位 如果后面需要解除限制修改正则  {0,3}
-      e.target.value = (e.target.value.match(/^\d*(\.?\d{0,3})/g)[0]) || null;
+      const { blockchain } = this.currentUserInfo;
+      if (blockchain === 'EOS') {
+        // 小数点后三位 如果后面需要解除限制修改正则  {0,3}
+        e.target.value = (e.target.value.match(/^\d*(\.?\d{0,3})/g)[0]) || null;
+      } else if (blockchain === 'ONT') {
+        e.target.value = (e.target.value.match(/^\d*/g)[0]) || null;
+      }
       this.amount = e.target.value;
     },
     setisSupported() {
@@ -384,14 +418,23 @@ export default {
       }
     },
     async b4support() {
-      // this.$Message.info('帐号检测中...');
-      await this.idCheck().then(() => {
-        this.getArticleInfo(this.hash, true);
+      try {
+        // this.$Message.info('帐号检测中...');
+        const { blockchin } = this.currentUserInfo;
+        // console.log(this.currentUserInfo);
+        const usingBlockchain = {
+          EOS: blockchin === 'EOS',
+          ONT: blockchin === 'ONT',
+        };
+        await this.idCheckandgetAuth(
+          usingBlockchain,
+        );
         // this.$Message.success('检测通过');
-      }).catch((err) => {
-        console.log(err);
+        this.getArticleInfo(this.hash, true);
+      } catch (error) {
+        console.log(error);
         this.$Message.error('本功能需登录');
-      });
+      }
     },
     async support() {
       const { article, comment } = this;
@@ -403,47 +446,61 @@ export default {
       }
 
       const signId = article.id;
-      const referrer = this.getInvite;
-      console.log('referrer :', referrer);
+      let referrer = this.getInvite;
+      // console.log('referrer :', referrer);
 
       try {
         this.isSupported = RewardStatus.LOADING;
-        // 問用戶要 acceess token
-        await getAuth();
         // 發轉帳 action 到合約
-        await support({ amount, signId, referrer });
-        try {
-          // 發 comment 到後端
+        // 1. EOS 照舊
+        // 2. ONT 用新流程
+        const { currentUserInfo, recordShare } = this;
+        const { blockchain, name: username } = currentUserInfo;
+
+        // 如果是ONT true 如果是 EOS或者其他 false
+        const isAddressBoolean = isAddress(referrer);
+
+        // 如果是EOS账户赞赏 但是邀请人是ONT用户 则认为没有邀请
+        if (blockchain === 'EOS' && isAddressBoolean) referrer = null;
+        // 如果是ONT账户赞赏 但是邀请人EOS账户 则认为没有邀请
+        else if (blockchain === 'ONT' && !isAddressBoolean) referrer = null;
+
+
+        const makeShare = async () => {
+          if (blockchain === 'EOS') return support({ amount, signId });
+          if (blockchain === 'ONT') {
+            const sponsor = referrer;
+            const share = await recordShare({ amount, signId, sponsor });
+            return reportShare({ amount, signId, sponsor });
+          }
+        };
+        const backendResult = await makeShare();
+        // console.log('F');
+        try { // 發 comment 到後端
           console.log('Send comment...');
-          await sendComment({ comment, signId }, ({ error, response }) => {
-            if (!error) {
-              console.log(error, response);
-              if (response.status !== 200) throw new Error(error);
-            } else throw error;
-          });
+          const response = await sendComment({ comment, signId });
+          console.log(response);
+          if (response.status !== 200) throw new Error(error);
         } catch (error) {
           console.error(error);
           console.log('Resend comment...');
-          await sendComment({ comment, signId }, ({ error, response }) => {
-            if (!error) {
-              console.log(error, response);
-              if (response.status !== 200) throw new Error(error);
-            } else throw error;
-          });
+          const response = await sendComment({ comment, signId });
+          console.log(response);
+          if (response.status !== 200) throw new Error(error);
         }
         this.isSupported = RewardStatus.REWARDED; // 按钮状态
         this.$Message.success('赞赏成功！');
         this.isRequest = true; // 自动请求
         this.visible3 = false; // 关闭dialog
       } catch (error) {
-        console.log(JSON.stringify(error));
+        console.error(JSON.stringify(error));
         this.$Message.error('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额');
         this.isSupported = RewardStatus.NOT_REWARD_YET;
       }
     },
     share() {
       try {
-        this.idCheck();
+        this.idCheckandgetAuth();
       } catch (error) {
         // console.log(error);
         // this.$Message.error('失败');
@@ -472,12 +529,13 @@ export default {
       };
       const delArticleFunc = async (id) => {
         if (!id) return fail('没有id');
-        await delArticle({ id },
-          ({ error, response }) => {
-            console.log(error, response);
-            if (response.status !== 200 || error || !response) return fail(error);
-            delSuccess();
-          });
+        try {
+          const response = await delArticle({ id });
+          if (response.status !== 200) return fail(error);
+          delSuccess();
+        } catch (error) {
+          return fail(error);
+        }
       };
       this.$Modal.confirm({
         title: '提示',
@@ -487,6 +545,23 @@ export default {
           delArticleFunc(this.article.id);
         },
       });
+    },
+    // 获取用户 得到头像
+    async getUser(username) {
+      const response = await getUser({ username }, this.currentUsername);
+      if (response.status !== 200) throw new Error('getUser error');
+      if (!response.data.avatar) return;
+      this.articleAvatar = getAvatarImage(response.data.avatar);
+    },
+    // 切换赞赏总额显示
+    toggleAmount(name) {
+      if (name === 'eos') {
+        this.totalSupportedAmount.show = this.totalSupportedAmount.eos;
+        this.totalSupportedAmount.showName = 'eos';
+      } else if (name === 'ont') {
+        this.totalSupportedAmount.show = this.totalSupportedAmount.ont;
+        this.totalSupportedAmount.showName = 'ont';
+      }
     },
   },
 };

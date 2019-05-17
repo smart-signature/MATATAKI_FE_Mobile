@@ -3,11 +3,11 @@
     <div class="comment-info">
       <Avatar icon="ios-person" class="comment-avatar" />
         <div class="comment-head">
-          <router-link class="comment-author" :to="{ name: 'User', params: { username: comment.author }}">
-            {{comment.nickname || comment.author }}
+          <router-link class="comment-author" :to="{ name: 'User', params: { username: comment.username }}">
+            {{comment.nickname || comment.username }}
           </router-link>
           赞赏了
-          <span class="comment-quantity">{{`${parseFloat(comment.amount) / 10000} EOS`}}</span>
+          <span class="comment-quantity">{{amount}}</span>
           <p class="comment-timestamp">{{friendlyDate}}</p>
         </div>
       </div>
@@ -19,6 +19,7 @@
 <script>
 import moment from 'moment';
 import { isNDaysAgo } from '@/common/methods';
+import { precision } from '@/common/precisionConversion';
 
 export default {
   name: 'CommentCard',
@@ -29,10 +30,13 @@ export default {
     },
     friendlyDate() {
       // const isAppleSlave = navigator.platform.includes('iPhone');
-      const newTime = new Date(this.comment.create_time);
-      const time = moment(newTime.getTime() - newTime.getTimezoneOffset()
-                   * 60000);// 返回的数据带了时区
+      const time = moment(this.comment.create_time);
+      // const time = moment(newTime.getTime() - newTime.getTimezoneOffset()
+      //              * 60000);// 返回的数据带了时区
       return isNDaysAgo(2, time) ? time.format('MMMDo HH:mm') : time.fromNow();
+    },
+    amount() {
+      return precision(this.comment.amount, this.comment.platform) + this.comment.platform.toUpperCase();
     },
   },
 };
@@ -57,6 +61,7 @@ export default {
 }
 .comment-avatar {
   margin-right: 12px;
+  flex: 0 0 32px;
 }
 .comment-author {
   color: rgba(0,0,0,0.70);
@@ -66,6 +71,7 @@ export default {
   color:rgba(0,0,0,1);
   line-height:20px;
   letter-spacing:1px;
+  word-break: break-word;
 }
 .comment-quantity {
   font-family:PingFangSC-Medium;

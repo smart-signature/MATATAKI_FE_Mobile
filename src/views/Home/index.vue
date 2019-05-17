@@ -1,4 +1,3 @@
-/* eslint-disable */
 <template>
   <div class='home' @click='addShow=false'>
     <div class='head'>
@@ -21,10 +20,8 @@
           <Button class="title-button">加入电报</Button>
         </a>
       </div>
-
       <MyBanner/>
       <div class="head-bc"></div>
-
     </div>
     <ArticleRankings ref='ArticleRankings'/>
   </div>
@@ -69,26 +66,8 @@ export default {
     };
   },
   methods: {
-    ...mapActions('scatter', [
-      'connect',
-      'login',
-    ]),
-    connectScatterAsync() { return this.connect(); },
-    loginScatterAsync() { return this.login(); },
     cancelCb(reason, event) {
       console.log(reason, event);
-    },
-    async loginWithWallet() {
-      try {
-        // await this.connectScatterAsync();
-        await this.loginScatterAsync();
-      } catch (e) {
-        console.warn('Unable to connect wallets');
-        this.$Modal.error({
-          title: '无法与你的钱包建立链接',
-          content: '请检查钱包是否打开并解锁',
-        });
-      }
     },
   },
 };
@@ -137,6 +116,8 @@ h2.subtitle {
 }
 .title-button {
   margin: 0 4px;
+  border-radius: 3px;
+  border: none;
 }
 button.publish {
   background: #478970;

@@ -1,8 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Home from './views/Home/index.vue';
-import { disassembleToken } from './api/backend';
-
+import { disassembleToken } from '@/api';
 
 Vue.use(Router);
 
@@ -14,6 +13,9 @@ export default new Router({
       path: '/',
       name: 'home',
       component: Home,
+      // meta: {
+      //   keepAlive: true, // 缓存
+      // },
     },
     {
       path: '/about',
@@ -24,7 +26,7 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ './views/About.vue'),
     },
     {
-      path: '/article/:hash',
+      path: '/article/:hash', // 支持 hash id 访问
       name: 'Article',
       props: true,
       component: () => import(/* webpackChunkName: "article" */ './views/Article/index.vue'),
@@ -41,14 +43,38 @@ export default new Router({
       component: () => import(/* webpackChunkName: "user" */ './views/User/index.vue'),
     },
     {
-      path: '/user/:username/asset',
+      path: '/user/edit/:username',
+      name: 'UserEdit',
+      props: true,
+      component: () => import(/* webpackChunkName: "user" */ './views/User/edit.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
+        // eslint-disable-next-line eqeqeq
+        if (to.params.username != tokenUserName) next('/');
+        else { next(); }
+      },
+    },
+    {
+      path: '/user/asset/:username',
       name: 'Asset',
+      props: true,
+      component: () => import(/* webpackChunkName: "user" */ './views/User/Asset/index.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
+        // eslint-disable-next-line eqeqeq
+        if (to.params.username != tokenUserName) next('/');
+        else { next(); }
+      }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
+    },
+    {
+      path: '/user/asset/:username/:type',
+      name: 'AssetType',
       props: true,
       component: () => import(/* webpackChunkName: "user" */ './views/User/Asset/Asset.vue'),
       beforeEnter: (to, from, next) => {
         const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
         // eslint-disable-next-line eqeqeq
-        if (to.params.username != tokenUserName) next(`/user/${tokenUserName}/asset`);
+        if (to.params.username != tokenUserName) next('/');
         else { next(); }
       }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
     },
@@ -57,12 +83,18 @@ export default new Router({
       name: 'Original',
       props: true,
       component: () => import(/* webpackChunkName: "user" */ './views/User/Original.vue'),
+      // meta: {
+      //   keepAlive: true, // 缓存
+      // },
     },
     {
       path: '/user/:username/reward',
       name: 'Reward',
       props: true,
       component: () => import(/* webpackChunkName: "user" */ './views/User/Reward.vue'),
+      // meta: {
+      //   keepAlive: true, // 缓存
+      // },
     },
     {
       // id 用于编辑文章或者草稿的时候动态传值使用
@@ -73,7 +105,7 @@ export default new Router({
       path: '/publish/:id',
       name: 'Publish',
       props: true,
-      component: () => import(/* webpackChunkName: "article-edit" */ './views/Publish.vue'),
+      component: () => import(/* webpackChunkName: "article-edit" */ './views/Publish/Publish.vue'),
     },
     {
       path: '/followlist/:username',
@@ -88,16 +120,14 @@ export default new Router({
       component: () => import(/* webpackChunkName: "user" */ './views/User/DraftBox.vue'),
     },
     {
-      path: '/avatar',
-      name: 'AvatarUploader',
-      props: true,
-      component: () => import(/* webpackChunkName: "user" */ './views/User/AvatarUploader.vue'),
-    },
-    {
       path: '/_easter-egg',
       name: 'EasterEgg',
       props: true,
       component: () => import(/* webpackChunkName: "easter-egg" */ './views/EasterEgg.vue'),
+    },
+    { // 幽林页面重定向进入首页 可以考虑设计 404 页面
+      path: '*',
+      redirect: '/',
     },
   ],
 });

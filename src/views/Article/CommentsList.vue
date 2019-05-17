@@ -1,7 +1,7 @@
 <template>
   <BasePull
     :loadingText="{
-      start: '更多...',
+      start: '',
       end: '',
       noArticles: '暂无赞赏评论',
     }"
@@ -9,6 +9,7 @@
     :apiUrl="apiUrl"
     :isRefresh="false"
     :autoRequestTime="autoRequestTime"
+    :needAccessToken="true"
     @getListData="getListData"
     >
       <CommentCard :comment="item" v-for="(item, index) in articles" :key="index"/>
@@ -33,12 +34,12 @@ export default {
     isRequest(newVal) {
       if (newVal) {
         this.timer = setInterval(() => {
-          if (this.autoRequestTime >= 30) {
+          if (this.autoRequestTime >= 2) {
             clearInterval(this.timer);
             this.$emit('stopAutoRequest', false);
           }
           this.autoRequestTime += 1;
-        }, 500);
+        }, 2000);
       } else {
         clearInterval(this.timer);
       }
