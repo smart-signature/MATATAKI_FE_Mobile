@@ -382,8 +382,9 @@ export default {
       this.article = article;
       this.articleCreateTime = article.create_time;
       this.totalSupportedAmount.show = article.value ? precision(article.value, 'eos') : 0; // 用于默认显示
-      this.totalSupportedAmount.eos = article.value ? precision(article.value, 'eos') : 0;
-      this.totalSupportedAmount.ont = precision(article.ontvalue, 'ont');
+      this.totalSupportedAmount.eos = article.value ? precision(article.value, 'eos') : 0; // eos
+      this.totalSupportedAmount.ont = precision(article.ontvalue, 'ont'); // ont
+
       this.signId = article.id;
       this.articleLoading = false; // 文章加载状态隐藏
       this.is_original = Boolean(article.is_original);
