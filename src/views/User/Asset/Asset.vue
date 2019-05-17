@@ -3,7 +3,6 @@
     <BaseHeader
       :pageinfo="{ left: 'back', title: `资产明细`, rightPage: 'home', needLogin: false, }"/>
 
-
     <div class="topcard">
       <div class="topcard-head">
         <div>
