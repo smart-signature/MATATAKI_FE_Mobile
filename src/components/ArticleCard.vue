@@ -6,7 +6,7 @@
         <p class="avatar">{{article.nickname || article.author}}</p>
         <p class="date">
           {{friendlyDate}} · <img src="../assets/img/icon_amount.png" alt="eos" />
-          {{article.value/ 10000}}
+          {{articleValue}}
         </p>
       </div>
       <div class="img-outer" v-if="cover">
@@ -19,6 +19,7 @@
 <script>
 import moment from 'moment';
 import { isNDaysAgo } from '@/common/methods';
+import { precision } from '@/common/precisionConversion';
 import { getAvatarImage } from '@/api';
 
 export default {
@@ -33,10 +34,11 @@ export default {
       return this.article.id; // 原来是 hash 现在用id进入
     },
     cover() {
-      if (this.article.cover) {
-        return getAvatarImage(this.article.cover);
-      }
+      if (this.article.cover) return getAvatarImage(this.article.cover);
       return null;
+    },
+    articleValue() {
+      return precision(this.article.value, 'eos');
     },
   },
 };

@@ -19,6 +19,7 @@
 <script>
 import moment from 'moment';
 import { isNDaysAgo } from '@/common/methods';
+import { precision } from '@/common/precisionConversion';
 
 export default {
   name: 'CommentCard',
@@ -35,11 +36,7 @@ export default {
       return isNDaysAgo(2, time) ? time.format('MMMDo HH:mm') : time.fromNow();
     },
     amount() {
-      // console.log(this.comment);
-      if (this.comment.platform !== 'eos') {
-        return this.comment.amount + (this.comment.platform).toUpperCase();
-      }
-      return this.comment.amount / 10000 + (this.comment.platform).toUpperCase();
+      return precision(this.comment.amount, this.comment.platform) + this.comment.platform.toUpperCase();
     },
   },
 };

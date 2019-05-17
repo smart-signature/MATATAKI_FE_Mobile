@@ -155,6 +155,8 @@ import moment from 'moment';
 import { ContentLoader } from 'vue-content-loader';
 import CommentsList from './CommentsList.vue';
 import { sleep, isNDaysAgo } from '@/common/methods';
+import { precision } from '@/common/precisionConversion';
+
 import ArticleInfo from './ArticleInfo.vue';
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
@@ -379,9 +381,9 @@ export default {
       }
       this.article = article;
       this.articleCreateTime = article.create_time;
-      this.totalSupportedAmount.show = article.value ? (article.value / 10000) : 0; // 用于默认显示
-      this.totalSupportedAmount.eos = article.value ? (article.value / 10000) : 0;
-      this.totalSupportedAmount.ont = article.ontvalue;
+      this.totalSupportedAmount.show = article.value ? precision(article.value, 'eos') : 0; // 用于默认显示
+      this.totalSupportedAmount.eos = article.value ? precision(article.value, 'eos') : 0;
+      this.totalSupportedAmount.ont = precision(article.ontvalue, 'ont');
       this.signId = article.id;
       this.articleLoading = false; // 文章加载状态隐藏
       this.is_original = Boolean(article.is_original);

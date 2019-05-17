@@ -13,6 +13,7 @@ import moment from 'moment';
 // https://github.com/clampy-js/vue-clampy
 import clampy from '@clampy-js/vue-clampy';
 import { isNDaysAgo } from '@/common/methods';
+import { precision } from '@/common/precisionConversion';
 
 export default {
   name: 'AssetCard',
@@ -28,13 +29,11 @@ export default {
       return isNDaysAgo(2, time) ? time.format('MMMDo HH:mm') : time.fromNow();
     },
     assetAmount() {
-      let amount = '';
-      if (this.asset.symbol !== 'EOS') {
-        amount = this.asset.amount > 0 ? `+${this.asset.amount}` : this.asset.amount;
-        return amount + this.asset.symbol;
-      }
-      amount = this.asset.amount > 0 ? `+${this.asset.amount / 10000}` : this.asset.amount / 10000;
-      return amount + this.asset.symbol;
+      const precisionFunc = (amount) => {
+        const amountType = amount > 0 ? '+' : '';
+        return amountType + amount + this.asset.symbol;
+      };
+      return precisionFunc(precision(this.asset.amount, this.asset.symbol));
     },
     assetColor() {
       // eslint-disable-next-line no-nested-ternary

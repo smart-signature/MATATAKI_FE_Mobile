@@ -66,6 +66,7 @@ import { getPlayerIncome, withdraw } from '@/api/signature';
 import { isEmptyArray } from '@/common/methods';
 import AssetList from './AssetList.vue';
 import { mapGetters } from 'vuex';
+import { precision } from '@/common/precisionConversion';
 
 export default {
   name: 'AssetType',
@@ -111,7 +112,7 @@ export default {
       console.log('Connecting to EOS fetch player income...');
       const playerincome = await getPlayerIncome(name); // 从合约拿到支持收入和转发收入
       this.playerincome = isEmptyArray(playerincome)
-        ? (playerincome[0].share_income + playerincome[0].sign_income) / 10000
+        ? precision((playerincome[0].share_income + playerincome[0].sign_income), 'eos')
         : 0;
       // 截止2019年3月24日中午12时合约拿过来的东西要除以10000才能正常显示
     },
@@ -141,16 +142,17 @@ export default {
       const { assetsRewards } = this;
       // EOS
       if (this.type !== 'EOS') {
-        this.playerincome = balance;
-        assetsRewards.totalSignIncome = sign > 0 ? `+${sign}` : sign;
-        assetsRewards.totalShareIncome = shareIn > 0 ? `+${shareIn}` : shareIn;
-        assetsRewards.totalShareExpenses = shareExp > 0 ? `+${shareExp}` : shareExp;
-      } else {
-        // this.playerincome = balance / 10000;
-        assetsRewards.totalSignIncome = sign > 0 ? `+${sign / 10000}` : sign / 10000;
-        assetsRewards.totalShareIncome = shareIn > 0 ? `+${shareIn / 10000}` : shareIn / 10000;
-        assetsRewards.totalShareExpenses = shareExp > 0 ? `+${shareExp / 10000}` : shareExp / 10000;
+        this.playerincome = precision(balance, this.type);
       }
+
+      const precisionFunc = (amount) => {
+        const amountType = amount > 0 ? '+' : '';
+        return amountType + precision(amount, this.type);
+      };
+
+      assetsRewards.totalSignIncome = precisionFunc(sign);
+      assetsRewards.totalShareIncome = precisionFunc(shareIn);
+      assetsRewards.totalShareExpenses = precisionFunc(shareExp);
     },
     // 提现按钮单击
     withdrawButton() {

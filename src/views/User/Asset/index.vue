@@ -50,7 +50,7 @@ import { getAssets, getBalance } from '@/api';
 import { getPlayerIncome } from '@/api/signature';
 import { isEmptyArray } from '@/common/methods';
 import { mapGetters } from 'vuex';
-
+import { precision } from '@/common/precisionConversion';
 
 export default {
   name: 'Asset',
@@ -127,7 +127,7 @@ export default {
       const playerincome = await getPlayerIncome(name); // 从合约拿到支持收入和转发收入
       // 手动指定第一个list
       this.assetList[0].withdraw = isEmptyArray(playerincome)
-        ? (playerincome[0].share_income + playerincome[0].sign_income) / 10000
+        ? precision((playerincome[0].share_income + playerincome[0].sign_income), 'eos')
         : 0;
       // 截止2019年3月24日中午12时合约拿过来的东西要除以10000才能正常显示
     },
@@ -145,17 +145,17 @@ export default {
           // 如果不是是EOS账号使用接口余额
           if (blockchain !== 'EOS') {
             if (filterArrEOS.length !== 0) { // eos
-              this.assetList[0].withdraw = filterArrEOS[0].amount / 10000;
+              this.assetList[0].withdraw = precision(filterArrEOS[0].amount, filterArrEOS[0].symbol);
             }
           }
 
           if (filterArrEOS.length !== 0) { // eos
-            this.assetList[0].total = filterArrEOS[0].totalIncome / 10000;
+            this.assetList[0].total = precision(filterArrEOS[0].totalIncome, filterArrEOS[0].symbol);
           }
 
           if (filterArrONT.length !== 0) { // ont
-            this.assetList[1].withdraw = filterArrONT[0].amount;
-            this.assetList[1].total = filterArrONT[0].totalIncome;
+            this.assetList[1].withdraw = precision(filterArrONT[0].amount, filterArrONT[0].symbol);
+            this.assetList[1].total = precision(filterArrONT[0].totalIncome, filterArrONT[0].symbol);
           }
         } else {
           this.$toasted.show(`${res.data.message}`, {
