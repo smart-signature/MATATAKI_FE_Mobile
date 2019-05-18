@@ -30,7 +30,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import {
   Follow, Unfollow, getUser,
-  setUserName, getAssets, getAvatarImage, setProfile,
+  setUserName, getAvatarImage, setProfile,
   uploadAvatar,
 } from '@/api';
 import imgUpload from '@/components/imgUpload/index.vue';

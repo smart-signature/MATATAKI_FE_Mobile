@@ -82,20 +82,8 @@ const API = {
       ? axiosforApiServer.post(url, data)
       : accessBackend({ method: 'POST', url, data });
   },
-  async publishArticle({
-    author, hash, title, fissionFactor, cover, is_original,
-  }) {
-    return this.sendArticle('/publish', {
-      author, hash, title, fissionFactor, cover, is_original,
-    });
-  },
-  async editArticle({
-    signId, author, hash, title, fissionFactor, cover, is_original,
-  }) {
-    return this.sendArticle('/edit', {
-      signId, author, hash, title, fissionFactor, cover, is_original,
-    }, true);
-  },
+  async publishArticle(article) { return this.sendArticle('/publish', article); },
+  async editArticle(article) { return this.sendArticle('/edit', article, true); },
   async reportShare({
     amount, signId, sponsor = null,
   }) {
@@ -265,9 +253,7 @@ const API = {
     });
   },
   // 获取头像
-  getAvatarImage(hash) {
-    return `${apiServer}/image/${hash}`;
-  },
+  getAvatarImage(hash) { return `${apiServer}/image/${hash}`; },
   // 供基础组件 BasePull 使用的方法
   // 因为目前只需要GET查询 所以不把 GET POST 等调用封装到一起，
   // 区别 GET 用 params， POST 等用 data
@@ -281,10 +267,7 @@ const API = {
   },
   // 草稿箱api
   async draftList({ page }) {
-    return accessBackend({
-      url: '/drafts',
-      params: { page },
-    });
+    return accessBackend({ url: '/drafts', params: { page }, });
   },
   async createDraft({
     title, content, cover, fissionFactor, is_original,
@@ -309,10 +292,7 @@ const API = {
     });
   },
   async delDraft({ id }) {
-    return accessBackend({
-      method: 'DELETE',
-      url: `/draft/${id}`,
-    });
+    return accessBackend({ method: 'DELETE', url: `/draft/${id}` });
   },
   async getDraft({ id }) { return accessBackend({ url: `/draft/${id}` }); },
   // Be used in User page.
