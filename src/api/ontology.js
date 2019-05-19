@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { dappName } from '@/config';
+import { dappName, ontology } from '@/config';
 
 // https://github.com/backslash47/OEPs/blob/oep-dapp-api/OEP-6/OEP-6.mediawiki
 
@@ -49,7 +49,18 @@ const API = {
     if (!this.client) await this.setClient();
     const { client } = this;
     try {
-      if (isAPP) throw new Error('no getBalance in cyanobridge'); // done
+      if (isAPP) {
+        const url = process.env.NODE_ENV === 'production' 
+          ? `https://${ontology.currentUsingNode}:10334`
+          : `http://${ontology.currentUsingNode}:20334`;
+        const response = await fetch(`${url}/api/v1/balance/${address}`);
+        // console.debug(response);
+        const { Result } = await response.json();
+        // console.debug(Result);
+        const { ong: ONG, ont: ONT } = Result;
+        // console.debug({ ONG, ONT });
+        return ({ ONG, ONT });
+      }
       return client.api.network.getBalance({ address }); // done
     } catch(error) {
       console.error('ontology.js 內部錯誤，請查閱 npm 包的 doc 釐清 : ', error);
