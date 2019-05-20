@@ -7,7 +7,7 @@ module.exports = {
       libraryName: 'zarm-vue',
       styleLibraryName: 'theme',
     }],
-    ['import', {
+    ['import', { // 似乎没什么用 已经引入了全部的css
       libraryName: 'iview',
       libraryDirectory: 'src/components',
     }],

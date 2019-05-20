@@ -158,18 +158,16 @@ export default {
             this.assetList[1].total = precision(filterArrONT[0].totalIncome, filterArrONT[0].symbol);
           }
         } else {
-          this.$toasted.show(`${res.data.message}`, {
-            position: 'top-center',
+          this.vantToast.fail({
             duration: 1000,
-            fitToScreen: true,
+            message: `${res.data.message}`,
           });
         }
       }).catch((err) => {
         console.log(err);
-        this.$toasted.show('获取数据失败', {
-          position: 'top-center',
+        this.vantToast.fail({
           duration: 1000,
-          fitToScreen: true,
+          message: '获取数据失败',
         });
       });
     },

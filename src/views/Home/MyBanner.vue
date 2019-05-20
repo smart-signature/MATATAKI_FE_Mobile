@@ -105,10 +105,9 @@ export default {
         }).catch((err) => {
           console.log(err);
           this.showModal = false;
-          this.$toasted.show('登陆失败', {
-            position: 'top-center',
+          this.vantToast.fail({
             duration: 1000,
-            fitToScreen: true,
+            message: '登陆失败',
           });
         });
       });

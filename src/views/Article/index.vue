@@ -320,32 +320,34 @@ export default {
     initClipboard() {
       this.clipboard = new Clipboard('.button-share');
       this.clipboard.on('success', (e) => {
-        this.$toasted.clear();
-        this.$toasted.show('复制成功', {
-          position: 'top-center',
-          duration: 500,
-          fitToScreen: true,
+        this.vantToast.success({
+          duration: 1000,
+          message: '复制成功',
         });
         e.clearSelection();
       });
       this.clipboard.on('error', () => {
-        this.$Message.error('该浏览器不支持自动复制');
+        this.vantToast.fail({
+          duration: 1000,
+          message: '该浏览器不支持自动复制',
+        });
       });
     },
     // 复制hash
     copyHash() {
       this.clipboard = new Clipboard('.copy-hash');
       this.clipboard.on('success', (e) => {
-        this.$toasted.clear();
-        this.$toasted.show('复制成功', {
-          position: 'top-center',
-          duration: 500,
-          fitToScreen: true,
+        this.vantToast.success({
+          duration: 1000,
+          message: '复制成功',
         });
         e.clearSelection();
       });
       this.clipboard.on('error', () => {
-        this.$Message.error('该浏览器不支持自动复制');
+        this.vantToast.fail({
+          duration: 1000,
+          message: '该浏览器不支持自动复制',
+        });
       });
     },
     // 得到文章信息 hash id, supportDialog 为 true 则只更新文章信息

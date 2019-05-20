@@ -78,10 +78,9 @@ export default {
       // 中文 字母 数字 1-12
       const reg = /^[\u4E00-\u9FA5A-Za-z0-9]{5,20}$/;
       if (!reg.test(this.newIntroduction)) {
-        this.$toasted.show('<p style="margin: 8px 0;line-height: 1.5;">简介可设置5-20个字符</p>', {
-          position: 'top-center',
-          duration: 1500,
-          fitToScreen: true,
+        this.vantToast({
+          duration: 1000,
+          message: '简介可设置5-20个字符',
         });
         return;
       }
@@ -127,10 +126,9 @@ export default {
       return canSetProfile;
     },
     myToasted(notice) {
-      this.$toasted.show(`<p style="margin: 8px 0;line-height: 1.5;">${notice}</p>`, {
-        position: 'top-center',
-        duration: 1500,
-        fitToScreen: true,
+      this.vantToast({
+        duration: 1000,
+        message: notice,
       });
     },
     async save() {
@@ -174,7 +172,7 @@ export default {
         }
         console.log(error.config);
       }
-      //this.refreshUser();
+      // this.refreshUser();
     },
     async refreshUser() {
       if (this.username === null) this.username = this.currentUsername;

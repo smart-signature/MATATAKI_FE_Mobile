@@ -13,7 +13,7 @@ import './registerServiceWorker';
 // Vue plugins
 import './zarm';
 import './plugins/iview';
-import './plugins/vue-toasted';
+import './plugins/vant';
 
 // global css
 import '@/assets/css/index.less';

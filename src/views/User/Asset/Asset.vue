@@ -159,10 +159,9 @@ export default {
       // 目前只支持EOS提现 所以其他不允许弹出
       if (!this.isWithdrawButton) return;
       if (this.playerincome <= 0) {
-        this.$toasted.show('没有可以提现的余额', {
-          position: 'top-center',
+        this.vantToast.fail({
           duration: 1000,
-          fitToScreen: true,
+          message: '没有可以提现的余额',
         });
         return;
       }

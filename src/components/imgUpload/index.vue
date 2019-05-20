@@ -127,23 +127,20 @@ export default {
       if (newFile && !oldFile) {
         // 过滤不是图片后缀的文件
         if (!/\.(gif|jpg|jpeg|png|webp)$/i.test(newFile.name)) {
-          this.$toasted.show('复制成功', {
-            position: 'top-center',
-            duration: 1500,
-            fitToScreen: true,
+          this.vantToast.fail({
+            duration: 1000,
+            message: '请选择图片',
           });
           return prevent();
         }
       }
-
       // 限定最大字节
       const imgSize = () => {
         if (newFile.file.size >= 0 && newFile.file.size > 1024 * 1024 * this.imgSize) {
         // console.log(newFile.file.size);
-          this.$toasted.show(`请选择 ${this.imgSize}M 以内的图片`, {
-            position: 'top-center',
-            duration: 1500,
-            fitToScreen: true,
+          this.vantToast.fail({
+            duration: 1000,
+            message: `请选择 ${this.imgSize}M 以内的图片`,
           });
           return prevent();
         }
@@ -182,10 +179,9 @@ export default {
           error(err) {
             console.log(err.message);
             limitAndShowView();
-            this.$toasted.show('自动压缩图片失败', {
-              position: 'top-center',
-              duration: 1500,
-              fitToScreen: true,
+            this.vantToast.fail({
+              duration: 1000,
+              message: '自动压缩图片失败',
             });
           },
         });
@@ -231,10 +227,9 @@ export default {
           this.$emit('doneImageUpload', newFile.response);
         } else {
           this.modalLoading = false;
-          this.$toasted.show('上传图片失败', {
-            position: 'top-center',
-            duration: 1500,
-            fitToScreen: true,
+          this.vantToast.fail({
+            duration: 1000,
+            message: '上传图片失败',
           });
         }
       }

@@ -111,13 +111,13 @@ export default new Router({
       path: '/followlist/:username',
       name: 'FollowList',
       props: true,
-      component: () => import(/* webpackChunkName: "user" */ './views/User/FollowList/FollowList.vue'),
+      component: () => import(/* webpackChunkName: "followlist" */ './views/User/FollowList/FollowList.vue'),
     },
     {
       path: '/draftbox/:username',
       name: 'DraftBox',
       props: true,
-      component: () => import(/* webpackChunkName: "user" */ './views/User/DraftBox.vue'),
+      component: () => import(/* webpackChunkName: "draftbox" */ './views/User/DraftBox.vue'),
     },
     {
       path: '/_easter-egg',

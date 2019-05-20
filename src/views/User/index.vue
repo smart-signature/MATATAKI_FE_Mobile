@@ -173,11 +173,9 @@ export default {
       // 中文 字母 数字 1-12
       const reg = /^[\u4E00-\u9FA5A-Za-z0-9]{1,12}$/;
       if (!reg.test(this.newname)) {
-        // this.$Message.error('昵称长度为1-12位，中文、英文、数字但不包括下划线等符号');
-        this.$toasted.show('<p style="margin: 8px 0;line-height: 1.5;">昵称长度为1-12位，中文、英文、数字但不包括下划线等符号</p>', {
-          position: 'top-center',
-          duration: 1500,
-          fitToScreen: true,
+        this.vantToast({
+          duration: 1000,
+          message: '昵称长度为1-12位，中文、英文、数字但不包括下划线等符号',
         });
         return;
       }
@@ -304,9 +302,9 @@ export default {
   },
   watch: {
     isMe() {
-      this.refreshUser()
-    }
-  }
+      this.refreshUser();
+    },
+  },
 };
 </script>
 
