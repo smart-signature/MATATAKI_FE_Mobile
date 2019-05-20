@@ -471,7 +471,9 @@ export default {
         const makeShare = async () => {
           if (blockchain === 'EOS') return support({ amount, signId, sponsor });
           if (blockchain === 'ONT') {
-            const share = await recordShare({ amount, signId, sponsor, symbol: 'ONT' });
+            const share = await recordShare({
+              amount, signId, sponsor, symbol: 'ONT',
+            });
             return reportShare({ amount, signId, sponsor });
           }
         };

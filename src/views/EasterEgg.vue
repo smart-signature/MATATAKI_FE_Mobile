@@ -50,9 +50,9 @@ export default {
       // const balance = await API.getBalance({ address: 'AUZ27HUQt66H4g8MnEURNZvmSSpH9ZqKXz' });
       // console.log('AUZ27HUQt66H4g8MnEURNZvmSSpH9ZqKXz', ' :', balance);
       const address = 'AbU4AyDhukbj4EFb4fX633th144Rg2sG9A';
-      const url = process.env.NODE_ENV === 'production' 
-          ? `https://${ontology.currentUsingNode}:10334`
-          : `http://${ontology.currentUsingNode}:20334`;
+      const url = process.env.NODE_ENV === 'production'
+        ? `https://${ontology.currentUsingNode}:10334`
+        : `http://${ontology.currentUsingNode}:20334`;
       const response = await fetch(`${url}/api/v1/balance/${address}`);
       console.debug(response);
       const { Result } = await response.json();

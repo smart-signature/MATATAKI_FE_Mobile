@@ -267,7 +267,7 @@ const API = {
   },
   // 草稿箱api
   async draftList({ page }) {
-    return accessBackend({ url: '/drafts', params: { page }, });
+    return accessBackend({ url: '/drafts', params: { page } });
   },
   async createDraft({
     title, content, cover, fissionFactor, is_original,

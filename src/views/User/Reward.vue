@@ -38,7 +38,7 @@ export default {
     },
   },
   created() {
-    const { isMe, username } = this
+    const { isMe, username } = this;
     this.user = isMe(username) ? '我的用户页' : `${username} 的用户页`;
     this.userTitle = isMe(username) ? '我赞赏的文章' : `${username} 赞赏的文章`;
     document.title = `${this.user} - SmartSignature`;
