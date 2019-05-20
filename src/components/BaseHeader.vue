@@ -1,5 +1,5 @@
 <template>
-  <div class="header" :class="[isCenter && 'mw', isToggleBc && 'bc']">
+  <div class="header" :style="customizeHeaderBc && 'background:' + customizeHeaderBc" :class="[isCenter && 'mw', isToggleBc && 'bc']">
     <div class="header-left" slot="left">
       <template v-if="white">
         <img src="@/assets/img/icon_back_white.svg" alt="home" @click="goBack" class="back-icon">
@@ -48,6 +48,11 @@ export default {
     white: {
       type: Boolean,
       default: false,
+    },
+    // 自定义头部背景
+    customizeHeaderBc: {
+      type: String,
+      default: '',
     },
   },
   computed: {

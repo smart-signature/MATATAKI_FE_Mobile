@@ -53,7 +53,7 @@
     background-color: #fff;
     padding: 8px 20px;
     font-size: 14px;
-    border-bottom: 1px solid #eaeaea;
+    border-bottom: 1px solid #eee;
      p {
       font-weight: bold;
     }
@@ -88,7 +88,7 @@
     background-color: #fff;
     padding: 8px 20px;
     font-size: 14px;
-    border-bottom: 1px solid #eaeaea;
+    border-bottom: 1px solid #eee;
     .save-type {
       float: left;
       text-align: left;
@@ -101,7 +101,7 @@
     background-color: #fff;
     padding: 12px 20px;
     font-size: 14px;
-    border-bottom: 1px solid #eaeaea;
+    border-bottom: 1px solid #eee;
   }
 
   .edit-title {
@@ -113,12 +113,13 @@
     background: transparent;
     background-color: #fff;
     color: #000;
-    border-bottom: 1px solid #ddd;
+    border-top: 1px solid #f1f1f1;
+    box-sizing: border-box;
     font-size: 26px;
     font-weight: bold;
+    position: fixed;
+    top: 45px;
+    left: 0;
+    right: 0; 
+    z-index: 99;
   }
-  @media screen and (max-width: 576px) {
-    .edit-title {
-      font-size: 18px;
-    }
-}
