@@ -448,8 +448,8 @@ export default {
       }
 
       const signId = article.id;
-      let referrer = this.getInvite;
-      // console.log('referrer :', referrer);
+      let sponsor = this.getInvite;
+      // console.log('sponsor :', sponsor);
 
       try {
         this.isSupported = RewardStatus.LOADING;
@@ -460,19 +460,18 @@ export default {
         const { blockchain, name: username } = currentUserInfo;
 
         // 如果是ONT true 如果是 EOS或者其他 false
-        const isAddressBoolean = isAddress(referrer);
+        const isAddressBoolean = isAddress(sponsor);
 
         // 如果是EOS账户赞赏 但是邀请人是ONT用户 则认为没有邀请
-        if (blockchain === 'EOS' && isAddressBoolean) referrer = null;
+        if (blockchain === 'EOS' && isAddressBoolean) sponsor = null;
         // 如果是ONT账户赞赏 但是邀请人EOS账户 则认为没有邀请
-        else if (blockchain === 'ONT' && !isAddressBoolean) referrer = null;
+        else if (blockchain === 'ONT' && !isAddressBoolean) sponsor = null;
 
 
         const makeShare = async () => {
-          if (blockchain === 'EOS') return support({ amount, signId, referrer });
+          if (blockchain === 'EOS') return support({ amount, signId, sponsor });
           if (blockchain === 'ONT') {
-            const sponsor = referrer;
-            const share = await recordShare({ amount, signId, sponsor });
+            const share = await recordShare({ amount, signId, sponsor, symbol: 'ONT' });
             return reportShare({ amount, signId, sponsor });
           }
         };

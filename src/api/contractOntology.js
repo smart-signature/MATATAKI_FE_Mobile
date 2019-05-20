@@ -1,18 +1,23 @@
 import API from './ontology';
 import * as config from '@/config';
 
-const recordShare = async ({
-  amount = null, owner = null, signId = null, sponsor = null,
+// eslint-disable-next-line import/prefer-default-export
+export const recordShare = async ({
+  owner = null, signId = null, symbol = null, amount = null, sponsor = null,
 }) => {
-  if (!amount) { throw new Error('amount cant be null'); }
   if (!owner) { throw new Error('owner cant be null'); }
   if (!signId) { throw new Error('signId cant be null'); }
+  if (!symbol) { throw new Error('symbol cant be null'); }
+  if (!amount) { throw new Error('amount cant be null'); }
+
   const { scriptHash, gasLimit, gasPrice } = config.ontology;
-  console.debug(signId.toString());
+  // console.debug(signId.toString());
   const args = [
     { type: 'String', value: owner },
     { type: 'String', value: signId.toString() },
+    { type: 'String', value: symbol },
     { type: 'Integer', value: amount },
+    { type: 'String', value: amount.toString() },
   ];
   if (sponsor) args.push({ type: 'String', value: sponsor });
   const response = await API.invoke({
@@ -74,7 +79,3 @@ const getSign = async (signId) => {
     ]
 
 }; */
-
-export {
-  recordShare,
-};

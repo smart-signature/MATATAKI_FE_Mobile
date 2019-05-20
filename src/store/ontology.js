@@ -1,5 +1,5 @@
 import API from '@/api/ontology';
-import { recordShare } from '@/api/signatureOntology';
+import { recordShare } from '@/api/contractOntology';
 
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-shadow */
@@ -51,11 +51,13 @@ const actions = {
     if (!account) throw new Error('no account');
     return dispatch('getSignature', { signData: account });
   },
-  async recordShare({ state }, { amount, signId, sponsor }) {
+  async recordShare({ state }, {
+    amount, signId, sponsor, symbol,
+  }) {
     const { account } = state;
     if (!account) throw new Error('no account');
     return recordShare({
-      amount, owner: account, signId, sponsor,
+      amount, owner: account, signId, sponsor, symbol,
     });
   },
   signOut({ commit }) {

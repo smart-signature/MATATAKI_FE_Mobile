@@ -5,7 +5,7 @@ import { eos, currentEOSAccount as currentAccount } from './scatter';
 export const CONTRACT_ACCOUNT = process.env.VUE_APP_SIGNATURE_CONTRACT;
 
 const transferEOS = ({ amount = 0, memo = '' }) => {
-  if (currentAccount() == null) throw (new Error('NOT-LOGINED'));
+  if (!currentAccount()) throw (new Error('NOT-LOGINED'));
   return eos().transaction({
     actions: [{
       account: 'eosio.token',
@@ -24,18 +24,18 @@ const transferEOS = ({ amount = 0, memo = '' }) => {
   });
 };
 
-const support = ({ amount = null, signId = null, referrer = null }) => {
-  if (currentAccount() === null) { throw new Error('请先登录'); }
-  if (amount === null) { throw new Error('amount cant be 0'); }
-  if (signId === null) { throw new Error('sign_id can\'t be null'); }
+export const support = ({ amount = null, signId = null, sponsor = null }) => {
+  if (!currentAccount()) { throw new Error('请先登录'); }
+  if (!amount) { throw new Error('amount cant be falsy'); }
+  if (!signId) { throw new Error('signId cant be falsy'); }
   return transferEOS({
     amount,
-    memo: ((referrer != null) ? `support ${signId} ${referrer}` : `support ${signId}`),
+    memo: ((sponsor != null) ? `support ${signId} ${sponsor}` : `support ${signId}`),
   });
 };
 
-const withdraw = () => {
-  if (currentAccount() == null) { throw new Error('请先登录'); }
+export const withdraw = () => {
+  if (!currentAccount()) { throw new Error('请先登录'); }
   return eos().transaction({
     actions: [{
       account: CONTRACT_ACCOUNT,
@@ -49,36 +49,19 @@ const withdraw = () => {
   });
 };
 
-
+/*
 // https://eosio.stackexchange.com/questions/1459/how-to-get-all-the-actions-of-one-account
-const getContractActions = () => {
+export const getContractActions = () => {
   const param = {
     json: true,
     account_name: CONTRACT_ACCOUNT,
-    /* pos: -1, */
+    // pos: -1,
     offset: -200,
   };
   return eos().getActions(param);
-
-  // const options = {
-  //  url: 'https://geo.eosasia.one/v1/history/get_actions',
-  //  headers: {
-  //    Accept: '*/*',
-  //    'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
-  //   },
-  //  body: JSON.stringify(param),
-  // };
-  // const aaa = await axios.post(options)
-  //  .then('response', (response) => {
-  //    console.log(response.statusCode); // 200    // 如果还需要用这段代码 请给statusCode 替换为 status
-  //  }) {
-  //
-  // return JSON.parse(response.data) ;
-  // });
-  // console.log(JSON.parse(aaa));
 };
 
-const getSharesInfo = async (owner) => {
+export const getSharesInfo = async (owner) => {
   const { rows } = await eos().getTableRows({
     json: true,
     code: CONTRACT_ACCOUNT,
@@ -89,7 +72,7 @@ const getSharesInfo = async (owner) => {
   return rows;
 };
 
-const getSignInfo = async (id) => {
+export const getSignInfo = async (id) => {
   const { rows } = await eos().getTableRows({
     json: true,
     code: CONTRACT_ACCOUNT,
@@ -101,7 +84,6 @@ const getSignInfo = async (id) => {
   return rows;
 };
 
-// eslint-disable-next-line no-unused-vars
 const getSignsInfo = async () => {
   const { rows } = await eos().getTableRows({
     json: true,
@@ -117,7 +99,7 @@ const getPlayerBills = async (owner) => {
   const { actions } = await eos().getActions({
     json: true,
     account_name: owner,
-    /* pos: -1, */
+    // pos: -1,
     offset: -100,
   });
   // console.log("player actions",actions);
@@ -136,7 +118,6 @@ const getPlayerIncome = async (name) => {
   return rows;
 };
 
-/*
 async function getGoods() {
   const { rows } = await eosapi().getTableRows({
     json: true,
@@ -170,10 +151,3 @@ async function getMaxSignId() {
   return maxId;
 }
 */
-
-export {
-  support, withdraw,
-  getContractActions,
-  getSignInfo, getSharesInfo,
-  getPlayerIncome, getPlayerBills,
-};

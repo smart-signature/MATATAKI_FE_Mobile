@@ -139,13 +139,17 @@ export default new Vuex.Store({
 
       throw new Error('Unable to get id');
     },
-    async recordShare({ dispatch, getters }, { amount, signId, sponsor = null }) {
+    async recordShare({ dispatch, getters }, {
+      amount, signId, sponsor = null, symbol,
+    }) {
       const { blockchain } = getters.currentUserInfo;
       let actionName = null;
       // eslint-disable-next-line no-constant-condition
       if (false && blockchain === 'EOS') actionName = 'scatter/recordShare';
       else if (blockchain === 'ONT') actionName = 'ontology/recordShare';
-      return dispatch(actionName, { amount, signId, sponsor });
+      return dispatch(actionName, {
+        amount, signId, sponsor, symbol,
+      });
     },
     async getUser({ commit, getters }) {
       const { data } = await getUser({ username: getters.currentUserInfo.name });
