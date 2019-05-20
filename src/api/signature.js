@@ -105,8 +105,8 @@ const getPlayerBills = async (owner) => {
   // console.log("player actions",actions);
   return actions;
 };
-
-const getPlayerIncome = async (name) => {
+*/
+export const getPlayerIncome = async (name) => {
   const { rows } = await eos().getTableRows({
     json: true,
     code: CONTRACT_ACCOUNT,
@@ -117,7 +117,7 @@ const getPlayerIncome = async (name) => {
   // console.debug('getPlayerIncome : ', rows);
   return rows;
 };
-
+/*
 async function getGoods() {
   const { rows } = await eosapi().getTableRows({
     json: true,

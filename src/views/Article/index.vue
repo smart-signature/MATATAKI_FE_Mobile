@@ -146,7 +146,7 @@ import {
   getArticleDatafromIPFS,
   getArticleInfo,
   addReadAmount, sendComment,
-  delArticle, getAuth, getUser,
+  delArticle, getUser,
   reportShare, getAvatarImage,
 } from '@/api';
 import { support } from '@/api/signature';
