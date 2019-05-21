@@ -47,7 +47,7 @@
 
 <script>
 import { getBalance } from '@/api';
-import { getPlayerIncome } from '@/api/signature';
+import { getPlayerIncome } from '@/api/contractEOS';
 import { isEmptyArray } from '@/common/methods';
 import { mapGetters } from 'vuex';
 import { precision } from '@/common/precisionConversion';
