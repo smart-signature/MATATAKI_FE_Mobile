@@ -61,8 +61,7 @@
 </template>
 
 <script>
-import { getPlayerIncome, withdraw } from '@/api/signature';
-import { isEmptyArray } from '@/common/methods';
+import { withdraw } from '@/api/signature';
 import AssetList from './AssetList.vue';
 import { mapGetters } from 'vuex';
 import { precision } from '@/common/precisionConversion';
@@ -78,16 +77,7 @@ export default {
       this.$router.push({ name: 'home' });
     }
 
-    const { blockchain } = this.currentUserInfo;
-    // console.log(blockchain);
-    // EOS
-    // 如果是EOS账号并且是进入的EOS列表从链上查询余额
-    if (blockchain === 'EOS' && this.type === 'EOS') {
-      this.getPlayerTotalIncome(this.username);
-      this.isWithdrawButton = true; // 可以提现
-    } else {
-      this.isWithdrawButton = false; // 不能提现
-    }
+    this.togglewithdrawButton();
   },
   data() {
     return {
@@ -105,16 +95,12 @@ export default {
   computed: {
     ...mapGetters(['currentUserInfo']),
   },
-  methods: {
-    // 得到待提现
-    async getPlayerTotalIncome(name) {
-      console.log('Connecting to EOS fetch player income...');
-      const playerincome = await getPlayerIncome(name); // 从合约拿到支持收入和转发收入
-      this.playerincome = isEmptyArray(playerincome)
-        ? precision((playerincome[0].share_income + playerincome[0].sign_income), 'eos')
-        : 0;
-      // 截止2019年3月24日中午12时合约拿过来的东西要除以10000才能正常显示
+  watch: {
+    currentUserInfo() {
+      this.togglewithdrawButton();
     },
+  },
+  methods: {
     // 确认提现
     handleOk() {
       this.withdraw(this.username);
@@ -139,16 +125,14 @@ export default {
         totalShareExpenses: shareExp,
       } = res.data.data;
       const { assetsRewards } = this;
-      // EOS
-      const { blockchain } = this.currentUserInfo;
-      if (blockchain !== 'EOS' || this.type !== 'EOS') {
-        this.playerincome = precision(balance, this.type);
-      }
+
 
       const precisionFunc = (amount) => {
         const amountType = amount > 0 ? '+' : '';
         return amountType + precision(amount, this.type);
       };
+
+      this.playerincome = precision(balance, this.type);
 
       assetsRewards.totalSignIncome = precisionFunc(sign);
       assetsRewards.totalShareIncome = precisionFunc(shareIn);
@@ -166,6 +150,16 @@ export default {
         return;
       }
       this.visible = true;
+    },
+    togglewithdrawButton() {
+      const { blockchain } = this.currentUserInfo;
+      // console.log(blockchain);
+      // EOS可以提现
+      if (blockchain === 'EOS' && this.type === 'EOS') {
+        this.isWithdrawButton = true; // 可以提现
+      } else {
+        this.isWithdrawButton = false; // 不能提现
+      }
     },
   },
 };

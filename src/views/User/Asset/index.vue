@@ -47,9 +47,6 @@
 
 <script>
 import { getBalance } from '@/api';
-import { getPlayerIncome } from '@/api/signature';
-import { isEmptyArray } from '@/common/methods';
-import { mapGetters } from 'vuex';
 import { precision } from '@/common/precisionConversion';
 
 export default {
@@ -100,16 +97,9 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['currentUserInfo']),
   },
   created() {
     this.getBalance();
-    const { blockchain } = this.currentUserInfo;
-    // EOS
-    // 如果是EOS账号从链上查询余额
-    if (blockchain === 'EOS') {
-      this.getPlayerTotalIncome(this.username);
-    }
   },
   methods: {
     jumpTo(index) {
@@ -121,16 +111,6 @@ export default {
         },
       });
     },
-    // 获取可提现 暂时没有接口 先用已有的接口数据 -- copy from /user/asset/asset.vue
-    async getPlayerTotalIncome(name) {
-      console.log('Connecting to EOS fetch player income...');
-      const playerincome = await getPlayerIncome(name); // 从合约拿到支持收入和转发收入
-      // 手动指定第一个list
-      this.assetList[0].withdraw = isEmptyArray(playerincome)
-        ? precision((playerincome[0].share_income + playerincome[0].sign_income), 'eos')
-        : 0;
-      // 截止2019年3月24日中午12时合约拿过来的东西要除以10000才能正常显示
-    },
     // 获取账户资产列表 暂时没有EOS数据
     async getBalance() {
       await getBalance().then((res) => {
@@ -141,15 +121,8 @@ export default {
           const filterArrONT = filterArr('ONT');
           const filterArrEOS = filterArr('EOS');
 
-          const { blockchain } = this.currentUserInfo;
-          // 如果不是是EOS账号使用接口余额
-          if (blockchain !== 'EOS') {
-            if (filterArrEOS.length !== 0) { // eos
-              this.assetList[0].withdraw = precision(filterArrEOS[0].amount, filterArrEOS[0].symbol);
-            }
-          }
-
           if (filterArrEOS.length !== 0) { // eos
+            this.assetList[0].withdraw = precision(filterArrEOS[0].amount, filterArrEOS[0].symbol);
             this.assetList[0].total = precision(filterArrEOS[0].totalIncome, filterArrEOS[0].symbol);
           }
 
