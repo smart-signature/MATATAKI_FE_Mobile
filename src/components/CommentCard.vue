@@ -1,20 +1,20 @@
 <template>
   <div class="comment">
     <div class="comment-info">
-      <div class="comment-avatar">
-           <img :src="avatar" @error="() => { this.avatar = require('../assets/logo.png'); }" alt="avatar">
+      <div class="comment-avatar" @click="jumpTo({ name: 'User', params: { username: comment.username }})">
+        <img :src="avatar" @error="() => { this.avatar = require('../assets/logo.png'); }" alt="avatar">
       </div>
-        <div class="comment-head">
-          <router-link class="comment-author" :to="{ name: 'User', params: { username: comment.username }}">
-            {{comment.nickname || comment.username }}
-          </router-link>
-          赞赏了
-          <span class="comment-quantity">{{amount}}</span>
-          <p class="comment-timestamp">{{friendlyDate}}</p>
-        </div>
+      <div class="comment-head">
+        <router-link class="comment-author" :to="{ name: 'User', params: { username: comment.username }}">
+          {{comment.nickname || comment.username }}
+        </router-link>
+        赞赏了
+        <span class="comment-quantity">{{amount}}</span>
+        <p class="comment-timestamp">{{friendlyDate}}</p>
       </div>
-      <p class="comment-message">{{displayMessage}}</p>
-      <div class="comment-line"></div>
+    </div>
+    <p class="comment-message">{{displayMessage}}</p>
+    <div class="comment-line"></div>
   </div>
 </template>
 
@@ -44,6 +44,11 @@ export default {
     avatar() {
       if (!this.comment.avatar) return require('../assets/logo.png');
       return getAvatarImage(this.comment.avatar);
+    },
+  },
+  methods: {
+    jumpTo(params) {
+      this.$router.push(params);
     },
   },
 };
