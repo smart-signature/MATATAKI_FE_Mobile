@@ -465,7 +465,7 @@ export default {
           await recordShare({
             amount, signId, sponsor, symbol,
           });
-          return reportShare({ amount, signId, sponsor });  
+          return reportShare({ amount, signId, sponsor });
         };
         const backendResult = await makeShare();
         // console.log('F');
