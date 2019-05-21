@@ -155,7 +155,7 @@ import moment from 'moment';
 import { ContentLoader } from 'vue-content-loader';
 import CommentsList from './CommentsList.vue';
 import { sleep, isNDaysAgo } from '@/common/methods';
-import { isAddress } from '@/common/reg';
+import { ontAddressVerify } from '@/common/reg';
 import { precision } from '@/common/precisionConversion';
 
 import ArticleInfo from './ArticleInfo.vue';
@@ -460,12 +460,12 @@ export default {
         const { blockchain, name: username } = currentUserInfo;
 
         // 如果是ONT true 如果是 EOS或者其他 false
-        const isAddressBoolean = isAddress(sponsor);
+        const isOntAddressVerify = ontAddressVerify(sponsor);
 
         // 如果是EOS账户赞赏 但是邀请人是ONT用户 则认为没有邀请
-        if (blockchain === 'EOS' && isAddressBoolean) sponsor = null;
+        if (blockchain === 'EOS' && isOntAddressVerify) sponsor = null;
         // 如果是ONT账户赞赏 但是邀请人EOS账户 则认为没有邀请
-        else if (blockchain === 'ONT' && !isAddressBoolean) sponsor = null;
+        else if (blockchain === 'ONT' && !isOntAddressVerify) sponsor = null;
 
 
         const makeShare = async () => {
