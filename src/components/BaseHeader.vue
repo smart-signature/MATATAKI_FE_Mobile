@@ -20,7 +20,6 @@
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex'; // mapGetters 未使用
-// import { getAuth } from '@/api';
 import throttle from 'lodash/throttle';
 
 export default {

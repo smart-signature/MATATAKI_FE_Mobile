@@ -173,6 +173,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['idCheckandgetAuth'], ['getSignatureOfArticle']),
     // 通过ID拿数据
     async setArticleDataById(hash, id) {
       const articleData = await getArticleDatafromIPFS(hash);
@@ -198,7 +199,6 @@ export default {
       this.title = data.title;
       this.markdownData = data.content;
     },
-    ...mapActions(['idCheckandgetAuth']),
     // 设置文章数据 by hash
     /* async setArticleData(hash) {
       const articleData = await getArticleDatafromIPFS(hash);
@@ -261,7 +261,8 @@ export default {
     async publishArticle(data) {
       const { failed, success } = this;
       try {
-        const response = await backendAPI.publishArticle(data);
+        const signature = await this.getSignatureOfArticle();
+        const response = await backendAPI.publishArticle(data, signature);
         if (response.data.code !== 0) {
           throw new Error(response.data.message);
         }
@@ -282,7 +283,8 @@ export default {
     },
     // 编辑文章
     async editArticle(data) {
-      const response = await backendAPI.editArticle(data);
+      const signature = await this.getSignatureOfArticle();
+      const response = await backendAPI.editArticle(data, signature);
       console.log(response);
       if (response.data.msg !== 'success') this.failed('失败请重试');
       this.success(data.hash);
@@ -337,17 +339,17 @@ export default {
         cover,
         editorMode, saveType,
       } = this;
-      const is_original = Number(this.isOriginal);
+      const isOriginal = Number(this.isOriginal);
       console.log('sendThePost mode :', editorMode, saveType);
       if (editorMode === 'create' && saveType === 'public') { // 发布文章
         const { hash } = await this.sendPost({ title, author, content });
         console.log('sendPost result :', hash);
         this.publishArticle({
-          author, title, hash, fissionFactor, cover, is_original,
+          author, title, hash, fissionFactor, cover, isOriginal,
         });
       } else if (editorMode === 'create' && saveType === 'draft') { // 发布到草稿箱
         this.createDraft({
-          title, content, fissionFactor, cover, is_original,
+          title, content, fissionFactor, cover, isOriginal,
         });
       } else if (editorMode === 'edit') { // 编辑文章
         const { hash } = await this.sendPost({ title, author, content });
@@ -359,12 +361,12 @@ export default {
           fissionFactor,
           signature: this.signature,
           cover,
-          is_original,
+          isOriginal,
         });
       } else if (editorMode === 'draft' && saveType === 'public') { // 草稿箱编辑 发布
         const { hash } = await this.sendPost({ title, author, content });
         this.publishArticle({
-          author, title, hash, fissionFactor, cover, is_original,
+          author, title, hash, fissionFactor, cover, isOriginal,
         }).then(() => {
           this.delDraft(this.id);
         }).catch(() => {
@@ -372,7 +374,7 @@ export default {
         });
       } else if (editorMode === 'draft' && saveType === 'draft') { // 草稿箱编辑 更新
         await this.updateDraft({
-          id: this.id, title, content, fissionFactor, cover, is_original,
+          id: this.id, title, content, fissionFactor, cover, isOriginal,
         });
       }
     },

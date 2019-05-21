@@ -56,7 +56,7 @@
       <a data-pocket-label="pocket" data-pocket-count="horizontal" class="pocket-btn" data-lang="en"></a>
       <span class="is-original">
         本文发布于智能签名<br />
-        <template v-if="is_original">
+        <template v-if="isOriginal">
           未经授权禁止转载
         </template>
       </span>
@@ -204,7 +204,7 @@ export default {
       infoModa: false,
       isRequest: false,
       articleLoading: true, // 文章加载状态
-      is_original: false,
+      isOriginal: false,
     };
   },
   computed: {
@@ -324,7 +324,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['idCheckandgetAuth', 'recordShare']),
+    ...mapActions(['idCheckandgetAuth', 'makeShare']),
     // 分享功能
     initClipboard() {
       this.clipboard = new Clipboard('.button-share');
@@ -401,7 +401,7 @@ export default {
       this.totalSupportedAmount.ont = precision(article.ontvalue, 'ont'); // ont
 
       this.articleLoading = false; // 文章加载状态隐藏
-      this.is_original = Boolean(article.is_original);
+      this.isOriginal = Boolean(article.is_original);
       // 未登录下点击赞赏会自动登陆并且重新获取文章信息 如果没有打赏并且是点击赞赏 则显示赞赏框
       if (!article.support && supportDialog) {
         this.visible3 = true;
@@ -443,11 +443,7 @@ export default {
 
       try {
         this.isSupported = RewardStatus.LOADING;
-        // 發轉帳 action 到合約
-        // 1. EOS 照舊
-        // 2. ONT 用新流程
-        const { currentUserInfo, recordShare } = this;
-        const { blockchain, name: username } = currentUserInfo;
+        const { blockchain } = this.currentUserInfo;
 
         // 如果是ONT true 如果是 EOS或者其他 false
         const isOntAddressVerify = ontAddressVerify(sponsor);
@@ -457,18 +453,8 @@ export default {
         // 如果是ONT账户赞赏 但是邀请人EOS账户 则认为没有邀请
         else if (blockchain === 'ONT' && !isOntAddressVerify) sponsor = null;
 
+        await this.makeShare({ amount, signId, sponsor });
 
-        const makeShare = async () => {
-          let symbol = null;
-          if (blockchain === 'EOS') symbol = 'EOS';
-          if (blockchain === 'ONT') symbol = 'ONT';
-          await recordShare({
-            amount, signId, sponsor, symbol,
-          });
-          return reportShare({ amount, signId, sponsor });
-        };
-        const backendResult = await makeShare();
-        // console.log('F');
         try { // 發 comment 到後端
           console.log('Send comment...');
           const response = await sendComment({ comment, signId });

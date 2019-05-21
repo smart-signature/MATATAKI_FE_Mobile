@@ -1,7 +1,5 @@
 import axios from 'axios';
 import https from 'https';
-// eslint-disable-next-line import/no-cycle
-import store from '@/store';
 import { Base64 } from 'js-base64';
 
 // Doc : https://github.com/axios/axios
@@ -16,13 +14,8 @@ const axiosforApiServer = axios.create({
 });
 
 // localStorage
-const getCurrentAccessToken = () => localStorage.getItem('ACCESS_TOKEN');
-const setAccessToken = token => localStorage.setItem('ACCESS_TOKEN', token);
-
-// store
-const platform = () => (store.getters.currentUserInfo.blockchain.toLowerCase());
-const getSignatureOfArticle = ({ author, hash }) => store.dispatch('getSignatureOfArticle', { author, hash });
-const getSignatureOfAuth = () => store.dispatch('getSignatureOfAuth');
+export const getCurrentAccessToken = () => localStorage.getItem('ACCESS_TOKEN');
+export const setAccessToken = token => localStorage.setItem('ACCESS_TOKEN', token);
 
 /*
  * 拆token，返回json对象
@@ -35,69 +28,50 @@ export const disassembleToken = (token) => {
   // {iss:用户名，exp：token的过期时间，用ticks的形式表示}
 };
 
-/*
- * /后端访问入口，当遇到401的时候直接重新拿token
-*/
 /* eslint no-param-reassign: ["error", { "props": false }] */
 const accessBackend = async (options) => {
   // https://blog.fundebug.com/2018/07/25/es6-const/
-  options.headers = {};
-  let accessToken = getCurrentAccessToken();
-  try { // 更新 Auth
-    // eslint-disable-next-line no-use-before-define
-    accessToken = await API.getAuth();
-  } catch (error) {
-    console.warn(
-      'url :', options.url,
-      '\ngetAuth error:', error.message,
-      '\n將使用 access token 存檔',
-    );
-  }
-  options.headers['x-access-token'] = accessToken;
+  options.headers = {
+    'x-access-token': getCurrentAccessToken(),
+  };
   return axiosforApiServer(options);
 };
 
 const API = {
   async sendArticle(url = '', {
-    signId = null, author, hash, title, fissionFactor, cover, is_original,
+    signId = null, author, hash, title, fissionFactor, cover, isOriginal,
+  }, {
+    blockchain, publicKey, signature, username,
   }, needAccessToken = false) {
-    // 若 getSignatureOfArticle reject(或內部 throw 被轉為reject)
-    // 則 sendArticle 會成為 Promise.reject()
-    const { publicKey, signature, username } = await getSignatureOfArticle({ author, hash });
-    console.log('getSignatureOfArticle :', { publicKey, signature, username });
     const data = {
       author,
       cover,
       fissionFactor,
       hash,
-      platform: platform(),
+      platform: blockchain.toLowerCase(),
       publickey: publicKey,
       sign: signature,
       signId,
       title,
       username,
-      is_original,
+      is_original: isOriginal,
     };
     return !needAccessToken
       ? axiosforApiServer.post(url, data)
       : accessBackend({ method: 'POST', url, data });
   },
-  async publishArticle(article) { return this.sendArticle('/publish', article); },
-  async editArticle(article) { return this.sendArticle('/edit', article, true); },
+  async publishArticle(article, signature) {
+    return this.sendArticle('/publish', article, signature);
+  },
+  async editArticle(article, signature) {
+    return this.sendArticle('/edit', article, signature, true);
+  },
   async reportShare({
-    amount, signId, sponsor = null,
+    amount, contract, blockchain, signId, sponsor = null, symbol,
   }) {
-    const _platform = platform();
     let _amount = amount;
-    let contract = null;
-    let symbol = null;
-    if (_platform === 'eos') {
+    if (blockchain === 'EOS') {
       _amount = amount * 10000;
-      contract = 'eosio.token';
-      symbol = 'EOS';
-    } else if (_platform === 'ont') {
-      contract = 'AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV';
-      symbol = 'ONT';
     }
     return accessBackend({
       method: 'POST',
@@ -107,7 +81,7 @@ const API = {
         contract,
         symbol,
         amount: _amount,
-        platform: _platform,
+        platform: blockchain.toLowerCase(),
         referrer: sponsor,
       },
     });
@@ -136,9 +110,14 @@ const API = {
   /*
    * 根据用户名，公钥，客户端签名请求access_token
   */
-  async auth({ publicKey, signature, username }) {
+  async auth({
+    blockchain, publicKey, signature, username,
+  }) {
     return axiosforApiServer.post('/auth', {
-      platform: platform(), publickey: publicKey, sign: signature, username,
+      platform: blockchain.toLowerCase(),
+      publickey: publicKey,
+      sign: signature,
+      username,
     },
     {
       headers: { Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==' },
@@ -148,33 +127,7 @@ const API = {
   /*
    * 装载access_token
   */
-  async getAuth() {
-    const currentToken = getCurrentAccessToken();
-    const decodedData = disassembleToken(currentToken); // 拆包
-    const username = currentToken ? decodedData.iss : null;
-    const { name: currentUsername } = store.getters.currentUserInfo;
-    if (!currentUsername) throw new Error('no currentUsername');
-    if (!currentToken || !decodedData || decodedData.exp < new Date().getTime()
-      || username !== currentUsername) {
-      try {
-        console.log('Retake authtoken...');
-        const result = await getSignatureOfAuth();
-        console.info('getSignatureOfAuth() :', result);
-        // 将取得的签名和用户名和公钥post到服务端 获得accessToken
-        const { username: _username, publicKey, signature } = result;
-        const response = await this.auth({ username: _username, publicKey, signature });
-        if (response.status !== 200) throw new Error('auth 出錯');
-        // 3. save accessToken
-        const accessToken = response.data;
-        console.info('got the access token :', accessToken);
-        setAccessToken(accessToken);
-        return accessToken;
-      } catch (error) {
-        console.warn('取得用戶新簽名出錯', error);
-        throw error;
-      }
-    } else return currentToken;
-  },
+
   async getArticleDatafromIPFS(hash) {
     return axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
   },
@@ -270,24 +223,24 @@ const API = {
     return accessBackend({ url: '/drafts', params: { page } });
   },
   async createDraft({
-    title, content, cover, fissionFactor, is_original,
+    title, content, cover, fissionFactor, isOriginal,
   }) {
     return accessBackend({
       method: 'POST',
       url: '/draft/save',
       data: {
-        title, content, cover, fissionFactor, is_original,
+        title, content, cover, fissionFactor, isOriginal,
       },
     });
   },
   async updateDraft({
-    id, title, content, cover, fissionFactor, is_original,
+    id, title, content, cover, fissionFactor, isOriginal,
   }) {
     return accessBackend({
       method: 'POST',
       url: '/draft/save',
       data: {
-        id, title, content, cover, fissionFactor, is_original,
+        id, title, content, cover, fissionFactor, isOriginal,
       },
     });
   },

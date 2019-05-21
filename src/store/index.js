@@ -2,13 +2,15 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import ontology from './ontology';
 import scatter from './scatter';
-import { backendAPI, getUser } from '@/api';
+import {
+  backendAPI, getUser, disassembleToken, getCurrentAccessToken, setAccessToken,
+} from '@/api';
+
 
 Vue.use(Vuex);
 
 // That's vuex's need, sorry eslint
 /* eslint-disable no-param-reassign */
-
 export default new Vuex.Store({
   modules: {
     ontology,
@@ -45,20 +47,48 @@ export default new Vuex.Store({
     isMe: (state, { currentUserInfo }) => target => currentUserInfo.name === target,
   },
   actions: {
+    async getAuth({ dispatch, getters }) {
+      const currentToken = getCurrentAccessToken();
+      const decodedData = disassembleToken(currentToken); // 拆包
+      const username = currentToken ? decodedData.iss : null;
+      const { name: currentUsername } = getters.currentUserInfo;
+      if (!currentUsername) throw new Error('no currentUsername');
+      if (!currentToken || !decodedData || decodedData.exp < new Date().getTime()
+        || username !== currentUsername) {
+        try {
+          console.log('Retake authtoken...');
+          const signature = await dispatch('getSignatureOfAuth');
+          const response = await backendAPI.auth(signature);
+          if (response.status !== 200) throw new Error('auth 出錯');
+          // 3. save accessToken
+          const accessToken = response.data;
+          console.info('got the access token :', accessToken);
+          setAccessToken(accessToken);
+          return accessToken;
+        } catch (error) {
+          console.warn('取得用戶新簽名出錯', error);
+          throw error;
+        }
+      } else return currentToken;
+    },
     // output: { publicKey, signature, username }
     async getSignatureOfArticle({ dispatch, getters }, { author, hash }) {
       const { blockchain } = getters.currentUserInfo;
       let actionName = null;
       if (blockchain === 'EOS') actionName = 'scatter/getSignatureOfArticle';
       else if (blockchain === 'ONT') actionName = 'ontology/getSignatureOfArticle';
-      return dispatch(actionName, { author, hash });
+      const signature = await dispatch(actionName, { author, hash });
+      signature.blockchain = blockchain;
+      return signature;
     },
     async getSignatureOfAuth({ dispatch, getters }) {
       const { blockchain } = getters.currentUserInfo;
       let actionName = null;
       if (blockchain === 'EOS') actionName = 'scatter/getSignatureOfAuth';
       else if (blockchain === 'ONT') actionName = 'ontology/getSignatureOfAuth';
-      return dispatch(actionName);
+      const signature = await dispatch(actionName);
+      signature.blockchain = blockchain;
+      return signature;
     },
     async idCheckandgetAuth({
       dispatch, state, getters,
@@ -72,7 +102,7 @@ export default new Vuex.Store({
       if (getters.currentUserInfo.name) {
         console.log('Id check pass, id :', getters.currentUserInfo);
         try { // 更新 Auth
-          await backendAPI.getAuth();
+          await dispatch('getAuth');
         } catch (error) {
           console.error('getAuth error:', error.message);
           throw new Error('更新 Auth 失敗');
@@ -116,7 +146,7 @@ export default new Vuex.Store({
       if (getters.currentUserInfo.name) {
         console.log('Id check pass, id :', getters.currentUserInfo);
         try { // 更新 Auth
-          await backendAPI.getAuth();
+          await dispatch('getAuth');
         } catch (error) {
           console.error('getAuth error:', error.message);
           throw new Error('更新 Auth 失敗');
@@ -131,16 +161,46 @@ export default new Vuex.Store({
 
       throw new Error('Unable to get id');
     },
+    async makeShare({ dispatch, getters }, {
+      amount, signId, sponsor = null,
+    }) {
+      const { blockchain } = getters.currentUserInfo;
+      let contract = null;
+      let symbol = null;
+      if (blockchain === 'EOS') {
+        contract = 'eosio.token';
+        symbol = 'EOS';
+      } else if (blockchain === 'ONT') {
+        contract = 'AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV';
+        symbol = 'ONT';
+      }
+      await dispatch('recordShare', {
+        amount, signId, sponsor, symbol,
+      });
+      return dispatch('reportShare', {
+        amount, contract, signId, sponsor, symbol,
+      });
+    },
     async recordShare({ dispatch, getters }, {
       amount, signId, sponsor = null, symbol,
     }) {
       const { blockchain } = getters.currentUserInfo;
       let actionName = null;
-      // eslint-disable-next-line no-constant-condition
       if (blockchain === 'EOS') actionName = 'scatter/recordShare';
       else if (blockchain === 'ONT') actionName = 'ontology/recordShare';
       return dispatch(actionName, {
         amount, signId, sponsor, symbol,
+      });
+    },
+    async reportShare({ getters }, {
+      amount, contract, signId, sponsor = null,
+    }) {
+      return backendAPI.reportShare({
+        amount,
+        contract,
+        blockchain: getters.currentUserInfo.blockchain,
+        signId,
+        sponsor,
       });
     },
     async getUser({ commit, getters }) {
