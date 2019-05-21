@@ -60,8 +60,7 @@
 </template>
 
 <script>
-import { getPlayerIncome, withdraw } from '@/api/contractEOS';
-import { isEmptyArray } from '@/common/methods';
+import { withdraw } from '@/api/contractEOS';
 import AssetList from './AssetList.vue';
 import { mapGetters } from 'vuex';
 import { precision } from '@/common/precisionConversion';
@@ -107,7 +106,6 @@ export default {
     },
     // 提现
     async withdraw(name) {
-      console.log('Connecting to EOS fetch data...');
       await withdraw(name)
         .then(() => this.$Message.success('提现成功!'))
         .catch((error) => {
