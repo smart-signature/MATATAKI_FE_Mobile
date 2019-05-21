@@ -24,13 +24,13 @@ const transferEOS = ({ amount = 0, memo = '' }) => {
   });
 };
 
-export const support = ({ amount = null, signId = null, sponsor = null }) => {
+export const recordShare = ({ amount = null, signId = null, sponsor = null }) => {
   if (!currentAccount()) { throw new Error('请先登录'); }
   if (!amount) { throw new Error('amount cant be falsy'); }
   if (!signId) { throw new Error('signId cant be falsy'); }
   return transferEOS({
     amount,
-    memo: ((sponsor != null) ? `support ${signId} ${sponsor}` : `support ${signId}`),
+    memo: !sponsor ? `support ${signId} ${sponsor}` : `support ${signId}`,
   });
 };
 

@@ -1,4 +1,5 @@
 import api, { eosClient, currentEOSAccount } from '@/api/scatter';
+import { recordShare } from '@/api/contractEOS';
 
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-shadow */
@@ -79,6 +80,15 @@ const actions = {
   },
   async getSignatureOfAuth({ dispatch }) {
     return dispatch('getSignature', { signData: state.account.name, memo: 'Auth' });
+  },
+  async recordShare({ state }, {
+    amount, signId, sponsor, symbol,
+  }) {
+    const { account } = state;
+    if (!account) throw new Error('no account');
+    return recordShare({
+      amount, owner: account.name, signId, sponsor, symbol,
+    });
   },
   async setBalances({ commit, state }) {
     const { name } = state.account;

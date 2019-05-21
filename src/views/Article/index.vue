@@ -146,7 +146,6 @@ import {
   delArticle, getUser,
   reportShare, getAvatarImage,
 } from '@/api';
-import { support } from '@/api/signature';
 import 'mavon-editor/dist/css/index.css';
 import moment from 'moment';
 import { ContentLoader } from 'vue-content-loader';
@@ -460,13 +459,13 @@ export default {
 
 
         const makeShare = async () => {
-          if (blockchain === 'EOS') return support({ amount, signId, sponsor });
-          if (blockchain === 'ONT') {
-            const share = await recordShare({
-              amount, signId, sponsor, symbol: 'ONT',
-            });
-            return reportShare({ amount, signId, sponsor });
-          }
+          let symbol = null;
+          if (blockchain === 'EOS') symbol = 'EOS';
+          if (blockchain === 'ONT') symbol = 'ONT';
+          await recordShare({
+            amount, signId, sponsor, symbol,
+          });
+          return reportShare({ amount, signId, sponsor });  
         };
         const backendResult = await makeShare();
         // console.log('F');
