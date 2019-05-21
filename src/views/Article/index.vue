@@ -186,7 +186,7 @@ export default {
         author: 'Loading...',
         createTime: '',
         fission_factor: 0,
-        id: -1,
+        id: null,
       },
       // eslint-disable-next-line global-require
       articleAvatar: require('../../assets/logo.png'),
@@ -428,7 +428,6 @@ export default {
       if (!this.userConfig.blockchin) {
         this.$Message.warning('本功能需登录');
         this.showModal = true;
-        return;
       }
     },
     async support() {

@@ -120,6 +120,12 @@ export default new Router({
       component: () => import(/* webpackChunkName: "draftbox" */ './views/User/DraftBox.vue'),
     },
     {
+      path: '/help',
+      name: 'Help',
+      props: true,
+      component: () => import(/* webpackChunkName: "Help" */ './views/User/Help/index.vue'),
+    },
+    {
       path: '/_easter-egg',
       name: 'EasterEgg',
       props: true,

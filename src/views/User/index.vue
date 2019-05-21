@@ -1,8 +1,10 @@
 /* eslint-disable no-shadow */
 <template>
   <div class="user mw">
-    <BaseHeader v-if="isMe" :pageinfo="{ title: `编辑`, rightPage: 'home', needLogin: false, }"  />
-    <BaseHeader v-else :pageinfo="{ title: ``, rightPage: 'home', needLogin: false, }"  style="background-color: #478970" :white="true">
+    <BaseHeader v-if="isMe" :pageinfo="{ title: '个人主页'}" >
+        <span slot="right" class="help-button" @click="jumpTo({ name: 'Help' })">帮助</span>
+    </BaseHeader>
+    <BaseHeader v-else :pageinfo="{ title: ``}"  style="background-color: #478970" :white="true">
       <div slot="right" v-if="!isMe">
         <template v-if="!followed">
           <span class="darkBtn" @click="follow_user">关注</span>
@@ -80,19 +82,12 @@
         草稿箱
       </za-cell>
     </div>
-    <div class="centercard" v-if="isMe">
-      <za-cell is-link has-arrow @click='jumpTo({ name: "About" })'>
-        规则介绍
-      </za-cell>
-      <za-cell is-link has-arrow @click='() => {}'>
-        用户协议
-      </za-cell>
-      <za-cell is-link has-arrow @click='() => {}'>
-        隐私政策
-      </za-cell>
-    </div>
-    <div class="bottomcard" v-if="isMe">
+    <!-- <div class="bottomcard" v-if="isMe">
       <Button class="bottombutton" long @click="btnsignOut">退出登录</Button>
+    </div> -->
+
+    <div class="signout" v-if="isMe">
+      <a class="signout-button" href="javascript:;" @click="btnsignOut">退出登录</a>
     </div>
     <ArticlesList :listtype="'others'" ref='ArticlesList' :username='username' v-if="!isMe"/>
   </div>
