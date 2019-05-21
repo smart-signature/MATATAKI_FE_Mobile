@@ -72,7 +72,7 @@ export default {
       this.tabsData[res.index].articles = res.data;
     },
     dropdownClick(name) {
-      console.log(name);
+      // console.log(name);
       this.activeIndex = name;
     },
     // addHandleScroll() {

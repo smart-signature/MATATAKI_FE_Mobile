@@ -60,6 +60,7 @@ export default {
       default: () => ({
         type: 'Array',
         key: '',
+        keys: null,
       }),
     },
     // 是否支持刷新
@@ -142,8 +143,11 @@ export default {
           });
           if (resData.length >= 0 && resData.length < 20) this.isTheEndOfTheScroll = true;
         } else if (this.isObj.type === 'newObject') { // 接口新格式  后面统一格式就能去掉一个判断
+          let resData = [];
           // 如果返回的是 Object 根据传进来的字段获取相应的 list
-          const resData = data.data[this.isObj.key];
+          if (!this.isObj.keys) resData = data[this.isObj.key];
+          else resData = data[this.isObj.key][this.isObj.keys];
+
           if (data.code === 0) {
             this.articles = [...this.articles, ...resData];
             this.$emit('getListData', {

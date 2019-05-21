@@ -27,7 +27,7 @@ export default {
       },
       apiUrl: 'tokens',
       asset: [],
-      isObj: { type: 'newObject', key: 'logs' },
+      isObj: { type: 'newObject', key: 'data', keys: 'logs' },
       needAccessToken: true,
     };
   },
