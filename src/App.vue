@@ -14,7 +14,6 @@
 import Konami from 'konami';
 import { mapActions, mapMutations } from 'vuex';
 import { version } from '../package.json';
-// import { getSign } from '@/api/signatureOntology';
 
 export default {
   methods: {

@@ -60,7 +60,8 @@
 </template>
 
 <script>
-import { withdraw } from '@/api/signature';
+import { getPlayerIncome, withdraw } from '@/api/contractEOS';
+import { isEmptyArray } from '@/common/methods';
 import AssetList from './AssetList.vue';
 import { mapGetters } from 'vuex';
 import { precision } from '@/common/precisionConversion';
