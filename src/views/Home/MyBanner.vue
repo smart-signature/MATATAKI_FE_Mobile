@@ -22,24 +22,16 @@
       </div>
       <a class="my-user-page" href="javascript:;" @click="showModal = true">立即登录</a>
     </template>
-    <modal-prompt
-    :showModal="showModal"
-    :modalText="modalText"
-    @changeInfo="changeInfo"
-    @modalSuccess="modalSuccess" />
+    <BaseModalPrompt :showModal="showModal" @changeInfo="changeInfo" />
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import { getAvatarImage } from '@/api';
-import modalPrompt from './components/modalPrompt.vue';
 
 export default {
   name: 'My-Banner',
-  components: {
-    modalPrompt,
-  },
   computed: {
     ...mapGetters(['currentUserInfo', 'isLogined']),
     displayBalance() {
@@ -56,10 +48,6 @@ export default {
   data() {
     return {
       showModal: false,
-      modalText: {
-        text: '选择登录账号',
-        button: ['确认', '取消'],
-      },
       userConfig: {
         blockchin: 'EOS',
       },
@@ -71,7 +59,7 @@ export default {
     if (isLogined) { refreshUser(); }
   },
   methods: {
-    ...mapActions(['idCheckandgetAuth', 'getUser']),
+    ...mapActions(['getUser']),
     toUserPage(username) {
       this.$router.push({ name: 'User', params: { username } });
     },
@@ -85,42 +73,9 @@ export default {
       const { avatar } = await this.getUser();
       this.getAvatarImage(avatar);
     },
-    async signIn() {
-      const { blockchin } = this.userConfig;
-      const usingBlockchain = {
-        EOS: blockchin === 'EOS',
-        ONT: blockchin === 'ONT',
-      };
-
-      const success = () => {
-        localStorage.setItem('blockchin', blockchin); // 成功存储登陆方式
-        this.showModal = false;
-      };
-
-      await this.idCheckandgetAuth(usingBlockchain).then(() => {
-        success();
-      }).catch(async () => {
-        await this.idCheckandgetAuth(usingBlockchain).then(() => {
-          success();
-        }).catch((err) => {
-          console.log(err);
-          this.showModal = false;
-          this.vantToast.fail({
-            duration: 1000,
-            message: '登陆失败',
-          });
-        });
-      });
-    },
     // 改变modal
     changeInfo(status) {
       this.showModal = status;
-    },
-    // modal 确认按钮
-    modalSuccess(type) {
-      this.userConfig.blockchin = type;
-      this.signIn();
-      // console.log(type);
     },
   },
   watch: {

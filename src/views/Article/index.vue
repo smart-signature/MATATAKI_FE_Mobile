@@ -64,13 +64,10 @@
 
     <div class="comments-list">
       <div class="commentslist-title">
-        <span>
-          赞赏队列 {{article.ups || 0}}
-        </span>
+        <span>赞赏队列 {{article.ups || 0}}</span>
       </div>
       <CommentsList class="comments" :signId="signId" :isRequest="isRequest" @stopAutoRequest="(status) => isRequest = status" />
     </div>
-
 
     <footer class="footer">
       <div class="footer-block">
@@ -134,12 +131,12 @@
 
     <!-- 文章 Info -->
     <ArticleInfo :infoModa="infoModa" @changeInfo="(status) => infoModa = status" />
-
+    <BaseModalPrompt :showModal="showModal" @changeInfo="changeInfo" />
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 import Clipboard from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
 import {
@@ -180,7 +177,6 @@ export default {
   },
   data() {
     return {
-      signId: null,
       post: {
         author: 'Loading...',
         title: 'Loading...',
@@ -188,23 +184,23 @@ export default {
       },
       article: {
         author: 'Loading...',
-        create_time: '',
+        createTime: '',
         fission_factor: 0,
+        id: -1,
       },
       // eslint-disable-next-line global-require
       articleAvatar: require('../../assets/logo.png'),
       amount: '',
       comment: '',
-      isSupported: RewardStatus.NOT_LOGGINED,
       totalSupportedAmount: {
         show: 0, // 用于默认数据显示
         showName: 'eos', // 用于默认数据显示
         eos: 0,
         ont: 0,
       },
+      showModal: false,
       visible3: false,
       clipboard: null,
-      articleCreateTime: '',
       opr: false,
       infoModa: false,
       isRequest: false,
@@ -213,6 +209,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(['userConfig']),
     ...mapGetters(['currentUserInfo', 'currentUsername', 'isLogined', 'isMe']),
     displayPlaceholder() {
       return `请输入 ${this.currentUserInfo.balance.slice(-4)} 赞赏金额`;
@@ -245,9 +242,23 @@ export default {
       const { invite } = this.$route.query;
       return !invite ? null : invite;
     },
+    isSupported() {
+      const { article, isLogined } = this;
+      let isSupported = false;
+      if (isLogined) {
+        isSupported = article.support ? RewardStatus.REWARDED : RewardStatus.NOT_REWARD_YET;
+      } else {
+        isSupported = RewardStatus.NOT_LOGGINED;
+      }
+      return isSupported;
+    },
+    signId() {
+      return this.article.id;
+    },
     articleCreateTimeComputed() {
-      if (!this.articleCreateTime) return '';
-      const time = moment(this.articleCreateTime);
+      const { createTime } = this.article;
+      if (!createTime) return '';
+      const time = moment(createTime);
       return isNDaysAgo(2, time) ? time.format('MMMDo HH:mm') : time.fromNow();
     },
   },
@@ -298,14 +309,13 @@ export default {
   },
   watch: {
     article() {
-      this.setisSupported();
       this.$emit('updateHead');
     },
     post() {
       this.$emit('updateHead');
     },
-    currentUsername() {
-      this.setisSupported();
+    isLogined(newState) {
+      if (newState) this.getArticleInfo(this.hash, true);
     },
     isRequest(newVal) {
       // 监听是否请求默认为false被改变为true下面不执行，请求完毕又被改变为false执行下列方法
@@ -332,6 +342,9 @@ export default {
           message: '该浏览器不支持自动复制',
         });
       });
+    },
+    changeInfo(status) {
+      this.showModal = status;
     },
     // 复制hash
     copyHash() {
@@ -383,12 +396,11 @@ export default {
         console.error('addReadAmount :', error);
       }
       this.article = article;
-      this.articleCreateTime = article.create_time;
+      this.article.CreateTime = article.create_time;
       this.totalSupportedAmount.show = article.value ? precision(article.value, 'eos') : 0; // 用于默认显示
       this.totalSupportedAmount.eos = article.value ? precision(article.value, 'eos') : 0; // eos
       this.totalSupportedAmount.ont = precision(article.ontvalue, 'ont'); // ont
 
-      this.signId = article.id;
       this.articleLoading = false; // 文章加载状态隐藏
       this.is_original = Boolean(article.is_original);
       // 未登录下点击赞赏会自动登陆并且重新获取文章信息 如果没有打赏并且是点击赞赏 则显示赞赏框
@@ -411,35 +423,16 @@ export default {
       }
       this.amount = e.target.value;
     },
-    setisSupported() {
-      const { article, currentUsername } = this;
-      if (currentUsername) {
-        this.isSupported = article.support ? RewardStatus.REWARDED : RewardStatus.NOT_REWARD_YET;
-      } else {
-        this.isSupported = RewardStatus.NOT_LOGGINED;
-      }
-    },
-    async b4support() {
-      try {
-        // this.$Message.info('帐号检测中...');
-        const { blockchin } = this.currentUserInfo;
-        // console.log(this.currentUserInfo);
-        const usingBlockchain = {
-          EOS: blockchin === 'EOS',
-          ONT: blockchin === 'ONT',
-        };
-        await this.idCheckandgetAuth(
-          usingBlockchain,
-        );
-        // this.$Message.success('检测通过');
-        this.getArticleInfo(this.hash, true);
-      } catch (error) {
-        console.log(error);
-        this.$Message.error('本功能需登录');
+    b4support() {
+      console.debug(this.userConfig.blockchin);
+      if (!this.userConfig.blockchin) {
+        this.$Message.warning('本功能需登录');
+        this.showModal = true;
+        return;
       }
     },
     async support() {
-      const { article, comment } = this;
+      const { article, comment, signId } = this;
       // 檢查 amount
       const amount = parseFloat(this.amount);
       if (Number.isNaN(amount) || amount < 0.01) {
@@ -447,7 +440,6 @@ export default {
         return;
       }
 
-      const signId = article.id;
       let sponsor = this.getInvite;
       // console.log('sponsor :', sponsor);
 

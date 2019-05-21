@@ -11,26 +11,21 @@
           <div class="blockchin-radio" :class="blockchin.nowIndex===index && 'active'"></div>
           <span>{{item.name}}</span>
         </div>
-        <a class="success" href="javascript:;" @click="success">{{modalText.button[0]}}</a>
+        <a class="success" href="javascript:;" @click="confirm">{{modalText.button[0]}}</a>
         <a class="cancel" href="javascript:;" @click="cancel">{{modalText.button[1]}}</a>
       </div>
   </Modal>
 </template>
 
 <script>
+import { mapActions, mapMutations, mapState } from 'vuex';
+
 export default {
-  name: 'modalPrompt',
+  name: 'BaseModalPrompt',
   props: {
     showModal: {
       type: Boolean,
       default: false,
-    },
-    modalText: {
-      type: Object,
-      default: () => ({
-        text: '提示',
-        button: ['确认', '取消'],
-      }),
     },
   },
   watch: {
@@ -38,9 +33,16 @@ export default {
       this.showModaCopy = newVal;
     },
   },
+  computed: {
+    ...mapState(['userConfig']),
+  },
   data() {
     return {
       showModaCopy: this.showModal,
+      modalText: {
+        text: '选择登录账号',
+        button: ['确认', '取消'],
+      },
       blockchin: {
         name: [
           {
@@ -48,7 +50,7 @@ export default {
             type: 'EOS',
           },
           {
-            name: 'ONT账号登录',
+            name: '本体账号登录',
             type: 'ONT',
           },
         ],
@@ -57,6 +59,8 @@ export default {
     };
   },
   methods: {
+    ...mapActions(['idCheckandgetAuth']),
+    ...mapMutations(['setUserConfig']),
     change(status) {
       this.showModaCopy = status;
       this.$emit('changeInfo', status);
@@ -65,12 +69,36 @@ export default {
       if (index === this.blockchin.nowIndex) return;
       this.blockchin.nowIndex = index;
     },
-    success() {
-      this.$emit('modalSuccess', this.blockchin.name[this.blockchin.nowIndex].type);
+    async confirm() {
+      this.setUserConfig({ blockchin: this.blockchin.name[this.blockchin.nowIndex].type });
+      await this.signIn();
+      this.change(false);
     },
     cancel() {
-      this.showModaCopy = false;
-      this.$emit('changeInfo', false);
+      this.change(false);
+    },
+    async signIn() {
+      const success = () => {
+        localStorage.setItem('blockchin', this.userConfig.blockchin); // 成功存储登陆方式
+        return true;
+      };
+
+      try {
+        await this.idCheckandgetAuth();
+        return success();
+      } catch (error) {
+        try {
+          await this.idCheckandgetAuth();
+          return success();
+        } catch (error) {
+          console.log(error);
+          this.vantToast.fail({
+            duration: 1000,
+            message: '登陆失败',
+          });
+          return false;
+        }
+      }
     },
   },
 };
@@ -103,9 +131,9 @@ export default {
     &-radio {
       width: 26px;
       height: 26px;
-      background-image: url('../../../assets/img/icon_select.svg');
+      background-image: url('../assets/img/icon_select.svg');
       &.active {
-        background-image: url('../../../assets/img/icon_select_active.svg');
+        background-image: url('../assets/img/icon_select_active.svg');
       }
     }
     span {
@@ -135,5 +163,4 @@ export default {
       }
   }
 }
-
 </style>
