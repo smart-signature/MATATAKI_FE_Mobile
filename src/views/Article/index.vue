@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 <template>
   <div class="article">
-    <BaseHeader :pageinfo="{ title: `文章详情`, needLogin: false, }">
+    <BaseHeader :pageinfo="{ title: '文章详情' }">
       <img class="more" src="@/assets/more.svg" alt="more" slot="right" @click="opr = !opr" v-if="isMe(article.author)">
       <div class="information" slot="info" @click="infoModa = true">
         <img src="@/assets/information.svg" alt="information">
@@ -146,7 +146,6 @@ import {
   delArticle, getUser,
   reportShare, getAvatarImage,
 } from '@/api';
-import { support } from '@/api/signature';
 import 'mavon-editor/dist/css/index.css';
 import moment from 'moment';
 import { ContentLoader } from 'vue-content-loader';
@@ -460,13 +459,13 @@ export default {
 
 
         const makeShare = async () => {
-          if (blockchain === 'EOS') return support({ amount, signId, sponsor });
-          if (blockchain === 'ONT') {
-            const share = await recordShare({
-              amount, signId, sponsor, symbol: 'ONT',
-            });
-            return reportShare({ amount, signId, sponsor });
-          }
+          let symbol = null;
+          if (blockchain === 'EOS') symbol = 'EOS';
+          if (blockchain === 'ONT') symbol = 'ONT';
+          await recordShare({
+            amount, signId, sponsor, symbol,
+          });
+          return reportShare({ amount, signId, sponsor });  
         };
         const backendResult = await makeShare();
         // console.log('F');

@@ -59,7 +59,7 @@ export default {
     setUserConfig({ blockchin: localStorage.getItem('blockchin') });
     idCheckandgetAuth().catch(() => {
       // 失败之后再重试一次
-      idCheckandgetAuth().catch(() => setUserConfig( null ));
+      idCheckandgetAuth().catch(() => setUserConfig(null));
     });
 
     window.updateNotify = updateNotify;

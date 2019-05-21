@@ -2,7 +2,7 @@
   <div class="new-post">
     <BaseHeader
       :isCenter="false"
-      :pageinfo="{ title: editorText, rightPage: 'home', needLogin: false, }"
+      :pageinfo="{ title: editorText, rightPage: 'home' }"
       :customizeBackFunc="true"
       :customizeHomeFunc="true"
       :customizeHeaderBc="'#fff'"

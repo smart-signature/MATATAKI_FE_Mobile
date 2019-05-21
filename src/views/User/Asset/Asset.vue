@@ -1,7 +1,6 @@
 <template>
   <div class="assetpage mw">
-    <BaseHeader
-      :pageinfo="{ left: 'back', title: `资产明细`, rightPage: 'home', needLogin: false, }"/>
+    <BaseHeader :pageinfo="{ left: 'back', title: '资产明细', rightPage: 'home' }"/>
 
     <div class="topcard">
       <div class="topcard-head">

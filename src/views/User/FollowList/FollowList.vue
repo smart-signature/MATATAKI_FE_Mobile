@@ -1,6 +1,6 @@
 <template>
   <div class="mw draftbox">
-    <BaseHeader :pageinfo="{ title: '列表', rightPage: 'home', needLogin: false, }" />
+    <BaseHeader :pageinfo="{ title: '列表', rightPage: 'home' }" />
     <za-tabs v-model="activeIndex" @change="changeTabs">
       <za-tab-pane :label="item.label" :name="index" v-for="(item, index) in tabsData" :key="index">
         <BasePull

@@ -128,7 +128,7 @@ export default new Vuex.Store({
         console.warn('Unable to get id, reason :', error);
         throw error;
       };
-      
+
       throw new Error('Unable to get id');
     },
     async recordShare({ dispatch, getters }, {
@@ -137,7 +137,7 @@ export default new Vuex.Store({
       const { blockchain } = getters.currentUserInfo;
       let actionName = null;
       // eslint-disable-next-line no-constant-condition
-      if (false && blockchain === 'EOS') actionName = 'scatter/recordShare';
+      if (blockchain === 'EOS') actionName = 'scatter/recordShare';
       else if (blockchain === 'ONT') actionName = 'ontology/recordShare';
       return dispatch(actionName, {
         amount, signId, sponsor, symbol,
