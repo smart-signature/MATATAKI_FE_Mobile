@@ -1,6 +1,6 @@
 /* eslint-disable no-shadow */
 <template>
-  <div class="user mw">
+  <div class="edit-user mw">
     <BaseHeader :pageinfo="{ title: '编辑', rightPage: 'home' }" >
       <div slot="right">
         <span class="done-button" :class="!setProfile && 'no-modify'" @click="save">完成</span>
@@ -192,10 +192,10 @@ export default {
   padding-top: 45px;
 }
 .edit-card {
-background:rgba(255,255,255,1);
-box-shadow:0px 2px 5px 0px rgba(235,235,235,0.5);
-border-radius:4px;
-margin: 10px 20px 0;
+  background:rgba(255,255,255,1);
+  box-shadow:0px 2px 5px 0px rgba(235,235,235,0.5);
+  border-radius:4px;
+  margin: 10px 20px 0;
 &-list {
   display: flex;
   justify-content: space-between;

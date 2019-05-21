@@ -1,7 +1,9 @@
 <template>
   <div class="comment">
     <div class="comment-info">
-      <Avatar icon="ios-person" class="comment-avatar" />
+      <div class="comment-avatar">
+           <img :src="avatar" @error="() => { this.avatar = require('../assets/logo.png'); }" alt="avatar">
+      </div>
         <div class="comment-head">
           <router-link class="comment-author" :to="{ name: 'User', params: { username: comment.username }}">
             {{comment.nickname || comment.username }}
@@ -20,6 +22,7 @@
 import moment from 'moment';
 import { isNDaysAgo } from '@/common/methods';
 import { precision } from '@/common/precisionConversion';
+import { getAvatarImage } from '@/api';
 
 export default {
   name: 'CommentCard',
@@ -38,11 +41,15 @@ export default {
     amount() {
       return precision(this.comment.amount, this.comment.platform) + this.comment.platform.toUpperCase();
     },
+    avatar() {
+      if (!this.comment.avatar) return require('../assets/logo.png');
+      return getAvatarImage(this.comment.avatar);
+    },
   },
 };
 </script>
 
-<style scoped>
+<style scoped lang="less">
 .comment {
     margin: 10px 24px;
     text-align: left;
@@ -61,7 +68,16 @@ export default {
 }
 .comment-avatar {
   margin-right: 12px;
-  flex: 0 0 32px;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  overflow: hidden;
+  border-radius: 50%;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 }
 .comment-author {
   color: rgba(0,0,0,0.70);
