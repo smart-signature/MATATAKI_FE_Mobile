@@ -9,10 +9,32 @@ process.env.VUE_APP_COMMIT_HASH = process.env.COMMIT_REF;
 const { NODE_ENV } = process.env;
 module.exports = {
   configureWebpack: {
+    optimization: {
+      splitChunks: {
+        chunks: 'async',
+        minSize: 30000,
+        minChunks: 1,
+        maxAsyncRequests: 5,
+        maxInitialRequests: 3,
+        automaticNameDelimiter: '~',
+        name: true,
+        cacheGroups: {
+          vendors: {
+            test: /[\\/]node_modules[\\/]/,
+            priority: -10,
+          },
+          default: {
+            minChunks: 2,
+            priority: -20,
+            reuseExistingChunk: true,
+          },
+        },
+      },
+    },
     plugins: [
       // 为生产环境修改配置...
       // new BundleAnalyzerPlugin(),
-      // new webpack.IgnorePlugin(/\/iconv-loader$/),
+      new webpack.IgnorePlugin(/\/iconv-loader$/),
       new webpack.ContextReplacementPlugin( // 减少moment体积
         /moment[/\\]locale$/,
         /zh-cn/,
