@@ -61,23 +61,10 @@ export default new Vuex.Store({
       return dispatch(actionName);
     },
     async idCheckandgetAuth({
-      commit, dispatch, state, getters,
-    }, { EOS, ONT }) {
-      const noId = (error) => {
-        console.warn('Unable to get id, reason :', error);
-        throw error;
-      };
-
+      dispatch, state, getters,
+    }) {
       const { blockchin } = state.userConfig;
-      if (!blockchin) { // 1st time
-        if (!EOS && !ONT) { // 不該到這
-          EOS = true;
-          ONT = true;
-        } else commit('setUserConfig', { EOS, ONT });
-      } else if (!EOS && !ONT) {
-        EOS = blockchin === 'EOS';
-        ONT = blockchin === 'ONT';
-      }
+      if (!blockchin) throw new Error('did not choice blockchin');
 
       console.log('Start id check ...');
       console.info('Ontology status :', state.ontology.account);
@@ -94,7 +81,7 @@ export default new Vuex.Store({
       }
 
       // Scatter
-      if (EOS) {
+      if (blockchin === 'EOS') {
         try {
           if (!state.scatter.isConnected) {
             const result = await dispatch('scatter/connect');
@@ -109,7 +96,7 @@ export default new Vuex.Store({
         }
       }
       // Ontology
-      if (ONT) {
+      if (blockchin === 'ONT') {
         try {
           if (!state.ontology.account) {
             const address = await dispatch('ontology/getAccount');
@@ -137,6 +124,11 @@ export default new Vuex.Store({
         return true;
       }
 
+      const noId = (error) => {
+        console.warn('Unable to get id, reason :', error);
+        throw error;
+      };
+      
       throw new Error('Unable to get id');
     },
     async recordShare({ dispatch, getters }, {
@@ -198,8 +190,8 @@ export default new Vuex.Store({
   },
   mutations: {
     setUserConfig(state, config = null) {
-      if (config) state.userConfig.blockchin = config.EOS ? 'EOS' : 'ONT';
-      else state.userConfig.blockchin = null;
+      if (config) state.userConfig.blockchin = config.blockchin;
+      else state.userConfig = { blockchin: null };
     },
     setNickname(state, nickname = '') {
       state.userInfo.nickname = nickname;

@@ -12,14 +12,14 @@
 
 <script>
 import Konami from 'konami';
-import { mapActions } from 'vuex';
+import { mapActions, mapMutations } from 'vuex';
 import { version } from '../package.json';
 // import { getSign } from '@/api/signatureOntology';
 
 export default {
   methods: {
-    // ...mapActions(['walletConnectionSetup']),
     ...mapActions(['idCheckandgetAuth']),
+    ...mapMutations(['setUserConfig']),
     updateNotify(desc) {
       const btnCommonStyle = {
         type: 'default',
@@ -53,28 +53,16 @@ export default {
   },
   created() { // https://juejin.im/post/5bfa4bb951882558ae3c171e
     console.info('Smart Signature version :', version);
-    const { updateNotify } = this;
-
+    const { idCheckandgetAuth, setUserConfig, updateNotify } = this;
 
     // 根据本地存储的状态来自动登陆
-    const blockchin = localStorage.getItem('blockchin');
-    // console.debug(blockchin);
-    if (blockchin) {
-      const usingBlockchain = {
-        EOS: blockchin === 'EOS',
-        ONT: blockchin === 'ONT',
-      };
-      this.idCheckandgetAuth(usingBlockchain).catch(() => {
-        this.idCheckandgetAuth(usingBlockchain);// 失败之后再重试一次
-      });
-    }
+    setUserConfig({ blockchin: localStorage.getItem('blockchin') });
+    idCheckandgetAuth().catch(() => {
+      // 失败之后再重试一次
+      idCheckandgetAuth().catch(() => setUserConfig( null ));
+    });
 
     window.updateNotify = updateNotify;
-    // const { walletConnectionSetup } = this;
-    // const usingBlockchain = { EOS: true, ONT: true };
-    // walletConnectionSetup(usingBlockchain).then((meg) => {
-    //   if (meg !== '') this.$Message.success(`${meg}登录成功！`);
-    // });
   },
   mounted() {
     // eslint-disable-next-line no-unused-vars
