@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 <template>
   <div class="article">
-    <BaseHeader :pageinfo="{ title: `文章详情`, needLogin: false, }">
+    <BaseHeader :pageinfo="{ title: '文章详情' }">
       <img class="more" src="@/assets/more.svg" alt="more" slot="right" @click="opr = !opr" v-if="isMe(article.author)">
       <div class="information" slot="info" @click="infoModa = true">
         <img src="@/assets/information.svg" alt="information">
@@ -428,7 +428,6 @@ export default {
       if (!this.userConfig.blockchin) {
         this.$Message.warning('本功能需登录');
         this.showModal = true;
-        return;
       }
     },
     async support() {

@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 <template>
-  <div class="edit-user mw">
-    <BaseHeader :pageinfo="{ title: '编辑', }" >
+  <div class="user mw">
+    <BaseHeader :pageinfo="{ title: '编辑', rightPage: 'home' }" >
       <div slot="right">
         <span class="done-button" :class="!setProfile && 'no-modify'" @click="save">完成</span>
       </div>

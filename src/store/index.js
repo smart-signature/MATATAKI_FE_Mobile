@@ -128,7 +128,7 @@ export default new Vuex.Store({
         console.warn('Unable to get id, reason :', error);
         throw error;
       };
-      
+
       throw new Error('Unable to get id');
     },
     async recordShare({ dispatch, getters }, {

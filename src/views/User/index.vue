@@ -1,8 +1,8 @@
 /* eslint-disable no-shadow */
 <template>
   <div class="user mw">
-    <BaseHeader v-if="isMe" :pageinfo="{ title: `编辑`, rightPage: 'home', needLogin: false, }"  />
-    <BaseHeader v-else :pageinfo="{ title: ``, rightPage: 'home', needLogin: false, }"  style="background-color: #478970" :white="true">
+    <BaseHeader v-if="isMe" :pageinfo="{ title: '编辑', rightPage: 'home' }"  />
+    <BaseHeader v-else :pageinfo="{ title: '', rightPage: 'home' }"  style="background-color: #478970" :white="true">
       <div slot="right" v-if="!isMe">
         <template v-if="!followed">
           <span class="darkBtn" @click="follow_user">关注</span>

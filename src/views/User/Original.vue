@@ -1,8 +1,6 @@
 <template>
   <div class="original mw">
-    <BaseHeader
-            :pageinfo="{ left: 'back', title: userTitle, rightPage: 'home',
-                   needLogin: false, }"/>
+    <BaseHeader :pageinfo="{ left: 'back', title: userTitle, rightPage: 'home' }"/>
     <ArticlesList :listtype="'original'" :username='username' ref='ArticlesList'/>
   </div>
 </template>
