@@ -12,6 +12,7 @@ module.exports = {
     plugins: [
       // 为生产环境修改配置...
       // new BundleAnalyzerPlugin(),
+      // new webpack.IgnorePlugin(/\/iconv-loader$/),
       new webpack.ContextReplacementPlugin( // 减少moment体积
         /moment[/\\]locale$/,
         /zh-cn/,
