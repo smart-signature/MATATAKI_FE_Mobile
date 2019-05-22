@@ -1,20 +1,24 @@
 /* eslint-disable no-shadow */
 <template>
-  <div class="article">
+  <div class="article" @click.stop="opr = false">
     <BaseHeader :pageinfo="{ title: '文章详情' }">
-      <img class="more" src="@/assets/more.svg" alt="more" slot="right" @click="opr = !opr" v-if="isMe(article.author)">
+      <div slot="right" class="more">
+        <img  src="@/assets/more.svg" alt="more" @click.stop="opr = !opr" v-if="isMe(article.author)">
+        <transition name="fade" mode="out-in">
+          <div class="dropdown" v-show="opr">
+            <div
+              class="dropdown-item"
+              @click="$router.push({name: 'Publish', params: { id: article.id }, query: { from: 'edit', hash: article.hash }})">编辑</div>
+            <div class="dropdown-item" @click="delArticleButton">删除</div>
+          </div>
+        </transition>
+      </div>
       <div class="information" slot="info" @click="infoModa = true">
         <img src="@/assets/information.svg" alt="information">
         <span>攻略</span>
       </div>
-
     </BaseHeader>
-    <transition name="fade" mode="out-in">
-      <div class="dropdown" v-show="opr">
-        <div class="dropdown-item" @click="$router.push({name: 'Publish', params: { id: article.id }, query: { from: 'edit', hash: article.hash }})">编辑</div>
-        <div class="dropdown-item" @click="delArticleButton">删除</div>
-      </div>
-    </transition>
+
     <ContentLoader v-if="articleLoading">
         <circle cx="36.98272" cy="24.082720000000002" r="11.98272" />
         <rect x="54" y="14.8" rx="0" ry="0" width="63.8" height="7.0666" />
@@ -46,10 +50,10 @@
     </template>
 
     <div class="ipfs-hash">
-        <img src="@/assets/img/icon_copy.svg" class="copy-hash" alt="hash" :data-clipboard-text="getCopyIpfsHash">
-        <span >
-          IPFS Hash: {{article.hash || 'Loading...'}}
-        </span>
+      <img src="@/assets/img/icon_copy.svg" class="copy-hash" alt="hash" :data-clipboard-text="getCopyIpfsHash">
+      <span >
+        IPFS Hash: {{article.hash || 'Loading...'}}
+      </span>
     </div>
 
     <div class="decoration">
@@ -101,14 +105,14 @@
             </div>
             <div class="amount-text">裂变系数</div>
           </div>
-      </div>
-      <div class="footer-block">
-          <button class="button-support" v-if="isSupported===-1" @click="b4support">赞赏<img src="@/assets/img/icon_support.png"/></button>
-          <button class="button-support" v-if="isSupported===0" disabled>赞赏中<img src="@/assets/img/icon_support.png"/></button>
-          <button class="button-support" v-else-if="isSupported===1" @click="visible3 = true">赞赏<img src="@/assets/img/icon_support.png"/></button>
-          <button class="button-support" v-else-if="isSupported===2" disabled>已赞赏<img src="@/assets/img/icon_support.png"/></button>
-          <button class="button-share" :data-clipboard-text="getClipboard" @click="share">分享<img src="@/assets/img/icon_share.png" /></button>
-      </div>
+    </div>
+    <div class="footer-block">
+        <button class="button-support" v-if="isSupported===-1" @click="b4support">赞赏<img src="@/assets/img/icon_support.png"/></button>
+        <button class="button-support" v-if="isSupported===0" disabled>赞赏中<img src="@/assets/img/icon_support.png"/></button>
+        <button class="button-support" v-else-if="isSupported===1" @click="visible3 = true">赞赏<img src="@/assets/img/icon_support.png"/></button>
+        <button class="button-support" v-else-if="isSupported===2" disabled>已赞赏<img src="@/assets/img/icon_support.png"/></button>
+        <button class="button-share" :data-clipboard-text="getClipboard" @click="share">分享<img src="@/assets/img/icon_share.png" /></button>
+    </div>
     </footer>
     <!-- 赞赏对话框 zarm -->
     <za-modal

@@ -180,21 +180,6 @@
     line-height: 46px;
     border-radius: 3px;
 }
-.dropdown {
-    position: absolute;
-    background-color: #434343;
-    color: #fff;
-    top: 50px;
-    right: 16px;
-    cursor: pointer;
-}
-.dropdown-item {
-    padding: 8px 20px;
-    font-size: 14px;
-}
-.dropdown-item:hover {
-    background-color: #2f2f2f;
-}
 
 
 
@@ -548,4 +533,27 @@
 .more {
   padding-left: 20px;
   cursor: pointer;
+  position: relative;
+  img {
+    width: 3px;
+  }
+
+  .dropdown {
+    position: absolute;
+    background-color: #434343;
+    color: #fff;
+    top: 40px;
+    right: 0px;
+    cursor: pointer;
+    width: 70px;
+    text-align: center;
+  }
+  .dropdown-item {
+      padding: 8px 0;
+      font-size: 14px;
+  }
+  .dropdown-item:hover {
+      background-color: #2f2f2f;
+  }
+
 }
