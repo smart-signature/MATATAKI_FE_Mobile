@@ -47,7 +47,7 @@ export default new Router({
       beforeEnter: (to, from, next) => {
         const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
         // eslint-disable-next-line eqeqeq
-        if (to.params.username != tokenUserName) next('/');
+        if (to.params.username != tokenUserName) next({ name: 'User', params: { username: to.params.username } });
         else { next(); }
       },
     },
@@ -59,7 +59,7 @@ export default new Router({
       beforeEnter: (to, from, next) => {
         const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
         // eslint-disable-next-line eqeqeq
-        if (to.params.username != tokenUserName) next('/');
+        if (to.params.username != tokenUserName) next({ name: 'User', params: { username: to.params.username } });
         else { next(); }
       }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
     },
@@ -71,7 +71,7 @@ export default new Router({
       beforeEnter: (to, from, next) => {
         const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
         // eslint-disable-next-line eqeqeq
-        if (to.params.username != tokenUserName) next('/');
+        if (to.params.username != tokenUserName) next({ name: 'User', params: { username: to.params.username } });
         else { next(); }
       }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
     },
@@ -80,12 +80,24 @@ export default new Router({
       name: 'Original',
       props: true,
       component: () => import(/* webpackChunkName: "user" */ './views/User/Original.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
+        // eslint-disable-next-line eqeqeq
+        if (to.params.username != tokenUserName) next({ name: 'User', params: { username: to.params.username } });
+        else { next(); }
+      }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
     },
     {
       path: '/user/:username/reward',
       name: 'Reward',
       props: true,
       component: () => import(/* webpackChunkName: "user" */ './views/User/Reward.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
+        // eslint-disable-next-line eqeqeq
+        if (to.params.username != tokenUserName) next({ name: 'User', params: { username: to.params.username } });
+        else { next(); }
+      }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
     },
     {
       // id 用于编辑文章或者草稿的时候动态传值使用
@@ -97,6 +109,10 @@ export default new Router({
       name: 'Publish',
       props: true,
       component: () => import(/* webpackChunkName: "article-edit" */ './views/Publish/Publish.vue'),
+      beforeEnter: (to, from, next) => {
+        if (to.query.from === 'edit' && from.name !== 'Article') next('/');
+        else next();
+      },
     },
     {
       path: '/followlist/:username',
@@ -109,6 +125,12 @@ export default new Router({
       name: 'DraftBox',
       props: true,
       component: () => import(/* webpackChunkName: "draftbox" */ './views/User/DraftBox.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
+        // eslint-disable-next-line eqeqeq
+        if (to.params.username != tokenUserName) next({ name: 'User', params: { username: to.params.username } });
+        else { next(); }
+      }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
     },
     {
       path: '/help',
