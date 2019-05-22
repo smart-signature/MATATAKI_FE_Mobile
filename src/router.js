@@ -118,6 +118,10 @@ export default new Router({
       name: 'Publish',
       props: true,
       component: () => import(/* webpackChunkName: "article-edit" */ './views/Publish/Publish.vue'),
+      beforeEnter: (to, from, next) => {
+        if (to.query.from === 'edit' && from.name !== 'Article') next('/');
+        else next();
+      },
     },
     {
       path: '/followlist/:username',

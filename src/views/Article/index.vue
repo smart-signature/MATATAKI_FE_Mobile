@@ -135,7 +135,7 @@
 
     <!-- 文章 Info -->
     <ArticleInfo :infoModa="infoModa" @changeInfo="(status) => infoModa = status" />
-    <BaseModalPrompt :showModal="showModal" @changeInfo="changeInfo" />
+    <BaseModalForSignIn :showModal="showModal" @changeInfo="changeInfo" />
   </div>
 </template>
 
@@ -212,7 +212,6 @@ export default {
     };
   },
   computed: {
-    ...mapState(['userConfig']),
     ...mapGetters(['currentUserInfo', 'currentUsername', 'isLogined', 'isMe']),
     displayPlaceholder() {
       return `请输入 ${this.currentUserInfo.balance.slice(-4)} 赞赏金额`;
@@ -427,8 +426,7 @@ export default {
       this.amount = e.target.value;
     },
     b4support() {
-      console.debug(this.userConfig.blockchin);
-      if (!this.userConfig.blockchin) {
+      if (!this.isLogined) {
         this.$Message.warning('本功能需登录');
         this.showModal = true;
       }

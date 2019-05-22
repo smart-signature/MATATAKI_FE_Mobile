@@ -22,7 +22,7 @@
       </div>
       <a class="my-user-page" href="javascript:;" @click="showModal = true">立即登录</a>
     </template>
-    <BaseModalPrompt :showModal="showModal" @changeInfo="changeInfo" />
+    <BaseModalForSignIn :showModal="showModal" @changeInfo="changeInfo" />
   </div>
 </template>
 
