@@ -6,8 +6,7 @@ import {
   backendAPI, getUser, disassembleToken, getCurrentAccessToken, setAccessToken,
 } from '@/api';
 
-
-Vue.use(Vuex);
+if (!window.Vue) Vue.use(Vuex);
 
 // That's vuex's need, sorry eslint
 /* eslint-disable no-param-reassign */

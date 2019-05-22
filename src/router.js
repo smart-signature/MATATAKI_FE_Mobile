@@ -1,11 +1,11 @@
 import Vue from 'vue';
-import Router from 'vue-router';
+import VueRouter from 'vue-router';
 import Home from './views/Home/index.vue';
 import { disassembleToken } from '@/api';
 
-Vue.use(Router);
+if (!window.VueRouter) Vue.use(VueRouter);
 
-export default new Router({
+export default new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes: [
