@@ -253,11 +253,12 @@ export default {
       return data;
     },
     // 发布文章
-    async publishArticle(data) {
+    async publishArticle(article) {
       const { failed, success } = this;
       try {
-        const signature = await this.getSignatureOfArticle();
-        const response = await backendAPI.publishArticle(data, signature);
+        const { author, hash } = article;
+        const signature = await this.getSignatureOfArticle({ author, hash });
+        const response = await backendAPI.publishArticle(article, signature);
         if (response.data.code !== 0) {
           throw new Error(response.data.message);
         }
