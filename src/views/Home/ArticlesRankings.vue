@@ -22,7 +22,7 @@
         :key="index"
         v-show="index === activeIndex"
         >
-          <ArticleCard :article="item" v-for="(item, index) in item.articles" :key="index"/>
+          <ArticleCard :article="item" v-for="(item, itemIndex) in item.articles" :key="itemIndex"/>
       </BasePull>
   </div>
 

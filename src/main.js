@@ -5,10 +5,15 @@ import camelCase from 'lodash/camelCase';
 import clipboard from 'clipboard';
 import moment from 'moment';
 import infiniteScroll from 'vue-infinite-scroll';
+// 记录路由并缓存页面，像原生APP导航一样。
+import Navigation from 'vue-navigation';
 import App from './App.vue';
 import router from './router';
 import store from './store';
+
+
 import './registerServiceWorker';
+
 
 // Vue plugins
 import './zarm';
@@ -18,6 +23,8 @@ import './plugins/vant';
 // global css
 import '@/assets/css/index.less';
 
+// 记录路由并缓存页面，像原生APP导航一样。
+Vue.use(Navigation, { router, store });
 
 [
   VueHead, infiniteScroll,

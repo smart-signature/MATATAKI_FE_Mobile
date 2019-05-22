@@ -86,14 +86,18 @@ export default {
     &-title {
       font-size:12px;
       font-weight:bold;
-      color:#A6A6A6;
       color:rgba(0,0,0,.7);
       letter-spacing:1px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
     }
     &-date {
       font-size:12px;
       font-weight:400;
       color:rgba(0,0,0,.44);
+      flex: 0 0 88px;
+      text-align: right;
     }
 }
 

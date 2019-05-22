@@ -434,6 +434,7 @@ export default {
     },
     // modal 同意
     modalCancel() {
+      this.showModal = false;
       if (this.modalMode === 'back') this.$router.go(-1);
       else if (this.modalMode === 'home') this.$router.push({ name: 'home' });
       else this.$router.go(-1);
