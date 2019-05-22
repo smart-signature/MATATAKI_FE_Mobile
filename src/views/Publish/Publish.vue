@@ -58,11 +58,12 @@
       :modalText="modalText"
       @changeInfo="changeInfo"
       @modalCancel="modalCancel" />
+    <BaseModalForSignIn :showModal="showSignInModal" @changeInfo="changeInfo2" />
   </div>
 </template>
 
 <script>
-import { mapGetters, mapActions, mapState } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import { sendPost } from '@/api/ipfs';
 import { mavonEditor } from 'mavon-editor';
 import {
@@ -129,6 +130,7 @@ export default {
     isOriginal: false, // 是否原创
     imgUploadDone: 0,
     showModal: false, // 弹框显示
+    showSignInModal: false,
     modalText: {
       text: ['文章尚未保存，是否退出？'], // 退出
       button: ['再想想', '退出'],
@@ -136,10 +138,7 @@ export default {
     modalMode: null, // header 判断点击的 back 还是 home
   }),
   computed: {
-    ...mapState('scatter', {
-      isScatterConnected: state => state.isConnected,
-    }),
-    ...mapGetters(['currentUsername']),
+    ...mapGetters(['currentUserInfo', 'currentUsername', 'isLogined']),
     isShowEditorMode() {
       // 创建和草稿的时候是否可以显示编辑器模式（单选按钮显示
       return !!(this.editorMode === 'create' || this.editorMode === 'draft');
@@ -190,7 +189,7 @@ export default {
           this.$router.push({ name: 'home' });
         }
       } catch (error) {
-        console.log(error);
+        console.error(error);
         this.$Notice.error({ title: '获取文章信息发生错误' });
         this.$router.push({ name: 'home' });
       }
@@ -234,11 +233,7 @@ export default {
       this.$Notice.error({ title: '发送失败', desc: error });
     },
     // 跳转页面
-    jumpToArticle(hash) {
-      this.$router.push({
-        name: 'Article', params: { hash },
-      });
-    },
+    jumpToArticle(hash) { this.$router.push({ name: 'Article', params: { hash } }); },
     // 成功提示
     async success(hash) {
       this.$Notice.success({
@@ -315,16 +310,6 @@ export default {
     },
     // 发布||修改按钮
     async sendThePost() {
-      /* try {
-        // this.$Message.info('帐号检测中...');
-        await this.idCheckandgetAuth();
-        // this.$Message.success('检测通过');
-      } catch (error) {
-        console.error(error);
-        this.$Message.error('本功能需登录');
-        return;
-      } */
-
       if (this.title === '' || this.markdownData === '') { // 标题或内容为空时
         this.$Message.error('标题或正文不能为空');
         return;
@@ -342,6 +327,11 @@ export default {
       const isOriginal = Number(this.isOriginal);
       console.log('sendThePost mode :', editorMode, saveType);
       if (editorMode === 'create' && saveType === 'public') { // 发布文章
+        if (!this.isLogined) {
+          this.$Message.warning('本功能需登录');
+          this.showSignInModal = true;
+          return;
+        }
         const { hash } = await this.sendPost({ title, author, content });
         console.log('sendPost result :', hash);
         this.publishArticle({
@@ -432,6 +422,9 @@ export default {
     changeInfo(status) {
       this.showModal = status;
       this.modalMode = null;
+    },
+    changeInfo2(status) {
+      this.showSignInModal = status;
     },
     // modal 同意
     modalCancel() {

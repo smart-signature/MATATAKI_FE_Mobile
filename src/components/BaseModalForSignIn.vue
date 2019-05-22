@@ -21,7 +21,7 @@
 import { mapActions, mapMutations, mapState } from 'vuex';
 
 export default {
-  name: 'BaseModalPrompt',
+  name: 'BaseModalForSignIn',
   props: {
     showModal: {
       type: Boolean,
