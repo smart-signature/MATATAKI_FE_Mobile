@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from 'vuex'; // mapGetters 未使用
+import { mapGetters } from 'vuex'; // mapGetters 未使用
 import throttle from 'lodash/throttle';
 
 export default {
@@ -53,12 +53,6 @@ export default {
       type: String,
       default: '',
     },
-  },
-  computed: {
-    ...mapState('scatter', {
-      isScatterConnected: state => state.isConnected,
-      isScatterLoggingIn: state => state.isLoggingIn,
-    }),
   },
   data() {
     return {
@@ -115,25 +109,8 @@ export default {
   },
   watch: {
     isLogined(newState) {
-      if (newState) this.$Message.success('自动登录成功');
+      if (newState) this.$Message.success('登录成功');
     },
-    /*
-    isScatterConnected(newState) {
-      const { pageinfo, isScatterLoggingIn } = this;
-      if (pageinfo.needLogin !== undefined && pageinfo.needLogin) {
-        if (newState && !isScatterLoggingIn) {
-          console.log('auto log in');
-          this.loginScatterAsync()
-            .then((id) => {
-              this.$Message.success('自动登录成功');
-            })
-            .catch(() => {
-              console.log('Unable to log in wallet');
-              this.$Message.error('自动登录失败，钱包需打开并解锁...');
-            });
-        }
-      }
-    }, */
   },
 };
 </script>
