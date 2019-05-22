@@ -20,5 +20,6 @@ export const toolbars = {
     table: true, // 表格
     navigation: true,
   },
-  mobile: {},
+  mobile: {
+  },
 };

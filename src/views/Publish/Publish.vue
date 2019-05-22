@@ -19,9 +19,10 @@
       class="editor"
       @imgAdd="$imgAdd"
       :toolbars="toolbars"
-      :subfield="false"
+      :subfield="subfield"
       :boxShadow="false"
       :autofocus="false"
+      :style="mavonStyle"
       placeholder="请输入 Markdown 格式的文字开始编辑"/>
       <div v-if="editorMode !== 'edit'" class="fission">
           <p>裂变系数</p>
@@ -77,9 +78,11 @@ import 'mavon-editor/dist/css/index.css'; // editor css
 import VueSlider from 'vue-slider-component';
 import 'vue-slider-component/theme/default.css';
 import { sleep } from '@/common/methods';
+import debounce from 'lodash/debounce';
 import { toolbars } from './toolbars'; // 编辑器配置
 import imgUpload from '@/components/imgUpload/index.vue'; // 图片上传
 import modalPrompt from './components/modalPrompt.vue'; // 弹出框提示
+
 
 export default {
   name: 'NewPost',
@@ -120,6 +123,10 @@ export default {
     fissionFactor: 2000,
     toolbars: {},
     screenWidth: document.body.clientWidth,
+    mavonStyle: {
+      // 367 其他元素高度剩余的总高度
+      minHeight: `${document.body.clientHeight - 367}px`,
+    },
     fissionNum: 2,
     cover: '',
     signature: '',
@@ -136,6 +143,7 @@ export default {
       button: ['再想想', '退出'],
     },
     modalMode: null, // header 判断点击的 back 还是 home
+    subfield: true,
   }),
   computed: {
     ...mapGetters(['currentUserInfo', 'currentUsername', 'isLogined']),
@@ -392,13 +400,21 @@ export default {
       image.src = imgfile.miniurl;
     },
     setToolBar(val) {
-      if (val > 750) this.toolbars = Object.assign(toolbars.pc, toolbars.public);
-      else this.toolbars = Object.assign(toolbars.mobile, toolbars.public);
+      if (val > 750) {
+        this.toolbars = Object.assign(toolbars.pc, toolbars.public);
+        this.subfield = true;
+      } else {
+        this.toolbars = Object.assign(toolbars.mobile, toolbars.public);
+        this.subfield = false;
+      }
     },
     resize() {
-      window.onresize = () => {
+      window.onresize = debounce(() => {
         this.screenWidth = document.body.clientWidth;
-      };
+        this.mavonStyle = {
+          minHeight: `${document.body.clientHeight - 367}px`,
+        };
+      }, 150);
     },
     // 上传完成
     doneImageUpload(res) {
@@ -437,6 +453,11 @@ export default {
   watch: {
     screenWidth(val) {
       this.setToolBar(val);
+    },
+    mavonStyle(newVal) {
+      console.log(newVal);
+
+      this.mavonStyle = newVal;
     },
     fissionNum() {
       this.fissionFactor = this.fissionNum * 1000;
