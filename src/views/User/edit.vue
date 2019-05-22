@@ -37,8 +37,6 @@ import {
   uploadAvatar,
 } from '@/api';
 import imgUpload from '@/components/imgUpload/index.vue';
-import { isNull } from '@/common/methods';
-import { log } from 'util';
 
 export default {
   name: 'User',
@@ -167,16 +165,25 @@ export default {
     // 完成上传
     async doneImageUpload(res) {
       const avatar = res.hash;
-      try {
-        // 更新图像
-        const response = await uploadAvatar({ avatar });
-        if (response.status !== 201) throw new Error('201');
-        this.refreshUser();
+      // 更新图像
+      await uploadAvatar({ avatar }).then((res) => {
+        if (res.status === 201) {
+          this.setAvatarImage(avatar);
+        } else {
+          this.vantToast.fail({
+            duration: 1000,
+            message: '上传失败',
+          });
+        }
         this.imgUploadDone += 1;
-      } catch (error) {
-        console.log(error);
-        this.$Message.error('上传失败请重试');
-      }
+      }).catch((err) => {
+        console.log(err);
+        this.vantToast.fail({
+          duration: 1000,
+          message: '上传失败',
+        });
+        this.imgUploadDone += 1;
+      });
     },
   },
   created() {
