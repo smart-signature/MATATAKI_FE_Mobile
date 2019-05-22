@@ -86,6 +86,12 @@ export default new Router({
       // meta: {
       //   keepAlive: true, // 缓存
       // },
+      beforeEnter: (to, from, next) => {
+        const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
+        // eslint-disable-next-line eqeqeq
+        if (to.params.username != tokenUserName) next({ name: 'User', params: { username: to.params.username } });
+        else { next(); }
+      }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
     },
     {
       path: '/user/:username/reward',
@@ -95,6 +101,12 @@ export default new Router({
       // meta: {
       //   keepAlive: true, // 缓存
       // },
+      beforeEnter: (to, from, next) => {
+        const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
+        // eslint-disable-next-line eqeqeq
+        if (to.params.username != tokenUserName) next({ name: 'User', params: { username: to.params.username } });
+        else { next(); }
+      }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
     },
     {
       // id 用于编辑文章或者草稿的时候动态传值使用
@@ -118,6 +130,12 @@ export default new Router({
       name: 'DraftBox',
       props: true,
       component: () => import(/* webpackChunkName: "draftbox" */ './views/User/DraftBox.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
+        // eslint-disable-next-line eqeqeq
+        if (to.params.username != tokenUserName) next({ name: 'User', params: { username: to.params.username } });
+        else { next(); }
+      }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
     },
     {
       path: '/help',
