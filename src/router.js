@@ -50,7 +50,7 @@ export default new Router({
       beforeEnter: (to, from, next) => {
         const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
         // eslint-disable-next-line eqeqeq
-        if (to.params.username != tokenUserName) next('/');
+        if (to.params.username != tokenUserName) next({ name: 'User', params: { username: to.params.username } });
         else { next(); }
       },
     },
@@ -62,7 +62,7 @@ export default new Router({
       beforeEnter: (to, from, next) => {
         const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
         // eslint-disable-next-line eqeqeq
-        if (to.params.username != tokenUserName) next('/');
+        if (to.params.username != tokenUserName) next({ name: 'User', params: { username: to.params.username } });
         else { next(); }
       }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
     },
@@ -74,7 +74,7 @@ export default new Router({
       beforeEnter: (to, from, next) => {
         const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
         // eslint-disable-next-line eqeqeq
-        if (to.params.username != tokenUserName) next('/');
+        if (to.params.username != tokenUserName) next({ name: 'User', params: { username: to.params.username } });
         else { next(); }
       }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
     },
