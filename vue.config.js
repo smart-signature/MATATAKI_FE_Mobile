@@ -1,5 +1,6 @@
 // const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const webpack = require('webpack');
+const nodeExternals = require('webpack-node-externals');
 // 动态计算环境变量并以 `process.env.` 注入网站
 // trick from: https://cli.vuejs.org/zh/guide/mode-and-env.html#在客户端侧代码中使用环境变量
 process.env.VUE_APP_VERSION = require('./package.json').version;
@@ -9,6 +10,8 @@ process.env.VUE_APP_COMMIT_HASH = process.env.COMMIT_REF;
 const { NODE_ENV } = process.env;
 module.exports = {
   configureWebpack: {
+    target: 'web', // in order to ignore built-in modules like path, fs, etc.
+    externals: ['encoding', 'bufferutil', 'memcpy', 'utf-8-validate'], // in order to ignore all modules in node_modules folder
     optimization: {
       splitChunks: {
         chunks: 'async',
@@ -75,4 +78,4 @@ module.exports = {
   //     },
   //   },
   // },
-};
+}
