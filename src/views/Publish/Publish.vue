@@ -431,7 +431,6 @@ export default {
     // 关闭modal
     changeInfo(status) {
       this.showModal = status;
-      this.modalMode = null;
     },
     // modal 同意
     modalCancel() {
