@@ -35,7 +35,7 @@
       </div>
       <div class="cover">
         <p>图文封面</p>
-        <img-upload :imgUploadDone="imgUploadDone" :imgSize="5" class="cover-upload" @doneImageUpload="doneImageUpload" v-if="!cover">
+        <img-upload :imgUploadDone="imgUploadDone" class="cover-upload" @doneImageUpload="doneImageUpload" v-if="!cover">
           <img slot="uploadButton" class="cover-add" src="@/assets/img/icon_add.svg" alt="add">
         </img-upload>
         <div class="cover-right" v-else>

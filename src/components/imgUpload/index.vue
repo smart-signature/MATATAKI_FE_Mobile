@@ -63,7 +63,7 @@ export default {
     // 显示上传图片大小 单位 M
     imgSize: {
       type: Number,
-      default: 2,
+      default: 5,
     },
     // 是否上传完成
     imgUploadDone: {
@@ -76,7 +76,7 @@ export default {
       type: Object,
       default: () => ({
         status: true, // 默认开启压缩
-        quality: 0.8, // 压缩品质
+        quality: 0.6, // 压缩品质
       }),
     },
   },
@@ -135,17 +135,14 @@ export default {
         }
       }
       // 限定最大字节
-      const imgSize = () => {
-        if (newFile.file.size >= 0 && newFile.file.size > 1024 * 1024 * this.imgSize) {
-        // console.log(newFile.file.size);
-          this.vantToast.fail({
-            duration: 1000,
-            message: `请选择 ${this.imgSize}M 以内的图片`,
-          });
-          return prevent();
-        }
-        return true;
-      };
+      if (newFile.file.size >= 0 && newFile.file.size > 1024 * 1024 * this.imgSize) {
+        this.vantToast({
+          duration: 1000,
+          message: `请选择 ${this.imgSize}M 以内的图片`,
+        });
+        return prevent();
+      }
+
       // 图片预览
       const modalImgView = () => {
         if (newFile && (!oldFile || newFile.file !== oldFile.file)) {
@@ -163,7 +160,6 @@ export default {
 
       // 执行 限制大小方法和显示裁剪框
       const limitAndShowView = () => {
-        imgSize();
         modalImgView();
       };
 
