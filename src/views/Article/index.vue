@@ -367,18 +367,27 @@ export default {
     },
     // 得到文章信息 hash id, supportDialog 为 true 则只更新文章信息
     async getArticleInfo(hash, supportDialog = false) {
-      try {
-        const response = await getArticleInfo(hash);
-        this.setArticle(response.data, supportDialog);
-        // 默认会执行获取文章方法，更新文章调用则不需要获取内容
-        if (!supportDialog) {
-          this.getArticleDatafromIPFS(response.data.hash);
-          this.getUser(response.data.author);
+      await getArticleInfo(hash).then((res) => {
+        if (res.status === 200 && res.data.code === 0) {
+          this.setArticle(res.data.data, supportDialog);
+          // 默认会执行获取文章方法，更新文章调用则不需要获取内容
+          if (!supportDialog) {
+            this.getArticleDatafromIPFS(res.data.data.hash);
+            this.getUser(res.data.data.author);
+          }
+        } else {
+          this.vantToast({
+            duration: 1000,
+            message: res.data.message,
+          });
         }
-      } catch (error) {
-        this.$Message.error('获取文章信息失败请重试');
-        console.log(error);
-      }
+      }).catch((err) => {
+        console.log(err);
+        this.vantToast({
+          duration: 1000,
+          message: '获取文章信息失败',
+        });
+      });
     },
     // 获取文章内容 from ipfs
     async getArticleDatafromIPFS(hash) {

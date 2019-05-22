@@ -74,6 +74,9 @@ export default {
 </script>
 
 <style scoped lang="less">
+.home {
+  min-height: 100%;
+}
 .head {
   color: #fff;
   padding-top: 10px;
