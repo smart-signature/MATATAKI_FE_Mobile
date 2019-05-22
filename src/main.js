@@ -16,9 +16,9 @@ import './registerServiceWorker';
 
 
 // Vue plugins
-import './zarm';
 import './plugins/iview';
 import './plugins/vant';
+import './plugins/zarm';
 
 // global css
 import '@/assets/css/index.less';
