@@ -28,7 +28,6 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions } from 'vuex';
 import MyBanner from './MyBanner.vue';
 import ArticleRankings from './ArticlesRankings.vue';
 

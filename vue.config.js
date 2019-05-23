@@ -13,10 +13,13 @@ module.exports = {
     target: 'web', // in order to ignore built-in modules like path, fs, etc.
     externals: [
       {
+        clipboard: 'ClipboardJS',
         vue: 'Vue',
         'vue-router': 'VueRouter',
         vuex: 'Vuex',
       },
+      'axios',
+      'moment',
       'encoding',
       'bufferutil',
       'memcpy',
@@ -50,6 +53,17 @@ module.exports = {
       new WebpackCdnPlugin({
         modules: [
           {
+            name: 'axios',
+            path: 'dist/axios.min.js',
+          },
+          {
+            name: 'clipboard',
+            path: 'dist/clipboard.min.js',
+          },
+          {
+            name: 'moment',
+          },
+          {
             name: 'vue',
             var: 'Vue',
             path: 'dist/vue.runtime.min.js',
@@ -63,15 +77,17 @@ module.exports = {
             name: 'vuex',
             var: 'Vuex',
             path: 'dist/vuex.min.js',
-          }
+          },
         ],
         publicPath: '/node_modules',
         crossOrigin: true,
       }),
+      /*
       new webpack.ContextReplacementPlugin( // 减少moment体积
         /moment[/\\]locale$/,
         /zh-cn/,
       ),
+      */
     ],
   },
   css: {

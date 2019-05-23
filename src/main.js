@@ -2,7 +2,6 @@ import Vue from 'vue';
 import VueHead from 'vue-head';
 import upperFirst from 'lodash/upperFirst';
 import camelCase from 'lodash/camelCase';
-import clipboard from 'clipboard';
 import moment from 'moment';
 import infiniteScroll from 'vue-infinite-scroll';
 // 记录路由并缓存页面，像原生APP导航一样。
@@ -66,8 +65,6 @@ requireComponent.keys().forEach((fileName) => {
 });
 
 Vue.config.productionTip = false;
-
-Vue.prototype.clipboard = clipboard;
 
 // Register moment's default language
 moment.locale('zh-CN');

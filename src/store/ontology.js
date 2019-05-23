@@ -23,22 +23,16 @@ const actions = {
     commit('setAccount', address);
     return address;
   },
-  async getBalance({ commit, dispatch, state }) {
-    let { account } = state;
-    if (!account) {
-      await dispatch('getAccount');
-      account = state.account;
-    }
+  async getBalance({ commit, state }) {
+    const { account } = state;
+    if (!account) throw new Error('no account');
     const balance = await API.getBalance({ address: account });
     commit('setBalance', balance);
     return balance;
   },
-  async getSignature({ dispatch, state }, { signData }) {
-    let { account } = state;
-    if (!account) {
-      await dispatch('getAccount');
-      account = state.account;
-    }
+  async getSignature({ state }, { signData }) {
+    const { account } = state;
+    if (!account) throw new Error('no account');
     const signature = await API.signMessage({ message: signData });
     return ({ publicKey: signature.publicKey, signature: signature.data, username: account });
   },
