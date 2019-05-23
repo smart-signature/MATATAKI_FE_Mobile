@@ -131,9 +131,9 @@ export default {
     &-radio {
       width: 26px;
       height: 26px;
-      background-image: url('../assets/img/icon_select.svg');
+      background-image: url('../../assets/img/icon_select.svg');
       &.active {
-        background-image: url('../assets/img/icon_select_active.svg');
+        background-image: url('../../assets/img/icon_select_active.svg');
       }
     }
     span {
