@@ -24,9 +24,11 @@ export default {
   computed: {
     friendlyDate() {
       // const isAppleSlave = navigator.platform.includes('iPhone');
-      const time = moment(this.asset.create_time);
+      // const time = moment(this.asset.create_time);
       // const timeZoneOffset = moment(time.getTime() - time.getTimezoneOffset() * 60000 * (isAppleSlave ? 0 : 1));
-      return isNDaysAgo(2, time) ? time.format('MMMDo HH:mm') : time.fromNow();
+      // return isNDaysAgo(2, time) ? time.format('MMMDo HH:mm') : time.fromNow();
+
+      return moment(this.asset.create_time).format('MMMDo HH:mm');
     },
     assetAmount() {
       const precisionFunc = (amount) => {
