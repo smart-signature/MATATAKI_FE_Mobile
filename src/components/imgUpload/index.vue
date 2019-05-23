@@ -71,14 +71,6 @@ export default {
       default: 0,
       required: true,
     },
-    // 压缩图片
-    compressorSetting: {
-      type: Object,
-      default: () => ({
-        status: true, // 默认开启压缩
-        quality: 0.6, // 压缩品质
-      }),
-    },
   },
   data() {
     return {
@@ -86,6 +78,7 @@ export default {
       modal: false, // modal 框显示和隐藏
       modalLoading: false, // modal button loading
       postAction: ifpsUpload, // 上传地址
+      quality: 0.8, // 压缩品质
     };
   },
   watch: {
@@ -135,14 +128,35 @@ export default {
         }
       }
       // 限定最大字节
-      if (newFile.file.size >= 0 && newFile.file.size > 1024 * 1024 * this.imgSize) {
-        this.vantToast({
-          duration: 1000,
-          message: `请选择 ${this.imgSize}M 以内的图片`,
+      const maxSize = (size) => {
+        if (newFile.file.size >= 0 && newFile.file.size > 1024 * 1024 * size) {
+          this.vantToast.fail({
+            duration: 1000,
+            message: '图片过大',
+          });
+          prevent();
+          return false;
+        }
+        return true;
+      };
+      // 压缩方法
+      const compressorFunc = async () => {
+        await new Compressor(newFile.file, {
+          quality: this.quality,
+          success(file) {
+            // eslint-disable-next-line no-param-reassign
+            newFile.file = file;
+            maxSize(this.imgSize);
+          },
+          error(err) {
+            console.log(err);
+            this.vantToast.fail({
+              duration: 1000,
+              message: '自动压缩图片失败',
+            });
+          },
         });
-        return prevent();
-      }
-
+      };
       // 图片预览
       const modalImgView = () => {
         if (newFile && (!oldFile || newFile.file !== oldFile.file)) {
@@ -157,34 +171,10 @@ export default {
           }
         }
       };
-
-      // 执行 限制大小方法和显示裁剪框
-      const limitAndShowView = () => {
-        modalImgView();
-      };
-
-      // 压缩方法
-      const compressorFunc = async () => {
-        await new Compressor(newFile.file, {
-          quality: this.compressorSetting.quality,
-          success(file) {
-            // eslint-disable-next-line no-param-reassign
-            newFile.file = file;
-            limitAndShowView();
-          },
-          error(err) {
-            console.log(err.message);
-            limitAndShowView();
-            this.vantToast.fail({
-              duration: 1000,
-              message: '自动压缩图片失败',
-            });
-          },
-        });
-      };
-
-      if (this.compressorSetting.status) compressorFunc();
-      else limitAndShowView();
+      const maxSizeResult = await maxSize(10);
+      if (!maxSizeResult) return true;
+      await compressorFunc();
+      await modalImgView();
     },
     // 上传图片
     uploadButton() {

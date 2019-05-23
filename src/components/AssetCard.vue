@@ -41,7 +41,7 @@ export default {
     },
     assetType() {
       const switchType = {
-        whthdraw: '提现',
+        withdraw: '提现',
         'share income': '赞赏收入',
         'sign income': '写作收入',
         'support expenses': '赞赏支出',
