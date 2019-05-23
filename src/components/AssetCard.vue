@@ -10,17 +10,12 @@
 
 <script>
 import moment from 'moment';
-// https://github.com/clampy-js/vue-clampy
-import clampy from '@clampy-js/vue-clampy';
-import { isNDaysAgo } from '@/common/methods';
+// import { isNDaysAgo } from '@/common/methods';
 import { precision } from '@/common/precisionConversion';
 
 export default {
   name: 'AssetCard',
   props: ['asset'],
-  directives: {
-    clampy,
-  },
   computed: {
     friendlyDate() {
       // const isAppleSlave = navigator.platform.includes('iPhone');

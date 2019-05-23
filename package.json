@@ -12,7 +12,6 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
-    "@clampy-js/vue-clampy": "^1.0.6",
     "axios": "^0.18.0",
     "clipboard": "^2.0.4",
     "compressorjs": "^1.0.5",
@@ -38,7 +37,6 @@
     "vue-navigation": "^1.1.4",
     "vue-router": "^3.0.1",
     "vue-slider-component": "^3.0.26",
-    "vue-toasted": "^1.1.26",
     "vue-upload-component": "^2.8.20",
     "vuex": "^3.0.1",
     "zarm-vue": "2.0.0-alpha.8"
