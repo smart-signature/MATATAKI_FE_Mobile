@@ -1,9 +1,12 @@
 <template>
   <div class="card">
-    <h2 class="card-pricing" :style='{ color: `${assetColor}` }'>{{assetAmount}}</h2>
     <div class="card-info">
-      <p class="card-title">{{asset.title}}</p>
-      <p class="card-date">{{friendlyDate}}</p>
+      <h2 class="card-pricing" :style='{ color: `${assetColor}` }'>{{assetAmount}}</h2>
+      <span class="card-type">{{assetType}}</span>
+    </div>
+    <div class="card-info">
+      <span class="card-title">{{asset.title}}</span>
+      <span class="card-date">{{friendlyDate}}</span>
     </div>
   </div>
 </template>
@@ -35,6 +38,15 @@ export default {
     assetColor() {
       // eslint-disable-next-line no-nested-ternary
       return this.asset.amount > 0 ? '#D95E5E' : (this.asset.amount < 0 ? '#519552' : '#a7aab7');
+    },
+    assetType() {
+      const switchType = {
+        whthdraw: '提现',
+        'share income': '赞赏收入',
+        'sign income': '写作收入',
+        'support expenses': '赞赏支出',
+      };
+      return switchType[this.asset.type];
     },
   },
   created() {},
@@ -75,25 +87,29 @@ export default {
       font-size: 24px;
       font-weight: bold;
     }
+    &-type {
+      font-size:14px;
+      font-weight:400;
+      color:rgba(0,0,0,.7);
+    }
     &-info {
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
     &-title {
-      font-size:12px;
+      font-size:14px;
       font-weight:bold;
       color:rgba(0,0,0,.7);
-      letter-spacing:1px;
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
     }
     &-date {
-      font-size:12px;
+      font-size:14px;
       font-weight:400;
       color:rgba(0,0,0,.44);
-      flex: 0 0 88px;
+      flex: 0 0 100px;
       text-align: right;
     }
 }

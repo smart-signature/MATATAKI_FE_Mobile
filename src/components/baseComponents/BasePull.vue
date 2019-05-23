@@ -108,10 +108,7 @@ export default {
     async infiniteHandler($state, isEmptyArray = false) {
       // 如果传了参数但是为null 阻止请求 场景发生在文章获取分享列表处
       // eslint-disable-next-line no-restricted-syntax
-      for (const [key, value] of Object.entries(this.params)) {
-        console.log(key, value);
-        if (!value) return;
-      }
+      for (const [key, value] of Object.entries(this.params)) if (!value) return;
 
       // if (this.nowIndex !== this.activeIndexCopy) return;
 
