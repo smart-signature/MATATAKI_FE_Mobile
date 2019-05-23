@@ -17,7 +17,7 @@ module.exports = {
         vue: 'Vue',
         'vue-router': 'VueRouter',
         vuex: 'Vuex',
-        'mavon-editor': 'mavon-editor',
+        'mavon-editor': 'MavonEditor',
       },
       'axios',
       'moment',
@@ -82,7 +82,13 @@ module.exports = {
           {
             name: 'mavon-editor',
             var: 'mavonEditor',
+            cssOnly: true,
             style: 'dist/css/index.css',
+          },
+          {
+            name: 'mavon-editor',
+            var: 'mavonEditor',
+            prodUrl: 'https://cdn.jsdelivr.net/gh/zhaokuohaha/mavonEditor@feature/lib-name/dist/mavon-editor.js'
           },
         ],
         publicPath: '/node_modules',
