@@ -1,5 +1,4 @@
 import API from '@/api/ontology';
-import { recordShare } from '@/api/contractOntology';
 
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-shadow */
@@ -56,6 +55,7 @@ const actions = {
   }) {
     const { account } = state;
     if (!account) throw new Error('no account');
+    const { recordShare } = await import(/* webpackChunkName: "contract-Ontology" */ '@/api/contractOntology');
     return recordShare({
       amount, owner: account, signId, sponsor, symbol,
     });

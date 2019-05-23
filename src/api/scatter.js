@@ -12,10 +12,9 @@ const currentNetwork = config.network.eos.mainnet[0];
 // api https://get-scatter.com/docs/api-create-transaction
 
 // @trick: use function to lazy eval Scatter eos, in order to avoid no ID problem.
-const eos = () => ScatterJS.scatter.eos(currentNetwork, Eos, { expireInSeconds: 60 });
-const currentEOSAccount = () => ScatterJS.scatter.identity && API.getAccount();
-
-const eosClient = Eos({
+export const eos = () => ScatterJS.scatter.eos(currentNetwork, Eos, { expireInSeconds: 60 });
+export const currentEOSAccount = () => ScatterJS.scatter.identity && API.getAccount();
+export const eosClient = Eos({
   chainId: "aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906",
   httpEndpoint: "https://proxy.eosnode.tools",
 });
@@ -94,6 +93,4 @@ const API = {
   },
 };
 
-
 export default API;
-export { eos, eosClient, currentEOSAccount };
