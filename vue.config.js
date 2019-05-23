@@ -63,6 +63,7 @@ module.exports = {
           },
           {
             name: 'moment',
+            paths: ['min/moment.min.js', 'locale/zh-cn.js'],
           },
           {
             name: 'vue',

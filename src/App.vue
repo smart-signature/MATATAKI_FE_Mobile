@@ -49,6 +49,9 @@ export default {
   },
   created() { // https://juejin.im/post/5bfa4bb951882558ae3c171e
     console.info('Smart Signature version :', version);
+
+    // console.debug(moment.locale());
+
     const { idCheckandgetAuth, setUserConfig, updateNotify } = this;
 
     // 根据本地存储的状态来自动登陆
