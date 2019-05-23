@@ -1,6 +1,6 @@
 <template>
   <div class="original mw">
-    <BaseHeader :pageinfo="{ left: 'back', title: userTitle, rightPage: 'home' }"/>
+    <BaseHeader :pageinfo="{ title: userTitle }"/>
     <ArticlesList :listtype="'original'" :username='username' ref='ArticlesList'/>
   </div>
 </template>
@@ -16,23 +16,25 @@ export default {
   data() {
     return {
       editing: false,
-      user: '',
       userTitle: '',
     };
   },
   computed: {
     ...mapGetters(['currentUsername', 'isMe']),
   },
+  watch: {
+    isMe() {
+      this.toggleTitle();
+    },
+  },
   methods: {
-    goBack() {
-      this.$router.go(-1);
+    toggleTitle() {
+      const { isMe, username } = this;
+      this.userTitle = isMe(username) ? '我的原创文章' : '他的原创文章';
     },
   },
   created() {
-    const { isMe, username } = this;
-    this.user = isMe(username) ? '我的用户页' : `${username} 的用户页`;
-    this.userTitle = isMe(username) ? '我的原创文章' : `${username} 的原创文章`;
-    document.title = `${this.user} - SmartSignature`;
+    this.toggleTitle();
   },
 };
 </script>

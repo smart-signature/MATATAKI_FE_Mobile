@@ -2,37 +2,37 @@
   <div>
     <!-- 复制了一份 来区别是否支持刷新 目前没有想到别的好办法 -->
     <!-- 负责刷新 -->
-    <za-pull :on-refresh="refresh" :refreshing="refreshing" v-if="isRefresh">
-      <!-- 负责滚动 -->
-      <div v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
+    <van-pull-refresh v-model="refreshing" @refresh="refresh" v-if="isRefresh">
         <slot></slot>
+    </van-pull-refresh>
+    <slot v-else></slot>
+    <!-- 负责滚动 -->
+    <infinite-loading :identifier="infiniteId" spinner="circles" @infinite="infiniteHandler" ref="infiniteLoading">
+      <div class="pull-message" slot="no-results">{{loadingTextComputed}}</div>
+      <div slot="error" slot-scope="{ trigger }">
+        <p class="error-message">您的网络似乎不太给力,请稍后重试</p>
+        <a class="error-refresh" href="javascript:;" @click="trigger">重新加载</a>
       </div>
-      <p v-if="articles.length !== 0" class="loading-stat">{{displayAboutScroll}}</p>
-      <p v-else class="loading-stat">{{loadingText.noArticles}}</p>
-    </za-pull>
-    <template v-else>
-      <div v-infinite-scroll="loadMore" infinite-scroll-disabled="busy">
-        <slot></slot>
-      </div>
-      <p v-if="articles.length !== 0" class="loading-stat">{{displayAboutScroll}}</p>
-      <p v-else class="loading-stat">{{loadingText.noArticles}}</p>
-    </template>
+    </infinite-loading>
   </div>
 </template>
 
 <script>
 import { getBackendData } from '@/api';
+import InfiniteLoading from 'vue-infinite-loading';
 
 export default {
   name: 'BasePull',
+  components: {
+    InfiniteLoading,
+  },
   props: {
     // 加载完的文字提示
     loadingText: {
       type: Object,
       default: () => ({
-        start: '😄 勤奋地加载更多精彩内容 😄',
-        end: '🎉 哇，你真勤奋，所有文章已经加载完了～ 🎉',
-        noArticles: '无文章',
+        nomore: '🎉 哇，你真勤奋，所有文章已经加载完了～ 🎉', // 没有更多
+        noresults: '无文章', // 没有数据
       }),
     },
     // 传进来的params
@@ -80,101 +80,103 @@ export default {
     },
   },
   computed: {
-    displayAboutScroll() {
-      return this.isTheEndOfTheScroll ? this.loadingText.end : this.loadingText.start;
+    loadingTextComputed() {
+      if (this.articles.length <= 0) return this.loadingText.noresults;
+      return this.loadingText.nomore;
     },
   },
   watch: {
+    // 改变tab
     activeIndex(newVal) {
       this.activeIndexCopy = newVal;
-      if (this.articles.length === 0) this.loadMore();
+      this.page = 1;
+      this.articles = [];
+      this.infiniteId += 1;
     },
+    // 父级请求完参数 刷新滚动分页
     params() {
-      // 父级请求完参数 刷新滚动分页
-      this.loadMore();
+      this.refresh();
     },
+    // 自动请求 通过time++
     autoRequestTime() {
       this.refresh();
     },
   },
-  created() {
-  },
+  created() {},
   methods: {
-    // 滚动 isEmptyArray 是否清空数组
-    async loadMore(isEmptyArray = false) {
+    // 滚动分页
+    async infiniteHandler($state, isEmptyArray = false) {
       // 如果传了参数但是为null 阻止请求 场景发生在文章获取分享列表处
       // eslint-disable-next-line no-restricted-syntax
-      for (const key in this.params) {
-        // eslint-disable-next-line no-prototype-builtins
-        if (this.params.hasOwnProperty(key)) {
-          if (!this.params[key]) return;
-        }
+      for (const [key, value] of Object.entries(this.params)) {
+        console.log(key, value);
+        if (!value) return;
       }
-      if (this.nowIndex !== this.activeIndexCopy || this.isTheEndOfTheScroll) return;
-      this.busy = true;
+
+      // if (this.nowIndex !== this.activeIndexCopy) return;
+
       const params = this.params || {};
       params.page = this.page;
-      await this.getApiData({
-        url: this.apiUrl,
-        params,
-      }, isEmptyArray);
-    },
-    async getApiData({ url, params }, isEmptyArray) {
-      try {
-        const { data } = await getBackendData({ url, params }, this.needAccessToken);
-        if (isEmptyArray) this.articles.length = 0;
-        if (this.isObj.type === 'Array') {
-          // 如果返回的数据是 Array 返回整个 data
+      const url = this.apiUrl;
+
+      // 获取数据成功执行
+      const getDataSuccess = (data) => {
+        if (isEmptyArray) this.articles.length = 0; // 清空数组
+        const isObjType = this.isObj.type; // 传进来的类型
+        let resDataList = []; // 请求回来的list 通过长度判断是否请求完毕
+
+        if (isObjType === 'Array') { // 如果返回的数据是 Array 返回整个 data
           this.articles = [...this.articles, ...data];
-          this.$emit('getListData', {
-            data: this.articles,
-            index: this.nowIndex,
-          });
-          if (data.length >= 0 && data.length < 20) this.isTheEndOfTheScroll = true;
-        } else if (this.isObj.type === 'Object') {
-          // 如果返回的是 Object 根据传进来的字段获取相应的 list
+          resDataList = data;
+        } else if (isObjType === 'Object') { // 如果返回的是 Object 根据传进来的字段获取相应的 list
           const resData = data[this.isObj.key];
-          console.log(resData, this.isObj.key);
+          resDataList = resData;
           this.articles = [...this.articles, ...resData];
-          this.$emit('getListData', {
-            data,
-            list: this.articles,
-            index: this.nowIndex,
-          });
-          if (resData.length >= 0 && resData.length < 20) this.isTheEndOfTheScroll = true;
-        } else if (this.isObj.type === 'newObject') { // 接口新格式  后面统一格式就能去掉一个判断
-          let resData = [];
+        } else if (isObjType === 'newObject') { // 接口新格式 后面统一格式就能去掉一个判断
           // 如果返回的是 Object 根据传进来的字段获取相应的 list
+          let resData = [];
+
+          // 根据传来的key 和 keys 判断读取的层数 (接口的数据层级有时候一样需要判断)
           if (!this.isObj.keys) resData = data[this.isObj.key];
           else resData = data[this.isObj.key][this.isObj.keys];
 
-          if (data.code === 0) {
-            this.articles = [...this.articles, ...resData];
-            this.$emit('getListData', {
-              data,
-              list: this.articles,
-              index: this.nowIndex,
-            });
-            if (resData.length >= 0 && resData.length < 20) this.isTheEndOfTheScroll = true;
-          } else {
-            throw new Error(data.message);
-          }
+          resDataList = resData;
+
+          // 因为接口的数据格式没有统一 这个判断先加在这里 统一格式之后拿出去
+          if (data.code === 0) this.articles = [...this.articles, ...resData];
+          else throw new Error(data.message);
         }
+
+        this.$emit('getListData', {
+          data, // 整个数据
+          list: this.articles, // list数据
+          index: this.nowIndex, // 当前索引
+        });
         this.page += 1;
-        this.busy = false;
-      } catch (error) {
-        console.log(error);
-        this.$Message.error('获取数据失败');
-        this.busy = true;
-        this.isTheEndOfTheScroll = true;
-      }
+
+        if (resDataList.length >= 0 && resDataList.length < 20) $state.complete();
+        else $state.loaded();
+      };
+
+      // 获取数据失败执行
+      const getDataFail = () => $state.error();
+
+      // 获取数据
+      await getBackendData({ url, params }, this.needAccessToken).then((res) => {
+        if (res.status === 200) getDataSuccess(res.data);
+        else getDataFail();
+      }).catch((err) => {
+        console.log(err);
+        getDataFail();
+      });
     },
     // 刷新
     async refresh() {
+      const { stateChanger } = this.$refs.infiniteLoading;
+      // stateChanger.reset();
       this.refreshing = true;
-      this.isTheEndOfTheScroll = false; // 显示未加载完成
       this.page = 1; // 重置分页索引
-      await this.loadMore(true);
+      await this.infiniteHandler(stateChanger, true);
       this.refreshing = false;
     },
   },
@@ -182,18 +184,32 @@ export default {
     return {
       refreshing: false, // 刷新
       page: 1, // 分页
-      busy: false, // 是否加载完成
       articles: [],
-      isTheEndOfTheScroll: false,
       activeIndexCopy: this.activeIndex,
+      infiniteId: +new Date(),
     };
   },
 };
 </script>
 
 <style scoped>
+.error-message {
+  font-size: 14px;
+  color: #6f6f6f;
+}
+.error-refresh {
+  display: inline-block;
+  background: #478970;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 3px;
+  box-sizing: border-box;
+  font-size: 14px;
+  margin: 10px 0 0;
+  cursor: pointer;
+}
 /* 加载更多提示 */
-.loading-stat {
+.pull-message {
   margin: 20px 0;
   color: #999;
   font-size: 14px;

@@ -69,7 +69,7 @@ export default {
   },
   methods: {
     getListData(res) {
-      this.tabsData[res.index].articles = res.data;
+      this.tabsData[res.index].articles = res.list;
     },
     dropdownClick(name) {
       // console.log(name);

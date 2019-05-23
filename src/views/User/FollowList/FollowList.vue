@@ -5,11 +5,7 @@
       <za-tab-pane :label="item.label" :name="index" v-for="(item, index) in tabsData" :key="index">
         <BasePull
           class="draftbox-list"
-          :loadingText = "{
-            start: '😄 勤奋地加载更多精彩内容 😄',
-            end: `🎉 哇，你真勤奋，所有关注/粉丝已经加载完了～ 🎉`,
-            noArticles: `无关注/粉丝`,
-          }"
+          :loadingText = "loadingText"
           :params="item.params"
           :apiUrl="item.apiUrl"
           :activeIndex="activeIndex"
@@ -55,7 +51,13 @@ export default {
       ],
       activeIndex: 0,
       activeIndexName: this.listtype,
+      loadingText: {
+        nomore: '',
+        noresults: '没有关注或粉丝',
+      },
     };
+  },
+  computed: {
   },
   created() {
     if (this.activeIndexName === '关注') this.activeIndex = 0;
@@ -67,8 +69,8 @@ export default {
       this.activeIndex = tab.name;
     },
     getListData(res) {
-      res.data.list.map(i => i.avatar = getAvatarImage(i.avatar));
-      this.tabsData[res.index].articles = res.data.list;
+      res.list.map(i => i.avatar = getAvatarImage(i.avatar));
+      this.tabsData[res.index].articles = res.list;
     },
   },
 };

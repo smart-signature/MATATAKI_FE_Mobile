@@ -1,8 +1,8 @@
 <template>
   <BasePull
-    :loadingText="{ start: '😄 勤奋地加载更多精彩内容 😄',
-        end: '',
-        noArticles: '无明细', }"
+    :loadingText="{
+        nomore: '',
+        noresults: '无明细', }"
     :params="params"
     :apiUrl="apiUrl"
     :needAccessToken="needAccessToken"
@@ -34,7 +34,6 @@ export default {
   computed: { },
   methods: {
     getListData(res) {
-      // console.log(res);
       const historyFilter = res.list.filter(i => i.amount !== 0); // 过滤金额为0
       this.asset = historyFilter;
       this.$emit('getOtherAsset', res);

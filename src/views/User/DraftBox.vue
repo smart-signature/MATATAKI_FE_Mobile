@@ -2,9 +2,9 @@
   <div class="draftbox mw">
     <BaseHeader :pageinfo="{ left: 'back', title: '草稿箱', rightPage: 'home' }"/>
     <BasePull
-    :loadingText="{ start: '更多...',
-        end: '',
-        noArticles: '无草稿', }"
+    :loadingText="{
+      nomore: '',
+      noresults: '无草稿', }"
     :params="params"
     :apiUrl="apiUrl"
     :needAccessToken="true"
@@ -34,7 +34,7 @@ export default {
   methods: {
     getListData(res) {
       // console.log(res);
-      this.draftBoxList = res.data;
+      this.draftBoxList = res.list;
     },
     delId(data) {
       const { id, index } = data;

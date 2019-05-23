@@ -8,6 +8,7 @@
             :apiUrl="item.apiUrl"
             :activeIndex="activeIndex"
             :nowIndex="index"
+            :loadingText="loadingText"
             @getListData="getListDataTab"
             >
               <ArticleCard :article="item" v-for="(item, index) in item.articles" :key="index"/>
@@ -19,6 +20,7 @@
         <BasePull
         :params="params"
         :apiUrl="apiUrl"
+        :loadingText="loadingText"
         @getListData="getListData"
         >
           <ArticleCard :article="item" v-for="(item, index) in articles" :key="index"/>
@@ -82,10 +84,10 @@ export default {
       this.activeIndex = tab.name;
     },
     getListData(res) {
-      this.articles = res.data;
+      this.articles = res.list;
     },
     getListDataTab(res) {
-      this.tabsData[res.index].articles = res.data;
+      this.tabsData[res.index].articles = res.list;
     },
   },
   data() {
@@ -95,6 +97,10 @@ export default {
       apiUrl: '',
       articles: [],
       activeIndex: 0,
+      loadingText: {
+        nomore: '',
+        noresults: '无文章',
+      },
     };
   },
 };

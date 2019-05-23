@@ -1,9 +1,8 @@
 <template>
   <BasePull
     :loadingText="{
-      start: '',
-      end: '',
-      noArticles: '暂无赞赏评论',
+      nomore: '',
+      noresults: '暂无赞赏评论',
     }"
     :params="params"
     :apiUrl="apiUrl"
@@ -72,7 +71,7 @@ export default {
       if (this.isRequest && res.data.data.length !== 0 && res.data.data[0].author === this.currentUserInfo.name) {
         this.$emit('stopAutoRequest', false);
       }
-      this.articles = res.data.data;
+      this.articles = res.list;
     },
   },
 };
