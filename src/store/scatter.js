@@ -46,7 +46,7 @@ const actions = {
     return state.API;
   },
   async connect({ commit, dispatch }) {
-    const api = dispatch('getAPI');
+    const api = await dispatch('getAPI');
     console.log('Connecting to Scatter wallet or Scatter desktop...');
     const connected = await api.connectScatterAsync();
     console.log('🛸Scatter🛸 connect result: ', connected);
@@ -70,7 +70,7 @@ const actions = {
     return false;
   },
   async getSignature({ dispatch, state }, { signData, memo = '' }) {
-    const api = dispatch('getAPI');
+    const api = await dispatch('getAPI');
     const { eosClient } = await import(/* webpackChunkName: "EOS-scatter" */ '@/api/scatter');
     const { account } = state;
     const result = await eosClient.getAccount(account.name);
@@ -104,7 +104,7 @@ const actions = {
     });
   },
   async setBalances({ commit, dispatch, state }) {
-    const api = dispatch('getAPI');
+    const api = await dispatch('getAPI');
     const { name } = state.account;
     const contractType = 'eos';
     if (contractType) {
@@ -116,7 +116,7 @@ const actions = {
     }
   },
   async login({ commit, dispatch }) {
-    const api = dispatch('getAPI');
+    const api = await dispatch('getAPI');
     console.log('Start log in...');
     commit('setIsLoggingIn', true);
     try {
@@ -139,7 +139,7 @@ const actions = {
     }
   },
   async logout({ commit, dispatch }) {
-    const api = dispatch('getAPI');
+    const api = await dispatch('getAPI');
     try {
       await api.logoutScatterAsync();
     } catch (err) {
