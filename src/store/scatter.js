@@ -1,6 +1,3 @@
-import api, { eosClient, currentEOSAccount } from '@/api/scatter';
-import { recordShare } from '@/api/contractEOS';
-
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-shadow */
 
@@ -8,6 +5,7 @@ import { recordShare } from '@/api/contractEOS';
 const state = {
   // account 是個物件, .name 才是帳號名
   account: null,
+  API: null,
   balances: {
     eos: '... EOS',
   },
@@ -31,13 +29,24 @@ const mutations = {
   setAccount(state, account = null) {
     state.account = account;
   },
+  setAPI(state, API = null) {
+    state.API = API;
+  },
   setBalance(state, { symbol, balance }) {
     state.balances[symbol] = balance;
   },
 };
 
 const actions = {
+  async getAPI({ commit, state }) {
+    if (!state.API) {
+      const { default: API } = await import(/* webpackChunkName: "EOS-scatter" */ '@/api/scatter');
+      commit('setAPI', API);
+    }
+    return state.API;
+  },
   async connect({ commit, dispatch }) {
+    const api = dispatch('getAPI');
     console.log('Connecting to Scatter wallet or Scatter desktop...');
     const connected = await api.connectScatterAsync();
     console.log('🛸Scatter🛸 connect result: ', connected);
@@ -47,6 +56,7 @@ const actions = {
     // 參考 https://es6.ruanyifeng.com/#docs/async
     commit('setIsConnected', connected);
     if (connected) {
+      const { currentEOSAccount } = await import(/* webpackChunkName: "EOS-scatter" */ '@/api/scatter');
       if (currentEOSAccount()) {
         commit('setAccount', currentEOSAccount());
         dispatch('setBalances');
@@ -59,7 +69,9 @@ const actions = {
     }
     return false;
   },
-  async getSignature({ state }, { signData, memo = '' }) {
+  async getSignature({ dispatch, state }, { signData, memo = '' }) {
+    const api = dispatch('getAPI');
+    const { eosClient } = await import(/* webpackChunkName: "EOS-scatter" */ '@/api/scatter');
     const { account } = state;
     const result = await eosClient.getAccount(account.name);
     // 获取当前权限
@@ -86,11 +98,13 @@ const actions = {
   }) {
     const { account } = state;
     if (!account) throw new Error('no account');
+    const { recordShare } = await import(/* webpackChunkName: "contract-EOS" */ '@/api/contractEOS');
     return recordShare({
       amount, owner: account.name, signId, sponsor, symbol,
     });
   },
-  async setBalances({ commit, state }) {
+  async setBalances({ commit, dispatch, state }) {
+    const api = dispatch('getAPI');
     const { name } = state.account;
     const contractType = 'eos';
     if (contractType) {
@@ -102,6 +116,7 @@ const actions = {
     }
   },
   async login({ commit, dispatch }) {
+    const api = dispatch('getAPI');
     console.log('Start log in...');
     commit('setIsLoggingIn', true);
     try {
@@ -123,7 +138,8 @@ const actions = {
       throw error;
     }
   },
-  async logout({ commit }) {
+  async logout({ commit, dispatch }) {
+    const api = dispatch('getAPI');
     try {
       await api.logoutScatterAsync();
     } catch (err) {

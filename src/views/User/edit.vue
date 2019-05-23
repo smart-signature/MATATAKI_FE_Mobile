@@ -30,7 +30,6 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
 import {
   Follow, Unfollow, getUser,
   setUserName, getAvatarImage, setProfile,

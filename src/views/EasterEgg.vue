@@ -1,4 +1,3 @@
-/* eslint-disable */
 <template>
     <div class="easter-egg">
         <h1 class="title">🎉 恭喜你发现了隐藏的彩蛋！</h1>
@@ -11,6 +10,7 @@
 </template>
 
 <script>
+/* eslint-disable */
 import { mapActions, mapGetters } from 'vuex';
 import API from '@/api/ontology';
 import { ontology } from '@/config';

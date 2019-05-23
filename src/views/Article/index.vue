@@ -141,7 +141,7 @@
 
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex';
-import Clipboard from 'clipboard';
+import ClipboardJS from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
 import {
   getArticleDatafromIPFS,
@@ -330,7 +330,7 @@ export default {
     ...mapActions(['idCheckandgetAuth', 'makeShare']),
     // 分享功能
     initClipboard() {
-      this.clipboard = new Clipboard('.button-share');
+      this.clipboard = new ClipboardJS('.button-share');
       this.clipboard.on('success', (e) => {
         this.vantToast.success({
           duration: 1000,
@@ -350,7 +350,7 @@ export default {
     },
     // 复制hash
     copyHash() {
-      this.clipboard = new Clipboard('.copy-hash');
+      this.clipboard = new ClipboardJS('.copy-hash');
       this.clipboard.on('success', (e) => {
         this.vantToast.success({
           duration: 1000,

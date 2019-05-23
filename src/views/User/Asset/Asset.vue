@@ -60,7 +60,6 @@
 </template>
 
 <script>
-import { withdraw } from '@/api/contractEOS';
 import AssetList from './AssetList.vue';
 import { mapGetters } from 'vuex';
 import { precision } from '@/common/precisionConversion';
@@ -106,12 +105,13 @@ export default {
     },
     // 提现
     async withdraw(name) {
+      /*
       await withdraw(name)
         .then(() => this.$Message.success('提现成功!'))
         .catch((error) => {
           console.error(error);
           this.$Message.error('提现失败!');
-        });
+        });*/
       this.visible = false; // 成功和失败都关闭弹窗
     },
     // 得到明细数据
