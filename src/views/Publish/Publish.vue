@@ -287,7 +287,8 @@ export default {
     },
     // 编辑文章
     async editArticle(data) {
-      const signature = await this.getSignatureOfArticle();
+      const { author, hash } = data;
+      const signature = await this.getSignatureOfArticle({ author, hash });
       const response = await backendAPI.editArticle(data, signature);
       console.log(response);
       if (response.data.msg !== 'success') this.failed('失败请重试');
