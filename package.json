@@ -9,7 +9,7 @@
     "build-for-netlify": "npm run build-dev && npm run fix-netlify-cs-routing",
     "build-prod": "vue-cli-service build --mode production",
     "fix-netlify-cs-routing": "echo '/*    /index.html   200' >> ./dist/_redirects",
-    "test:unit": "vue-cli-service test:unit"
+    "test:unit": "vue-cli-service test:unit --require mock-local-storage --require tests/setup.js"
   },
   "dependencies": {
     "axios": "^0.18.0",
@@ -55,8 +55,12 @@
     "chai": "^4.2.0",
     "eslint": "^5.8.0",
     "eslint-plugin-vue": "^5.0.0",
+    "jsdom": "15.1.0",
+    "jsdom-global": "3.0.2",
     "less": "^3.9.0",
     "less-loader": "^4.1.0",
+    "mock-local-storage": "^1.1.8",
+    "unmock-node": "0.0.55",
     "vue-cli-plugin-iview": "^1.0.6",
     "vue-template-compiler": "^2.6.6",
     "webpack": "^4.31.0",

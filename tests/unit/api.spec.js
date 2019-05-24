@@ -1,9 +1,11 @@
-import { assert } from 'chai';
-import backendAPI from '@/api/backend';
+import { unmock } from 'unmock-node';
+import backendAPI from '../../src/api/backend';
+
+beforeEach(async () => unmock());
 
 describe('backendAPI getUser()', () => {
   it('firt test response should be 200', async () => {
     const response = await backendAPI.getUser({ username: 'megumimegumi' });
-    assert(response.status === 200, 'response should be 200');
+    expect(response.status).to.equal(200);
   });
 });
