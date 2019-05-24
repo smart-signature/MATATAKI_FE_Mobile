@@ -94,7 +94,7 @@ if (NODE_ENV === 'test') {
             {
               name: 'mavon-editor',
               var: 'mavonEditor',
-              prodUrl: 'https://cdn.jsdelivr.net/gh/zhaokuohaha/mavonEditor@feature/lib-name/dist/mavon-editor.js'
+              prodUrl: 'https://cdn.jsdelivr.net/gh/zhaokuohaha/mavonEditor@feature/lib-name/dist/mavon-editor.js',
             },
           ],
           publicPath: '/node_modules',
@@ -143,5 +143,5 @@ if (NODE_ENV === 'test') {
     //     },
     //   },
     // },
-  }
+  };
 }

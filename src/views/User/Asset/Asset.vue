@@ -111,7 +111,7 @@ export default {
         .catch((error) => {
           console.error(error);
           this.$Message.error('提现失败!');
-        });*/
+        }); */
       this.visible = false; // 成功和失败都关闭弹窗
     },
     // 得到明细数据
