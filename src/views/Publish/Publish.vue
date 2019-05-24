@@ -122,10 +122,10 @@ export default {
     markdownData: '',
     fissionFactor: 2000,
     toolbars: {},
-    screenWidth: document.body.clientWidth,
+    screenWidth: (document.body.clientWidth || document.documentElement.clientWidth),
     mavonStyle: {
       // 367 其他元素高度剩余的总高度
-      minHeight: `${document.body.clientHeight - 367}px`,
+      minHeight: `${(document.body.clientHeight || document.documentElement.clientHeight) - 367}px`,
     },
     fissionNum: 2,
     cover: '',
@@ -410,9 +410,11 @@ export default {
     },
     resize() {
       window.onresize = debounce(() => {
-        this.screenWidth = document.body.clientWidth;
+        const clientHeight = (document.body.clientHeight || document.documentElement.clientHeight);
+        const clientWidth = (document.body.clientWidth || document.documentElement.clientWidth);
+        this.screenWidth = clientWidth;
         this.mavonStyle = {
-          minHeight: `${document.body.clientHeight - 367}px`,
+          minHeight: `${clientHeight - 367}px`,
         };
       }, 150);
     },

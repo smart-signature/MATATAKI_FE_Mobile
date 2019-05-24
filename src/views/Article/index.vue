@@ -70,6 +70,16 @@
       <div class="commentslist-title">
         <span>赞赏队列 {{article.ups || 0}}</span>
       </div>
+      <div class="product" v-if="article.product">
+        <div class="product-list" v-for="(item, index) in article.product" :key="index">
+          <span>《{{item.title}}》--key: {{item.digital_copy}}</span>
+          <img
+            src="@/assets/img/icon_copy.svg"
+            class="copy-product-info"
+            alt="hash"
+            :data-clipboard-text="'《' + item.title + '》--key:'+ item.digital_copy">
+        </div>
+      </div>
       <CommentsList class="comments" :signId="signId" :isRequest="isRequest" @stopAutoRequest="(status) => isRequest = status" />
     </div>
 
@@ -442,23 +452,52 @@ export default {
     },
     async support() {
       const { article, comment, signId } = this;
-      // 檢查 amount
+      const { blockchain } = this.currentUserInfo;
       const amount = parseFloat(this.amount);
-      if (Number.isNaN(amount) || amount < 0.01) {
-        this.$Message.warning('请输入正确的金额 最小赞赏金额为 0.01 EOS');
-        return;
-      }
+      // 检查金额是否符合
+      let checkPricesMatch = true;
+
+      // 检查价格
+      const checkPrices = (prices, range, message) => {
+        if (prices < range) {
+          this.vantToast({
+            duration: 1000,
+            message,
+          });
+          return false;
+        }
+        return true;
+      };
+      // 文章赞赏金额
+      if (blockchain === 'EOS') checkPricesMatch = checkPrices(amount, 0.01, `请输入正确的金额 最小赞赏金额为 0.01 ${blockchain}`);
+      else if (blockchain === 'ONT') checkPricesMatch = checkPrices(amount, 1, `请输入正确的金额 最小赞赏金额为 1 ${blockchain}`);
+      if (!checkPricesMatch) return;
+
+      // 检查商品价格
+      const checkCommodityPrices = () => {
+        const findBlockchain = (arr, symbol) => arr.filter(i => i.symbol === symbol);
+        const filterBlockchain = findBlockchain(article.prices, blockchain);
+        if (filterBlockchain.length !== 0) {
+          const { symbol, price } = filterBlockchain[0];
+          if (symbol === 'EOS') checkPricesMatch = checkPrices(amount, price / 10000, '赞赏金额不能小于商品价格');
+          else if (symbol === 'ONT') checkPricesMatch = checkPrices(amount, price, '赞赏金额不能小于商品价格');
+        }
+      };
+
+      // 文章是商品判断价格
+      if (article.channel_id === 2) checkCommodityPrices();
+      if (!checkPricesMatch) return;
+
 
       let sponsor = this.getInvite;
       // console.log('sponsor :', sponsor);
 
       try {
         this.isSupported = RewardStatus.LOADING;
-        const { blockchain } = this.currentUserInfo;
+
 
         // 如果是ONT true 如果是 EOS或者其他 false
         const isOntAddressVerify = ontAddressVerify(sponsor);
-
         // 如果是EOS账户赞赏 但是邀请人是ONT用户 则认为没有邀请
         if (blockchain === 'EOS' && isOntAddressVerify) sponsor = null;
         // 如果是ONT账户赞赏 但是邀请人EOS账户 则认为没有邀请

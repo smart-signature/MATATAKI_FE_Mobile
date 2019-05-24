@@ -463,10 +463,28 @@
   margin-left: 4px;
 }
 
-
-.loading-stat {
-  text-align: center;
+.product {
+  background-color: #fff;
+  padding: 4px 0;
+  &-list {
+    background: rgba(246, 246, 246, 0.7);
+    border-radius: 16px;
+    margin: 12px 20px;
+    padding: 8px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    span {
+      font-size: 14px;
+      color: rgb(93, 93, 93);
+    }
+    img {
+      height: 16px;
+      cursor: pointer;
+    }
+  }
 }
+
 
 @media screen and (min-width: 750px) {
   .ta_header h1 {
