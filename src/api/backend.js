@@ -249,11 +249,11 @@ const API = {
   },
   async getDraft({ id }) { return accessBackend({ url: `/draft/${id}` }); },
   // Be used in User page.
-  async setProfile({ nickname, introduction }) {
+  async setProfile({ nickname, introduction, email }) {
     return accessBackend({
       method: 'POST',
       url: '/user/setProfile',
-      data: { nickname, introduction },
+      data: { nickname, introduction, email },
     });
   },
   async getMyPost(id) { return accessBackend({ url: `/mypost/${id}` }); },

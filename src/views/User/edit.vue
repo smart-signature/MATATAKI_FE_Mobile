@@ -11,7 +11,7 @@
         <span>头像</span>
         <img-upload class="imgcard" :imgUploadDone="imgUploadDone" @doneImageUpload="doneImageUpload">
           <div class="user-avatar" slot="uploadButton">
-            <img :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png');}" alt="" slot="description">
+            <img :src="avatar" alt="" slot="description">
           </div>
         </img-upload>
       </div>
@@ -24,6 +24,11 @@
        <div class="edit-card-list">
         <span>简介</span>
         <input v-model="newIntroduction" placeholder="不能超过20位字符" />
+      </div>
+
+      <div class="edit-card-list">
+        <span>邮箱</span>
+        <input v-model="newEmail" placeholder="请输入邮箱" />
       </div>
     </div>
   </div>
@@ -47,24 +52,29 @@ export default {
       editing: false,
       nickname: '', // 昵称
       newname: '', // 昵称
-      email: '',
-      // eslint-disable-next-line global-require
-      avatar: require('../../assets/logo.png'),
+      avatar: '',
       imgUploadDone: 0, // 图片是否上传完成
       introduction: '', // 简介
       newIntroduction: '', // 简介
+      email: '',
+      newEmail: '',
       setProfile: false, // 是否编辑信息
     };
   },
   watch: {
     // 监听内容修改 如果内容改动则改变setProfile
     newname(newVal) {
-      if (newVal !== this.nickname || this.introduction !== this.newIntroduction) this.setProfile = true;
+      if (newVal !== this.nickname || this.introduction !== this.newIntroduction || this.email !== this.newEmail) this.setProfile = true;
       else this.setProfile = false;
     },
     // 监听内容修改 如果内容改动则改变setProfile
     newIntroduction(newVal) {
-      if (newVal !== this.introduction || this.nickname !== this.newname) this.setProfile = true;
+      if (newVal !== this.introduction || this.nickname !== this.newname || this.email !== this.newEmail) this.setProfile = true;
+      else this.setProfile = false;
+    },
+    // 监听内容修改 如果内容改动则改变setProfile
+    newEmail(newVal) {
+      if (newVal !== this.email || this.introduction !== this.newIntroduction || this.email !== this.newEmail) this.setProfile = true;
       else this.setProfile = false;
     },
   },
@@ -74,6 +84,7 @@ export default {
     checkSaveParams() {
       // 中文 字母 数字 1-12
       const reg = /^[\u4E00-\u9FA5A-Za-z0-9]{1,12}$/;
+      const regEmail = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
       let canSetProfile = true;
       if (!reg.test(this.newname)) {
         this.myToasted('昵称长度为1-12位,中文、英文、数字但不包括下划线等符号');
@@ -81,6 +92,10 @@ export default {
       }
       if (this.newIntroduction.length > 20) {
         this.myToasted('简介不能超过20个字符');
+        canSetProfile = false;
+      }
+      if (!regEmail.test(this.newEmail)) {
+        this.myToasted('请输入正确的邮件地址');
         canSetProfile = false;
       }
       return canSetProfile;
@@ -98,10 +113,12 @@ export default {
       const requestData = {
         nickname: this.newname,
         introduction: this.newIntroduction,
+        email: this.newEmail,
       };
       if (this.newname === this.nickname) delete requestData.nickname;
-      if (this.introduction === this.newIntroduction) delete requestData.introduction;
-
+      if (this.newIntroduction === this.introduction) delete requestData.introduction;
+      if (this.newEmail === this.email) delete requestData.email;
+      console.log(requestData);
       // 设置用户信息
       await setProfile(requestData).then((res) => {
         console.log(res);
@@ -131,11 +148,12 @@ export default {
       const { username } = this;
       const setUser = (data) => {
         this.nickname = data.nickname;
-        this.email = data.email;
         this.newname = this.nickname || this.username;
-        this.setAvatarImage(data.avatar);
+        this.email = data.email;
+        this.newEmail = data.email;
         this.introduction = data.introduction;
         this.newIntroduction = data.introduction;
+        this.setAvatarImage(data.avatar);
       };
 
       await getUser({ username }).then((res) => {
@@ -158,8 +176,7 @@ export default {
     setAvatarImage(hash) {
       // 空hash 显示默认Logo头像
       // eslint-disable-next-line global-require
-      if (!hash) this.avatar = require('../../assets/logo.png');
-      else this.avatar = getAvatarImage(hash);
+      if (hash) this.avatar = getAvatarImage(hash);
     },
     // 完成上传
     async doneImageUpload(res) {
@@ -248,6 +265,7 @@ export default {
     border-radius: 50%;
     overflow: hidden;
     position: relative;
+    background-color: #eee;
     img {
       width: 100%;
       height: 100%;
