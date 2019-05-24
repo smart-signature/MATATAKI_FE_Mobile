@@ -44,15 +44,9 @@ const actions = {
     if (!account) throw new Error('no account');
     return dispatch('getSignature', { signData: account });
   },
-  async recordShare({ state }, {
-    amount, signId, sponsor, symbol,
-  }) {
-    const { account } = state;
-    if (!account) throw new Error('no account');
+  async recordShare({ state }, share) {
     const { recordShare } = await import(/* webpackChunkName: "contract-Ontology" */ '@/api/contractOntology');
-    return recordShare({
-      amount, owner: account, signId, sponsor, symbol,
-    });
+    return recordShare({ ...share, owner: state.account });
   },
   signOut({ commit }) {
     commit('setAccount');

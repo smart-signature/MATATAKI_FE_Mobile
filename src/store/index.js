@@ -160,48 +160,25 @@ export default new Vuex.Store({
 
       throw new Error('Unable to get id');
     },
-    async makeShare({ dispatch, getters }, {
-      amount, signId, sponsor = null,
-    }) {
+    async makeShare({ dispatch, getters }, share) {
       const { blockchain } = getters.currentUserInfo;
-      let contract = null;
-      let symbol = null;
+      share.blockchain = blockchain;
       if (blockchain === 'EOS') {
-        contract = 'eosio.token';
-        symbol = 'EOS';
+        share.contract = 'eosio.token';
+        share.symbol = 'EOS';
       } else if (blockchain === 'ONT') {
-        contract = 'AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV';
-        symbol = 'ONT';
+        share.contract = 'AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV';
+        share.symbol = 'ONT';
       }
-      await dispatch('recordShare', {
-        amount, signId, sponsor, symbol,
-      });
-      return dispatch('reportShare', {
-        amount, contract, signId, sponsor, symbol,
-      });
+      await dispatch('recordShare', share);
+      return backendAPI.reportShare(share);
     },
-    async recordShare({ dispatch, getters }, {
-      amount, signId, sponsor = null, symbol,
-    }) {
-      const { blockchain } = getters.currentUserInfo;
+    async recordShare({ dispatch }, share) {
+      const { blockchain } = share;
       let actionName = null;
       if (blockchain === 'EOS') actionName = 'scatter/recordShare';
       else if (blockchain === 'ONT') actionName = 'ontology/recordShare';
-      return dispatch(actionName, {
-        amount, signId, sponsor, symbol,
-      });
-    },
-    async reportShare({ getters }, {
-      amount, contract, signId, sponsor = null, symbol,
-    }) {
-      return backendAPI.reportShare({
-        amount,
-        contract,
-        blockchain: getters.currentUserInfo.blockchain,
-        signId,
-        sponsor,
-        symbol,
-      });
+      return dispatch(actionName, share);
     },
     async getUser({ commit, getters }) {
       const { data } = await getUser({ username: getters.currentUserInfo.name });

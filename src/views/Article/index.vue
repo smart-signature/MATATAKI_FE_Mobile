@@ -159,7 +159,6 @@ import {
   addReadAmount, sendComment,
   delArticle, getUser,
   getAvatarImage,
-  // reportShare
 } from '@/api';
 import 'mavon-editor/dist/css/index.css';
 import moment from 'moment';

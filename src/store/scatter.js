@@ -93,15 +93,9 @@ const actions = {
   async getSignatureOfAuth({ dispatch }) {
     return dispatch('getSignature', { signData: state.account.name, memo: 'Auth' });
   },
-  async recordShare({ state }, {
-    amount, signId, sponsor, symbol,
-  }) {
-    const { account } = state;
-    if (!account) throw new Error('no account');
+  async recordShare(context, share) {
     const { recordShare } = await import(/* webpackChunkName: "contract-EOS" */ '@/api/contractEOS');
-    return recordShare({
-      amount, owner: account.name, signId, sponsor, symbol,
-    });
+    return recordShare(share);
   },
   async setBalances({ commit, dispatch, state }) {
     const api = await dispatch('getAPI');

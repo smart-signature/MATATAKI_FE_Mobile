@@ -66,25 +66,17 @@ const API = {
   async editArticle(article, signature) {
     return this.sendArticle('/edit', article, signature, true);
   },
-  async reportShare({
-    amount, contract, blockchain, signId, sponsor = null, symbol,
-  }) {
-    let _amount = amount;
+  async reportShare(share) {
+    const data = {
+      ...share, platform: share.blockchain.toLowerCase(), referrer: share.sponsor,
+    };
+    const { blockchain } = data;
     if (blockchain === 'EOS') {
-      _amount = amount * 10000;
+      data.amount *= 10000;
     }
-    return accessBackend({
-      method: 'POST',
-      url: '/support',
-      data: {
-        signId,
-        contract,
-        symbol,
-        amount: _amount,
-        platform: blockchain.toLowerCase(),
-        referrer: sponsor,
-      },
-    });
+    delete data.blockchain;
+    delete data.sponsor;
+    return accessBackend({ method: 'POST', url: '/support', data });
   },
   // 获取支持过的文章列表 page user
   async getArticleSupports(params) { return axiosforApiServer('/supports', { params }); },
