@@ -192,7 +192,7 @@ export default new Vuex.Store({
       });
     },
     async reportShare({ getters }, {
-      amount, contract, signId, sponsor = null,
+      amount, contract, signId, sponsor = null, symbol,
     }) {
       return backendAPI.reportShare({
         amount,
@@ -200,6 +200,7 @@ export default new Vuex.Store({
         blockchain: getters.currentUserInfo.blockchain,
         signId,
         sponsor,
+        symbol,
       });
     },
     async getUser({ commit, getters }) {
