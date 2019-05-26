@@ -5,7 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve --mode development ",
     "lint": "vue-cli-service lint",
-    "build-dev": "vue-cli-service build --mode test",
+    "build-dev": "vue-cli-service build --mode development",
     "build-for-netlify": "npm run build-dev && npm run fix-netlify-cs-routing",
     "build-prod": "vue-cli-service build --mode production",
     "fix-netlify-cs-routing": "echo '/*    /index.html   200' >> ./dist/_redirects",
