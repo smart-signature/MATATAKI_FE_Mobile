@@ -6,15 +6,10 @@
         <div class="onecard_title">{{draftbox.title}}</div>
         <div class="onecard_date">{{createTime}}</div>
       </div>
-    <za-icon
-      theme="default"
-      type="wrong-round-fill"
-      style="color: #515a6e;font-size: 24px;"
-      @click.stop="delListBtn({
+    <Icon type="md-close-circle" style="color: #515a6e;font-size: 24px;" @click.stop="delListBtn({
         id: draftbox.id,
         index: index
-      })">
-    </za-icon>
+      })"/>
   </div>
 </template>
 

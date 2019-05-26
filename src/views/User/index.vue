@@ -1,10 +1,10 @@
 /* eslint-disable no-shadow */
 <template>
-  <div class="user mw">
+  <div class="user mw" style="white-space:nowrap;">
     <BaseHeader v-if="isMe" :pageinfo="{ title: '个人主页'}" >
         <span slot="right" class="help-button" @click="jumpTo({ name: 'Help' })">帮助</span>
     </BaseHeader>
-    <BaseHeader v-else :pageinfo="{ title: ``}"  style="background-color: #478970" :white="true">
+    <BaseHeader v-else :pageinfo="{ title: ''}" style="background-color: #478970" :white="true">
       <div slot="right" v-if="!isMe">
         <template v-if="!followed">
           <span class="darkBtn" @click="follow_user">关注</span>
@@ -26,12 +26,8 @@
         <p v-if="email" class="email">{{email}}</p>
         <input class="userinput" :class="[!email ? 'username-email' : '']" v-if="editing" v-model='newname' />
         <p class="userstatus">
-          <a @click="jumpTo({ name: 'FollowList', params: { listtype: '关注' }})">
-            关注：{{follows}}
-          </a>
-          <a @click="jumpTo({ name: 'FollowList', params: {  listtype: '粉丝'  }})">
-            粉丝：{{fans}}
-          </a>
+          <router-link :to="{ name: 'FollowList', params: { listtype: '关注' }}">关注：{{follows}}</router-link>
+          <router-link :to="{ name: 'FollowList', params: { listtype: '粉丝' }}">粉丝：{{fans}}</router-link>
         </p>
       </div>
       <div class="user-button">
@@ -51,45 +47,62 @@
       </div>
       <div class="otherUsertextsOutter">
         <div class="otherUsertexts">
-          <p v-if="!editing" class="username" :class="[!email ? 'username-email' : '']">{{nickname === "" ? username : nickname}}</p>
+          <p v-if="!editing" class="username"
+            :class="[!email ? 'username-email' : '']"
+          >{{nickname === "" ? username : nickname}}</p>
           <p class="userstatus">
-            <a @click="jumpTo({ name: 'FollowList', params: { listtype: '关注' }})">
-              <span class="statusNumber">{{follows}}</span> <span class="statusKey">关注</span>
-            </a>
-            <a @click="jumpTo({ name: 'FollowList', params: {  listtype: '粉丝'  }})">
-              <span class="statusNumber">{{fans}}</span> <span class="statusKey">粉丝</span>
-            </a>
+            <router-link :to="{ name: 'FollowList', params: { listtype: '关注' }}">
+              <span class="statusNumber">{{follows}}</span>
+              <span class="statusKey">关注</span>
+            </router-link>
+            <router-link :to="{ name: 'FollowList', params: {  listtype: '粉丝'  }}">
+              <span class="statusNumber">{{fans}}</span>
+              <span class="statusKey">粉丝</span>
+            </router-link>
           </p>
           <p>简介：{{introduction || '暂无'}}</p>
           <p v-if="email" class="email">{{email}}</p>
         </div>
       </div>
     </div>
-    <div class="centercard" v-if="isMe">
-      <za-cell is-link has-arrow @click='jumpTo({ name: "Asset", params: { username }})' :description="`已绑定${stats.accounts}个账户`">
-        账户资产
-      </za-cell>
-    </div>
-
-    <div class="centercard" v-if="isMe">
-      <za-cell is-link has-arrow @click='jumpTo({ name: "Original", params: { username }})' :description="`${stats.articles}篇`">
-        原创文章
-      </za-cell>
-      <za-cell is-link has-arrow @click='jumpTo({ name: "Reward", params: { username }})' :description="`${stats.supports}篇`">
-        赞赏文章
-      </za-cell>
-      <za-cell is-link has-arrow @click='jumpTo({ name: "DraftBox", params: { username }})' :description="`${stats.drafts}篇`">
-        草稿箱
-      </za-cell>
-    </div>
-    <!-- <div class="bottomcard" v-if="isMe">
-      <Button class="bottombutton" long @click="btnsignOut">退出登录</Button>
-    </div> -->
-
+    <Menu v-if="isMe" theme="light" active-name="1" width="auto">
+      <Card class="centercard">
+        <MenuItem name="1" :to="{ name: 'Asset', params: { username }}">
+          <Row>
+            <Col span="8">账户资产</Col>
+            <Col span="6" offset="7">已绑定 {{stats.accounts}} 个账户 <Icon type="ios-arrow-forward" /></Col>
+          </Row>
+        </MenuItem>
+      </Card>
+      <Card class="centercard">
+        <MenuItem name="2" :to="{ name: 'Reward', params: { username }}">
+          <Row>
+            <Col span="8">赞赏文章</Col>
+            <Col span="6" offset="8">{{stats.supports}}篇</Col>
+            <Col span="2"><Icon type="ios-arrow-forward" /></Col>
+          </Row>
+        </MenuItem>
+        <MenuItem name="3" :to="{ name: 'Reward', params: { username }}">
+          <Row>
+            <Col span="8">原创文章</Col>
+            <Col span="6" offset="8">{{stats.supports}}篇</Col>
+            <Col span="2"><Icon type="ios-arrow-forward" /></Col>
+          </Row>
+        </MenuItem>
+        <MenuItem name="4" :to="{ name: 'DraftBox', params: { username }}">
+          <Row>
+            <Col span="8">草稿箱</Col>
+            <Col span="6" offset="8">{{stats.drafts}}篇</Col>
+            <Col span="2"><Icon type="ios-arrow-forward" /></Col>
+          </Row>
+        </MenuItem>
+      </Card>
+      </Menu>
+    
     <div class="signout" v-if="isMe">
       <a class="signout-button" href="javascript:;" @click="btnsignOut">退出登录</a>
     </div>
-    <ArticlesList :listtype="'others'" ref='ArticlesList' :username='username' v-if="!isMe"/>
+    <ArticlesList :listtype="'others'" ref="ArticlesList" :username="username" v-if="!isMe"/>
   </div>
 </template>
 
@@ -305,7 +318,10 @@ export default {
 
 <style lang="less" scoped src="./index.less"></style>
 <style lang="less">
-  .centercard .za-cell:first-child {
+  a {
+    color: black;
+  }
+  .centercard .Cell:first-child {
     &:after {
       border-top: none;
     }

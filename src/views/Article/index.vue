@@ -124,24 +124,20 @@
         <button class="button-share" :data-clipboard-text="getClipboard" @click="share">分享<img src="@/assets/img/icon_share.png" /></button>
     </div>
     </footer>
-    <!-- 赞赏对话框 zarm -->
-    <za-modal
-      :visible="visible3" @close="() => visible3 = false" radius=""
-      @maskClick="visible3 = false" :showClose="true">
-        <div slot="title" style="textAlign: center;">赞赏此文章</div>
+    <!-- 赞赏对话框 -->
+    <Modal v-model="visible3"
+      @close="() => visible3 = false" radius=""
+      @maskClick="visible3 = false" :showClose="true"
+      title="赞赏此文章"
+      ok-text="赞赏"
+      @on-ok="support"
+      >
         <div class="support-input">
-        <za-input
-          auto-height="" v-model="comment" type="textarea"
-          rows="4"
-          placeholder="输入推荐语…">
-        </za-input>
-        </div>
-        <div class="support-input">
+          <Input v-model="comment" type="textarea" :rows="4" placeholder="输入推荐语…"/>
           <input class="support-input__amount"
             :placeholder="displayPlaceholder" v-model="amount" type="text"  @input="handleChange"/>
         </div>
-        <button class="support-button" @click="support">赞赏</button>
-    </za-modal>
+    </Modal>
 
     <!-- 文章 Info -->
     <ArticleInfo :infoModa="infoModa" @changeInfo="(status) => infoModa = status" />

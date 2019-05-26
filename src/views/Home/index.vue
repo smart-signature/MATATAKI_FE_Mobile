@@ -5,7 +5,9 @@
       <link rel='icon' type='image/png' sizes='16x16' href='./img/Andoromeda logo.png'>
       <div class='add'>
         <Button class='publish' @click.stop='addShow=!addShow'>
-          <za-icon class='publish-icon' type='add' />
+          <Icon class='publish-icon' type="md-add" size='24'
+            style="margin-top: -8px;margin-left: -12px;;line-height: 16px;"
+           />
         </Button>
         <div v-show='addShow' class='add-menu'>
           <a href='javascript:void(0);'>搬运</a>
@@ -128,11 +130,6 @@ button.publish {
   width: 27px;
   height: 27px;
   margin-right: 14px;
-}
-.publish-icon {
-  margin: -5px -6px;
-  margin-left: -8px;
-  line-height: 16px;
 }
 .MyBanner {
   margin-top: 28px;

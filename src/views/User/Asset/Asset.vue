@@ -47,15 +47,8 @@
       </div>
     </div>
 
-
     <div class="detailtext">明细</div>
-    <AssetList :username="username" :type="type" @getOtherAsset="getOtherAsset" />
-
-    <za-confirm
-      :visible="visible"
-      title="提现确认" message="确定要提现吗？"
-      :ok="handleOk" :cancel="() => { visible = false }">
-    </za-confirm>
+    <AssetList :username="username" :type="type" @getOtherAsset="getOtherAsset"/>
   </div>
 </template>
 
@@ -94,25 +87,27 @@ export default {
     ...mapGetters(['currentUserInfo']),
   },
   watch: {
-    currentUserInfo() {
-      this.togglewithdrawButton();
-    },
+    currentUserInfo() { this.togglewithdrawButton(); },
   },
   methods: {
-    // 确认提现
-    handleOk() {
-      this.withdraw(this.username);
-    },
     // 提现
     async withdraw(name) {
-      /*
-      await withdraw(name)
-        .then(() => this.$Message.success('提现成功!'))
-        .catch((error) => {
-          console.error(error);
-          this.$Message.error('提现失败!');
-        }); */
-      this.visible = false; // 成功和失败都关闭弹窗
+      this.$Modal.confirm({
+        title: "提现确认",
+        content: "<p>确定要提现吗？</p>",
+        onOk: () => {
+          this.withdraw(this.username);
+          /*
+          .then(() => this.$Message.success('提现成功!'))
+          .catch((error) => {
+            console.error(error);
+            this.$Message.error('提现失败!');
+          }); */
+        },
+        onCancel: () => {
+          // this.$Message.info("Clicked cancel");
+        },
+      });
     },
     // 得到明细数据
     getOtherAsset(res) {
@@ -147,19 +142,13 @@ export default {
         });
         return;
       }
-      this.visible = true;
+      this.withdraw();
     },
     togglewithdrawButton() {
-      const { blockchain } = this.currentUserInfo;
-      // console.log(blockchain);
       // EOS可以提现
-      if (blockchain === 'EOS' && this.type === 'EOS') {
-        this.isWithdrawButton = true; // 可以提现
-      } else {
-        this.isWithdrawButton = false; // 不能提现
-      }
+      this.isWithdrawButton = this.currentUserInfo.blockchain === 'EOS' && this.type === 'EOS';
     },
-  },
+  }
 };
 </script>
 
