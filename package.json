@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "clipboard": "^2.0.4",
     "compressorjs": "^1.0.5",
     "cropperjs": "^1.5.1",
     "cyanobridge": "0.1.0",
@@ -31,6 +30,7 @@
     "scatterjs-plugin-eosjs": "^1.5.1",
     "vant": "^1.6.19",
     "vue": "^2.6.6",
+    "vue-clipboard2": "^0.3.0",
     "vue-content-loader": "^0.2.1",
     "vue-head": "^2.1.1",
     "vue-infinite-loading": "^2.4.4",

@@ -50,7 +50,9 @@
     </template>
 
     <div class="ipfs-hash">
-      <img src="@/assets/img/icon_copy.svg" class="copy-hash" alt="hash" :data-clipboard-text="getCopyIpfsHash">
+      <img
+        @click="copyText(getCopyIpfsHash)"
+        src="@/assets/img/icon_copy.svg" class="copy-hash" alt="hash">
       <span >
         IPFS Hash: {{article.hash || 'Loading...'}}
       </span>
@@ -77,7 +79,7 @@
             src="@/assets/img/icon_copy.svg"
             class="copy-product-info"
             alt="hash"
-            :data-clipboard-text="'《' + item.title + '》--key:'+ item.digital_copy">
+            @click="copyText('《' + item.title + '》--key:'+ item.digital_copy)">
         </div>
       </div>
       <CommentsList class="comments" :signId="signId" :isRequest="isRequest" @stopAutoRequest="(status) => isRequest = status" />
@@ -121,7 +123,7 @@
         <button class="button-support" v-if="isSupported===0" disabled>赞赏中<img src="@/assets/img/icon_support.png"/></button>
         <button class="button-support" v-else-if="isSupported===1" @click="visible3 = true">赞赏<img src="@/assets/img/icon_support.png"/></button>
         <button class="button-support" v-else-if="isSupported===2" disabled>已赞赏<img src="@/assets/img/icon_support.png"/></button>
-        <button class="button-share" :data-clipboard-text="getClipboard" @click="share">分享<img src="@/assets/img/icon_share.png" /></button>
+        <button class="button-share" @click="share">分享<img src="@/assets/img/icon_share.png" /></button>
     </div>
     </footer>
     <!-- 赞赏对话框 -->
@@ -147,7 +149,6 @@
 
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex';
-import ClipboardJS from 'clipboard';
 import { mavonEditor } from 'mavon-editor';
 import {
   getArticleDatafromIPFS,
@@ -181,9 +182,6 @@ export default {
   components: {
     CommentsList, ArticleInfo, ContentLoader, mavonEditor,
   },
-  beforeDestroy() {
-    this.clipboard.destroy(); // 组件销毁之前 销毁clipboard
-  },
   data() {
     return {
       post: {
@@ -209,7 +207,6 @@ export default {
       },
       showModal: false,
       visible3: false,
-      clipboard: null,
       opr: false,
       infoModa: false,
       isRequest: false,
@@ -272,8 +269,6 @@ export default {
   },
   created() {
     document.title = '正在加载文章 - Smart Signature';
-    this.initClipboard(); // 分享按钮功能需要放在前面 保证功能的正常执行
-    this.copyHash(); // 复制 hash
     this.getArticleInfo(this.hash); // 得到文章信息
   },
   head: {
@@ -334,40 +329,20 @@ export default {
   },
   methods: {
     ...mapActions(['idCheckandgetAuth', 'makeShare']),
-    // 分享功能
-    initClipboard() {
-      this.clipboard = new ClipboardJS('.button-share');
-      this.clipboard.on('success', (e) => {
-        this.vantToast.success({
-          duration: 1000,
-          message: '复制成功',
-        });
-        e.clearSelection();
-      });
-      this.clipboard.on('error', () => {
-        this.vantToast.fail({
-          duration: 1000,
-          message: '该浏览器不支持自动复制',
-        });
-      });
-    },
     changeInfo(status) {
       this.showModal = status;
     },
     // 复制hash
-    copyHash() {
-      this.clipboard = new ClipboardJS('.copy-hash');
-      this.clipboard.on('success', (e) => {
+    copyText(getCopyIpfsHash) {
+      this.$copyText(getCopyIpfsHash).then(() => {
         this.vantToast.success({
           duration: 1000,
           message: '复制成功',
         });
-        e.clearSelection();
-      });
-      this.clipboard.on('error', () => {
+      }, () => {
         this.vantToast.fail({
           duration: 1000,
-          message: '该浏览器不支持自动复制',
+          message: '复制失败',
         });
       });
     },
@@ -524,6 +499,7 @@ export default {
       }
     },
     share() {
+      this.copyText(this.getClipboard);
       try {
         this.idCheckandgetAuth();
       } catch (error) {

@@ -11,6 +11,7 @@ import store from './store';
 
 import './registerServiceWorker';
 
+import VueClipboard from 'vue-clipboard2';
 
 // Vue plugins
 import './plugins/iview';
@@ -19,6 +20,8 @@ import './plugins/baseComponents';
 
 // global css
 import '@/assets/css/index.less';
+
+Vue.use(VueClipboard);
 
 // 记录路由并缓存页面，像原生APP导航一样。
 Vue.use(Navigation, { router, store });
