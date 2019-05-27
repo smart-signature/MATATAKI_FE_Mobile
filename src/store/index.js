@@ -20,6 +20,7 @@ export default new Vuex.Store({
       blockchin: null,
     },
     userInfo: {
+      accessToken: null,
       nickname: '',
     },
   },
@@ -42,11 +43,11 @@ export default new Vuex.Store({
     currentUsername: (state, { 'scatter/currentUsername': scatterUsername }) => (
       scatterUsername || state.ontology.account || null
     ),
-    isLogined: (state, { currentUserInfo }) => currentUserInfo.name !== null,
+    isLogined: (state) => state.userInfo.accessToken !== null,
     isMe: (state, { currentUserInfo }) => target => currentUserInfo.name === target,
   },
   actions: {
-    async getAuth({ dispatch, getters }) {
+    async getAuth({ commit, dispatch, getters }) {
       const currentToken = getCurrentAccessToken();
       const decodedData = disassembleToken(currentToken); // 拆包
       const username = currentToken ? decodedData.iss : null;
@@ -63,6 +64,7 @@ export default new Vuex.Store({
           const accessToken = response.data;
           console.info('got the access token :', accessToken);
           setAccessToken(accessToken);
+          commit('setAccessToken', getCurrentAccessToken());
           return accessToken;
         } catch (error) {
           console.warn('取得用戶新簽名出錯', error);
@@ -98,61 +100,43 @@ export default new Vuex.Store({
       console.log('Start id check ...');
       console.info('Ontology status :', state.ontology.account);
       console.info('Scatter connect status :', state.scatter.isConnected);
-      if (getters.currentUserInfo.name) {
-        console.log('Id check pass, id :', getters.currentUserInfo);
-        try { // 更新 Auth
-          await dispatch('getAuth');
-        } catch (error) {
-          console.error('getAuth error:', error.message);
-          throw new Error('更新 Auth 失敗');
+      const accountInfoCheck = () => {
+        if (getters.currentUserInfo.name) {
+          console.log('Id check pass, id :', getters.currentUserInfo);
+          await dispatch('getAuth'); // 更新 Auth
+          return true;
         }
-        return true;
-      }
+        return false;
+      };
+
+      if(accountInfoCheck()) return true;
 
       // Scatter
       if (blockchin === 'EOS') {
-        try {
-          if (!state.scatter.isConnected) {
-            const result = await dispatch('scatter/connect');
-            if (!result) throw new Error('faild connect to scatter');
-          }
-          if (state.scatter.isConnected && !state.scatter.isLoggingIn) {
-            const result = await dispatch('scatter/login');
-            if (!result) throw new Error('scatter login faild');
-          }
-        } catch (error) {
-          console.warn(error);
-          throw error;
+        if (!state.scatter.isConnected) {
+          const result = await dispatch('scatter/connect');
+          if (!result) throw new Error('faild connect to scatter');
+        }
+        if (state.scatter.isConnected && !state.scatter.isLoggingIn) {
+          const result = await dispatch('scatter/login');
+          if (!result) throw new Error('scatter login faild');
         }
       }
       // Ontology
       if (blockchin === 'ONT') {
-        try {
-          if (!state.ontology.account) {
-            const address = await dispatch('ontology/getAccount');
-            let balance = null;
-            try {
-              balance = await dispatch('ontology/getBalance');
-            } catch (error) {
-              console.warn('Failed to get balance :', error);
-            }
-            console.info('ONT address :', address, 'balance :', balance);
+        if (!state.ontology.account) {
+          const address = await dispatch('ontology/getAccount');
+          let balance = null;
+          try {
+            balance = await dispatch('ontology/getBalance');
+          } catch (error) {
+            console.warn('Failed to get balance :', error);
           }
-        } catch (error) {
-          console.warn('Failed to get ONT account :', error);
+          console.info('ONT address :', address, 'balance :', balance);
         }
       }
 
-      if (getters.currentUserInfo.name) {
-        console.log('Id check pass, id :', getters.currentUserInfo);
-        try { // 更新 Auth
-          await dispatch('getAuth');
-        } catch (error) {
-          console.error('getAuth error:', error.message);
-          throw new Error('更新 Auth 失敗');
-        }
-        return true;
-      }
+      if(accountInfoCheck()) return true;
 
       throw new Error('Unable to get id');
     },
@@ -189,36 +173,10 @@ export default new Vuex.Store({
       if (EOS) dispatch('scatter/logout');
       if (ONT) dispatch('ontology/signOut');
       commit('setUserConfig');
+      commit('setAccessToken');
       commit('setNickname');
 
       localStorage.clear();
-    },
-    async walletConnectionSetup({ dispatch }, { EOS, ONT }) {
-      let meg = '';
-      if (EOS) {
-        try {
-          await dispatch('scatter/connect');
-          // if (!this.scatterAccount) await this.loginScatterAsync();
-        } catch (error) {
-          console.warn('Unable to connect Scatter wallets :', error);
-        }
-      }
-      if (ONT) {
-        try {
-          const address = await dispatch('ontology/getAccount');
-          let balance = null;
-          try {
-            balance = await dispatch('ontology/getBalance');
-          } catch (error) {
-            console.warn('Failed to get balance :', error);
-          }
-          console.info('ONT address :', address, 'balance :', balance);
-          meg += `ONT address : ${address}\n`;
-        } catch (error) {
-          console.warn('Failed to get ONT account :', error);
-        }
-      }
-      return meg;
     },
     // data: { amount, toaddress, memo }
     async withdraw({ dispatch, getters }, data) {
@@ -241,6 +199,9 @@ export default new Vuex.Store({
     },
   },
   mutations: {
+    setAccessToken(state, accessToken = null) {
+      state.userInfo.accessToken = accessToken;
+    },
     setUserConfig(state, config = null) {
       if (config) state.userConfig.blockchin = config.blockchin;
       else state.userConfig = { blockchin: null };
