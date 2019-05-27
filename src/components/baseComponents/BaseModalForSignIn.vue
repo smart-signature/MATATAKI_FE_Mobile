@@ -3,29 +3,46 @@
     v-model="showModaCopy"
     footer-hide
     @on-visible-change="change"
-    width="330"
     class-name="modalCenter">
       <div class="info-content">
-        <p>{{modalText.text}}</p>
-        <div class="blockchin" v-for="(item, index) in blockchin.name" :key="index" @click="toggleBlockchin(index)">
-          <div class="blockchin-radio" :class="blockchin.nowIndex===index && 'active'"></div>
-          <span>{{item.name}}</span>
+        <p class="info-content-title">{{modalText.text}}</p>
+
+        <div class="modal-login">
+          <div class="modal-body" v-for="(item, index) in blockchain" :key="index">
+            <div class="modal-logo">
+              <img :src="item.url" :alt="item.title" @click="walletLogin(item.type)" />
+              <span>{{item.title}}</span>
+            </div>
+            <div class="modal-wallet">
+              <a :href="itemWallet.href" v-for="(itemWallet, indexWallet) in item.wallet" :key="indexWallet">
+                <img :src="itemWallet.url" :alt="itemWallet.alt" />
+              </a>
+            </div>
+            <a class="modal-doc" :href="item.doc.href">{{item.doc.title}}</a>
+          </div>
         </div>
-        <a class="success" href="javascript:;" @click="confirm">{{modalText.button[0]}}</a>
-        <a class="cancel" href="javascript:;" @click="cancel">{{modalText.button[1]}}</a>
+        <div class="modal-loading" v-if="modalLoading">
+          <van-loading type="spinner" color="#1989fa" />
+        </div>
       </div>
   </Modal>
 </template>
 
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex';
+import iconEOS from '@/assets/img/icon_EOS.svg';
+import iconTokenpocket from '@/assets/img/icon_tokenpocket.svg';
+import iconMathwallet from '@/assets/img/icon_mathwallet.svg';
+import iconScatter from '@/assets/img/icon_scatter.svg';
+import iconONT from '@/assets/img/icon_ONT.svg';
+import iconCyano from '@/assets/img/icon_cyano.svg';
 
 export default {
   name: 'BaseModalForSignIn',
   props: {
     showModal: {
       type: Boolean,
-      default: false,
+      default: true,
     },
   },
   watch: {
@@ -39,64 +56,93 @@ export default {
   data() {
     return {
       showModaCopy: this.showModal,
+      modalLoading: false,
       modalText: {
-        text: '选择登录账号',
-        button: ['确认', '取消'],
+        text: '选择授权方式',
       },
-      blockchin: {
-        name: [
-          {
-            name: 'EOS账号登录',
-            type: 'EOS',
+      blockchain: [
+        {
+          url: iconEOS,
+          title: 'EOS授权',
+          type: 'EOS',
+          wallet: [
+            {
+              url: iconTokenpocket,
+              href: 'https://www.tokenpocket.pro/',
+              alt: 'https://www.tokenpocket.pro/',
+            },
+            {
+              url: iconMathwallet,
+              href: 'http://www.medishares.org/',
+              alt: 'http://www.medishares.org/',
+            },
+            {
+              url: iconScatter,
+              href: 'https://get-scatter.com/',
+              alt: 'https://get-scatter.com/',
+            },
+          ],
+          doc: {
+            title: '《如何使用EOS登录》',
+            href: 'https://smartsignature.io',
           },
-          {
-            name: '本体账号登录',
-            type: 'ONT',
+        },
+        {
+          url: iconONT,
+          title: 'ONT授权',
+          type: 'ONT',
+          wallet: [
+            {
+              url: iconMathwallet,
+              href: 'http://www.medishares.org/',
+              alt: 'http://www.medishares.org/',
+            },
+            {
+              url: iconCyano,
+              href: 'https://chrome.google.com/webstore/detail/cyano-wallet/dkdedlpgdmmkkfjabffeganieamfklkm',
+              alt: 'https://chrome.google.com/webstore/detail/cyano-wallet/dkdedlpgdmmkkfjabffeganieamfklkm',
+            },
+          ],
+          doc: {
+            title: '《如何使用ONT登录》',
+            href: 'https://smartsignature.io',
           },
-        ],
-        nowIndex: 0,
-      },
+        },
+      ],
     };
   },
   methods: {
     ...mapActions(['idCheckandgetAuth']),
     ...mapMutations(['setUserConfig']),
     change(status) {
+      if (this.modalLoading) this.modalLoading = false;
       this.showModaCopy = status;
       this.$emit('changeInfo', status);
     },
-    toggleBlockchin(index) {
-      if (index === this.blockchin.nowIndex) return;
-      this.blockchin.nowIndex = index;
-    },
-    async confirm() {
-      this.setUserConfig({ blockchin: this.blockchin.name[this.blockchin.nowIndex].type });
+    async walletLogin(type) {
+      this.setUserConfig({ blockchin: type });
+      this.modalLoading = true;
       await this.signIn();
-      this.change(false);
-    },
-    cancel() {
+      this.modalLoading = false;
       this.change(false);
     },
     async signIn() {
       const success = () => {
         localStorage.setItem('blockchin', this.userConfig.blockchin); // 成功存储登陆方式
-        return true;
       };
-
       try {
         await this.idCheckandgetAuth();
-        return success();
+        success();
       } catch (error) {
         try {
           await this.idCheckandgetAuth();
-          return success();
-        } catch (error) {
-          console.log(error);
+          success();
+        } catch (err) {
+          console.log(err);
           this.vantToast.fail({
             duration: 1000,
             message: '登陆失败',
           });
-          return false;
         }
       }
     },
@@ -107,60 +153,96 @@ export default {
 
 <style lang="less" scoped>
 .info-content {
-  margin: 0 10px;
-  p {
+  margin: 0 30px;
+  transition: all .3s;
+  &-title {
     text-align: center;
-    color:#484848;
-    letter-spacing:1px;
-    margin: 10px 0 18px;
-    font-size:18px;
-    font-weight:400;
-    color:rgba(0,0,0,.7);
+    font-size: 18px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.7);
+    margin: 20px 0 48px;
   }
-  .blockchin {
+
+  .modal-login {
     display: flex;
-    align-items: center;
     justify-content: center;
-    margin: 12px 0;
-    cursor: pointer;
-    font-size:14px;
-    font-family:PingFangSC-Regular;
-    font-weight:400;
-    color:rgba(0,0,0,.7);
-    letter-spacing:1px;
-    &-radio {
-      width: 26px;
-      height: 26px;
-      background-image: url('../../assets/img/icon_select.svg');
-      &.active {
-        background-image: url('../../assets/img/icon_select_active.svg');
+    align-items: center;
+    position: relative;
+  }
+  .modal-body {
+    flex: 0 0 50%;
+    text-align: center;
+    margin: 0 14px;
+    transition: all .3s;
+
+    .modal-logo {
+      text-align: center;
+      img {
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        margin: 0;
+        cursor: pointer;
+      }
+      span {
+        display: block;
+        font-size: 14px;
+        font-weight: 400;
+        color: rgba(0,0,0,.7);
+        margin: 6px 0 0;
+        padding: 0;
       }
     }
-    span {
-      margin-left: 14px;
+    .modal-wallet {
+      background:rgba(237,237,237,.75);
+      border-radius:16px;
+      padding: 20px 0;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 10px 0 44px;
+      a {
+        display: inline-block;
+        padding: 0;
+        margin: 0;
+        width: 22px;
+        height: 22px;
+        margin: 0 5px;
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+    }
+    .modal-doc {
+      font-size:14px;
+      font-weight:400;
+      color:rgba(0,118,255,1);
+      margin-bottom: 28px;
+      display: inline-block;
     }
   }
-  a {
-    display: block;
-    width: 270px;
-    height: 46px;
-    color: #fff;
-    text-align: center;
-    line-height: 46px;
-    font-size:14px;
-    font-family:PingFangSC-Medium;
-    font-weight:500;
-    letter-spacing:1px;
-    border-radius: 3px;
-    margin: 12px auto;
-    cursor: pointer;
-      &.success {
-        background-color: #478970;
-        margin-top: 30px;
-      }
-      &.cancel {
-        background-color:#D7D7D7;
-      }
+  .modal-loading {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.1);
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .info-content {
+    margin: 0 10px;
+    .modal-body {
+      margin: 0 4px;
+    }
   }
 }
 </style>

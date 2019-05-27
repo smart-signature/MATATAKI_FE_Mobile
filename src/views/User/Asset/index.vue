@@ -48,6 +48,11 @@
 <script>
 import { getBalance } from '@/api';
 import { precision } from '@/common/precisionConversion';
+import iconEOS from '@/assets/img/icon_EOS.svg';
+import iconONT from '@/assets/img/icon_ONT.svg';
+import iconETH from '@/assets/img/icon_ETH.svg';
+import iconBTC from '@/assets/img/icon_BTC.svg';
+import iconRMB from '@/assets/img/icon_RMB.svg';
 
 export default {
   name: 'Asset',
@@ -57,14 +62,14 @@ export default {
       assetList: [
         {
           type: 'EOS',
-          imgUrl: require('../../../assets/img/icon_EOS.svg'),
+          imgUrl: iconEOS,
           status: true,
           withdraw: 0,
           total: 0,
         },
         {
           type: 'ONT',
-          imgUrl: require('../../../assets/img/icon_ONT.svg'),
+          imgUrl: iconONT,
           status: true,
           withdraw: 0,
           total: 0,
@@ -74,21 +79,21 @@ export default {
       assetOtherList: [
         {
           type: 'ETH',
-          imgUrl: require('../../../assets/img/icon_ETH.svg'),
+          imgUrl: iconETH,
           status: false,
           withdraw: 0,
           total: 0,
         },
         {
           type: 'BTC',
-          imgUrl: require('../../../assets/img/icon_BTC.svg'),
+          imgUrl: iconBTC,
           status: false,
           withdraw: 0,
           total: 0,
         },
         {
           type: 'RMB',
-          imgUrl: require('../../../assets/img/icon_RMB.svg'),
+          imgUrl: iconRMB,
           status: false,
           withdraw: 0,
           total: 0,

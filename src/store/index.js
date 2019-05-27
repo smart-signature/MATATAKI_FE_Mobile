@@ -71,7 +71,7 @@ export default new Vuex.Store({
       } else return currentToken;
     },
     // output: { publicKey, signature, username }
-    async getSignature({ dispatch, getters }, mode, ...rawSignData ) {
+    async getSignature({ dispatch, getters }, mode, ...rawSignData) {
       const { blockchain } = getters.currentUserInfo;
       let signature = null;
       if (blockchain === 'EOS') {
@@ -83,7 +83,7 @@ export default new Vuex.Store({
       return signature;
     },
     async getSignatureOfArticle({ dispatch }, { author, hash }) {
-      return dispatch('getSignature', 'Article', author, hash );
+      return dispatch('getSignature', 'Article', author, hash);
     },
     async getSignatureOfAuth({ dispatch, getters }) {
       return dispatch('getSignature', 'Auth', getters.currentUserInfo.name);
@@ -114,13 +114,16 @@ export default new Vuex.Store({
           if (!state.scatter.isConnected) {
             const result = await dispatch('scatter/connect');
             if (!result) throw new Error('faild connect to scatter');
+            return true;
           }
           if (state.scatter.isConnected && !state.scatter.isLoggingIn) {
             const result = await dispatch('scatter/login');
-            if (!result) new Error('scatter login faild');
+            if (!result) throw new Error('scatter login faild');
+            return true;
           }
         } catch (error) {
           console.warn(error);
+          return error;
         }
       }
       // Ontology
@@ -234,7 +237,9 @@ export default new Vuex.Store({
         data.contract = 'AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV';
         data.symbol = 'ONT';
       }
-      const { amount, contract, symbol, toaddress } = data;
+      const {
+        amount, contract, symbol, toaddress,
+      } = data;
       data.signature = await dispatch(
         'getSignature', 'withdraw', toaddress, contract, symbol, amount,
       );

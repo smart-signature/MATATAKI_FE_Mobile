@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import {
   BackTop, Button, Icon,
-  Row, Col, 
+  Row, Col,
   Divider, Message,
   Notice, Modal, Avatar,
   Tooltip, RadioGroup, Radio,
@@ -13,7 +13,7 @@ import {
 } from 'iview';
 
 import './my-theme/dist/iview.css';
-// import 'iview/dist/styles/iview.css';
+import 'iview/dist/styles/iview.css';
 
 Vue.prototype.$Message = Message;
 Vue.prototype.$Modal = Modal;

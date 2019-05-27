@@ -187,12 +187,12 @@ export default {
   data() {
     return {
       post: {
-        author: 'Loading...',
-        title: 'Loading...',
-        content: '**Please wait for the connection to IPFS**',
+        author: '',
+        title: '',
+        content: '',
       },
       article: {
-        author: 'Loading...',
+        author: '',
         createTime: '',
         fission_factor: 0,
         id: null,
