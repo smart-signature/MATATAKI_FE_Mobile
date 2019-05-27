@@ -1,10 +1,67 @@
 /* eslint-disable no-shadow */
 <template>
   <div class="user mw" style="white-space:nowrap;">
-    <BaseHeader v-if="isMe" :pageinfo="{ title: '个人主页'}" >
-        <span slot="right" class="help-button" @click="jumpTo({ name: 'Help' })">帮助</span>
-    </BaseHeader>
-    <BaseHeader v-else :pageinfo="{ title: ''}" style="background-color: #478970" :white="true">
+    <template v-if="isMe">
+      <BaseHeader :pageinfo="{ title: '个人中心'}" >
+          <div slot="right" class="help-button" @click="jumpTo({ name: 'Help' })">
+            <img src="@/assets/img/icon_user_settings.svg" alt="settings">
+          </div>
+      </BaseHeader>
+      <div class="usercard">
+        <div class="user-avatar">
+          <img v-if="avatar" :src="avatar" />
+        </div>
+        <div class="texts">
+          <p class="user-info">
+            <span class="username">{{displayName}}</span>
+            <a href="javascript:;"
+                    class="edit-button"
+                    @click="jumpTo({ name: 'UserEdit', params: { username }})"
+                  >编辑</a>
+          </p>
+          <p class="userstatus">
+            <router-link :to="{ name: 'FollowList', params: { listtype: '关注' }}">关注：{{follows}}</router-link>
+            <router-link :to="{ name: 'FollowList', params: { listtype: '粉丝' }}">粉丝：{{fans}}</router-link>
+          </p>
+        </div>
+      </div>
+
+      <div class="user-block">
+        <div class="user-block-list" @click="jumpTo({ name: 'Asset', params: { username }})">
+          <span class="user-block-list-title">账户资产</span>
+          <span class="user-block-list-des">
+            已绑定{{stats.accounts}}个账户
+            <img class="arrow" src="@/assets/img/icon_arrow.svg" alt="查看">
+          </span>
+        </div>
+      </div>
+
+      <div class="user-block">
+        <div class="user-block-list" @click="jumpTo({ name: 'Reward', params: { username }})">
+          <span class="user-block-list-title">原创文章</span>
+          <span class="user-block-list-des">
+            {{stats.articles}}篇
+            <img class="arrow" src="@/assets/img/icon_arrow.svg" alt="查看">
+          </span>
+        </div>
+        <div class="user-block-list" @click="jumpTo({ name: 'Reward', params: { username }})">
+          <span class="user-block-list-title">赞赏文章</span>
+          <span class="user-block-list-des">
+            {{stats.supports}}篇
+            <img class="arrow" src="@/assets/img/icon_arrow.svg" alt="查看">
+          </span>
+        </div>
+        <div class="user-block-list" @click="jumpTo({ name: 'DraftBox', params: { username }})">
+          <span class="user-block-list-title">草稿箱</span>
+          <span class="user-block-list-des">
+            {{stats.drafts}}篇
+            <img class="arrow" src="@/assets/img/icon_arrow.svg" alt="查看">
+          </span>
+        </div>
+      </div>
+    </template>
+    <template v-else>
+      <BaseHeader :pageinfo="{ title: ''}" style="background-color: #478970" :white="true">
       <div slot="right" v-if="!isMe">
         <template v-if="!followed">
           <span class="darkBtn" @click="follow_user">关注</span>
@@ -13,33 +70,7 @@
           <span class="darkBtn" @click="unfollow_user">取消关注</span>
         </template>
       </div>
-    </BaseHeader>
-    <div class="usercard" v-if="isMe">
-      <div class="user-avatar">
-        <img class="userpic" :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png');}" />
-        <img-upload :imgUploadDone="imgUploadDone" class="camera" v-if="editing" @doneImageUpload="doneImageUpload">
-          <img slot="uploadButton" src="/img/camera.png" />
-        </img-upload>
-      </div>
-      <div class="texts">
-        <p v-if="!editing" class="username" :class="[!email ? 'username-email' : '']">{{displayName}}</p>
-        <p v-if="email" class="email">{{email}}</p>
-        <input class="userinput" :class="[!email ? 'username-email' : '']" v-if="editing" v-model='newname' />
-        <p class="userstatus">
-          <router-link :to="{ name: 'FollowList', params: { listtype: '关注' }}">关注：{{follows}}</router-link>
-          <router-link :to="{ name: 'FollowList', params: { listtype: '粉丝' }}">粉丝：{{fans}}</router-link>
-        </p>
-      </div>
-      <div class="user-button">
-        <template v-if="editing">
-          <a href="javascript:;" class="rightbutton" :class="[editing ? 'editing-button' : '']" @click="save">完成</a>
-        </template>
-        <template v-else>
-          <a href="javascript:;" class="rightbutton" @click="jumpTo({ name: 'UserEdit', params: { username }})">编辑</a>
-        </template>
-      </div>
-    </div>
-    <div v-else>
+      </BaseHeader>
       <div class="otherUser">
         <div class="user-avatar">
           <img class="userpic" :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png');}" />
@@ -64,45 +95,11 @@
           <p v-if="email" class="email">{{email}}</p>
         </div>
       </div>
-    </div>
-    <Menu v-if="isMe" theme="light" active-name="1" width="auto">
-      <Card class="centercard">
-        <MenuItem name="1" :to="{ name: 'Asset', params: { username }}">
-          <Row>
-            <Col span="8">账户资产</Col>
-            <Col span="6" offset="7">已绑定 {{stats.accounts}} 个账户 <Icon type="ios-arrow-forward" /></Col>
-          </Row>
-        </MenuItem>
-      </Card>
-      <Card class="centercard">
-        <MenuItem name="2" :to="{ name: 'Reward', params: { username }}">
-          <Row>
-            <Col span="8">赞赏文章</Col>
-            <Col span="6" offset="8">{{stats.supports}}篇</Col>
-            <Col span="2"><Icon type="ios-arrow-forward" /></Col>
-          </Row>
-        </MenuItem>
-        <MenuItem name="3" :to="{ name: 'Reward', params: { username }}">
-          <Row>
-            <Col span="8">原创文章</Col>
-            <Col span="6" offset="8">{{stats.supports}}篇</Col>
-            <Col span="2"><Icon type="ios-arrow-forward" /></Col>
-          </Row>
-        </MenuItem>
-        <MenuItem name="4" :to="{ name: 'DraftBox', params: { username }}">
-          <Row>
-            <Col span="8">草稿箱</Col>
-            <Col span="6" offset="8">{{stats.drafts}}篇</Col>
-            <Col span="2"><Icon type="ios-arrow-forward" /></Col>
-          </Row>
-        </MenuItem>
-      </Card>
-      </Menu>
-    
+      <ArticlesList ref="ArticlesList" :listtype="'others'" :username="username" />
+    </template>
     <div v-if="isMe" class="signout">
       <a class="signout-button" href="javascript:;" @click="btnsignOut">退出登录</a>
     </div>
-    <ArticlesList v-if="!isMe" ref="ArticlesList" :listtype="'others'" :username="username" />
   </div>
 </template>
 
@@ -130,8 +127,7 @@ export default {
       nickname: '',
       newname: '',
       email: '',
-      // eslint-disable-next-line global-require
-      avatar: require('../../assets/logo.png'),
+      avatar: '',
       imgUploadDone: 0, // 图片是否上传完成
       introduction: '',
       stats: {
@@ -289,9 +285,7 @@ export default {
     },
     setAvatarImage(hash) {
       // 空hash 显示默认Logo头像
-      // eslint-disable-next-line global-require
-      if (!hash) this.avatar = require('../../assets/logo.png');
-      else this.avatar = getAvatarImage(hash);
+      if (hash) this.avatar = getAvatarImage(hash);
     },
     // 完成上传
     async doneImageUpload(res) {

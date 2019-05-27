@@ -5,8 +5,9 @@
         <h2 class="title">{{article.title}}</h2>
         <p class="avatar">{{article.nickname || article.author}}</p>
         <p class="date">
-          {{friendlyDate}} · <img src="../assets/img/icon_amount.png" alt="eos" />
-          {{articleValue}}
+          {{friendlyDate}} ·
+          <img src="../assets/img/icon_eos_article.svg" alt="eos" />{{articleValue}}
+          <img src="../assets/img/icon_ont_article.svg" alt="ont" />{{articleOntValue}}
         </p>
       </div>
       <div class="img-outer" v-if="cover">
@@ -39,6 +40,9 @@ export default {
     },
     articleValue() {
       return precision(this.article.value, 'eos');
+    },
+    articleOntValue() {
+      return precision(this.article.ontvalue, 'ont');
     },
   },
 };
@@ -114,5 +118,6 @@ export default {
 .card .date img {
   width: 12px;
   margin: 0 8px;
+  opacity: 0.7;
 }
 </style>

@@ -36,6 +36,7 @@ import iconMathwallet from '@/assets/img/icon_mathwallet.svg';
 import iconScatter from '@/assets/img/icon_scatter.svg';
 import iconONT from '@/assets/img/icon_ONT.svg';
 import iconCyano from '@/assets/img/icon_cyano.svg';
+import iconLeafwallet from '@/assets/img/icon_leafwallet.svg';
 
 export default {
   name: 'BaseModalForSignIn',
@@ -80,6 +81,11 @@ export default {
               url: iconScatter,
               href: 'https://get-scatter.com/',
               alt: 'https://get-scatter.com/',
+            },
+            {
+              url: iconLeafwallet,
+              href: 'https://www.leafwallet.io/',
+              alt: 'https://www.leafwallet.io/',
             },
           ],
           doc: {
