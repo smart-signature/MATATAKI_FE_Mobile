@@ -264,7 +264,7 @@ const API = {
     }
     delete data.blockchain;
     delete data.signature;
-    
+
     return accessBackend({ method: 'POST', url: '/user/withdraw', data });
   },
 };

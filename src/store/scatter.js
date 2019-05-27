@@ -82,15 +82,14 @@ const actions = {
     let signData = null;
     let memo = null;
     if (mode === 'Article') {
-      const [ author, hash ] = rawSignData;
+      const [author, hash] = rawSignData;
       const hashPiece = [
         hash.slice(0, 12), hash.slice(12, 24), hash.slice(24, 36), hash.slice(36, 48),
       ];
       signData = `${author} ${hashPiece[0]} ${hashPiece[1]} ${hashPiece[2]} ${hashPiece[3]}`;
       memo = 'Smart Signature';
-    }
-    else if (mode === 'Auth') {
-      [ signData ] = rawSignData;
+    } else if (mode === 'Auth') {
+      [signData] = rawSignData;
       memo = 'Auth';
     } else if (mode === 'withdraw') {
       signData = rawSignData.join(' ');

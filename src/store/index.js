@@ -71,22 +71,23 @@ export default new Vuex.Store({
       } else return currentToken;
     },
     // output: { publicKey, signature, username }
-    async getSignature({ dispatch, getters }, mode, ...rawSignData) {
+    async getSignature({ dispatch, getters }, data) {
+      // console.debug(getters.currentUserInfo, data.mode, data.rawSignData);
       const { blockchain } = getters.currentUserInfo;
       let signature = null;
       if (blockchain === 'EOS') {
-        signature = await dispatch('scatter/getSignature', { mode, rawSignData });
+        signature = await dispatch('scatter/getSignature', data);
       } else if (blockchain === 'ONT') {
-        signature = await dispatch('ontology/getSignature', rawSignData);
+        signature = await dispatch('ontology/getSignature', data.rawSignData);
       }
       signature.blockchain = blockchain;
       return signature;
     },
     async getSignatureOfArticle({ dispatch }, { author, hash }) {
-      return dispatch('getSignature', 'Article', author, hash);
+      return dispatch('getSignature', { mode: 'Article', rawSignData: [author, hash] });
     },
     async getSignatureOfAuth({ dispatch, getters }) {
-      return dispatch('getSignature', 'Auth', getters.currentUserInfo.name);
+      return dispatch('getSignature', { mode: 'Auth', rawSignData: [getters.currentUserInfo.name] });
     },
     async idCheckandgetAuth({
       dispatch, state, getters,
@@ -114,16 +115,14 @@ export default new Vuex.Store({
           if (!state.scatter.isConnected) {
             const result = await dispatch('scatter/connect');
             if (!result) throw new Error('faild connect to scatter');
-            return true;
           }
           if (state.scatter.isConnected && !state.scatter.isLoggingIn) {
             const result = await dispatch('scatter/login');
             if (!result) throw new Error('scatter login faild');
-            return true;
           }
         } catch (error) {
           console.warn(error);
-          return error;
+          throw error;
         }
       }
       // Ontology
@@ -154,11 +153,6 @@ export default new Vuex.Store({
         }
         return true;
       }
-
-      const noId = (error) => {
-        console.warn('Unable to get id, reason :', error);
-        throw error;
-      };
 
       throw new Error('Unable to get id');
     },
