@@ -37,7 +37,7 @@
       </div>
 
       <div class="user-block">
-        <div class="user-block-list" @click="jumpTo({ name: 'Reward', params: { username }})">
+        <div class="user-block-list" @click="jumpTo({ name: 'Original', params: { username }})">
           <span class="user-block-list-title">原创文章</span>
           <span class="user-block-list-des">
             {{stats.articles}}篇
