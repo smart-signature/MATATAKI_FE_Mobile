@@ -97,9 +97,6 @@
       </div>
       <ArticlesList ref="ArticlesList" :listtype="'others'" :username="username" />
     </template>
-    <div v-if="isMe" class="signout">
-      <a class="signout-button" href="javascript:;" @click="btnsignOut">退出登录</a>
-    </div>
   </div>
 </template>
 
@@ -155,11 +152,6 @@ export default {
     document.title = `${user}的个人主页 - SmartSignature`;
   },
   methods: {
-    ...mapActions(['signOut']),
-    btnsignOut() {
-      this.signOut();
-      this.$router.push({ name: 'home' });
-    },
     edit() {
       this.editing = !this.editing;
     },
