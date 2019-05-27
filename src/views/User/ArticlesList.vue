@@ -1,8 +1,8 @@
 <template>
   <div>
     <div v-if="tabsData.length >= 2">
-      <za-tabs v-model="activeIndex" @change="changeTabs">
-        <za-tab-pane :label="item.label" :name="index" v-for="(item, index) in tabsData" :key="index">
+      <Tabs :value="activeIndex">
+        <TabPane v-for="(item, index) in tabsData" :key="index" :label="item.label">
           <BasePull
             :params="item.params"
             :apiUrl="item.apiUrl"
@@ -13,11 +13,11 @@
             >
               <ArticleCard :article="item" v-for="(item, index) in item.articles" :key="index"/>
           </BasePull>
-        </za-tab-pane>
-      </za-tabs>
+        </TabPane>
+      </Tabs>
     </div>
     <div v-else>
-        <BasePull
+      <BasePull
         :params="params"
         :apiUrl="apiUrl"
         :loadingText="loadingText"
@@ -48,41 +48,31 @@ export default {
     ArticleCard,
   },
   created() {
-    if (this.listtype === 'others') {
+    const { listtype } = this;
+    if (listtype === 'others') {
       this.tabsData = [
         {
           label: '文章列表',
-          params: {
-            author: this.username,
-          },
+          params: { author: this.username },
           apiUrl: 'posts',
           articles: [],
         },
         {
           label: '他赞赏的',
-          params: {
-            user: this.username,
-          },
+          params: { user: this.username },
           apiUrl: 'supports',
           articles: [],
         },
       ];
-    } else if (this.listtype === 'original') {
+    } else if (listtype === 'original') {
       this.apiUrl = 'posts';
-      this.params = {
-        author: this.username,
-      };
-    } else if (this.listtype === 'reward') {
+      this.params = { author: this.username };
+    } else if (listtype === 'reward') {
       this.apiUrl = 'supports';
-      this.params = {
-        user: this.username,
-      };
+      this.params = { user: this.username };
     }
   },
   methods: {
-    changeTabs(tab) {
-      this.activeIndex = tab.name;
-    },
     getListData(res) {
       this.articles = res.list;
     },
@@ -105,3 +95,9 @@ export default {
   },
 };
 </script>
+
+<style lang="less">
+  a {
+    color: black;
+  }
+</style>

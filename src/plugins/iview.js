@@ -1,11 +1,15 @@
 import Vue from 'vue';
 import {
   BackTop, Button, Icon,
-  Row, Col, Divider, Message,
+  Row, Col, 
+  Divider, Message,
   Notice, Modal, Avatar,
   Tooltip, RadioGroup, Radio,
   Dropdown, DropdownMenu, DropdownItem,
-  Checkbox, Input, Card, Menu, MenuGroup, MenuItem,
+  Checkbox, Input, Card,
+  Menu, MenuGroup, MenuItem,
+  Tabs, TabPane,
+  Scroll,
 } from 'iview';
 
 import './my-theme/dist/iview.css';
@@ -37,3 +41,6 @@ Vue.component('Card', Card);
 Vue.component('Menu', Menu);
 Vue.component('MenuGroup', MenuGroup);
 Vue.component('MenuItem', MenuItem);
+Vue.component('Tabs', Tabs);
+Vue.component('TabPane', TabPane);
+Vue.component('Scroll', Scroll);

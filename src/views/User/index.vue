@@ -99,10 +99,10 @@
       </Card>
       </Menu>
     
-    <div class="signout" v-if="isMe">
+    <div v-if="isMe" class="signout">
       <a class="signout-button" href="javascript:;" @click="btnsignOut">退出登录</a>
     </div>
-    <ArticlesList :listtype="'others'" ref="ArticlesList" :username="username" v-if="!isMe"/>
+    <ArticlesList v-if="!isMe" ref="ArticlesList" :listtype="'others'" :username="username" />
   </div>
 </template>
 

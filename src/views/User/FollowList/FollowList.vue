@@ -1,8 +1,8 @@
 <template>
   <div class="mw draftbox">
     <BaseHeader :pageinfo="{ title: '列表', rightPage: 'home' }" />
-    <za-tabs v-model="activeIndex" @change="changeTabs">
-      <za-tab-pane :label="item.label" :name="index" v-for="(item, index) in tabsData" :key="index">
+    <Tabs :value="activeIndex">
+      <TabPane v-for="(item, index) in tabsData" :key="index" :label="item.label" >
         <BasePull
           class="draftbox-list"
           :loadingText = "loadingText"
@@ -16,8 +16,8 @@
           >
             <list :list="item" v-for="(item, index) in item.articles" :key="index"/>
         </BasePull>
-      </za-tab-pane>
-    </za-tabs>
+      </TabPane>
+    </Tabs>
   </div>
 </template>
 
@@ -65,9 +65,6 @@ export default {
     else this.activeIndex = 0;
   },
   methods: {
-    changeTabs(tab) {
-      this.activeIndex = tab.name;
-    },
     getListData(res) {
       res.list.map(i => i.avatar = getAvatarImage(i.avatar));
       this.tabsData[res.index].articles = res.list;
