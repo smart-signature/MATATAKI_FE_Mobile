@@ -54,7 +54,7 @@
 
 <script>
 import AssetList from './AssetList.vue';
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import { precision } from '@/common/precisionConversion';
 
 export default {
@@ -90,6 +90,7 @@ export default {
     currentUserInfo() { this.togglewithdrawButton(); },
   },
   methods: {
+    ...mapActions(['withdraw']),
     // 提现
     async withdraw(name) {
       this.$Modal.confirm({

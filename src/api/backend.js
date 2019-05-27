@@ -251,6 +251,22 @@ const API = {
   async getMyPost(id) { return accessBackend({ url: `/mypost/${id}` }); },
   // 获取账户资产列表 暂时没有EOS数据
   async getBalance() { return accessBackend({ url: '/balance' }); },
+  async withdraw(rawData) {
+    const data = {
+      ...rawData,
+      platform: rawData.blockchain.toLowerCase(),
+      publickey: rawData.signature.publicKey,
+      sign: rawData.signature.signature,
+    };
+    const { blockchain } = data;
+    if (blockchain === 'EOS') {
+      data.amount *= 10000;
+    }
+    delete data.blockchain;
+    delete data.signature;
+    
+    return accessBackend({ method: 'POST', url: '/user/withdraw', data });
+  },
 };
 
 export default API;

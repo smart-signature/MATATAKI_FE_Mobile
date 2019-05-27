@@ -30,19 +30,11 @@ const actions = {
     commit('setBalance', balance);
     return balance;
   },
-  async getSignature({ state }, { signData }) {
+  async getSignature({ state }, rawSignData) {
     const { account } = state;
     if (!account) throw new Error('no account');
-    const signature = await API.signMessage({ message: signData });
+    const signature = await API.signMessage({ message: rawSignData.join(' ') });
     return ({ publicKey: signature.publicKey, signature: signature.data, username: account });
-  },
-  async getSignatureOfArticle({ dispatch }, { author, hash }) {
-    return dispatch('getSignature', { signData: `${author} ${hash}` });
-  },
-  async getSignatureOfAuth({ dispatch, state }) {
-    const { account } = state;
-    if (!account) throw new Error('no account');
-    return dispatch('getSignature', { signData: account });
   },
   async recordShare({ state }, share) {
     const { recordShare } = await import(/* webpackChunkName: "contract-Ontology" */ '@/api/contractOntology');

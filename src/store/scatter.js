@@ -69,7 +69,7 @@ const actions = {
     }
     return false;
   },
-  async getSignature({ dispatch, state }, { signData, memo = '' }) {
+  async getSignature({ dispatch, state }, { mode, rawSignData }) {
     const api = await dispatch('getAPI');
     const { eosClient } = await import(/* webpackChunkName: "EOS-scatter" */ '@/api/scatter');
     const { account } = state;
@@ -78,20 +78,28 @@ const actions = {
     const permissions = result.permissions.find(x => x.perm_name === account.authority);
     // 获取当前权限的public key
     const publicKey = permissions.required_auth.keys[0].key;
+
+    let signData = null;
+    let memo = null;
+    if (mode === 'Article') {
+      const [ author, hash ] = rawSignData;
+      const hashPiece = [
+        hash.slice(0, 12), hash.slice(12, 24), hash.slice(24, 36), hash.slice(36, 48),
+      ];
+      signData = `${author} ${hashPiece[0]} ${hashPiece[1]} ${hashPiece[2]} ${hashPiece[3]}`;
+      memo = 'Smart Signature';
+    }
+    else if (mode === 'Auth') {
+      [ signData ] = rawSignData;
+      memo = 'Auth';
+    } else if (mode === 'withdraw') {
+      signData = rawSignData.join(' ');
+      memo = 'withdraw';
+    }
     // 申请签名
     const signature = await api.getArbitrarySignature(publicKey, signData, memo);
     console.log('got signature: ', signature);
     return ({ publicKey, signature, username: account.name });
-  },
-  async getSignatureOfArticle({ dispatch }, { author, hash }) {
-    const hashPiece = [
-      hash.slice(0, 12), hash.slice(12, 24), hash.slice(24, 36), hash.slice(36, 48),
-    ];
-    const signData = `${author} ${hashPiece[0]} ${hashPiece[1]} ${hashPiece[2]} ${hashPiece[3]}`;
-    return dispatch('getSignature', { signData, memo: 'Smart Signature' });
-  },
-  async getSignatureOfAuth({ dispatch }) {
-    return dispatch('getSignature', { signData: state.account.name, memo: 'Auth' });
   },
   async recordShare(context, share) {
     const { recordShare } = await import(/* webpackChunkName: "contract-EOS" */ '@/api/contractEOS');

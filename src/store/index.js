@@ -71,23 +71,22 @@ export default new Vuex.Store({
       } else return currentToken;
     },
     // output: { publicKey, signature, username }
-    async getSignatureOfArticle({ dispatch, getters }, { author, hash }) {
+    async getSignature({ dispatch, getters }, mode, ...rawSignData ) {
       const { blockchain } = getters.currentUserInfo;
-      let actionName = null;
-      if (blockchain === 'EOS') actionName = 'scatter/getSignatureOfArticle';
-      else if (blockchain === 'ONT') actionName = 'ontology/getSignatureOfArticle';
-      const signature = await dispatch(actionName, { author, hash });
+      let signature = null;
+      if (blockchain === 'EOS') {
+        signature = await dispatch('scatter/getSignature', { mode, rawSignData });
+      } else if (blockchain === 'ONT') {
+        signature = await dispatch('ontology/getSignature', rawSignData);
+      }
       signature.blockchain = blockchain;
       return signature;
     },
+    async getSignatureOfArticle({ dispatch }, { author, hash }) {
+      return dispatch('getSignature', 'Article', author, hash );
+    },
     async getSignatureOfAuth({ dispatch, getters }) {
-      const { blockchain } = getters.currentUserInfo;
-      let actionName = null;
-      if (blockchain === 'EOS') actionName = 'scatter/getSignatureOfAuth';
-      else if (blockchain === 'ONT') actionName = 'ontology/getSignatureOfAuth';
-      const signature = await dispatch(actionName);
-      signature.blockchain = blockchain;
-      return signature;
+      return dispatch('getSignature', 'Auth', getters.currentUserInfo.name);
     },
     async idCheckandgetAuth({
       dispatch, state, getters,
@@ -223,6 +222,23 @@ export default new Vuex.Store({
         }
       }
       return meg;
+    },
+    // data: { amount, toaddress, memo }
+    async withdraw({ dispatch, getters }, data) {
+      const { blockchain } = getters.currentUserInfo;
+      data.blockchain = blockchain;
+      if (blockchain === 'EOS') {
+        data.contract = 'eosio.token';
+        data.symbol = 'EOS';
+      } else if (blockchain === 'ONT') {
+        data.contract = 'AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV';
+        data.symbol = 'ONT';
+      }
+      const { amount, contract, symbol, toaddress } = data;
+      data.signature = await dispatch(
+        'getSignature', 'withdraw', toaddress, contract, symbol, amount,
+      );
+      return backendAPI.withdraw(data);
     },
   },
   mutations: {
