@@ -67,7 +67,7 @@ export default new Vuex.Store({
           commit('setAccessToken', getCurrentAccessToken());
           return accessToken;
         } catch (error) {
-          console.warn('取得用戶新簽名出錯', error);
+          console.warn('取得 access token 出錯', error);
           throw error;
         }
       } else return currentToken;
@@ -97,10 +97,7 @@ export default new Vuex.Store({
       const { blockchin } = state.userConfig;
       if (!blockchin) throw new Error('did not choice blockchin');
 
-      console.log('Start id check ...');
-      console.info('Ontology status :', state.ontology.account);
-      console.info('Scatter connect status :', state.scatter.isConnected);
-      const accountInfoCheck = () => {
+      const accountInfoCheck = async () => {
         if (getters.currentUserInfo.name) {
           console.log('Id check pass, id :', getters.currentUserInfo);
           await dispatch('getAuth'); // 更新 Auth
@@ -109,6 +106,9 @@ export default new Vuex.Store({
         return false;
       };
 
+      console.log('Start id check ...');
+      console.info('Ontology status :', state.ontology.account);
+      console.info('Scatter connect status :', state.scatter.isConnected);
       if(accountInfoCheck()) return true;
 
       // Scatter
@@ -193,7 +193,7 @@ export default new Vuex.Store({
         amount, contract, symbol, toaddress,
       } = data;
       data.signature = await dispatch(
-        'getSignature', 'withdraw', toaddress, contract, symbol, amount,
+        'getSignature', { mode: 'withdraw', rawSignData: [toaddress, contract, symbol, amount] }
       );
       return backendAPI.withdraw(data);
     },
