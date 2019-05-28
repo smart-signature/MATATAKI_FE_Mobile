@@ -2,7 +2,7 @@
   <div class="help">
     <BaseHeader :pageinfo="{ title: '帮助'}"  />
     <div class="help-block">
-      <div class="help-list" v-for="(item, index) in helpDoc" :key="index" @click="jumpTo(item.name)">
+      <div class="help-list" v-for="(item, index) in helpDoc" :key="index" @click="jumpTo({name: item.name})">
         <span class="help-list-title">{{item.title}}</span>
         <img src="@/assets/img/icon_arrow.svg" alt="view">
       </div>
@@ -33,6 +33,7 @@
 
 <script>
 import { mapActions } from 'vuex';
+import { URLSearchParams } from 'url';
 
 export default {
   naem: 'Help',
@@ -60,9 +61,9 @@ export default {
       this.signOut();
       this.jumpTo({ name: 'home' });
     },
-    jumpTo(name) {
-      if (!name) return;
-      this.$router.push({ name });
+    jumpTo(params) {
+      if (!params.name) return;
+      this.$router.push(params);
     },
   },
 
