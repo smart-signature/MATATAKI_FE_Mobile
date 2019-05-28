@@ -70,7 +70,9 @@ export default new Vuex.Store({
           console.warn('取得 access token 出錯', error);
           throw error;
         }
-      } else return currentToken;
+      }
+      commit('setAccessToken', getCurrentAccessToken());
+      return currentToken;
     },
     // output: { publicKey, signature, username }
     async getSignature({ dispatch, getters }, data) {
@@ -97,6 +99,7 @@ export default new Vuex.Store({
       const { blockchin } = state.userConfig;
       if (!blockchin) throw new Error('did not choice blockchin');
 
+      // console.debug(getters.currentUserInfo);
       const accountInfoCheck = async () => {
         if (getters.currentUserInfo.name) {
           console.log('Id check pass, id :', getters.currentUserInfo);
@@ -109,7 +112,7 @@ export default new Vuex.Store({
       console.log('Start id check ...');
       console.info('Ontology status :', state.ontology.account);
       console.info('Scatter connect status :', state.scatter.isConnected);
-      if(accountInfoCheck()) return true;
+      if(await accountInfoCheck()) return true;
 
       // Scatter
       if (blockchin === 'EOS') {
