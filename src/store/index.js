@@ -43,7 +43,7 @@ export default new Vuex.Store({
     currentUsername: (state, { 'scatter/currentUsername': scatterUsername }) => (
       scatterUsername || state.ontology.account || null
     ),
-    isLogined: (state) => state.userInfo.accessToken !== null,
+    isLogined: state => state.userInfo.accessToken !== null,
     isMe: (state, { currentUserInfo }) => target => currentUserInfo.name === target,
   },
   actions: {
@@ -112,7 +112,7 @@ export default new Vuex.Store({
       console.log('Start id check ...');
       console.info('Ontology status :', state.ontology.account);
       console.info('Scatter connect status :', state.scatter.isConnected);
-      if(await accountInfoCheck()) return true;
+      if (await accountInfoCheck()) return true;
 
       // Scatter
       if (blockchin === 'EOS') {
@@ -139,7 +139,7 @@ export default new Vuex.Store({
         }
       }
 
-      if(accountInfoCheck()) return true;
+      if (await accountInfoCheck()) return true;
 
       throw new Error('Unable to get id');
     },
@@ -196,7 +196,7 @@ export default new Vuex.Store({
         amount, contract, symbol, toaddress,
       } = data;
       data.signature = await dispatch(
-        'getSignature', { mode: 'withdraw', rawSignData: [toaddress, contract, symbol, amount] }
+        'getSignature', { mode: 'withdraw', rawSignData: [toaddress, contract, symbol, amount] },
       );
       return backendAPI.withdraw(data);
     },

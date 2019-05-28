@@ -18,7 +18,6 @@ if (NODE_ENV === 'test') {
       target: 'web', // in order to ignore built-in modules like path, fs, etc.
       externals: [
         {
-          clipboard: 'ClipboardJS',
           vue: 'Vue',
           'vue-router': 'VueRouter',
           vuex: 'Vuex',
@@ -61,10 +60,6 @@ if (NODE_ENV === 'test') {
             {
               name: 'axios',
               path: 'dist/axios.min.js',
-            },
-            {
-              name: 'clipboard',
-              path: 'dist/clipboard.min.js',
             },
             {
               name: 'moment',
