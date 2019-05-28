@@ -101,7 +101,7 @@ export default {
       return canSetProfile;
     },
     myToasted(notice) {
-      this.vantToast({
+      this.$toast({
         duration: 1000,
         message: notice,
       });
@@ -123,7 +123,7 @@ export default {
       await setProfile(requestData).then((res) => {
         console.log(res);
         if (res.status === 200 && res.data.code === 0) {
-          this.vantToast.success({
+          this.$toast.success({
             duration: 1000,
             message: res.data.message,
           });
@@ -132,12 +132,12 @@ export default {
       }).catch((error) => {
         console.log(error);
         if (error.response.status === 401) {
-          this.vantToast.fail({
+          this.$toast.fail({
             duration: 1000,
             message: '没有登陆',
           });
         } else {
-          this.vantToast.fail({
+          this.$toast.fail({
             duration: 1000,
             message: '登陆失败',
           });
@@ -159,14 +159,14 @@ export default {
       await getUser({ username }).then((res) => {
         if (res.status === 200) setUser(res.data);
         else {
-          this.vantToast.fail({
+          this.$toast.fail({
             duration: 1000,
             message: '失败',
           });
         }
       }).catch((err) => {
         console.log(err);
-        this.vantToast.fail({
+        this.$toast.fail({
           duration: 1000,
           message: '失败',
         });
@@ -186,7 +186,7 @@ export default {
         if (res.status === 201) {
           this.setAvatarImage(avatar);
         } else {
-          this.vantToast.fail({
+          this.$toast.fail({
             duration: 1000,
             message: '上传失败',
           });
@@ -194,7 +194,7 @@ export default {
         this.imgUploadDone += 1;
       }).catch((err) => {
         console.log(err);
-        this.vantToast.fail({
+        this.$toast.fail({
           duration: 1000,
           message: '上传失败',
         });

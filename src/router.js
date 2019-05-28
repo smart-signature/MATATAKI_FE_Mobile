@@ -76,6 +76,17 @@ export default new VueRouter({
       }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
     },
     {
+      path: '/user/withdraw/:username/:type',
+      name: 'Withdraw',
+      props: true,
+      component: () => import(/* webpackChunkName: "Withdraw" */ './views/User/Withdraw'),
+      beforeEnter: (to, from, next) => {
+        const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
+        if (to.params.username !== tokenUserName) next({ name: 'User', params: { username: to.params.username } });
+        else { next(); }
+      },
+    },
+    {
       path: '/user/:username/original',
       name: 'Original',
       props: true,

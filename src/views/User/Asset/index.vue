@@ -136,14 +136,14 @@ export default {
             this.assetList[1].total = precision(filterArrONT[0].totalIncome, filterArrONT[0].symbol);
           }
         } else {
-          this.vantToast.fail({
+          this.$toast.fail({
             duration: 1000,
             message: `${res.data.message}`,
           });
         }
       }).catch((err) => {
         console.log(err);
-        this.vantToast.fail({
+        this.$toast.fail({
           duration: 1000,
           message: '获取数据失败',
         });

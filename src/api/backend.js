@@ -258,13 +258,8 @@ const API = {
       publickey: rawData.signature.publicKey,
       sign: rawData.signature.signature,
     };
-    const { blockchain } = data;
-    if (blockchain === 'EOS') {
-      data.amount *= 10000;
-    }
-    delete data.blockchain;
+    delete data.mode;
     delete data.signature;
-
     return accessBackend({ method: 'POST', url: '/user/withdraw', data });
   },
 };

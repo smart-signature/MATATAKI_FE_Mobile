@@ -78,6 +78,8 @@ export default new Vuex.Store({
     async getSignature({ dispatch, getters }, data) {
       // console.debug(getters.currentUserInfo, data.mode, data.rawSignData);
       const { blockchain } = getters.currentUserInfo;
+      // const { blockchain } = data;
+      // console.log(data.blockchain);
       let signature = null;
       if (blockchain === 'EOS') {
         signature = await dispatch('scatter/getSignature', data);
@@ -183,22 +185,41 @@ export default new Vuex.Store({
     },
     // data: { amount, toaddress, memo }
     async withdraw({ dispatch, getters }, data) {
-      const { blockchain } = getters.currentUserInfo;
-      data.blockchain = blockchain;
-      if (blockchain === 'EOS') {
+      // const { blockchain } = getters.currentUserInfo;
+      // data.blockchain = blockchain;
+      console.log(data);
+      // console.log(blockchain);
+
+      // 根据传进来的mode判断提现什么币
+      if (data.mode === 'EOS') {
         data.contract = 'eosio.token';
         data.symbol = 'EOS';
-      } else if (blockchain === 'ONT') {
+        data.blockchain = 'eos';
+      } else if (data.mode === 'ONT') {
         data.contract = 'AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV';
         data.symbol = 'ONT';
+        data.blockchain = 'ont';
       }
+      data.amount *= 10000; // 前端统一*10000
+
       const {
-        amount, contract, symbol, toaddress,
+        amount, contract, symbol, toaddress, mode,
       } = data;
       data.signature = await dispatch(
-        'getSignature', { mode: 'withdraw', rawSignData: [toaddress, contract, symbol, amount] },
+        'getSignature',
+        {
+          mode: 'withdraw',
+          rawSignData: [toaddress, contract, symbol, amount],
+          // blockchain: mode,
+        },
       );
-      return backendAPI.withdraw(data);
+
+      try {
+        const res = await backendAPI.withdraw(data);
+        return res;
+      } catch (error) {
+        return error;
+      }
     },
   },
   mutations: {

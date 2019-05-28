@@ -335,12 +335,12 @@ export default {
     // 复制hash
     copyText(getCopyIpfsHash) {
       this.$copyText(getCopyIpfsHash).then(() => {
-        this.vantToast.success({
+        this.$toast.success({
           duration: 1000,
           message: '复制成功',
         });
       }, () => {
-        this.vantToast.fail({
+        this.$toast.fail({
           duration: 1000,
           message: '复制失败',
         });
@@ -357,14 +357,14 @@ export default {
             this.getUser(res.data.data.author);
           }
         } else {
-          this.vantToast({
+          this.$toast({
             duration: 1000,
             message: res.data.message,
           });
         }
       }).catch((err) => {
         console.log(err);
-        this.vantToast({
+        this.$toast({
           duration: 1000,
           message: '获取文章信息失败',
         });
@@ -431,7 +431,7 @@ export default {
       // 检查价格
       const checkPrices = (prices, range, message) => {
         if (prices < range) {
-          this.vantToast({
+          this.$toast({
             duration: 1000,
             message,
           });

@@ -145,7 +145,7 @@ export default {
           success();
         } catch (err) {
           console.log(err);
-          this.vantToast.fail({
+          this.$toast.fail({
             duration: 1000,
             message: '登陆失败',
           });

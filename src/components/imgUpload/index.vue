@@ -120,7 +120,7 @@ export default {
       if (newFile && !oldFile) {
         // 过滤不是图片后缀的文件
         if (!/\.(gif|jpg|jpeg|png|webp)$/i.test(newFile.name)) {
-          this.vantToast.fail({
+          this.$toast.fail({
             duration: 1000,
             message: '请选择图片',
           });
@@ -130,7 +130,7 @@ export default {
       // 限定最大字节
       const maxSize = (size) => {
         if (newFile.file.size >= 0 && newFile.file.size > 1024 * 1024 * size) {
-          this.vantToast.fail({
+          this.$toast.fail({
             duration: 1000,
             message: '图片过大',
           });
@@ -150,7 +150,7 @@ export default {
           },
           error(err) {
             console.log(err);
-            this.vantToast.fail({
+            this.$toast.fail({
               duration: 1000,
               message: '自动压缩图片失败',
             });
@@ -213,7 +213,7 @@ export default {
           this.$emit('doneImageUpload', newFile.response);
         } else {
           this.modalLoading = false;
-          this.vantToast.fail({
+          this.$toast.fail({
             duration: 1000,
             message: '上传图片失败',
           });

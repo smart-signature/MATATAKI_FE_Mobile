@@ -32,7 +32,9 @@ const actions = {
   },
   async getSignature({ state }, rawSignData) {
     const { account } = state;
+    // console.log(state);
     if (!account) throw new Error('no account');
+    // console.log(rawSignData);
     const signature = await API.signMessage({ message: rawSignData.join(' ') });
     return ({ publicKey: signature.publicKey, signature: signature.data, username: account });
   },

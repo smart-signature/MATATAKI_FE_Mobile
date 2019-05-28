@@ -94,8 +94,8 @@ export default {
     // 提现
     async withdraw(name) {
       this.$Modal.confirm({
-        title: "提现确认",
-        content: "<p>确定要提现吗？</p>",
+        title: '提现确认',
+        content: '<p>确定要提现吗？</p>',
         onOk: () => {
           this.withdraw(this.username);
           /*
@@ -137,19 +137,24 @@ export default {
       // 目前只支持EOS提现 所以其他不允许弹出
       if (!this.isWithdrawButton) return;
       if (this.playerincome <= 0) {
-        this.vantToast.fail({
+        this.$toast.fail({
           duration: 1000,
           message: '没有可以提现的余额',
         });
         return;
       }
-      this.withdraw();
+      const { username, type } = this;
+      this.$router.push({
+        name: 'Withdraw',
+        params: { username, type },
+      });
+      // this.withdraw();
     },
     togglewithdrawButton() {
       // EOS可以提现
       this.isWithdrawButton = this.currentUserInfo.blockchain === 'EOS' && this.type === 'EOS';
     },
-  }
+  },
 };
 </script>
 
