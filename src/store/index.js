@@ -218,7 +218,8 @@ export default new Vuex.Store({
         const res = await backendAPI.withdraw(data);
         return res;
       } catch (error) {
-        return error;
+        // 手动抛出一个promise reject error
+        return Promise.reject(error);
       }
     },
   },
