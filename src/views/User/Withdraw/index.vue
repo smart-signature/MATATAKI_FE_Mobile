@@ -226,7 +226,7 @@ export default {
             tokenName: this.type,
             amount: strTrim(`${this.withdrawData.head.amount}`),
             toaddress: strTrim(`${this.withdrawData.list[0].value}`),
-            memo: this.type === 'EOS' ? strTrim(this.withdrawData.list[1].value) : '', // eos 交易所需要填写memo标签
+            memo: this.type === 'EOS' ? strTrim(`${this.withdrawData.list[1].value}`) : '', // eos 交易所需要填写memo标签
           })
             .then((res) => {
               if (res.status === 200 && res.data.code === 0) {
