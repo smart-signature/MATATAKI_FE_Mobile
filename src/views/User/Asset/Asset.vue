@@ -9,13 +9,7 @@
           <p class="topcard-playerincome">{{playerincome}}</p>
         </div>
         <!-- 控制提现样式 如果修改记得修改class样式 -->
-        <div class="withdraw" :class="!isWithdrawButton && 'disabled'" @click="withdrawButton">
-          <!-- 控制提现文字 根据不同情况修改 -->
-          {{
-            isWithdrawButton ?
-            '全部提现' :
-            '提现未开放'
-          }}
+        <div class="withdraw" @click="withdrawButton">全部提现
         </div>
       </div>
 
@@ -54,7 +48,7 @@
 
 <script>
 import AssetList from './AssetList.vue';
-import { mapActions, mapGetters } from 'vuex';
+import { mapGetters } from 'vuex';
 import { precision } from '@/common/precisionConversion';
 
 export default {
@@ -67,8 +61,6 @@ export default {
     if (!assetTypeArr.includes(this.type)) {
       this.$router.push({ name: 'home' });
     }
-
-    this.togglewithdrawButton();
   },
   data() {
     return {
@@ -80,36 +72,12 @@ export default {
         totalShareExpenses: 0,
       },
       visible: false,
-      isWithdrawButton: true,
     };
   },
   computed: {
     ...mapGetters(['currentUserInfo']),
   },
-  watch: {
-    currentUserInfo() { this.togglewithdrawButton(); },
-  },
   methods: {
-    ...mapActions(['withdraw']),
-    // 提现
-    async withdraw(name) {
-      this.$Modal.confirm({
-        title: '提现确认',
-        content: '<p>确定要提现吗？</p>',
-        onOk: () => {
-          this.withdraw(this.username);
-          /*
-          .then(() => this.$Message.success('提现成功!'))
-          .catch((error) => {
-            console.error(error);
-            this.$Message.error('提现失败!');
-          }); */
-        },
-        onCancel: () => {
-          // this.$Message.info("Clicked cancel");
-        },
-      });
-    },
     // 得到明细数据
     getOtherAsset(res) {
       const {
@@ -119,7 +87,6 @@ export default {
         totalShareExpenses: shareExp,
       } = res.data.data;
       const { assetsRewards } = this;
-
 
       const precisionFunc = (amount) => {
         const amountType = amount > 0 ? '+' : '';
@@ -134,12 +101,10 @@ export default {
     },
     // 提现按钮单击
     withdrawButton() {
-      // 目前只支持EOS提现 所以其他不允许弹出
-      if (!this.isWithdrawButton) return;
       if (this.playerincome <= 0) {
         this.$toast.fail({
           duration: 1000,
-          message: '没有可以提现的余额',
+          message: '无提现余额',
         });
         return;
       }
@@ -148,11 +113,6 @@ export default {
         name: 'Withdraw',
         params: { username, type },
       });
-      // this.withdraw();
-    },
-    togglewithdrawButton() {
-      // EOS可以提现
-      this.isWithdrawButton = this.currentUserInfo.blockchain === 'EOS' && this.type === 'EOS';
     },
   },
 };

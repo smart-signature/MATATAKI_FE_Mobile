@@ -203,10 +203,10 @@ export default {
         if (action === 'confirm') {
           done();
           await this.withdraw({
-            mode: this.type,
+            tokenName: this.type,
             amount: this.withdrawData.head.amount,
             toaddress: this.withdrawData.list[0].value,
-            memo: `提现 ${this.type}`,
+            memo: this.type === 'EOS' ? this.withdrawData.list[1].value : '', // eos 交易所需要填写memo标签
           })
             .then((res) => {
               if (res.status === 200 && res.data.code === 0) {

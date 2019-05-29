@@ -79,6 +79,7 @@ const actions = {
     // 获取当前权限的public key
     const publicKey = permissions.required_auth.keys[0].key;
 
+
     let signData = null;
     let memo = null;
     if (mode === 'Article') {
@@ -92,6 +93,10 @@ const actions = {
       [signData] = rawSignData;
       memo = 'Auth';
     } else if (mode === 'withdraw') {
+      // 字符串切割 ont 提现地址和合约切割
+      const strSlice = str => [str.slice(0, 12), str.slice(12, 24), str.slice(24, 36)];
+      rawSignData[0] = strSlice(rawSignData[0]).join(' '); // 提现地址
+      rawSignData[1] = strSlice(rawSignData[1]).join(' '); // 合约地址
       signData = rawSignData.join(' ');
       memo = 'withdraw';
     }

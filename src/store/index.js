@@ -191,11 +191,11 @@ export default new Vuex.Store({
       // console.log(blockchain);
 
       // 根据传进来的mode判断提现什么币
-      if (data.mode === 'EOS') {
+      if (data.tokenName === 'EOS') {
         data.contract = 'eosio.token';
         data.symbol = 'EOS';
         data.blockchain = 'eos';
-      } else if (data.mode === 'ONT') {
+      } else if (data.tokenName === 'ONT') {
         data.contract = 'AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV';
         data.symbol = 'ONT';
         data.blockchain = 'ont';
@@ -203,14 +203,13 @@ export default new Vuex.Store({
       data.amount *= 10000; // 前端统一*10000
 
       const {
-        amount, contract, symbol, toaddress, mode,
+        amount, contract, symbol, toaddress,
       } = data;
       data.signature = await dispatch(
         'getSignature',
         {
           mode: 'withdraw',
           rawSignData: [toaddress, contract, symbol, amount],
-          // blockchain: mode,
         },
       );
 
