@@ -258,6 +258,7 @@ const API = {
       publickey: rawData.signature.publicKey,
       sign: rawData.signature.signature,
     };
+    delete data.blockchain;
     delete data.tokenName;
     delete data.signature;
     return accessBackend({ method: 'POST', url: '/user/withdraw', data });

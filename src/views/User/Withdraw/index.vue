@@ -1,5 +1,5 @@
 <template>
-  <div class=" mw withdraw">
+  <div class="mw withdraw">
     <BaseHeader :pageinfo="{ title: '帮助'}"  />
     <div class="withdraw-head">
       <div class="withdraw-head-type">
@@ -45,9 +45,10 @@
 <script>
 import { getBalance } from '@/api';
 import { precision } from '@/common/precisionConversion';
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import iconEOS from '@/assets/img/icon_EOS.svg';
 import iconONT from '@/assets/img/icon_ONT.svg';
+import { strTrim } from '@/common/reg';
 
 export default {
   name: 'Withdraw',
@@ -122,8 +123,8 @@ export default {
             title: '手续费',
             titleDes: '(限时由智能签名官方支付)',
             placeholder: '输入或长按黏贴地址',
-            value: 0,
-            des: 'ONT',
+            value: 0.01,
+            des: 'ONG',
             disabled: true,
           },
         ],
@@ -144,6 +145,11 @@ export default {
       this.withdrawData = this.ontWithdraw;
     }
     this.getBalance(this.type);
+    // 如果登陆的平台等于进入的币提现类型 默认带上提现地址
+    if (this.currentUserInfo.blockchain === this.type) this.withdrawData.list[0].value = this.currentUserInfo.name;
+  },
+  computed: {
+    ...mapGetters(['currentUserInfo']),
   },
   methods: {
     ...mapActions(['withdraw']),
@@ -165,7 +171,7 @@ export default {
           } else if (type === 'ONT' && filterArrONT.length !== 0) {
             const amount = precision(filterArrONT[0].amount, filterArrONT[0].symbol);
             this.withdrawData.head.amount = amount;
-            this.withdrawData.list[1].value = amount;
+            this.withdrawData.list[1].value = Math.floor(amount); // ont 向下取整
           }
         } else {
           this.$toast.fail({
@@ -199,14 +205,18 @@ export default {
       if (this.withdrawData.head.amount <= 0) return this.toastMessage('没有可以提现的余额');
       if (!this.withdrawData.list[0].value) return this.toastMessage('请输入提现地址');
 
+      // 最小金额限制
+      if (this.type === 'EOS' && this.withdrawData.head.amount < 0.5) return this.toastMessage('提现EOS不能小于0.5');
+      if (this.type === 'ONT' && this.withdrawData.head.amount < 1) return this.toastMessage('提现ONT不能小于1');
+
       const beforeClose = async (action, done) => {
         if (action === 'confirm') {
           done();
           await this.withdraw({
             tokenName: this.type,
-            amount: this.withdrawData.head.amount,
-            toaddress: this.withdrawData.list[0].value,
-            memo: this.type === 'EOS' ? this.withdrawData.list[1].value : '', // eos 交易所需要填写memo标签
+            amount: strTrim(`${this.withdrawData.head.amount}`),
+            toaddress: strTrim(`${this.withdrawData.list[0].value}`),
+            memo: this.type === 'EOS' ? strTrim(this.withdrawData.list[1].value) : '', // eos 交易所需要填写memo标签
           })
             .then((res) => {
               if (res.status === 200 && res.data.code === 0) {
@@ -226,6 +236,7 @@ export default {
         message: '确认提现?',
         beforeClose,
       });
+      return true;
     },
   },
 

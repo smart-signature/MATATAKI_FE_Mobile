@@ -1,5 +1,5 @@
 <template>
-  <div class="help">
+  <div class="mw help">
     <BaseHeader :pageinfo="{ title: '帮助'}"  />
     <div class="help-block">
       <div class="help-list" v-for="(item, index) in helpDoc" :key="index" @click="jumpTo({name: item.name})">
