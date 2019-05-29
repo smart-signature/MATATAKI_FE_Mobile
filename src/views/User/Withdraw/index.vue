@@ -224,7 +224,7 @@ export default {
           done();
           await this.withdraw({
             tokenName: this.type,
-            amount: strTrim(`${this.withdrawData.head.amount}`),
+            amount: this.type === 'EOS' ? strTrim(`${this.withdrawData.list[2].value}`) : strTrim(`${this.withdrawData.list[1].value}`),
             toaddress: strTrim(`${this.withdrawData.list[0].value}`),
             memo: this.type === 'EOS' ? strTrim(`${this.withdrawData.list[1].value}`) : '', // eos 交易所需要填写memo标签
           })
