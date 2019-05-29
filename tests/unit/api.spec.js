@@ -6,6 +6,7 @@ beforeEach(async () => unmock());
 describe('backendAPI getUser()', () => {
   it('firt test response should be 200', async () => {
     const response = await backendAPI.getUser({ username: 'megumimegumi' });
+    // throw response;
     expect(response.status).to.equal(200);
   });
 });

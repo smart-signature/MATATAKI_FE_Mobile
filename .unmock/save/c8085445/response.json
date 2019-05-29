@@ -1,0 +1,28 @@
+{
+  "headers": {
+    "content-length": "183",
+    "content-type": "application/json; charset=utf-8",
+    "etag": "W/\"b7-Zm/Kycfq4kLiQnvk+5jXajQ5chE\"",
+    "access-control-allow-origin": "*",
+    "x-dns-prefetch-control": "off",
+    "x-frame-options": "SAMEORIGIN",
+    "strict-transport-security": "max-age=15552000; includeSubDomains",
+    "x-download-options": "noopen",
+    "x-content-type-options": "nosniff",
+    "x-xss-protection": "1; mode=block",
+    "x-ratelimit-limit": "150",
+    "x-ratelimit-remaining": "149",
+    "x-ratelimit-reset": "1559101303",
+    "unmock-hash": "1059939e",
+    "x-unmock-hash": "1059939e",
+    "access-control-expose-headers": "Content-Type, unmock-hash, x-unmock-hash",
+    "set-cookie": [
+      "ARRAffinity=1c29cc44c1a55b0a25d18663d79d2549ce88a6d0b7d2105332aaf3a011aee48c;Path=/;HttpOnly;Domain=api.unmock.io"
+    ],
+    "date": "Wed, 29 May 2019 03:40:42 GMT"
+  },
+  "body": {
+    "badNews": "Unmock does not currently contain a viable mock of this API.",
+    "goodNews": "We are working hard to mock the entire internet, and we will e-mail you when this API is ready."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "headers": {
+    "vary": "Access-Control-Request-Headers",
+    "x-powered-by": "Express",
+    "access-control-allow-origin": "*",
+    "access-control-allow-methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+    "access-control-allow-headers": "lang",
+    "set-cookie": [
+      "ARRAffinity=bd39db228e7787daed50c20412ed37325f0e93d6e76cc16fc1b41fc6135e44a9;Path=/;HttpOnly;Domain=api.unmock.io"
+    ],
+    "date": "Wed, 29 May 2019 03:20:10 GMT"
+  }
+}

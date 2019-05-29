@@ -1,0 +1,13 @@
+{
+  "headers": {
+    "origin": "null",
+    "access-control-request-method": "GET",
+    "access-control-request-headers": "lang",
+    "user-agent": "Mozilla/5.0 (linux) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/15.1.0",
+    "content-length": "0",
+    "connection": "keep-alive"
+  },
+  "host": "apitest.smartsignature.io",
+  "method": "OPTIONS",
+  "path": "/user/megumimegumi"
+}

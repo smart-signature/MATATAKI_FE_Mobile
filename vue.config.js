@@ -10,6 +10,12 @@ const { NODE_ENV } = process.env;
 if (NODE_ENV === 'test') {
   module.exports = {
     configureWebpack: {
+      externals: [{
+          canvas: 'commonjs canvas',
+        },
+        'bufferutil',
+        'utf-8-validate',
+      ],
     },
   };
 } else {

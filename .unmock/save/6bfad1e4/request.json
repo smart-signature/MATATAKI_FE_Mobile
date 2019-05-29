@@ -1,0 +1,14 @@
+{
+  "headers": {
+    "accept": "application/json, text/plain, */*",
+    "referer": "about:blank",
+    "user-agent": "Mozilla/5.0 (linux) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/15.1.0",
+    "accept-language": "en",
+    "origin": "null",
+    "accept-encoding": "gzip, deflate",
+    "connection": "keep-alive"
+  },
+  "host": "polaris1.ont.io",
+  "method": "GET",
+  "path": "/api/v1/version"
+}
