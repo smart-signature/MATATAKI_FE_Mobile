@@ -271,6 +271,7 @@ export default {
           throw new Error(response.data.message);
         }
         success(response.data.data);
+        console.log(response);
         return 'success';
       } catch (error) {
         console.error(error);
@@ -290,9 +291,8 @@ export default {
       const { author, hash } = data;
       const signature = await this.getSignatureOfArticle({ author, hash });
       const response = await backendAPI.editArticle(data, signature);
-      console.log(response);
-      if (response.data.msg !== 'success') this.failed('失败请重试');
-      this.success(data.hash);
+      if (response.status === 200 && response.data.code === 0) this.success(response.data.data);
+      else this.failed('失败请重试');
     },
     // 删除草稿
     async delDraft(id) {
