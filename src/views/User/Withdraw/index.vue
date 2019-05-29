@@ -30,8 +30,7 @@
     </div>
 
     <div class="withdraw-des">
-      <p>提现100 ONT，单次最多提现2000 ONT</p>
-      <p>如果需要注释加在这里</p>
+      <p v-for="(item, index) in this.withdrawData.des" :key="index">{{item}}</p>
     </div>
 
 
@@ -71,7 +70,7 @@ export default {
             disabled: false,
           },
           {
-            title: '标签',
+            title: '标签 MEMO',
             titleDes: '(填写错误可能导致资产损失,请仔细核对)',
             placeholder: '输入或长按粘贴标签',
             value: '',
@@ -94,6 +93,12 @@ export default {
             des: 'EOS',
             disabled: true,
           },
+        ],
+        des: [
+          '最小提币数量为：0.5 EOS。',
+          '提现数量默认为全部EOS余额。',
+          '如需提币到交易所，请填写正确的 memo。',
+          '请务必确认电脑及浏览器安全，防止信息被篡改或泄露。',
         ],
       },
       ontWithdraw: {
@@ -128,6 +133,11 @@ export default {
             disabled: true,
           },
         ],
+        des: [
+          '最小提币数量为：1 ONT。',
+          '提现数量默认为全部ONT余额的正整数部分。',
+          '请务必确认电脑及浏览器安全，防止信息被篡改或泄露。',
+        ],
       },
       withdrawData: null,
     };
@@ -135,21 +145,21 @@ export default {
   created() {
     // 认为是用户手动切换非法地址  考虑要不要移到路由里面去拦截
     const assetTypeArr = ['EOS', 'ONT'];
-    if (!assetTypeArr.includes(this.type)) {
-      this.$router.push({ name: 'home' });
-    }
+    if (!assetTypeArr.includes(this.type)) this.$router.push({ name: 'home' });
 
-    if (this.type === 'EOS') {
-      this.withdrawData = this.eosWithdraw;
-    } else if (this.type === 'ONT') {
-      this.withdrawData = this.ontWithdraw;
-    }
+    if (this.type === 'EOS') this.withdrawData = this.eosWithdraw;
+    else if (this.type === 'ONT') this.withdrawData = this.ontWithdraw;
+
     this.getBalance(this.type);
-    // 如果登陆的平台等于进入的币提现类型 默认带上提现地址
-    if (this.currentUserInfo.blockchain === this.type) this.withdrawData.list[0].value = this.currentUserInfo.name;
+    this.writeAddres();
   },
   computed: {
     ...mapGetters(['currentUserInfo']),
+  },
+  watch: {
+    currentUserInfo() {
+      this.writeAddres();
+    },
   },
   methods: {
     ...mapActions(['withdraw']),
@@ -237,6 +247,10 @@ export default {
         beforeClose,
       });
       return true;
+    },
+    writeAddres() {
+      // 如果登陆的平台等于进入的币提现类型 默认带上提现地址
+      if (this.currentUserInfo.blockchain === this.type) this.withdrawData.list[0].value = this.currentUserInfo.name;
     },
   },
 
