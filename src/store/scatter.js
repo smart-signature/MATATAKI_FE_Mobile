@@ -69,7 +69,8 @@ const actions = {
     }
     return false;
   },
-  async getSignature({ dispatch, state }, { mode, rawSignData }) {
+  // tokenName 传进来判断是提现什么币
+  async getSignature({ dispatch, state }, { mode, rawSignData, tokenName }) {
     const api = await dispatch('getAPI');
     const { eosClient } = await import(/* webpackChunkName: "EOS-scatter" */ '@/api/scatter');
     const { account } = state;
@@ -93,10 +94,13 @@ const actions = {
       [signData] = rawSignData;
       memo = 'Auth';
     } else if (mode === 'withdraw') {
-      // 字符串切割 ont 提现地址和合约切割
-      const strSlice = str => [str.slice(0, 12), str.slice(12, 24), str.slice(24, 36)];
-      rawSignData[0] = strSlice(rawSignData[0]).join(' '); // 提现地址
-      rawSignData[1] = strSlice(rawSignData[1]).join(' '); // 合约地址
+      // 如果是EOS登陆提现ONT
+      if (tokenName === 'ONT') {
+        // 字符串切割 ont 提现地址和合约切割
+        const strSlice = str => [str.slice(0, 12), str.slice(12, 24), str.slice(24, 36)];
+        rawSignData[0] = strSlice(rawSignData[0]).join(' '); // 提现地址
+        rawSignData[1] = strSlice(rawSignData[1]).join(' '); // 合约地址
+      }
       signData = rawSignData.join(' ');
       memo = 'withdraw';
     }

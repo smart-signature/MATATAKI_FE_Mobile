@@ -203,13 +203,14 @@ export default new Vuex.Store({
       data.amount *= 10000; // 前端统一*10000
 
       const {
-        amount, contract, symbol, toaddress,
+        amount, contract, symbol, toaddress, tokenName,
       } = data;
       data.signature = await dispatch(
         'getSignature',
         {
           mode: 'withdraw',
           rawSignData: [toaddress, contract, symbol, amount],
+          tokenName,
         },
       );
 
