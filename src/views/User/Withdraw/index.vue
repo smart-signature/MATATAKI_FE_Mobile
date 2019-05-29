@@ -196,7 +196,7 @@ export default {
       }
     },
     async withdrawButton() {
-      // if (this.withdrawData.head.amount <= 0) return this.toastMessage('没有可以提现的余额');
+      if (this.withdrawData.head.amount <= 0) return this.toastMessage('没有可以提现的余额');
       if (!this.withdrawData.list[0].value) return this.toastMessage('请输入提现地址');
 
       const beforeClose = async (action, done) => {
