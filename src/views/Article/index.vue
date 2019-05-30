@@ -119,27 +119,32 @@
           </div>
     </div>
     <div class="footer-block">
-        <button class="button-support" v-if="isSupported===-1" @click="b4support">赞赏<img src="@/assets/img/icon_support.png"/></button>
-        <button class="button-support" v-if="isSupported===0" disabled>赞赏中<img src="@/assets/img/icon_support.png"/></button>
-        <button class="button-support" v-else-if="isSupported===1" @click="supportButton">赞赏<img src="@/assets/img/icon_support.png"/></button>
-        <button class="button-support" v-else-if="isSupported===2" disabled>已赞赏<img src="@/assets/img/icon_support.png"/></button>
-        <button class="button-share" @click="share">分享<img src="@/assets/img/icon_share.png" /></button>
+      <button class="button-support" v-if="isSupported===-1" @click="b4support">赞赏<img src="@/assets/img/icon_support.png"/></button>
+      <button class="button-support" v-if="isSupported===0" disabled>赞赏中<img src="@/assets/img/icon_support.png"/></button>
+      <button class="button-support" v-else-if="isSupported===1" @click="supportButton">赞赏<img src="@/assets/img/icon_support.png"/></button>
+      <button class="button-support" v-else-if="isSupported===2" disabled>已赞赏<img src="@/assets/img/icon_support.png"/></button>
+      <button class="button-share" @click="share">分享<img src="@/assets/img/icon_share.png" /></button>
     </div>
     </footer>
-    <!-- 赞赏对话框 -->
-    <Modal v-model="supportModal"
-      @close="() => supportModal = false" radius=""
-      @maskClick="supportModal = false" :showClose="true"
-      title="赞赏此文章"
-      ok-text="赞赏"
-      @on-ok="support"
-      >
-        <div class="support-input">
-          <Input v-model="comment" type="textarea" :rows="4" placeholder="输入推荐语…"/>
-          <input class="support-input__amount"
-            :placeholder="displayPlaceholder" v-model="amount" type="text"  @input="handleChange"/>
-        </div>
-    </Modal>
+
+    <van-dialog
+      v-model="supportModal"
+      title="赞赏"
+      show-cancel-button
+      @confirm="support"
+      @cancel="supportModal = false"
+    >
+      <div class="support-body">
+        <van-field
+          v-model="comment"
+          type="textarea"
+          placeholder="输入推荐语…"
+          rows="4"
+          autosize
+        />
+        <van-field v-model="amount" @input="handleChange(amount)" :placeholder="displayPlaceholder" />
+      </div>
+    </van-dialog>
 
     <!-- 文章 Info -->
     <ArticleInfo :infoModa="infoModa" @changeInfo="(status) => infoModa = status" />
@@ -247,14 +252,13 @@ export default {
       const { invite } = this.$route.query;
       return !invite ? null : invite;
     },
+    // 这里发现有问题 应该是下面直接设置了属性报错 后续需要修改
+    // errorinfo - vue.js:634 [Vue warn]: Computed property "isSupported" was assigned to but it has no setter.
     isSupported() {
       const { article, isLogined } = this;
       let isSupported = false;
-      if (isLogined) {
-        isSupported = article.support ? RewardStatus.REWARDED : RewardStatus.NOT_REWARD_YET;
-      } else {
-        isSupported = RewardStatus.NOT_LOGGINED;
-      }
+      if (isLogined) isSupported = article.support ? RewardStatus.REWARDED : RewardStatus.NOT_REWARD_YET;
+      else isSupported = RewardStatus.NOT_LOGGINED;
       return isSupported;
     },
     signId() {
@@ -405,15 +409,17 @@ export default {
       this.post = post;
       this.articleLoading = false; // 文章加载状态隐藏
     },
-    handleChange(e) {
+    handleChange(amount) {
+      let amountValue = amount;
       const { blockchain } = this.currentUserInfo;
       if (blockchain === 'EOS') {
         // 小数点后三位 如果后面需要解除限制修改正则  {0,3}
-        e.target.value = (e.target.value.match(/^\d*(\.?\d{0,3})/g)[0]) || null;
+        amountValue = (amountValue.match(/^\d*(\.?\d{0,3})/g)[0]) || null;
       } else if (blockchain === 'ONT') {
-        e.target.value = (e.target.value.match(/^\d*/g)[0]) || null;
+        amountValue = (amountValue.match(/^\d*/g)[0]) || null;
       }
-      this.amount = e.target.value;
+      console.log(amountValue);
+      this.amount = amountValue;
     },
     b4support() {
       if (!this.isLogined) {
