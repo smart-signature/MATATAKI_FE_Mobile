@@ -101,6 +101,7 @@
 </template>
 
 <script>
+// 这个页面被改完了 还有一堆没有的方法待删除 -- 希望修改的时候改干净吧 :(
 import { mapGetters, mapActions } from 'vuex';
 import {
   Follow, Unfollow, getUser,
@@ -287,7 +288,7 @@ export default {
         const response = await uploadAvatar({ avatar });
         if (response.status !== 201) throw new Error('201');
         this.refreshUser();
-        this.imgUploadDone += 1;
+        this.imgUploadDone += Date.now();
       } catch (error) {
         console.log(error);
         this.$Message.error('上传失败请重试');

@@ -30,7 +30,7 @@ components: { imgUpload },
 | --- | --- | --- | --- | --- |
 | buttonText | 按钮文字 | string | 保存 | fasle |
 | imgSize | 显示上传图片大小 单位 M | Number | 2 | false |
-| imgUploadDone | 是否上传完成 | Number | 0 上传完成++/+=1改变数值 | true |
+| imgUploadDone | 是否上传完成 | Number | 0 上传完成++/+= Date.now() 改变数值 | true |
 | compressorSetting | 压缩图片 | Object | status: true \| quality: 0.8 | false |
 
 接口地址

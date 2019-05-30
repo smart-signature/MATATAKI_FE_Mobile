@@ -94,7 +94,7 @@ export default {
         this.myToasted('简介不能超过20个字符');
         canSetProfile = false;
       }
-      if (!regEmail.test(this.newEmail)) {
+      if (this.newEmail !== '' && !regEmail.test(this.newEmail)) {
         this.myToasted('请输入正确的邮件地址');
         canSetProfile = false;
       }
@@ -129,7 +129,7 @@ export default {
           });
           this.nickname = this.newname;
           this.$navigation.cleanRoutes(); // 清除路由记录
-        } else this.myToasted('昵称重复，请重新填写');
+        } else this.myToasted(res.data.message);
       }).catch((error) => {
         console.log(error);
         if (error.response.status === 401) {
@@ -197,7 +197,7 @@ export default {
           message: '上传失败',
         });
       });
-      this.imgUploadDone += 1;
+      this.imgUploadDone += Date.now();
     },
   },
   created() {

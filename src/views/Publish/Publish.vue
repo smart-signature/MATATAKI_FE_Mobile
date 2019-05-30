@@ -19,7 +19,6 @@
       class="editor"
       @imgAdd="$imgAdd"
       :toolbars="toolbars"
-      :subfield="subfield"
       :boxShadow="false"
       :autofocus="false"
       :style="mavonStyle"
@@ -35,10 +34,10 @@
       </div>
       <div class="cover">
         <p>图文封面</p>
-        <img-upload :imgUploadDone="imgUploadDone" class="cover-upload" @doneImageUpload="doneImageUpload" v-if="!cover">
+        <img-upload :imgUploadDone="imgUploadDone" class="cover-upload" @doneImageUpload="doneImageUpload" v-show="!cover">
           <img slot="uploadButton" class="cover-add" src="@/assets/img/icon_add.svg" alt="add">
         </img-upload>
-        <div class="cover-right" v-else>
+        <div class="cover-right" v-show="cover">
           <img class="cover-right-img" :src="coverEditor" alt="cover" />
           <img class="cover-right-remove" @click.prevent="removeCover" src="@/assets/img/icon_remove.svg" alt="remove">
         </div>
@@ -143,7 +142,6 @@ export default {
       button: ['再想想', '退出'],
     },
     modalMode: null, // header 判断点击的 back 还是 home
-    subfield: true,
   }),
   computed: {
     ...mapGetters(['currentUserInfo', 'currentUsername', 'isLogined']),
@@ -401,13 +399,8 @@ export default {
       image.src = imgfile.miniurl;
     },
     setToolBar(val) {
-      if (val > 750) {
-        this.toolbars = Object.assign(toolbars.pc, toolbars.public);
-        this.subfield = true;
-      } else {
-        this.toolbars = Object.assign(toolbars.mobile, toolbars.public);
-        this.subfield = false;
-      }
+      if (val > 750) this.toolbars = Object.assign(toolbars.pc, toolbars.public);
+      else this.toolbars = Object.assign(toolbars.mobile, toolbars.public);
     },
     resize() {
       window.onresize = debounce(() => {
@@ -421,8 +414,8 @@ export default {
     },
     // 上传完成
     doneImageUpload(res) {
+      this.imgUploadDone += Date.now();
       this.cover = res.hash;
-      this.imgUploadDone += 1;
     },
     // 删除cover
     removeCover() {
