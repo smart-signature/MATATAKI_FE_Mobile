@@ -1,16 +1,21 @@
 <template>
   <div class="mw">
-      <div class="head" ref="head" :class="isFixedHead && 'fixed'">
-            <Dropdown trigger="click" @on-click="dropdownClick" class="dropdown">
-            <span class="dropdown-text">
-                {{tabsData[activeIndex].label}}
-                <Icon class="dropdown-icon" size="22" type="md-arrow-dropdown" />
-            </span>
-            <DropdownMenu slot="list">
-                <DropdownItem class="dropdown-list" v-for="(item, index) in tabsData" :key="index" :name="index">{{item.label}}</DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-          <!-- <span class="des">规则介绍<Icon type="ios-arrow-forward" /></span> -->
+      <div class="head">
+        <div class="head-list">
+          <a
+            href="javascript:;"
+            class="head-list-button"
+            :class="activeIndex===index && 'active'"
+            v-for="(item, index) in tabsData"
+            :key="index"
+            @click="toggleHeadButton(index)">
+            {{item.label}}
+          </a>
+        </div>
+        <Checkbox v-model="channel" class="head-store">
+          <img class="head-store-icon" src="@/assets/img/icon_store.svg" alt="store">商品
+        </Checkbox>
+      <!-- <div class="head" ref="head" :class="isFixedHead && 'fixed'"> -->
       </div>
       <BasePull
         :params="item.params"
@@ -18,6 +23,8 @@
         :activeIndex="activeIndex"
         :nowIndex="index"
         @getListData="getListData"
+        :isObj="{type: 'Object', key: 'data'}"
+        :autoRequestTime="autoRequestTime"
         v-for="(item, index) in tabsData"
         :key="index"
         v-show="index === activeIndex"
@@ -37,29 +44,56 @@ export default {
   components: { ArticleCard },
   data() {
     return {
+      channel: false,
       tabsData: [
         {
-          label: '发布时间',
-          params: {},
-          apiUrl: 'posts',
+          label: '最热',
+          params: {
+            channel: 1,
+          },
+          apiUrl: '/posts/supportsRanking',
           articles: [],
         },
         {
-          label: '赞赏金额',
-          params: {},
-          apiUrl: 'getSupportAmountRanking',
+          label: '最新',
+          params: {
+            channel: 1,
+          },
+          apiUrl: '/posts/timeRanking',
           articles: [],
         },
         {
-          label: '赞赏次数',
-          params: {},
-          apiUrl: 'getSupportTimesRanking',
+          label: 'EOS',
+          params: {
+            symbol: 'eos',
+            channel: 1,
+          },
+          apiUrl: '/posts/amountRanking',
+          articles: [],
+        },
+        {
+          label: 'ONT',
+          params: {
+            symbol: 'ont',
+            channel: 1,
+          },
+          apiUrl: '/posts/amountRanking',
           articles: [],
         },
       ],
       activeIndex: 0,
       isFixedHead: false,
+      autoRequestTime: 0,
     };
+  },
+  watch: {
+    channel() {
+      this.tabsData.map((i) => {
+        if (this.channel) i.params.channel = 2;
+        else i.params.channel = 1;
+      });
+      this.autoRequestTime += Date.now();
+    },
   },
   created() {
     // this.addHandleScroll();
@@ -71,8 +105,7 @@ export default {
     getListData(res) {
       this.tabsData[res.index].articles = res.list;
     },
-    dropdownClick(name) {
-      // console.log(name);
+    toggleHeadButton(name) {
       this.activeIndex = name;
     },
     // addHandleScroll() {
@@ -94,7 +127,7 @@ export default {
 
 <style lang="less" scoped>
 .head {
-  padding: 20px 20px 0;
+  padding: 20px 16px 10px;
   transition: all .3s;
   display: flex;
   justify-content: space-between;
@@ -109,31 +142,46 @@ export default {
     margin: 0 auto;
     background-color: #f0f0f0;
   }
-  .dropdown-text {
-    font-size:14px;
-    font-family:PingFangSC-Semibold;
+}
+
+.head-list {
+  padding: 0 10px;
+  &-button {
+    font-size:16px;
     font-weight:600;
-    color:#494949;
-    line-height:18px;
-    letter-spacing:1px;
-  }
-  .dropdown-icon {
-    color: #AFAFAF;
-    margin-left: -6px;
+    color:rgba(0,0,0,.24);
+    margin: 0 30px 0 0;
+    transition: all .18s;
+    text-align: center;
+    display: inline-block;
+    &.active{
+      color:rgba(0,0,0,7);
+      position: relative;
+      transform: scale(1.3);
+      &::after {
+        content: '';
+        display: block;
+        position: absolute;
+        bottom: -4px;
+        left: 50%;
+        transform: translate(-50%, 0);
+        height: 2px;
+        width: 30px;
+        border-radius: 10px;
+        background-color: #00ADF2;
+      }
+    }
   }
 }
 
-.dropdown-list {
-  position: relative;
-  &:nth-child(n+2):after {
-    content: '';
-    display: block;
-    position: absolute;
-    height: 1px;
-    top: 0;
-    left: 20px;
-    right: 20px;
-    background-color: #F4F4F4;
+.head-store {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  &-icon {
+    width: 20px;
+    margin-left: 4px;
   }
 }
+
 </style>

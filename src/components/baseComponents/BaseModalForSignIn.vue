@@ -9,16 +9,22 @@
 
         <div class="modal-login">
           <div class="modal-body" v-for="(item, index) in blockchain" :key="index">
-            <div class="modal-logo">
-              <img :src="item.url" :alt="item.title" @click="walletLogin(item.type)" />
-              <span>{{item.title}}</span>
+            <div class="modal-body-content">
+              <div class="modal-body-head">支持钱包</div>
+                <div class="modal-wallet">
+                  <a :href="itemWallet.href" target="_blank" v-for="(itemWallet, indexWallet) in item.wallet" :key="indexWallet">
+                    <img :src="itemWallet.url" :alt="itemWallet.alt" />
+                  </a>
+                </div>
+                <div class="modal-logo">
+                  <div class="modal-logo-button" :class="'active'+index" @click="walletLogin(item.type)">
+                    <img :src="item.url" :alt="item.title" />
+                    <span>{{item.title}}</span>
+                  </div>
+                </div>
+
             </div>
-            <div class="modal-wallet">
-              <a :href="itemWallet.href" v-for="(itemWallet, indexWallet) in item.wallet" :key="indexWallet">
-                <img :src="itemWallet.url" :alt="itemWallet.alt" />
-              </a>
-            </div>
-            <a class="modal-doc" :href="item.doc.href">{{item.doc.title}}</a>
+            <a class="modal-doc" target="_blank" :href="item.doc.href">{{item.doc.title}}</a>
           </div>
         </div>
         <div class="modal-loading" v-if="modalLoading">
@@ -30,20 +36,22 @@
 
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex';
-import iconEOS from '@/assets/img/icon_EOS.svg';
+import iconEOS from '@/assets/img/icon_logo_eos.svg';
 import iconTokenpocket from '@/assets/img/icon_tokenpocket.svg';
 import iconMathwallet from '@/assets/img/icon_mathwallet.svg';
 import iconScatter from '@/assets/img/icon_scatter.svg';
-import iconONT from '@/assets/img/icon_ONT.svg';
+import iconONT from '@/assets/img/icon_logo_ont.svg';
 import iconCyano from '@/assets/img/icon_cyano.svg';
 import iconLeafwallet from '@/assets/img/icon_leafwallet.svg';
+import iconChallte from '@/assets/img/icon_challte.svg';
+import iconMeet from '@/assets/img/icon_meet.svg';
 
 export default {
   name: 'BaseModalForSignIn',
   props: {
     showModal: {
       type: Boolean,
-      default: true,
+      default: false,
     },
   },
   watch: {
@@ -64,7 +72,7 @@ export default {
       blockchain: [
         {
           url: iconEOS,
-          title: 'EOS授权',
+          title: 'EOS登陆',
           type: 'EOS',
           wallet: [
             {
@@ -73,29 +81,39 @@ export default {
               alt: 'https://www.tokenpocket.pro/',
             },
             {
-              url: iconMathwallet,
-              href: 'http://www.medishares.org/',
-              alt: 'http://www.medishares.org/',
-            },
-            {
               url: iconScatter,
               href: 'https://get-scatter.com/',
               alt: 'https://get-scatter.com/',
+            },
+            {
+              url: iconChallte,
+              href: 'http://eblock.io/',
+              alt: 'http://eblock.io/',
+            },
+            {
+              url: iconMathwallet,
+              href: 'http://www.medishares.org/',
+              alt: 'http://www.medishares.org/',
             },
             {
               url: iconLeafwallet,
               href: 'https://www.leafwallet.io/',
               alt: 'https://www.leafwallet.io/',
             },
+            {
+              url: iconMeet,
+              href: 'https://meet.one/',
+              alt: 'https://meet.one/',
+            },
           ],
           doc: {
             title: '《如何使用EOS登录》',
-            href: 'https://smartsignature.io',
+            href: 'https://smartsignature.io/article/515',
           },
         },
         {
           url: iconONT,
-          title: 'ONT授权',
+          title: 'ONT登陆',
           type: 'ONT',
           wallet: [
             {
@@ -111,7 +129,7 @@ export default {
           ],
           doc: {
             title: '《如何使用ONT登录》',
-            href: 'https://smartsignature.io',
+            href: 'https://smartsignature.io/article/516',
           },
         },
       ],
@@ -180,41 +198,83 @@ export default {
     text-align: center;
     margin: 0 14px;
     transition: all .3s;
+    &-content {
+      background-color: #f0f0f0;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 0 14px 0;
+      height: 194px;
+    }
+
+    &-head {
+      width: 100%;
+      background: #E6E6E6;
+      padding: 7px 0;
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      font-weight: 400;
+      color: rgba(0,0,0,.7);
+    }
 
     .modal-logo {
-      text-align: center;
-      img {
-        width: 44px;
-        height: 44px;
-        padding: 0;
-        margin: 0;
+        flex: 1;
+        display: flex;
+        align-items: flex-end;
+      &-button {
+        text-align: center;
+        color: #fff;
+        margin: 16px 0 0;
+        padding: 0 20px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         cursor: pointer;
+        background-color: #eee;
+        &.active0 {
+          background: #444;
+        }
+        &.active1 {
+          background: #4D9AFD;
+        }
+      img {
+        height: 16px;
+        padding: 0;
+        margin: 8px 8px 8px 0;
+        cursor: pointer;
+        box-sizing: border-box;
       }
       span {
-        display: block;
         font-size: 14px;
         font-weight: 400;
-        color: rgba(0,0,0,.7);
-        margin: 6px 0 0;
         padding: 0;
+        margin: 0;
       }
     }
+    }
     .modal-wallet {
-      background:rgba(237,237,237,.75);
-      border-radius:16px;
-      padding: 20px 0;
+      background: rgba(237, 237, 237, 0.75);
+      border-radius: 16px;
+      padding: 0;
+      margin: 0;
       text-align: center;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -ms-flexbox;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 10px 0 44px;
+      width: 120px;
+      flex-wrap: wrap;
       a {
         display: inline-block;
         padding: 0;
-        margin: 0;
-        width: 22px;
-        height: 22px;
-        margin: 0 5px;
+        width: 28px;
+        height: 28px;
+        margin: 5px;
         img {
           width: 100%;
           height: 100%;
@@ -226,7 +286,7 @@ export default {
       font-size:14px;
       font-weight:400;
       color:rgba(0,118,255,1);
-      margin-bottom: 28px;
+      margin: 34px 0 28px 0;
       display: inline-block;
     }
   }

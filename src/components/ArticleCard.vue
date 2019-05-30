@@ -39,7 +39,7 @@ export default {
       return null;
     },
     articleValue() {
-      return precision(this.article.value, 'eos');
+      return precision(this.article.eosvalue, 'eos');
     },
     articleOntValue() {
       return precision(this.article.ontvalue, 'ont');

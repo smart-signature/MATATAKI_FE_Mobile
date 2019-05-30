@@ -324,7 +324,7 @@ export default {
       this.$emit('updateHead');
     },
     isLogined(newState) {
-      if (newState) this.getArticleInfo(this.hash, true);
+      if (newState) this.getArticleInfo(this.hash, false);
     },
     isRequest(newVal) {
       // 监听是否请求默认为false被改变为true下面不执行，请求完毕又被改变为false执行下列方法
@@ -425,7 +425,6 @@ export default {
     },
     b4support() {
       if (!this.isLogined) {
-        this.$Message.warning('本功能需登录');
         this.showModal = true;
       }
     },
