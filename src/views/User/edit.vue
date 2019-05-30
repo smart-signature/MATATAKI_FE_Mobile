@@ -74,7 +74,7 @@ export default {
     },
     // 监听内容修改 如果内容改动则改变setProfile
     newEmail(newVal) {
-      if (newVal !== this.email || this.introduction !== this.newIntroduction || this.email !== this.newEmail) this.setProfile = true;
+      if (newVal !== this.email || this.introduction !== this.newIntroduction || this.nickname !== this.newname) this.setProfile = true;
       else this.setProfile = false;
     },
   },
