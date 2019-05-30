@@ -68,67 +68,89 @@ export default {
       console.debug({ ONG, ONT });
     },
     async maaaaa() {
-      const httpsAgent = new https.Agent({ rejectUnauthorized: false });
-      const axiosX = axios.create({
-        httpsAgent,
-      });
+    const signId = 100436;
+    
+    const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+    const axiosX = axios.create({
+      httpsAgent,
+    });
 
-      var ontWallet = Wallet.create('test');
-      let privateKeys = [
-        // AT9deLiocSk3SC6k9gX2U5gwPCZGn8ASyP
-        'L2JRYhnR5dHSUnsPSxD8LRGCxcWuAq6pQasjwZypTgVUEw3kdQBw',
-      ];
-      privateKeys = privateKeys.map((key) => Crypto.PrivateKey.deserializeWIF(key));
-      ontWallet.addAccount(Account.create(privateKeys[0], 'password', 'cat1'));
-      const { address, encryptedKey, salt } = ontWallet.accounts[0];
-      const private2 = encryptedKey.decrypt('password', address, salt);
-      // const address2 = new Address('AXK2KtCfcJnSMyRzSwTuwTKgNrtx5aXfFX');
-      const restClient = new RestClient('https://polaris1.ont.io:10334');
-      const amount = 1;
-      const signId = 100429;
-      const symbol = 'ONT';
-      const json = {
-          action: 'invoke',
-          params: {
-              login: true,
-              message: 'invoke smart contract test',
-              invokeConfig: {
-                  contractHash: ontology.scriptHash,
-                  functions: [{
-                      operation: 'RecordShare',
-                      args: [{
-                          name: 'arg0',
-                          value: `String:${address.toBase58()}`,
-                      }, {
-                          name: 'arg1',
-                          value: `String:${signId.toString()}`,
-                      }, {
-                          name: 'arg2',
-                          value: `String:${symbol}`,
-                      }, {
-                          name: 'arg3',
-                          value: amount,
-                      },{
-                          name: 'arg4',
-                          value: `String:${amount.toString()}`,
-                      }]
-                  }],
-                  gasLimit: 20000,
-                  gasPrice: 500,
-                  payer: address.toBase58()
-              }
-          }
+    var ontWallet = Wallet.create('test');
+    let privateKeys = [
+      // AT9deLiocSk3SC6k9gX2U5gwPCZGn8ASyP
+      'L2JRYhnR5dHSUnsPSxD8LRGCxcWuAq6pQasjwZypTgVUEw3kdQBw',
+      // ATA6v4nkHHDpL56DrcbVmuAnf4QV2LkmfU
+      'L1XMnVnSrocLGcy9VMbSr1GUouF4nyvMwrprcPfQ5a2moKeCs6d3',
+      // AaccygC1DTeg24xSqWZEb7qMwtRKQduNNM
+      'KxFEbLBxHscqMKq4uLstWhm3zeHz44X1X6UXgMkNTjJEhZrFrcFa',
+    ];
+    privateKeys = privateKeys.map((key) => Crypto.PrivateKey.deserializeWIF(key));
+    for (let key of privateKeys) {
+      ontWallet.addAccount(Account.create(key, 'password', 'cat1'));
+    }
+    
+    const { makeTransactionsByJson, signTransaction } = TransactionBuilder;
+    const restClient = new RestClient('https://polaris1.ont.io:10334');
+    const amount = 10;
+    const symbol = 'ONT';
+    let json = null;
+    let privateZ = null;
+    let txs = [];
+    let i = 0;
+    for (let account of ontWallet.accounts) {
+      try {
+        await axiosX(`https://ont.io/api/v1/asset/transfer/${account.address.toBase58()}`);
+      } catch (error) {
+        
+      }
+      json = {
+        action: 'invoke',
+        params: {
+            login: true,
+            message: 'invoke smart contract test',
+            invokeConfig: {
+                contractHash: ontology.scriptHash,
+                functions: [{
+                    operation: 'RecordShare',
+                    args: [{
+                        name: 'arg0',
+                        value: `String:${account.address.toBase58()}`,
+                    }, {
+                        name: 'arg1',
+                        value: `String:${signId.toString()}`,
+                    }, {
+                        name: 'arg2',
+                        value: `String:${symbol}`,
+                    }, {
+                        name: 'arg3',
+                        value: amount,
+                    },{
+                        name: 'arg4',
+                        value: `String:${amount.toString()}`,
+                    }]
+                }],
+                gasLimit: 20000,
+                gasPrice: 500,
+                payer: account.address.toBase58()
+            }
+        }
       };
-      console.log('xDD', address.value);
-      const { makeTransactionsByJson, signTransaction } = TransactionBuilder;
+      txs.push((makeTransactionsByJson(json))[0]);
+      privateZ = account.encryptedKey.decrypt('password', account.address, account.salt);
+      signTransaction(txs[i], privateZ);
+      i++;
+    }
 
-      const txs = makeTransactionsByJson(json);
-      signTransaction(txs[0], private2);
-      // const rer = await axiosX('https://polaris1.ont.io:10334/api/v1/version');
-      // throw new Error(rer.status);
-      // return true;
-      // await restClient.sendRawTransaction(txs[0].serialize(), false);
-      window.localStorage.setItem('ACCESS_TOKEN', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJBVDlkZUxpb2NTazNTQzZrOWdYMlU1Z3dQQ1pHbjhBU3lQIiwiZXhwIjoxNTU5Njc3OTgwNTc0LCJwbGF0Zm9ybSI6Im9udCIsImlkIjozMTF9.FOHInE1zHz75YxApyra6zoMWyo1o2VM8wngsbVyNBdQ');
+    await txs.forEach(async tx => restClient.sendRawTransaction(tx.serialize(), false));
+    
+    const ACCESS_TOKENs = [
+      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJBVDlkZUxpb2NTazNTQzZrOWdYMlU1Z3dQQ1pHbjhBU3lQIiwiZXhwIjoxNTU5Njc3OTgwNTc0LCJwbGF0Zm9ybSI6Im9udCIsImlkIjozMTF9.FOHInE1zHz75YxApyra6zoMWyo1o2VM8wngsbVyNBdQ',
+      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJBVEE2djRua0hIRHBMNTZEcmNiVm11QW5mNFFWMkxrbWZVIiwiZXhwIjoxNTU5NzMzMTQxNDk1LCJwbGF0Zm9ybSI6Im9udCIsImlkIjozMTR9.74UbZsD6Blqejyai6Pi7YuKk1aRq25RU0_3m9YfdFcc',
+      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJBYWNjeWdDMURUZWcyNHhTcVdaRWI3cU13dFJLUWR1Tk5NIiwiZXhwIjoxNTU5NzMzNDMwMDkwLCJwbGF0Zm9ybSI6Im9udCIsImlkIjozMTV9._U9EDjRnnbg2XqE3j2L_fa6lRYhCxxA9xGYpv4ZlvMo',
+    ];
+    for (i = 0; i < ontWallet.accounts.length; i++) {
+      window.localStorage.setItem('ACCESS_TOKEN', ACCESS_TOKENs[i]);
+      try {
       await backendAPI.reportShare({
         amount: amount,
         blockchain: 'ONT',
@@ -136,9 +158,17 @@ export default {
         signId: signId,
         symbol: 'ONT',
         referrer: null,
-      });
-     await backendAPI.sendComment({ comment: 'test 1', signId });
-    
+      });  
+      } catch (error) {
+        
+      }
+      try {
+        await backendAPI.sendComment({ comment: `test ${i}`, signId });  
+      } catch (error) {
+        
+      }
+      
+    }
     },
   },
 };

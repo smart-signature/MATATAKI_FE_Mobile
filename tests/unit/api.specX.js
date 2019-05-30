@@ -1,7 +1,7 @@
 import { unmock } from 'unmock-node';
 import backendAPI from '../../src/api/backend';
 
-beforeEach(async () => unmock());
+// beforeEach(async () => unmock());
 
 describe('backendAPI getUser()', () => {
   it('firt test response should be 200', async () => {
