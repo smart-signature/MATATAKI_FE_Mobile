@@ -12,6 +12,9 @@
             {{item.label}}
           </a>
         </div>
+        <Checkbox v-model="channel" class="head-store">
+          <img class="head-store-icon" src="@/assets/img/icon_store.svg" alt="store">
+        </Checkbox>
       <!-- <div class="head" ref="head" :class="isFixedHead && 'fixed'"> -->
       </div>
       <BasePull
@@ -21,6 +24,7 @@
         :nowIndex="index"
         @getListData="getListData"
         :isObj="{type: 'Object', key: 'data'}"
+        :autoRequestTime="autoRequestTime"
         v-for="(item, index) in tabsData"
         :key="index"
         v-show="index === activeIndex"
@@ -40,16 +44,21 @@ export default {
   components: { ArticleCard },
   data() {
     return {
+      channel: false,
       tabsData: [
         {
           label: '最热',
-          params: {},
+          params: {
+            channel: 1,
+          },
           apiUrl: '/posts/supportsRanking',
           articles: [],
         },
         {
           label: '最新',
-          params: {},
+          params: {
+            channel: 1,
+          },
           apiUrl: '/posts/timeRanking',
           articles: [],
         },
@@ -57,6 +66,7 @@ export default {
           label: 'EOS',
           params: {
             symbol: 'eos',
+            channel: 1,
           },
           apiUrl: '/posts/amountRanking',
           articles: [],
@@ -65,6 +75,7 @@ export default {
           label: 'ONT',
           params: {
             symbol: 'ont',
+            channel: 1,
           },
           apiUrl: '/posts/amountRanking',
           articles: [],
@@ -72,7 +83,17 @@ export default {
       ],
       activeIndex: 0,
       isFixedHead: false,
+      autoRequestTime: 0,
     };
+  },
+  watch: {
+    channel() {
+      this.tabsData.map((i) => {
+        if (this.channel) i.params.channel = 2;
+        else i.params.channel = 1;
+      });
+      this.autoRequestTime += Date.now();
+    },
   },
   created() {
     // this.addHandleScroll();
@@ -106,7 +127,7 @@ export default {
 
 <style lang="less" scoped>
 .head {
-  padding: 20px 20px 10px;
+  padding: 20px 16px 10px;
   transition: all .3s;
   display: flex;
   justify-content: space-between;
@@ -152,4 +173,15 @@ export default {
     }
   }
 }
+
+.head-store {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  &-icon {
+    width: 20px;
+    margin-left: 4px;
+  }
+}
+
 </style>
