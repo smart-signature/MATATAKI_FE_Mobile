@@ -1,6 +1,6 @@
 <template>
   <div class="mw withdraw">
-    <BaseHeader :pageinfo="{ title: '帮助'}"  />
+    <BaseHeader :pageinfo="{ title: '提现'}"  />
     <div class="withdraw-head">
       <div class="withdraw-head-type">
         <img :src="withdrawData.head.logo" :alt="withdrawData.head.type" />
