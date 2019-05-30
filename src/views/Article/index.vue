@@ -164,12 +164,14 @@ import {
 import 'mavon-editor/dist/css/index.css';
 import moment from 'moment';
 import { ContentLoader } from 'vue-content-loader';
+import { xssFilter } from '@/common/xss';
 import CommentsList from './CommentsList.vue';
 import { sleep, isNDaysAgo } from '@/common/methods';
 import { ontAddressVerify } from '@/common/reg';
 import { precision } from '@/common/precisionConversion';
 
 import ArticleInfo from './ArticleInfo.vue';
+
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
 
@@ -224,7 +226,8 @@ export default {
       return `请输入 ${this.currentUserInfo.balance.slice(-4)} 赞赏金额`;
     },
     compiledMarkdown() {
-      return markdownIt.render(this.post.content);
+      console.log(xssFilter(this.post.content));
+      return markdownIt.render(xssFilter(this.post.content));
     },
     getClipboard() {
       const { article, currentUsername } = this;

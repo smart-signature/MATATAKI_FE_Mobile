@@ -3,7 +3,7 @@
     <template v-if="isLogined">
       <div class="banner-text">
         <div class="round_icon">
-           <img :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png'); }">
+           <img v-if="avatar" :src="avatar">
         </div>
          <div>
             <p class="username">{{displayName}}</p>
@@ -51,7 +51,7 @@ export default {
       userConfig: {
         blockchin: 'EOS',
       },
-      avatar: require('../../assets/logo.png'),
+      avatar: '',
     };
   },
   created() {
@@ -64,10 +64,7 @@ export default {
       this.$router.push({ name: 'User', params: { username } });
     },
     async getAvatarImage(hash) {
-      // 空hash 显示默认Logo头像
-      // eslint-disable-next-line global-require
-      if (!hash) this.avatar = require('../../assets/logo.png');
-      else this.avatar = getAvatarImage(hash);
+      if (hash) this.avatar = getAvatarImage(hash);
     },
     async refreshUser() {
       const { avatar } = await this.getUser();
@@ -113,6 +110,7 @@ export default {
     height: 50px;
     border-radius: 50%;
     overflow: hidden;
+    background: #dedede;
     img {
       width: 100%;
       height: 100%;
