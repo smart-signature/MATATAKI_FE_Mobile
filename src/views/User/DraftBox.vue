@@ -1,12 +1,13 @@
 <template>
-  <div class="draftbox">
-    <BaseHeader :pageinfo="{ left: 'back', title: '草稿箱', rightPage: 'home', needLogin: false, }"/>
+  <div class="draftbox mw">
+    <BaseHeader :pageinfo="{ left: 'back', title: '草稿箱', rightPage: 'home' }"/>
     <BasePull
-    :loadingText="{ start: '更多...',
-        end: '',
-        noArticles: '无草稿', }"
+    :loadingText="{
+      nomore: '',
+      noresults: '无草稿', }"
     :params="params"
     :apiUrl="apiUrl"
+    :needAccessToken="true"
     @getListData="getListData">
     <DraftBoxList :draftbox="item" :index="index"  v-for="(item, index) in draftBoxList" :key="index" @delId="delId"/>
   </BasePull>
@@ -33,7 +34,7 @@ export default {
   methods: {
     getListData(res) {
       // console.log(res);
-      this.draftBoxList = res.data;
+      this.draftBoxList = res.list;
     },
     delId(data) {
       const { id, index } = data;
@@ -52,13 +53,14 @@ export default {
     },
     // 删除草稿
     async asyncSuccessDel(id, index) {
-      await delDraft({ id },
-        ({ error, response }) => {
-          // console.log(error, response);
-          if (response.status !== 200 || error || !response) return console.log('自动删除草稿失败,请手动删除');
-          this.draftBoxList.splice(index, 1); // 前端手动删除一下数据
-          this.$Modal.remove();
-        });
+      try {
+        const response = await delDraft({ id });
+        if (response.status !== 200) return console.log('自动删除草稿失败,请手动删除');
+        this.draftBoxList.splice(index, 1); // 前端手动删除一下数据
+        this.$Modal.remove();
+      } catch (error) {
+        return console.log('自动删除草稿失败,请手动删除');
+      }
     },
   },
   mounted() {

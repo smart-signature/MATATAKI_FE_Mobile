@@ -1,11 +1,12 @@
 <template>
   <BasePull
-    :loadingText="{ start: '😄 勤奋地加载更多精彩内容 😄',
-        end: '🎉 哇，你真勤奋，所有明细已经加载完了～ 🎉',
-        noArticles: '无明细', }"
+    :loadingText="{
+        nomore: '',
+        noresults: '无明细', }"
     :params="params"
     :apiUrl="apiUrl"
-    :isObj="{ type: 'Object', key: 'history' }"
+    :needAccessToken="needAccessToken"
+    :isObj="isObj"
     @getListData="getListData">
       <AssetCard :asset="item" v-for="(item, index) in asset" :key="index" />
   </BasePull>
@@ -16,23 +17,23 @@ import { AssetCard } from '@/components/';
 
 export default {
   name: 'AssetList',
-  props: ['username'],
+  props: ['type'],
   components: { AssetCard },
-  created() {
-  },
+  created() { },
   data() {
     return {
       params: {
-        user: this.username,
+        symbol: this.type,
       },
-      apiUrl: 'assets',
+      apiUrl: 'tokens',
       asset: [],
+      isObj: { type: 'newObject', key: 'data', keys: 'logs' },
+      needAccessToken: true,
     };
   },
   computed: { },
   methods: {
     getListData(res) {
-      // console.log(res);
       const historyFilter = res.list.filter(i => i.amount !== 0); // 过滤金额为0
       this.asset = historyFilter;
       this.$emit('getOtherAsset', res);

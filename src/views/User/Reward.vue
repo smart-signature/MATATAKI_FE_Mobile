@@ -1,14 +1,6 @@
 <template>
-  <div class="original">
-    <BaseHeader
-            :pageinfo="{ left: 'back', title: userTitle, rightPage: 'home',
-                   needLogin: false, }"/>
-    <!--<za-nav-bar>
-      <div slot="left">
-        <za-icon theme="primary" type="arrow-left" @click="goBack"></za-icon>
-      </div>
-      <div slot="title">{{userTitle}}</div>
-    </za-nav-bar>-->
+  <div class="original mw">
+    <BaseHeader :pageinfo="{ left: 'back', title: userTitle, rightPage: 'home' }"/>
     <ArticlesList :listtype="'reward'" :username='username' ref='ArticlesList'/>
   </div>
 </template>
@@ -30,11 +22,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['currentUsername']),
-    isMe() {
-      const { username, currentUsername } = this;
-      return username === currentUsername;
-    },
+    ...mapGetters(['currentUsername', 'isMe']),
   },
   methods: {
     goBack() {
@@ -42,8 +30,9 @@ export default {
     },
   },
   created() {
-    this.user = this.isMe ? '我的用户页' : `${this.username} 的用户页`;
-    this.userTitle = this.isMe ? '我赞助的文章' : `${this.username} 赞助的文章`;
+    const { isMe, username } = this;
+    this.user = isMe(username) ? '我的用户页' : `${username} 的用户页`;
+    this.userTitle = isMe(username) ? '我赞赏的文章' : `${username} 赞赏的文章`;
     document.title = `${this.user} - SmartSignature`;
   },
 };
@@ -57,5 +46,6 @@ a {
   background-color: #F7F7F7;
   padding-bottom: 20px;
   padding-top: 45px;
+  min-height: 100%;
 }
 </style>

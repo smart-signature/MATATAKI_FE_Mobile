@@ -1,12 +1,11 @@
 import Vue from 'vue';
-import Router from 'vue-router';
+import VueRouter from 'vue-router';
 import Home from './views/Home/index.vue';
-import { disassembleToken } from './api/backend';
+import { disassembleToken } from '@/api';
 
+if (!window.VueRouter) Vue.use(VueRouter);
 
-Vue.use(Router);
-
-export default new Router({
+export default new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes: [
@@ -24,10 +23,10 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ './views/About.vue'),
     },
     {
-      path: '/article/:hash',
+      path: '/article/:hash', // 支持 hash id 访问
       name: 'Article',
       props: true,
-      component: () => import(/* webpackChunkName: "article" */ './views/Article/index.vue'),
+      component: () => import(/* webpackChunkName: "article", webpackPrefetch: true */ './views/Article/index.vue'),
     },
     // {
     //   path: '/login',
@@ -41,28 +40,75 @@ export default new Router({
       component: () => import(/* webpackChunkName: "user" */ './views/User/index.vue'),
     },
     {
-      path: '/user/:username/asset',
+      path: '/user/edit/:username',
+      name: 'UserEdit',
+      props: true,
+      component: () => import(/* webpackChunkName: "user" */ './views/User/edit.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
+        // eslint-disable-next-line eqeqeq
+        if (to.params.username != tokenUserName) next({ name: 'User', params: { username: to.params.username } });
+        else { next(); }
+      },
+    },
+    {
+      path: '/user/asset/:username',
       name: 'Asset',
+      props: true,
+      component: () => import(/* webpackChunkName: "user" */ './views/User/Asset/index.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
+        // eslint-disable-next-line eqeqeq
+        if (to.params.username != tokenUserName) next({ name: 'User', params: { username: to.params.username } });
+        else { next(); }
+      }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
+    },
+    {
+      path: '/user/asset/:username/:type',
+      name: 'AssetType',
       props: true,
       component: () => import(/* webpackChunkName: "user" */ './views/User/Asset/Asset.vue'),
       beforeEnter: (to, from, next) => {
         const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
         // eslint-disable-next-line eqeqeq
-        if (to.params.username != tokenUserName) next(`/user/${tokenUserName}/asset`);
+        if (to.params.username != tokenUserName) next({ name: 'User', params: { username: to.params.username } });
         else { next(); }
       }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
+    },
+    {
+      path: '/user/withdraw/:username/:type',
+      name: 'Withdraw',
+      props: true,
+      component: () => import(/* webpackChunkName: "Withdraw" */ './views/User/Withdraw'),
+      beforeEnter: (to, from, next) => {
+        const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
+        if (to.params.username !== tokenUserName) next({ name: 'User', params: { username: to.params.username } });
+        else { next(); }
+      },
     },
     {
       path: '/user/:username/original',
       name: 'Original',
       props: true,
       component: () => import(/* webpackChunkName: "user" */ './views/User/Original.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
+        // eslint-disable-next-line eqeqeq
+        if (to.params.username != tokenUserName) next({ name: 'User', params: { username: to.params.username } });
+        else { next(); }
+      }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
     },
     {
       path: '/user/:username/reward',
       name: 'Reward',
       props: true,
       component: () => import(/* webpackChunkName: "user" */ './views/User/Reward.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
+        // eslint-disable-next-line eqeqeq
+        if (to.params.username != tokenUserName) next({ name: 'User', params: { username: to.params.username } });
+        else { next(); }
+      }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
     },
     {
       // id 用于编辑文章或者草稿的时候动态传值使用
@@ -73,31 +119,45 @@ export default new Router({
       path: '/publish/:id',
       name: 'Publish',
       props: true,
-      component: () => import(/* webpackChunkName: "article-edit" */ './views/Publish.vue'),
+      component: () => import(/* webpackChunkName: "article-edit" */ './views/Publish/Publish.vue'),
+      beforeEnter: (to, from, next) => {
+        if (to.query.from === 'edit' && from.name !== 'Article') next('/');
+        else next();
+      },
     },
     {
       path: '/followlist/:username',
       name: 'FollowList',
       props: true,
-      component: () => import(/* webpackChunkName: "user" */ './views/User/FollowList/FollowList.vue'),
+      component: () => import(/* webpackChunkName: "followlist" */ './views/User/FollowList/FollowList.vue'),
     },
     {
       path: '/draftbox/:username',
       name: 'DraftBox',
       props: true,
-      component: () => import(/* webpackChunkName: "user" */ './views/User/DraftBox.vue'),
+      component: () => import(/* webpackChunkName: "draftbox" */ './views/User/DraftBox.vue'),
+      beforeEnter: (to, from, next) => {
+        const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
+        // eslint-disable-next-line eqeqeq
+        if (to.params.username != tokenUserName) next({ name: 'User', params: { username: to.params.username } });
+        else { next(); }
+      }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
     },
     {
-      path: '/avatar',
-      name: 'AvatarUploader',
+      path: '/help',
+      name: 'Help',
       props: true,
-      component: () => import(/* webpackChunkName: "user" */ './views/User/AvatarUploader.vue'),
+      component: () => import(/* webpackChunkName: "Help" */ './views/User/Help/index.vue'),
     },
     {
       path: '/_easter-egg',
       name: 'EasterEgg',
       props: true,
       component: () => import(/* webpackChunkName: "easter-egg" */ './views/EasterEgg.vue'),
+    },
+    { // 幽林页面重定向进入首页 可以考虑设计 404 页面
+      path: '*',
+      redirect: '/',
     },
   ],
 });

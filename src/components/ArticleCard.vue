@@ -5,8 +5,9 @@
         <h2 class="title">{{article.title}}</h2>
         <p class="avatar">{{article.nickname || article.author}}</p>
         <p class="date">
-          {{friendlyDate}} · <img src="../assets/img/icon_amount.png" alt="eos" />
-          {{article.value/ 10000}}
+          {{friendlyDate}} ·
+          <img src="../assets/img/icon_eos_article.svg" alt="eos" />{{articleValue}}
+          <img src="../assets/img/icon_ont_article.svg" alt="ont" />{{articleOntValue}}
         </p>
       </div>
       <div class="img-outer" v-if="cover">
@@ -19,6 +20,7 @@
 <script>
 import moment from 'moment';
 import { isNDaysAgo } from '@/common/methods';
+import { precision } from '@/common/precisionConversion';
 import { getAvatarImage } from '@/api';
 
 export default {
@@ -30,13 +32,17 @@ export default {
       return isNDaysAgo(2, time) ? time.format('MMMDo HH:mm') : time.fromNow();
     },
     hash() {
-      return this.article.hash;
+      return this.article.id; // 原来是 hash 现在用id进入
     },
     cover() {
-      if (this.article.cover) {
-        return getAvatarImage(this.article.cover);
-      }
+      if (this.article.cover) return getAvatarImage(this.article.cover);
       return null;
+    },
+    articleValue() {
+      return precision(this.article.value, 'eos');
+    },
+    articleOntValue() {
+      return precision(this.article.ontvalue, 'ont');
     },
   },
 };
@@ -44,30 +50,31 @@ export default {
 
 <style scoped>
 .article-text {
-  width: 70%;
-  min-width: 70%;
+  flex: 1;
+  overflow: hidden;
 }
 .img-outer {
+  flex: 0 0 80px;
   width: 80px;
   height: 80px;
+  margin-left: 10px;
 }
 .img-inner {
   width: 100%;
   height: 100%;
   display: block;
-  border-radius: 5px;
+  border-radius: 3px;
   object-fit: cover;
 }
 /* 文章card */
 .card {
   margin: 10px 20px;
   text-align: left;
-  box-shadow: 0px 2px 8px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 1px 4px 0 rgba(0, 0, 0, 0.1);
   border-radius: 3px;
-  border: 1px solid #f1f1f1;
   box-sizing: border-box;
   background-color: #fff;
-  padding: 18px;
+  padding: 14px 20px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -90,14 +97,13 @@ export default {
 
 .card .avatar {
   color: #4D4D4D;
-  font-size:16px;
-  font-family:PingFangSC-Regular;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  font-size: 18px;
+  font-size:14px;
   font-weight:400;
   letter-spacing:1px;
+  margin-top: 4px;
 }
 .card .date {
   font-size:14px;
@@ -107,9 +113,11 @@ export default {
   color: #A5A5A5;
   display: flex;
   align-items: center;
+  margin-top: 2px;
 }
 .card .date img {
   width: 12px;
   margin: 0 8px;
+  opacity: 0.7;
 }
 </style>

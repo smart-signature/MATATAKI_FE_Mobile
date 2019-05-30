@@ -1,4 +1,4 @@
-import cyanobridgeAPI from '@/api/cyanobridge';
+import API from '@/api/ontology';
 
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-shadow */
@@ -6,46 +6,54 @@ import cyanobridgeAPI from '@/api/cyanobridge';
 // initial state
 const state = {
   account: null,
-  balances: {
-    ong: '... ONG',
-    ont: '... ONT',
+  balance: {
+    ONG: 0,
+    ONT: 0,
   },
 };
 
 const getters = {
-  currentBalance: ({ balances }) => (balances.ont),
-  // currentUsername: ({ account }) => (account || null),
+  currentBalance: ({ balance }) => (`${balance.ONT} ONT`),
 };
 
 const actions = {
-  getAccount({ commit }) {
+  async getAccount({ commit }) {
     console.log('Connecting to ont wallet ...');
-    return new Promise((resolve, reject) => {
-      cyanobridgeAPI.getAccount()
-        .then((address) => {
-          commit('setAccount', address);
-          resolve(address);
-        })
-        .catch(result => reject(result));
-    });
+    const address = await API.getAccount();
+    commit('setAccount', address);
+    return address;
   },
-  async getSignature({ dispatch, state }, { author, hash }) {
-    let { account } = state;
-    if (!account) {
-      await dispatch('getAccount');
-      account = state.account;
-    }
-    // 需要签名的数据
-    const signData = `${author} ${hash}`;
-    // 申请签名
-    const signature = await cyanobridgeAPI.signMessage(signData);
+  async getBalance({ commit, state }) {
+    const { account } = state;
+    if (!account) throw new Error('no account');
+    const balance = await API.getBalance({ address: account });
+    commit('setBalance', balance);
+    return balance;
+  },
+  async getSignature({ state }, rawSignData) {
+    const { account } = state;
+    // console.log(state);
+    if (!account) throw new Error('no account');
+    // console.log(rawSignData);
+    const signature = await API.signMessage({ message: rawSignData.join(' ') });
     return ({ publicKey: signature.publicKey, signature: signature.data, username: account });
+  },
+  async recordShare({ state }, share) {
+    const { recordShare } = await import(/* webpackChunkName: "contract-Ontology" */ '@/api/contractOntology');
+    return recordShare({ ...share, owner: state.account });
+  },
+  signOut({ commit }) {
+    commit('setAccount');
+    commit('setBalance');
   },
 };
 
 const mutations = {
-  setAccount(state, account) {
+  setAccount(state, account = null) {
     state.account = account;
+  },
+  setBalance(state, balance = { ONG: 0, ONT: 0 }) {
+    state.balance = balance;
   },
 };
 

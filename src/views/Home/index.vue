@@ -1,4 +1,3 @@
-/* eslint-disable */
 <template>
   <div class='home' @click='addShow=false'>
     <div class='head'>
@@ -6,7 +5,9 @@
       <link rel='icon' type='image/png' sizes='16x16' href='./img/Andoromeda logo.png'>
       <div class='add'>
         <Button class='publish' @click.stop='addShow=!addShow'>
-          <za-icon class='publish-icon' type='add' />
+          <Icon class='publish-icon' type="md-add" size='24'
+            style="margin-top: -8px;margin-left: -12px;;line-height: 16px;"
+           />
         </Button>
         <div v-show='addShow' class='add-menu'>
           <a href='javascript:void(0);'>搬运</a>
@@ -21,17 +22,14 @@
           <Button class="title-button">加入电报</Button>
         </a>
       </div>
-
       <MyBanner/>
       <div class="head-bc"></div>
-
     </div>
     <ArticleRankings ref='ArticleRankings'/>
   </div>
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions } from 'vuex';
 import MyBanner from './MyBanner.vue';
 import ArticleRankings from './ArticlesRankings.vue';
 
@@ -69,32 +67,17 @@ export default {
     };
   },
   methods: {
-    ...mapActions('scatter', [
-      'connect',
-      'login',
-    ]),
-    connectScatterAsync() { return this.connect(); },
-    loginScatterAsync() { return this.login(); },
     cancelCb(reason, event) {
       console.log(reason, event);
-    },
-    async loginWithWallet() {
-      try {
-        // await this.connectScatterAsync();
-        await this.loginScatterAsync();
-      } catch (e) {
-        console.warn('Unable to connect wallets');
-        this.$Modal.error({
-          title: '无法与你的钱包建立链接',
-          content: '请检查钱包是否打开并解锁',
-        });
-      }
     },
   },
 };
 </script>
 
 <style scoped lang="less">
+.home {
+  min-height: 100%;
+}
 .head {
   color: #fff;
   padding-top: 10px;
@@ -137,6 +120,8 @@ h2.subtitle {
 }
 .title-button {
   margin: 0 4px;
+  border-radius: 3px;
+  border: none;
 }
 button.publish {
   background: #478970;
@@ -145,11 +130,6 @@ button.publish {
   width: 27px;
   height: 27px;
   margin-right: 14px;
-}
-.publish-icon {
-  margin: -5px -6px;
-  margin-left: -8px;
-  line-height: 16px;
 }
 .MyBanner {
   margin-top: 28px;

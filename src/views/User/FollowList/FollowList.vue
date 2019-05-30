@@ -1,32 +1,29 @@
 <template>
   <div class="mw draftbox">
-    <BaseHeader :pageinfo="{ left: 'back', rightPage: 'home', needLogin: false, }"/>
-    <za-tabs v-model="activeIndex" @change="changeTabs">
-      <za-tab-pane :label="item.label" :name="index" v-for="(item, index) in tabsData" :key="index">
+    <BaseHeader :pageinfo="{ title: '列表', rightPage: 'home' }" />
+    <Tabs :value="activeIndex">
+      <TabPane v-for="(item, index) in tabsData" :key="index" :label="item.label" >
         <BasePull
           class="draftbox-list"
-          :loadingText = "{
-            start: '😄 勤奋地加载更多精彩内容 😄',
-            end: `🎉 哇，你真勤奋，所有关注/粉丝已经加载完了～ 🎉`,
-            noArticles: `无关注/粉丝`,
-          }"
+          :loadingText = "loadingText"
           :params="item.params"
           :apiUrl="item.apiUrl"
           :activeIndex="activeIndex"
+          :needAccessToken="true"
           :nowIndex="index"
           :isObj="{ type: 'Object', key: 'list' }"
           @getListData="getListData"
           >
             <list :list="item" v-for="(item, index) in item.articles" :key="index"/>
         </BasePull>
-      </za-tab-pane>
-    </za-tabs>
+      </TabPane>
+    </Tabs>
   </div>
 </template>
 
 <script>
 import list from './list.vue';
-import { getAvatarImage } from '@/api/backend';
+import { getAvatarImage } from '@/api';
 
 export default {
   name: 'DeaftBox',
@@ -54,7 +51,13 @@ export default {
       ],
       activeIndex: 0,
       activeIndexName: this.listtype,
+      loadingText: {
+        nomore: '',
+        noresults: '没有关注或粉丝',
+      },
     };
+  },
+  computed: {
   },
   created() {
     if (this.activeIndexName === '关注') this.activeIndex = 0;
@@ -62,12 +65,9 @@ export default {
     else this.activeIndex = 0;
   },
   methods: {
-    changeTabs(tab) {
-      this.activeIndex = tab.name;
-    },
     getListData(res) {
-      res.data.list.map(i => i.avatar = getAvatarImage(i.avatar));
-      this.tabsData[res.index].articles = res.data.list;
+      res.list.map(i => i.avatar = getAvatarImage(i.avatar));
+      this.tabsData[res.index].articles = res.list;
     },
   },
 };
@@ -75,6 +75,7 @@ export default {
 <style scoped>
 .draftbox {
   padding-bottom: 20px;
+  padding-top: 45px;
 }
 .draftbox-list {
   margin: 10px 0 0;

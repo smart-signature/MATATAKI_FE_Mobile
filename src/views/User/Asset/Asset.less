@@ -1,50 +1,10 @@
 .assetpage {
   background:rgba(247,247,247,1);
-  text-align: left;
   padding-top: 45px;
+  padding-bottom: 10px;
+  min-height: 100%;
 }
-.my-assets {
-  margin: auto;
-  margin-top: 13px;
-  text-align: center;
-  max-height: 128px;
-  /* margin: -32px 20px 0 20px; */
-  /*padding: 8px;*/
-  background: rgba(255, 255, 255, 1);
-  box-shadow: 0px 5px 5px 0px rgba(213, 213, 213, 0.5);
-  border-radius: 3px;
-}
-.row1 {
-  font: 12px;
-  /*text-align: left;*/
-}
-.row2 {
-  text-align: center;
-}
-.title-bar {
-  white-space: nowrap;
-  font-size: 12px;
-  font-family: PingFangSC-Semibold;
-  line-height: 0px;
-  color: rgba(152,152,152,1);
-  opacity: 1;
-}
-.income {
-  color: #FF3030;
-  font-size: 16px;
-  font-family: PingFangSC-Semibold;
-}
-.income2 {
-  color:  #07BB3D;
-  font-size: 16px;
-  font-family: PingFangSC-Semibold;
-}
-.assets {
-  /* background: rgba(240, 240, 240, 1); */
-  margin-top: -100px;
-  padding-top: 100px;
-  font-weight: bold;
-}
+
 .topcard{
   margin: 16px 20px 20px;
   padding: 20px;
@@ -52,32 +12,71 @@
   background: rgba(255, 255, 255, 1);
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
   border-radius: 3px;
+  &-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 1px solid #F1F1F1;
+    padding: 0 0 10px;
+    margin: 0 0 10px;
+  
+    .withdraw {
+      background-color: #232323;
+      text-align: center;
+      padding: 0 14px;
+      line-height: 28px;
+      height: 28px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 400;
+      color: #ffffff;
+      cursor: pointer;
+      letter-spacing: 1px;
+    }
+  }
+  &-title {
+    font-size:14px;
+    font-weight:400;
+    color:rgba(0,0,0,.45);
+  }
+  &-playerincome {
+    font-size:24px;
+    font-weight:bold;
+    color:rgba(0,0,0,.7);
+  }
+
+  &-list {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    &-title {
+      font-size:14px;
+      font-weight:400;
+      color:rgba(0,0,0,.7);
+    }
+    &-pricing {
+      font-size:18px;
+      font-weight: bold;
+    }
+    &-line{
+      flex: 1;
+      position: relative;
+      &:nth-child(n+2)::before{
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 16px;
+        display: block;
+        width: 1px;
+        height: 20px;
+        background-color: #F1F1F1;
+      }
+    }
+  }
 }
-.toptext1{
-  color: rgba(0, 0, 0, 1);
-  font-size: 12px;
-  opacity: 0.4;
-  float: left;
-}
-.topremain{
-  color: rgba(0, 0, 0, 1);
-  font-size: 22px;
-  font-weight: bolder;
-  float: top;
-}
-.toptext2{
-  text-align: center;
-  color: rgba(0, 0, 0, 1);
-  font-size: 12px;
-}
-.toptext3{
-  padding-top: 7px;
-  text-align: center;
-  color: rgba(0, 0, 0, 1);
-  font-size: 14px;
-  font-weight: bold;
-}
+
 .detailtext{
+  text-align: left;
   margin: 0 24px 10px;
   font-weight: bold;
   font-size:14px;
@@ -86,18 +85,4 @@
   color:rgba(0,0,0,1);
   line-height:18px;
   letter-spacing:1px;
-}
-Button.withdraw, Button.withdraw:focus, Button.withdraw:hover {
-  background-color: rgba(0, 0, 0, 1);
-  border-radius: 2px;
-  color: rgba(255,255,255,1);
-  float: right;
-  font-size: 12px;
-  margin-top: 20px;
-  width: 80px;
-  height: 25px;
-  letter-spacing: 2px;
-  max-width: 94px;
-  max-height: 35px;
-  margin-right: 0px;
 }

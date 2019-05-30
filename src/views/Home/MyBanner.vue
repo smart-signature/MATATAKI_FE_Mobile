@@ -2,12 +2,14 @@
   <div class="my-banner">
     <template v-if="isLogined">
       <div class="banner-text">
-         <img :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png'); }" class="round_icon">
+        <div class="round_icon">
+           <img v-if="avatar" :src="avatar">
+        </div>
          <div>
             <p class="username">{{displayName}}</p>
             <p class="my-balance">
               {{displayBalance}}
-              <span class="coin-symbol">EOS</span>
+              <span class="coin-symbol">{{displayBalanceSymbol}}</span>
             </p>
          </div>
       </div>
@@ -18,104 +20,65 @@
         <p class="login-notification">即刻登录</p>
         <p class="login-notification">开始智能签名之旅 </p>
       </div>
-      <a class="my-user-page" href="javascript:;" @click="loginWithWallet">立即登录</a>
+      <a class="my-user-page" href="javascript:;" @click="showModal = true">立即登录</a>
     </template>
+    <BaseModalForSignIn :showModal="showModal" @changeInfo="changeInfo" />
   </div>
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from 'vuex';
-import {
-  getUser,
-  getAssets,
-  getAvatarImage,
-} from '@/api';
+import { mapActions, mapGetters } from 'vuex';
+import { getAvatarImage } from '@/api';
 
 export default {
   name: 'My-Banner',
   computed: {
-    ...mapState('scatter', {
-      isScatterConnected: state => state.isConnected,
-    }),
     ...mapGetters(['currentUserInfo', 'isLogined']),
     displayBalance() {
       return this.currentUserInfo.balance.slice(0, -4);
     },
-    displayName() {
-      const { currentUserInfo, nickname } = this;
-      return nickname !== '' ? nickname
-        : currentUserInfo.name.length <= 12 ? currentUserInfo.name
-          : currentUserInfo.name.slice(0, 12);
-    },
-    displayTokenSymbol() {
+    displayBalanceSymbol() {
       return this.currentUserInfo.balance.slice(-4);
+    },
+    displayName() {
+      const { name, nickname } = this.currentUserInfo;
+      return nickname || (name.length <= 12 ? name : name.slice(0, 12));
     },
   },
   data() {
     return {
-      avatar: require('../../assets/logo.png'),
-      nickname: '',
+      showModal: false,
+      userConfig: {
+        blockchin: 'EOS',
+      },
+      avatar: '',
     };
   },
   created() {
-    const { isLogined, refresh_user } = this;
-    if (isLogined) { refresh_user(); }
+    const { isLogined, refreshUser } = this;
+    if (isLogined) { refreshUser(); }
   },
   methods: {
-    ...mapActions('scatter', [
-      'connect',
-      'login',
-    ]),
-    connectScatterAsync() { return this.connect(); },
-    loginScatterAsync() { return this.login(); },
+    ...mapActions(['getUser']),
     toUserPage(username) {
       this.$router.push({ name: 'User', params: { username } });
     },
-    async loginWithWallet() {
-      if (!this.isScatterConnected) {
-        this.$Modal.error({
-          title: '无法与你的钱包建立链接',
-          content: '请检查钱包是否打开并解锁',
-        });
-        return;
-      }
-      try {
-        // await this.connectScatterAsync();
-        await this.loginScatterAsync();
-      } catch (e) {
-        console.warn('Unable to connect wallets');
-        this.$Modal.error({
-          title: '无法与你的钱包建立链接',
-          content: '请检查钱包是否打开并解锁',
-        });
-      }
-    },
-    handleClick(tab, event) {
-      console.log(tab, event);
-    },
     async getAvatarImage(hash) {
-      // 空hash 显示默认Logo头像
-      // eslint-disable-next-line global-require
-      if (!hash) this.avatar = require('../../assets/logo.png');
-      else this.avatar = getAvatarImage(hash);
+      if (hash) this.avatar = getAvatarImage(hash);
     },
-    refresh_user() {
-      const { name: username } = this.currentUserInfo;
-      console.log(username);
-      getUser({ username }).then((response) => {
-        const { data } = response;
-        console.log(data);
-        this.nickname = data.nickname;
-        this.getAvatarImage(data.avatar);
-      });
+    async refreshUser() {
+      const { avatar } = await this.getUser();
+      this.getAvatarImage(avatar);
     },
-  },
-  mounted() {
+    // 改变modal
+    changeInfo(status) {
+      this.showModal = status;
+    },
   },
   watch: {
-    isLogined() {
-      if (this.isLogined) {
-        this.refresh_user();
+    isLogined(newState) {
+      if (newState) {
+        this.refreshUser();
       }
     },
   },
@@ -142,9 +105,17 @@ export default {
   flex: 1;
   margin-right: 10px;
   .round_icon {
+    flex: 0 0 50px;
     width: 50px;
     height: 50px;
     border-radius: 50%;
+    overflow: hidden;
+    background: #dedede;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
   }
   .username {
     font-size: 14px;

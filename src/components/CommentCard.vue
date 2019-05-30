@@ -1,24 +1,28 @@
 <template>
   <div class="comment">
     <div class="comment-info">
-      <Avatar icon="ios-person" class="comment-avatar" />
-        <div class="comment-head">
-          <router-link class="comment-author" :to="{ name: 'User', params: { username: comment.author }}">
-            {{comment.nickname || comment.author }}
-          </router-link>
-          赞赏了
-          <span class="comment-quantity">{{`${parseFloat(comment.amount) / 10000} EOS`}}</span>
-          <p class="comment-timestamp">{{friendlyDate}}</p>
-        </div>
+      <div class="comment-avatar" @click="jumpTo({ name: 'User', params: { username: comment.username }})">
+        <img :src="avatar" @error="() => { this.avatar = require('../assets/logo.png'); }" alt="avatar">
       </div>
-      <p class="comment-message">{{displayMessage}}</p>
-      <div class="comment-line"></div>
+      <div class="comment-head">
+        <router-link class="comment-author" :to="{ name: 'User', params: { username: comment.username }}">
+          {{comment.nickname || comment.username }}
+        </router-link>
+        赞赏了
+        <span class="comment-quantity">{{amount}}</span>
+        <p class="comment-timestamp">{{friendlyDate}}</p>
+      </div>
+    </div>
+    <p class="comment-message">{{displayMessage}}</p>
+    <div class="comment-line"></div>
   </div>
 </template>
 
 <script>
 import moment from 'moment';
 import { isNDaysAgo } from '@/common/methods';
+import { precision } from '@/common/precisionConversion';
+import { getAvatarImage } from '@/api';
 
 export default {
   name: 'CommentCard',
@@ -29,16 +33,28 @@ export default {
     },
     friendlyDate() {
       // const isAppleSlave = navigator.platform.includes('iPhone');
-      const newTime = new Date(this.comment.create_time);
-      const time = moment(newTime.getTime() - newTime.getTimezoneOffset()
-                   * 60000);// 返回的数据带了时区
+      const time = moment(this.comment.create_time);
+      // const time = moment(newTime.getTime() - newTime.getTimezoneOffset()
+      //              * 60000);// 返回的数据带了时区
       return isNDaysAgo(2, time) ? time.format('MMMDo HH:mm') : time.fromNow();
+    },
+    amount() {
+      return precision(this.comment.amount, this.comment.platform) + this.comment.platform.toUpperCase();
+    },
+    avatar() {
+      if (!this.comment.avatar) return require('../assets/logo.png');
+      return getAvatarImage(this.comment.avatar);
+    },
+  },
+  methods: {
+    jumpTo(params) {
+      this.$router.push(params);
     },
   },
 };
 </script>
 
-<style scoped>
+<style scoped lang="less">
 .comment {
     margin: 10px 24px;
     text-align: left;
@@ -57,6 +73,17 @@ export default {
 }
 .comment-avatar {
   margin-right: 12px;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #eee;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 }
 .comment-author {
   color: rgba(0,0,0,0.70);
@@ -66,6 +93,7 @@ export default {
   color:rgba(0,0,0,1);
   line-height:20px;
   letter-spacing:1px;
+  word-break: break-word;
 }
 .comment-quantity {
   font-family:PingFangSC-Medium;

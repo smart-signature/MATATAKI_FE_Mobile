@@ -1,43 +1,101 @@
 <template>
   <div class="card">
-    <div>
-      <h2 class="asset-quantity" :style='{ color: `${assetColor}` }'>{{assetAmount}} EOS</h2>
-      <p class="asset-information">{{friendlyDate}}</p>
+    <div class="card-info">
+      <h2 class="card-pricing" :style='{ color: `${assetColor}` }'>{{assetAmount}}</h2>
+      <span class="card-type">{{assetType}}</span>
     </div>
-    <div class="detailright">
-      <p v-clampy="3">{{asset.title}}</p>
+    <div class="card-info">
+      <span class="card-title" v-if="!isWithdraw">{{asset.title}}</span>
+      <span class="card-title" v-else>
+        <span class="card-title-info">
+          {{asset.toaddress.slice(0,6)}}...
+          <img src="@/assets/img/icon_copy.svg" class="copy-hash" alt="hash" @click="copyInfo(asset.toaddress)" />
+        </span>
+        <span>
+          {{asset.trx.slice(0,6)}}...
+          <img src="@/assets/img/icon_copy.svg" class="copy-hash" alt="hash" @click="copyInfo(asset.trx)" />
+        </span>
+      </span>
+      <span class="card-date">{{friendlyDate}}</span>
     </div>
   </div>
 </template>
 
 <script>
 import moment from 'moment';
-// https://github.com/clampy-js/vue-clampy
-import clampy from '@clampy-js/vue-clampy';
-import { isNDaysAgo } from '@/common/methods';
+// import { isNDaysAgo } from '@/common/methods';
+import { precision } from '@/common/precisionConversion';
 
 export default {
   name: 'AssetCard',
   props: ['asset'],
-  directives: {
-    clampy,
-  },
   computed: {
     friendlyDate() {
-      const isAppleSlave = navigator.platform.includes('iPhone');
-      const time = new Date(this.asset.create_time);
-      const timeZoneOffset = moment(time.getTime() - time.getTimezoneOffset() * 60000 * (isAppleSlave ? 0 : 1));
-      return isNDaysAgo(2, timeZoneOffset) ? timeZoneOffset.format('MMMDo HH:mm') : timeZoneOffset.fromNow();
+      // const isAppleSlave = navigator.platform.includes('iPhone');
+      // const time = moment(this.asset.create_time);
+      // const timeZoneOffset = moment(time.getTime() - time.getTimezoneOffset() * 60000 * (isAppleSlave ? 0 : 1));
+      // return isNDaysAgo(2, time) ? time.format('MMMDo HH:mm') : time.fromNow();
+
+      return moment(this.asset.create_time).format('MMMDo HH:mm');
     },
     assetAmount() {
-      return this.asset.amount > 0 ? `+${this.asset.amount / 10000}` : this.asset.amount / 10000;
+      const switchType = {
+        withdraw: '',
+        'share income': '+',
+        'sign income': '+',
+        'support expenses': '',
+      };
+      return switchType[this.asset.type] + precision(this.asset.amount, this.asset.symbol);
     },
     assetColor() {
-      // eslint-disable-next-line no-nested-ternary
-      return this.asset.amount > 0 ? '#D95E5E' : (this.asset.amount < 0 ? '#519552' : '#a7aab7');
+      const switchType = {
+        withdraw: 'color: #333',
+        'share income': '#D95E5E',
+        'sign income': '#D95E5E',
+        'support expenses': '#519552',
+      };
+      return switchType[this.asset.type];
+    },
+    assetType() {
+      // type='withdraw'：0 待处理 1已转账待确认 2成功 3失败， 4审核 5审核拒绝
+      // type=其他：只有2，表示成功
+      const { status, type } = this.asset;
+      const switchStatus = {
+        0: '提现待处理',
+        1: '提现待确认',
+        2: '提现成功',
+        3: '提现失败',
+        4: '提现审核中',
+        5: '提现审核失败',
+      };
+      const switchType = {
+        withdraw: switchStatus[status],
+        'share income': '赞赏收入',
+        'sign income': '写作收入',
+        'support expenses': '赞赏支出',
+      };
+      return switchType[type];
+    },
+    isWithdraw() {
+      return this.asset.type === 'withdraw';
     },
   },
   created() {},
+  methods: {
+    copyInfo(copyText) {
+      this.$copyText(copyText).then(() => {
+        this.$toast.success({
+          duration: 1000,
+          message: '复制成功',
+        });
+      }, () => {
+        this.$toast.fail({
+          duration: 1000,
+          message: '复制失败',
+        });
+      });
+    },
+  },
 };
 </script>
 
@@ -49,9 +107,9 @@ export default {
     background-color: #fff;
     padding: 10px 20px;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
     position: relative;
+    text-align: left;
     &::after {
       content: '';
       display: block;
@@ -71,35 +129,41 @@ export default {
         display: none;
       }
     }
+    &-pricing {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    &-type {
+      font-size:14px;
+      font-weight:400;
+      color:rgba(0,0,0,.7);
+    }
+    &-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    &-title {
+      font-size:14px;
+      font-weight:bold;
+      color:rgba(0,0,0,.7);
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      &-info {
+        margin: 0 6px 0 0;
+      }
+      .copy-hash {
+        width: 16px;
+      }
+    }
+    &-date {
+      font-size:14px;
+      font-weight:400;
+      color:rgba(0,0,0,.44);
+      flex: 0 0 100px;
+      text-align: right;
+    }
 }
-.asset-quantity {
-  font-size:22px;
-  font-family:PingFangSC-Semibold;
-  font-weight:600;
-  line-height:30px;
-}
-.asset-information {
-  font-size:11px;
-  font-family:PingFangSC-Regular;
-  font-weight:400;
-  color:#A6A6A6;
-  line-height:16px;
-  letter-spacing:1px;
-}
-.detailright{
-    width: 60px;
-    height: 60px;
-    background-color: #ecebeb;
-    color: #777777;
-    font-size: 12px;
-    font-weight: normal;
-    padding: 5px;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-    word-wrap: break-word;
-    font-family:PingFangSC-Regular;
-    font-weight:400;
-    color:rgba(119,119,119,1);
-    line-height:15px;
-}
+
 </style>

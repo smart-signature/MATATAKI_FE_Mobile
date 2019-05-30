@@ -1,14 +1,15 @@
 <template>
   <BasePull
     :loadingText="{
-      start: '更多...',
-      end: '',
-      noArticles: '暂无赞赏评论',
+      nomore: '',
+      noresults: '暂无赞赏评论',
     }"
     :params="params"
     :apiUrl="apiUrl"
     :isRefresh="false"
     :autoRequestTime="autoRequestTime"
+    :needAccessToken="true"
+    :isObj="isObj"
     @getListData="getListData"
     >
       <CommentCard :comment="item" v-for="(item, index) in articles" :key="index"/>
@@ -33,12 +34,12 @@ export default {
     isRequest(newVal) {
       if (newVal) {
         this.timer = setInterval(() => {
-          if (this.autoRequestTime >= 30) {
+          if (this.autoRequestTime >= 2) {
             clearInterval(this.timer);
             this.$emit('stopAutoRequest', false);
           }
           this.autoRequestTime += 1;
-        }, 500);
+        }, 2000);
       } else {
         clearInterval(this.timer);
       }
@@ -54,18 +55,23 @@ export default {
       params: {
         signid: this.signId,
       },
-      apiUrl: 'shares',
+      apiUrl: 'support/comments',
       articles: [],
       autoRequestTime: 0,
       timer: null,
+      isObj: {
+        type: 'newObject',
+        key: 'data',
+        kes: null,
+      },
     };
   },
   methods: {
     getListData(res) {
-      if (this.isRequest && res.data.length !== 0 && res.data[0].author === this.currentUserInfo.name) {
+      if (this.isRequest && res.data.data.length !== 0 && res.data.data[0].author === this.currentUserInfo.name) {
         this.$emit('stopAutoRequest', false);
       }
-      this.articles = res.data;
+      this.articles = res.list;
     },
   },
 };

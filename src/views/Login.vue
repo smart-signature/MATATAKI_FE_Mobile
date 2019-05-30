@@ -1,3 +1,4 @@
+/* eslint-disable */
 <template>
   <div class="login">
     <za-nav-bar>
@@ -23,9 +24,9 @@
       <za-button
         block
         theme="primary"
-        :disabled="!isScatterConnected"
-        @click="loginWithWallet"
-      >{{ isScatterConnected ? '使用钱包登录' : '没有检测到钱包' }}</za-button>
+        :disabled="true"
+        @click="true"
+      >{{ true ? '使用钱包登录' : '没有检测到钱包' }}</za-button>
       <p class="disclaimer">未注册的账号登录时将自动注册，注册则代表您已经同意用户协议和隐私政策</p>
     </div>
   </div>
@@ -37,27 +38,10 @@ import { mapActions, mapState, mapGetters } from 'vuex';
 export default {
   name: 'Login Page',
   computed: {
-    ...mapState(['isScatterConnected', 'scatterAccount']),
     ...mapGetters(['currentUsername']),
   },
   methods: {
-    ...mapActions([
-      'connectScatterAsync',
-      'loginScatterAsync',
-      'logoutScatterAsync',
-    ]),
-    async loginWithWallet() {
-      try {
-        // await this.connectScatterAsync();
-        await this.loginScatterAsync();
-      } catch (e) {
-        // console.warn('Unable to connect wallets');
-        this.$Modal.error({
-          title: '无法与你的钱包建立链接',
-          content: '请检查钱包是否打开并解锁',
-        });
-      }
-    },
+
   },
 };
 </script>

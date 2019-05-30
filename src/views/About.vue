@@ -1,8 +1,6 @@
 <template>
-  <div class="about">
-    <BaseHeader
-      :pageinfo="{ left: 'back', title: `关于我们`, rightPage: 'home',
-                   needLogin: false, }"/>
+  <div class="about mw">
+    <BaseHeader :pageinfo="{ left: 'back', title: '关于我们', rightPage: 'home' }"/>
     <div class="about-card">
       <h1 class="about-title">{{items.title}}</h1>
       <p class="about-detail">{{items.detail}}</p>
@@ -24,8 +22,6 @@ export default {
   data: () => ({
     items,
   }),
-  methods: {
-  },
 };
 </script>
 
@@ -33,9 +29,11 @@ export default {
 <style scoped>
 .about {
   background: #f7f7f7;
-  margin: 45px auto 0;
-  padding: 10px 0 0;
+  margin: 0 auto;
+  padding: 55px 0 0;
   text-align: center;
+  min-height: 100%;
+  box-sizing: border-box;
 }
 
 .about-card {

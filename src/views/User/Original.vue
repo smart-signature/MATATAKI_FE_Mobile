@@ -1,14 +1,6 @@
 <template>
-  <div class="original">
-    <BaseHeader
-            :pageinfo="{ left: 'back', title: userTitle, rightPage: 'home',
-                   needLogin: false, }"/>
-    <!--<za-nav-bar>
-      <div slot="left">
-        <za-icon theme="primary" type="arrow-left" @click="goBack"></za-icon>
-      </div>
-      <div slot="title">{{userTitle}}</div>
-    </za-nav-bar>-->
+  <div class="original mw">
+    <BaseHeader :pageinfo="{ title: userTitle }"/>
     <ArticlesList :listtype="'original'" :username='username' ref='ArticlesList'/>
   </div>
 </template>
@@ -24,26 +16,25 @@ export default {
   data() {
     return {
       editing: false,
-      user: '',
       userTitle: '',
     };
   },
   computed: {
-    ...mapGetters(['currentUsername']),
+    ...mapGetters(['currentUsername', 'isMe']),
+  },
+  watch: {
     isMe() {
-      const { username, currentUsername } = this;
-      return username === currentUsername;
+      this.toggleTitle();
     },
   },
   methods: {
-    goBack() {
-      this.$router.go(-1);
+    toggleTitle() {
+      const { isMe, username } = this;
+      this.userTitle = isMe(username) ? '我的原创文章' : '他的原创文章';
     },
   },
   created() {
-    this.user = this.isMe ? '我的用户页' : `${this.username} 的用户页`;
-    this.userTitle = this.isMe ? '我的原创文章' : `${this.username} 的原创文章`;
-    document.title = `${this.user} - SmartSignature`;
+    this.toggleTitle();
   },
 };
 </script>
@@ -56,5 +47,6 @@ a {
   background-color: #F7F7F7;
   padding-bottom: 20px;
   padding-top: 45px;
+  min-height: 100%;
 }
 </style>

@@ -1,0 +1,38 @@
+html,body{
+  height: 100%;
+}
+body {
+  background: #F0F0F0;
+  font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol;
+}
+
+/* 加载更多提示 */
+.loading-stat {
+  margin: 10px;
+  color: #999;
+  font-size: 13px;
+}
+
+/* max width 最大宽度 */
+.mw {
+  max-width: 750px;
+  margin: 0 auto;
+}
+/* 全局 markdown 文字加粗覆盖样式 
+因为导入的样式优先级低于了默认的样式 导致安卓机型 600 不加粗 
+使用 bolder 覆盖 */
+.markdown-body strong {
+  font-weight: bolder !important;
+}
+
+
+/* modal居中，单独的全局css才能覆盖 */
+.modalCenter{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .ivu-modal{
+        top: 0;
+    }
+}

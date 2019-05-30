@@ -1,70 +1,66 @@
 <template>
-  <div class="assetpage">
-    <BaseHeader
-      :pageinfo="{ left: 'back', title: `资产明细`, rightPage: 'home',
-                   needLogin: false, }"/>
+  <div class="assetpage mw">
+    <BaseHeader :pageinfo="{ left: 'back', title: '资产明细', rightPage: 'home' }"/>
+
     <div class="topcard">
-      <div class="toptext1">待提现</div><br/>
-      <div class="topremain">{{playerincome.toFixed(4)}}</div>
-      <div style="position:absolute;right:40px;top:90px;">
-          <Button class="withdraw" ghost @click="visible = true"><div style="margin-top:-2px">提现</div></Button>
-          <za-confirm
-            :visible="visible"
-            title="提现确认" message="确定要提现吗？"
-            :ok="handleOk" :cancel="() => { visible = false }"></za-confirm>
+      <div class="topcard-head">
+        <div>
+          <p class="topcard-title">待提现</p>
+          <p class="topcard-playerincome">{{playerincome}}</p>
+        </div>
+        <!-- 控制提现样式 如果修改记得修改class样式 -->
+        <div class="withdraw" @click="withdrawButton">全部提现
+        </div>
       </div>
-      <Divider style="margin-top:10px;margin-bottom:10px;"/>
-      <Row type="flex" justify="center" class="code-row-bg">
-        <Col span="6">
-          <p class="toptext2">创作历史收益</p>
-          <p class="toptext3"
+
+      <div class="topcard-list">
+        <div class="topcard-list-line">
+          <p class="topcard-list-title">创作历史收益</p>
+          <p class="topcard-list-pricing"
             :style='assetsRewards.totalSignIncome > 0 ? { color: "#D95E5E" }
                     : (assetsRewards.totalSignIncome < 0 ? { color: "#519552" } : {color: "#a7aab7"})'>
             {{assetsRewards.totalSignIncome}}
           </p>
-        </Col>
-        <Col span="3" style="text-align:center">
-          <Divider type="vertical" style="height:20px;margin-top:16px;" />
-        </Col>
-        <Col span="6">
-          <p class="toptext2">赞赏历史收益</p>
-          <p class="toptext3"
+        </div>
+        <div class="topcard-list-line">
+          <p class="topcard-list-title">赞赏历史收益</p>
+          <p class="topcard-list-pricing"
              :style='assetsRewards.totalShareIncome > 0 ? { color: "#D95E5E" }
                      : (assetsRewards.totalShareIncome < 0 ? { color: "#519552" } : {color: "#a7aab7"})'>
             {{assetsRewards.totalShareIncome}}
           </p>
-        </Col>
-        <Col span="3" style="text-align:center">
-          <Divider type="vertical" style="height:20px;margin-top:16px;" />
-        </Col>
-        <Col span="6">
-          <p class="toptext2">赞赏历史支出</p>
-          <p class="toptext3"
+        </div>
+        <div class="topcard-list-line">
+          <p class="topcard-list-title">赞赏历史支出</p>
+          <p class="topcard-list-pricing"
             :style='assetsRewards.totalShareExpenses > 0 ? { color: "#D95E5E" }
                     : (assetsRewards.totalShareExpenses < 0 ? { color: "#519552" } : {color: "#a7aab7"})'>
             {{assetsRewards.totalShareExpenses}}
           </p>
-        </Col>
-      </Row>
+        </div>
+      </div>
     </div>
+
     <div class="detailtext">明细</div>
-    <AssetList class="asset-list" :username="username" @getOtherAsset="getOtherAsset" />
+    <AssetList :username="username" :type="type" @getOtherAsset="getOtherAsset"/>
   </div>
 </template>
 
 <script>
-import { getUser } from '@/api';
-import { getPlayerIncome, withdraw } from '@/api/signature';
-import { isEmptyArray } from '@/common/methods';
 import AssetList from './AssetList.vue';
+import { mapGetters } from 'vuex';
+import { precision } from '@/common/precisionConversion';
 
 export default {
-  name: 'Asset',
-  props: ['username'],
+  name: 'AssetType',
+  props: ['username', 'type'],
   components: { AssetList },
   created() {
-    this.getPlayerTotalIncome(this.username);
-    this.getUser(this.username);
+    // 认为是用户手动切换非法地址  考虑要不要移到路由里面去拦截
+    const assetTypeArr = ['EOS', 'ONT'];
+    if (!assetTypeArr.includes(this.type)) {
+      this.$router.push({ name: 'home' });
+    }
   },
   data() {
     return {
@@ -76,51 +72,47 @@ export default {
         totalShareExpenses: 0,
       },
       visible: false,
-      newName: '',
     };
   },
-  computed: { },
+  computed: {
+    ...mapGetters(['currentUserInfo']),
+  },
   methods: {
-    async getPlayerTotalIncome(name) {
-      console.log('Connecting to EOS fetch player income...');
-      const playerincome = await getPlayerIncome(name); // 从合约拿到支持收入和转发收入
-      this.playerincome = isEmptyArray(playerincome)
-        ? (playerincome[0].share_income + playerincome[0].sign_income) / 10000
-        : 0;
-      // 截止2019年3月24日中午12时合约拿过来的东西要除以10000才能正常显示
-    },
-    handleOk() {
-      this.withdraw(this.username);
-    },
-    async withdraw(name) {
-      console.log('Connecting to EOS fetch data...');
-      await withdraw(name)
-        .then(() => this.$Message.success('提现成功!'))
-        .catch((err) => {
-          console.log(err);
-          this.$Message.error('提现失败!');
-        });
-      this.visible = false; // 成功和失败都关闭弹窗
-    },
-    async getUser(username) {
-      await getUser({ username }).then(({ data }) => {
-        this.newName = data.nickname || data.username;
-      }).catch((err) => {
-        this.newName = this.username;
-        console.log(err);
-      });
-    },
+    // 得到明细数据
     getOtherAsset(res) {
-      // console.log(res);
       const {
+        balance,
         totalSignIncome: sign,
         totalShareIncome: shareIn,
         totalShareExpenses: shareExp,
-      } = res.data;
+      } = res.data.data;
       const { assetsRewards } = this;
-      assetsRewards.totalSignIncome = sign > 0 ? `+${sign / 10000}` : sign / 10000;
-      assetsRewards.totalShareIncome = shareIn > 0 ? `+${shareIn / 10000}` : shareIn / 10000;
-      assetsRewards.totalShareExpenses = shareExp > 0 ? `+${shareExp / 10000}` : shareExp / 10000;
+
+      const precisionFunc = (amount) => {
+        const amountType = amount > 0 ? '+' : '';
+        return amountType + precision(amount, this.type);
+      };
+
+      this.playerincome = precision(balance, this.type);
+
+      assetsRewards.totalSignIncome = precisionFunc(sign);
+      assetsRewards.totalShareIncome = precisionFunc(shareIn);
+      assetsRewards.totalShareExpenses = precisionFunc(shareExp);
+    },
+    // 提现按钮单击
+    withdrawButton() {
+      if (this.playerincome <= 0) {
+        this.$toast.fail({
+          duration: 1000,
+          message: '无提现余额',
+        });
+        return;
+      }
+      const { username, type } = this;
+      this.$router.push({
+        name: 'Withdraw',
+        params: { username, type },
+      });
     },
   },
 };
