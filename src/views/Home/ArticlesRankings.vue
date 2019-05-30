@@ -13,7 +13,7 @@
           </a>
         </div>
         <Checkbox v-model="channel" class="head-store">
-          <img class="head-store-icon" src="@/assets/img/icon_store.svg" alt="store">
+          <img class="head-store-icon" src="@/assets/img/icon_store.svg" alt="store">商品
         </Checkbox>
       <!-- <div class="head" ref="head" :class="isFixedHead && 'fixed'"> -->
       </div>
