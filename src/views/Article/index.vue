@@ -131,19 +131,18 @@
       v-model="supportModal"
       title="赞赏"
       show-cancel-button
+      class="ffff"
       @confirm="support"
       @cancel="supportModal = false"
     >
-      <div class="support-body">
-        <van-field
-          v-model="comment"
-          type="textarea"
-          placeholder="输入推荐语…"
-          rows="4"
-          autosize
-        />
-        <van-field v-model="amount" @input="handleChange(amount)" :placeholder="displayPlaceholder" />
-      </div>
+      <van-field
+        v-model="comment"
+        type="textarea"
+        placeholder="输入推荐语…"
+        rows="4"
+        autosize
+      />
+      <van-field v-model="amount" @input="handleChange(amount)" :placeholder="displayPlaceholder" />
     </van-dialog>
 
     <!-- 文章 Info -->
@@ -598,3 +597,9 @@ export default {
 </script>
 
 <style src="./index.less" scoped lang="less"></style>
+<style>
+/* 覆盖赞赏框宽度 */
+.article .van-dialog {
+  max-width: 350px;
+}
+</style>
