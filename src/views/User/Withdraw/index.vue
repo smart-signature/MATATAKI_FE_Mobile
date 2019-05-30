@@ -232,6 +232,7 @@ export default {
               if (res.status === 200 && res.data.code === 0) {
                 this.toastMessage(res.data.message, 'success');
                 this.getBalance(this.type);
+                this.$navigation.cleanRoutes(); // 清除路由记录
               } else this.toastMessage(res.data.message, 'fail');
               done();
             })

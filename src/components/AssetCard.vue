@@ -5,7 +5,17 @@
       <span class="card-type">{{assetType}}</span>
     </div>
     <div class="card-info">
-      <span class="card-title">{{asset.title}}</span>
+      <span class="card-title" v-if="!isWithdraw">{{asset.title}}</span>
+      <span class="card-title" v-else>
+        <span class="card-title-info">
+          {{asset.toaddress.slice(0,6)}}...
+          <img src="@/assets/img/icon_copy.svg" class="copy-hash" alt="hash" @click="copyInfo(asset.toaddress)" />
+        </span>
+        <span>
+          {{asset.trx.slice(0,6)}}...
+          <img src="@/assets/img/icon_copy.svg" class="copy-hash" alt="hash" @click="copyInfo(asset.trx)" />
+        </span>
+      </span>
       <span class="card-date">{{friendlyDate}}</span>
     </div>
   </div>
@@ -29,27 +39,63 @@ export default {
       return moment(this.asset.create_time).format('MMMDo HH:mm');
     },
     assetAmount() {
-      const precisionFunc = (amount) => {
-        const amountType = amount > 0 ? '+' : '';
-        return amountType + amount + this.asset.symbol;
+      const switchType = {
+        withdraw: '',
+        'share income': '+',
+        'sign income': '+',
+        'support expenses': '',
       };
-      return precisionFunc(precision(this.asset.amount, this.asset.symbol));
+      return switchType[this.asset.type] + precision(this.asset.amount, this.asset.symbol);
     },
     assetColor() {
-      // eslint-disable-next-line no-nested-ternary
-      return this.asset.amount > 0 ? '#D95E5E' : (this.asset.amount < 0 ? '#519552' : '#a7aab7');
+      const switchType = {
+        withdraw: 'color: #333',
+        'share income': '#D95E5E',
+        'sign income': '#D95E5E',
+        'support expenses': '#519552',
+      };
+      return switchType[this.asset.type];
     },
     assetType() {
+      // type='withdraw'：0 待处理 1已转账待确认 2成功 3失败， 4审核 5审核拒绝
+      // type=其他：只有2，表示成功
+      const { status, type } = this.asset;
+      const switchStatus = {
+        0: '提现待处理',
+        1: '提现待确认',
+        2: '提现成功',
+        3: '提现失败',
+        4: '提现审核中',
+        5: '提现审核失败',
+      };
       const switchType = {
-        withdraw: '提现',
+        withdraw: switchStatus[status],
         'share income': '赞赏收入',
         'sign income': '写作收入',
         'support expenses': '赞赏支出',
       };
-      return switchType[this.asset.type];
+      return switchType[type];
+    },
+    isWithdraw() {
+      return this.asset.type === 'withdraw';
     },
   },
   created() {},
+  methods: {
+    copyInfo(copyText) {
+      this.$copyText(copyText).then(() => {
+        this.$toast.success({
+          duration: 1000,
+          message: '复制成功',
+        });
+      }, () => {
+        this.$toast.fail({
+          duration: 1000,
+          message: '复制失败',
+        });
+      });
+    },
+  },
 };
 </script>
 
@@ -104,6 +150,12 @@ export default {
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
+      &-info {
+        margin: 0 6px 0 0;
+      }
+      .copy-hash {
+        width: 16px;
+      }
     }
     &-date {
       font-size:14px;

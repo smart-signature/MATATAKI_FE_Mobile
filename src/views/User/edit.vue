@@ -128,6 +128,7 @@ export default {
             message: res.data.message,
           });
           this.nickname = this.newname;
+          this.$navigation.cleanRoutes(); // 清除路由记录
         } else this.myToasted('昵称重复，请重新填写');
       }).catch((error) => {
         console.log(error);
@@ -174,8 +175,6 @@ export default {
     },
 
     setAvatarImage(hash) {
-      // 空hash 显示默认Logo头像
-      // eslint-disable-next-line global-require
       if (hash) this.avatar = getAvatarImage(hash);
     },
     // 完成上传
@@ -191,15 +190,14 @@ export default {
             message: '上传失败',
           });
         }
-        this.imgUploadDone += 1;
       }).catch((err) => {
         console.log(err);
         this.$toast.fail({
           duration: 1000,
           message: '上传失败',
         });
-        this.imgUploadDone += 1;
       });
+      this.imgUploadDone += 1;
     },
   },
   created() {
