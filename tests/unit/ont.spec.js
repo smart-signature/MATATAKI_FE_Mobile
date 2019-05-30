@@ -3,12 +3,28 @@ import {
   Account, Crypto, RestClient, TransactionBuilder, Wallet, // utils,
 } from 'ontology-ts-sdk';
 import { ontology } from '@/config';
-import backendAPI from '../../src/api/backend';
-require('mock-local-storage');
-
+import backendAPI, { getCurrentAccessToken, setAccessToken } from '../../src/api/backend';
+// --require mock-local-storage
 // https://developer.ont.io/applyOng
 
-beforeEach(function() {
+let window;
+beforeEach(async () => {
+  window = (new JSDOM(``, {
+    url: "http://localhost/",
+    referrer: "http://localhost/",
+    contentType: "text/html",
+    includeNodeLocations: true,
+    storageQuota: 10000000,
+    // runScripts: "outside-only"
+  })).window;
+  window.eval(`
+    // This code executes in the jsdom global scope
+    globalVariable = typeof XMLHttpRequest === "function";
+    navigator = {
+      userAgent: 'node.js',
+    };
+    // Date = Date;
+  `);
   // unmock(ignoreStory())
 });
 
@@ -84,7 +100,7 @@ describe('The world', function() {
                 payer: account.address.toBase58()
             }
         }
-      };
+      };  
       txs.push((makeTransactionsByJson(json))[0]);
       privateZ = account.encryptedKey.decrypt('password', account.address, account.salt);
       signTransaction(txs[i], privateZ);
@@ -95,22 +111,29 @@ describe('The world', function() {
     
     return true;
   });
-  
+
+  window.Date = Date;
+  // require('mock-local-storage');
   const ACCESS_TOKENs = [
     'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJBVDlkZUxpb2NTazNTQzZrOWdYMlU1Z3dQQ1pHbjhBU3lQIiwiZXhwIjoxNTU5Njc3OTgwNTc0LCJwbGF0Zm9ybSI6Im9udCIsImlkIjozMTF9.FOHInE1zHz75YxApyra6zoMWyo1o2VM8wngsbVyNBdQ',
     'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJBVEE2djRua0hIRHBMNTZEcmNiVm11QW5mNFFWMkxrbWZVIiwiZXhwIjoxNTU5NzMzMTQxNDk1LCJwbGF0Zm9ybSI6Im9udCIsImlkIjozMTR9.74UbZsD6Blqejyai6Pi7YuKk1aRq25RU0_3m9YfdFcc',
     'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJBYWNjeWdDMURUZWcyNHhTcVdaRWI3cU13dFJLUWR1Tk5NIiwiZXhwIjoxNTU5NzMzNDMwMDkwLCJwbGF0Zm9ybSI6Im9udCIsImlkIjozMTV9._U9EDjRnnbg2XqE3j2L_fa6lRYhCxxA9xGYpv4ZlvMo',
   ];
   for (let i = 0 ; i < ontWallet.accounts.length; i++) {
-      window.localStorage.setItem('ACCESS_TOKEN', ACCESS_TOKENs[i]);
+      setAccessToken(ACCESS_TOKENs[i]);
+      console.log(getCurrentAccessToken());
+      // backendAPI.window = global.window ;
       it(`backendAPI.reportShare ${i}`, async () => {
+
+
+
         await backendAPI.reportShare({
           amount,
           blockchain: 'ONT',
           contract: 'AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV',
           signId,
           symbol: 'ONT',
-          referrer: null,
+          sponsor: null,
         }).catch(function (error) {
           if (error.response) {
             // The request was made and the server responded with a status code
