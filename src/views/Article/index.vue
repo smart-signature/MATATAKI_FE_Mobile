@@ -121,15 +121,15 @@
     <div class="footer-block">
         <button class="button-support" v-if="isSupported===-1" @click="b4support">赞赏<img src="@/assets/img/icon_support.png"/></button>
         <button class="button-support" v-if="isSupported===0" disabled>赞赏中<img src="@/assets/img/icon_support.png"/></button>
-        <button class="button-support" v-else-if="isSupported===1" @click="visible3 = true">赞赏<img src="@/assets/img/icon_support.png"/></button>
+        <button class="button-support" v-else-if="isSupported===1" @click="supportButton">赞赏<img src="@/assets/img/icon_support.png"/></button>
         <button class="button-support" v-else-if="isSupported===2" disabled>已赞赏<img src="@/assets/img/icon_support.png"/></button>
         <button class="button-share" @click="share">分享<img src="@/assets/img/icon_share.png" /></button>
     </div>
     </footer>
     <!-- 赞赏对话框 -->
-    <Modal v-model="visible3"
-      @close="() => visible3 = false" radius=""
-      @maskClick="visible3 = false" :showClose="true"
+    <Modal v-model="supportModal"
+      @close="() => supportModal = false" radius=""
+      @maskClick="supportModal = false" :showClose="true"
       title="赞赏此文章"
       ok-text="赞赏"
       @on-ok="support"
@@ -206,7 +206,7 @@ export default {
         ont: 0,
       },
       showModal: false,
-      visible3: false,
+      supportModal: false,
       opr: false,
       infoModa: false,
       isRequest: false,
@@ -397,7 +397,7 @@ export default {
       this.isOriginal = Boolean(article.is_original);
       // 未登录下点击赞赏会自动登陆并且重新获取文章信息 如果没有打赏并且是点击赞赏 则显示赞赏框
       if (!article.support && supportDialog) {
-        this.visible3 = true;
+        this.supportModal = true;
       }
     },
     // 设置文章内容
@@ -420,6 +420,30 @@ export default {
         this.$Message.warning('本功能需登录');
         this.showModal = true;
       }
+    },
+    // 根据 blockchain 查询商品数据
+    findBlockchain(articlePrices, blockchain) {
+      const findBlockchain = (arr, symbol) => arr.filter(i => i.symbol === symbol);
+      return findBlockchain(articlePrices, blockchain);
+    },
+    // 赞赏按钮
+    supportButton() {
+      // 如果是商品 判断库存是否充足
+      if (this.article.channel_id === 2) {
+        const { currentUserInfo, findBlockchain, article } = this;
+        const { blockchain } = currentUserInfo;
+        const filterBlockchain = findBlockchain(article.prices, blockchain);
+        const { stock_quantity: stockQuantity } = filterBlockchain[0];
+        if (stockQuantity <= 0) {
+          return this.$toast({
+            duration: 1000,
+            message: '库存不足',
+          });
+        }
+      }
+      // 如果是商品 判断库存是否充足 end
+      this.supportModal = true;
+      return true;
     },
     async support() {
       const { article, comment, signId } = this;
@@ -446,8 +470,7 @@ export default {
 
       // 检查商品价格
       const checkCommodityPrices = () => {
-        const findBlockchain = (arr, symbol) => arr.filter(i => i.symbol === symbol);
-        const filterBlockchain = findBlockchain(article.prices, blockchain);
+        const filterBlockchain = this.findBlockchain(article.prices, blockchain);
         if (filterBlockchain.length !== 0) {
           const { symbol, price } = filterBlockchain[0];
           if (symbol === 'EOS') checkPricesMatch = checkPrices(amount, price / 10000, '赞赏金额不能小于商品价格');
@@ -491,7 +514,7 @@ export default {
         this.isSupported = RewardStatus.REWARDED; // 按钮状态
         this.$Message.success('赞赏成功！');
         this.isRequest = true; // 自动请求
-        this.visible3 = false; // 关闭dialog
+        this.supportModal = false; // 关闭dialog
       } catch (error) {
         console.error(JSON.stringify(error));
         this.$Message.error('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额');
