@@ -164,7 +164,7 @@ import {
 import 'mavon-editor/dist/css/index.css';
 import moment from 'moment';
 import { ContentLoader } from 'vue-content-loader';
-import { xssFilter } from '@/common/xss';
+// import { xssFilter } from '@/common/xss';
 import CommentsList from './CommentsList.vue';
 import { sleep, isNDaysAgo } from '@/common/methods';
 import { ontAddressVerify } from '@/common/reg';
@@ -226,8 +226,7 @@ export default {
       return `请输入 ${this.currentUserInfo.balance.slice(-4)} 赞赏金额`;
     },
     compiledMarkdown() {
-      console.log(xssFilter(this.post.content));
-      return markdownIt.render(xssFilter(this.post.content));
+      return markdownIt.render(this.post.content);
     },
     getClipboard() {
       const { article, currentUsername } = this;
