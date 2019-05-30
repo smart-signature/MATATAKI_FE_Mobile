@@ -64,7 +64,7 @@ export default {
   },
   data() {
     return {
-      showModaCopy: true,
+      showModaCopy: this.showModal,
       modalLoading: false,
       modalText: {
         text: '选择授权方式',
