@@ -33,7 +33,6 @@
 
 <script>
 import { mapActions } from 'vuex';
-import { URLSearchParams } from 'url';
 
 export default {
   naem: 'Help',
