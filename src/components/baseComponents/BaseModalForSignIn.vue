@@ -72,7 +72,7 @@ export default {
       blockchain: [
         {
           url: iconEOS,
-          title: 'EOS登陆',
+          title: 'EOS登录',
           type: 'EOS',
           wallet: [
             {
@@ -113,7 +113,7 @@ export default {
         },
         {
           url: iconONT,
-          title: 'ONT登陆',
+          title: 'ONT登录',
           type: 'ONT',
           wallet: [
             {

@@ -47,19 +47,19 @@ export default {
       channel: false,
       tabsData: [
         {
-          label: '最热',
-          params: {
-            channel: 1,
-          },
-          apiUrl: '/posts/supportsRanking',
-          articles: [],
-        },
-        {
           label: '最新',
           params: {
             channel: 1,
           },
           apiUrl: '/posts/timeRanking',
+          articles: [],
+        },
+        {
+          label: '最热',
+          params: {
+            channel: 1,
+          },
+          apiUrl: '/posts/supportsRanking',
           articles: [],
         },
         {
@@ -90,7 +90,7 @@ export default {
     channel() {
       this.tabsData.map((i) => {
         if (this.channel) i.params.channel = 2;
-        else i.params.channel = 1;
+        else delete i.params.channel;
       });
       this.autoRequestTime += Date.now();
     },

@@ -9,43 +9,12 @@ process.env.VUE_APP_COMMIT_HASH = process.env.COMMIT_REF;
 const { NODE_ENV } = process.env;
 if (NODE_ENV === 'test') {
   module.exports = {
-    chainWebpack: config => {
+    chainWebpack: (config) => {
       // 移除 prefetch 插件
       config.plugins.delete('prefetch');
-  
+
       if (NODE_ENV === 'test') {
         config.merge({
-            target: 'node',
-            devtool: 'inline-cheap-module-source-map',
-            externals: [
-              {
-                canvas: 'commonjs canvas',
-              },
-              'bufferutil',
-              'utf-8-validate',
-              ],
-        });
-        // when target === 'node', vue-loader will attempt to generate
-        // SSR-optimized code. We need to turn that off here.
-        config.module
-          .rule('vue')
-            .use('vue-loader')
-            .tap(options => {
-                options.optimizeSSR = false
-                return options
-            });
-      }
-    },
-  };
-  return ;
-}
-module.exports = {
-  chainWebpack: config => {
-    // 移除 prefetch 插件
-    config.plugins.delete('prefetch');
-
-    if (NODE_ENV === 'test') {
-      config.merge({
           target: 'node',
           devtool: 'inline-cheap-module-source-map',
           externals: [
@@ -54,17 +23,48 @@ module.exports = {
             },
             'bufferutil',
             'utf-8-validate',
-            ],
+          ],
+        });
+        // when target === 'node', vue-loader will attempt to generate
+        // SSR-optimized code. We need to turn that off here.
+        config.module
+          .rule('vue')
+          .use('vue-loader')
+          .tap((options) => {
+            options.optimizeSSR = false;
+            return options;
+          });
+      }
+    },
+  };
+  return;
+}
+module.exports = {
+  chainWebpack: (config) => {
+    // 移除 prefetch 插件
+    config.plugins.delete('prefetch');
+
+    if (NODE_ENV === 'test') {
+      config.merge({
+        target: 'node',
+        devtool: 'inline-cheap-module-source-map',
+        externals: [
+          {
+            canvas: 'commonjs canvas',
+          },
+          'bufferutil',
+          'utf-8-validate',
+        ],
       });
       // when target === 'node', vue-loader will attempt to generate
       // SSR-optimized code. We need to turn that off here.
       config.module
         .rule('vue')
-          .use('vue-loader')
-          .tap(options => {
-              options.optimizeSSR = false
-              return options
-          });
+        .use('vue-loader')
+        .tap((options) => {
+          options.optimizeSSR = false;
+          return options;
+        });
     }
   },
   configureWebpack: {

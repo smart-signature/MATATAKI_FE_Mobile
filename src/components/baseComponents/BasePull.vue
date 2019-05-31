@@ -9,6 +9,7 @@
     <!-- 负责滚动 -->
     <infinite-loading :identifier="infiniteId" spinner="circles" @infinite="infiniteHandler" ref="infiniteLoading">
       <div class="pull-message" slot="no-results">{{loadingTextComputed}}</div>
+       <div slot="no-more"></div>
       <div slot="error" slot-scope="{ trigger }">
         <p class="error-message">您的网络似乎不太给力,请稍后重试</p>
         <a class="error-refresh" href="javascript:;" @click="trigger">重新加载</a>
