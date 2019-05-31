@@ -223,11 +223,14 @@ export default {
         flex: 1;
         display: flex;
         align-items: flex-end;
+        width: 100%;
+        padding: 0 20px;
       &-button {
         text-align: center;
         color: #fff;
         margin: 16px 0 0;
-        padding: 0 20px;
+        padding: 0;
+        flex: 1;
         border-radius: 4px;
         display: flex;
         align-items: center;
