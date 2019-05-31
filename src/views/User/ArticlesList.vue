@@ -9,6 +9,7 @@
             :activeIndex="activeIndex"
             :nowIndex="index"
             :loadingText="loadingText"
+            :isObj="{type: 'Object', key: 'data'}"
             @getListData="getListDataTab"
             >
               <ArticleCard :article="item" v-for="(item, index) in item.articles" :key="index"/>
@@ -21,6 +22,7 @@
         :params="params"
         :apiUrl="apiUrl"
         :loadingText="loadingText"
+        :isObj="{type: 'Object', key: 'data'}"
         @getListData="getListData"
         >
           <ArticleCard :article="item" v-for="(item, index) in articles" :key="index"/>
@@ -54,21 +56,21 @@ export default {
         {
           label: '文章列表',
           params: { author: this.username },
-          apiUrl: 'posts',
+          apiUrl: '/posts/timeRanking',
           articles: [],
         },
         {
           label: '他赞赏的',
           params: { user: this.username },
-          apiUrl: 'supports',
+          apiUrl: '/posts/supported',
           articles: [],
         },
       ];
     } else if (listtype === 'original') {
-      this.apiUrl = 'posts';
+      this.apiUrl = '/posts/timeRanking';
       this.params = { author: this.username };
     } else if (listtype === 'reward') {
-      this.apiUrl = 'supports';
+      this.apiUrl = '/posts/supported';
       this.params = { user: this.username };
     }
   },

@@ -79,7 +79,6 @@
       <div class="otherUsertextsOutter">
         <div class="otherUsertexts">
           <p v-if="!editing" class="username"
-            :class="[!email ? 'username-email' : '']"
           >{{nickname === "" ? username : nickname}}</p>
           <p class="userstatus">
             <router-link :to="{ name: 'FollowList', params: { listtype: '关注' }}">
@@ -92,7 +91,6 @@
             </router-link>
           </p>
           <p>简介：{{introduction || '暂无'}}</p>
-          <p v-if="email" class="email">{{email}}</p>
         </div>
       </div>
       <ArticlesList ref="ArticlesList" :listtype="'others'" :username="username" />
