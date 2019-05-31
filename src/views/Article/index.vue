@@ -132,8 +132,9 @@
       title="赞赏"
       show-cancel-button
       class="ffff"
-      @confirm="support"
+      :before-close="support"
       @cancel="supportModal = false"
+      :closeOnClickOverlay='true'
     >
       <van-field
         v-model="comment"
@@ -419,7 +420,6 @@ export default {
       } else if (blockchain === 'ONT') {
         amountValue = (amountValue.match(/^\d*/g)[0]) || null;
       }
-      console.log(amountValue);
       this.amount = amountValue;
     },
     b4support() {
@@ -451,10 +451,14 @@ export default {
       this.supportModal = true;
       return true;
     },
-    async support() {
+
+
+    async support(action, done) {
+      if (action !== 'confirm') return done();
       const { article, comment, signId } = this;
       const { blockchain } = this.currentUserInfo;
-      const amount = parseFloat(this.amount);
+      // 默认 ‘’ 转成了 NAN
+      const amount = this.amount === '' ? 0 : parseFloat(this.amount);
       // 检查金额是否符合
       let checkPricesMatch = true;
 
@@ -472,28 +476,29 @@ export default {
       // 文章赞赏金额
       const minimumAmount = (blockchain) => {
         if (blockchain === 'EOS') return 0.01;
-        else if (blockchain === 'ONT') return 1;
+        if (blockchain === 'ONT') return 1;
       };
       checkPricesMatch = checkPrices(
-        amount, 
+        amount,
         minimumAmount(blockchain),
-        `请输入正确的金额 最小赞赏金额为 ${minimumAmount(blockchain)} ${blockchain}`
+        `请输入正确的金额 最小赞赏金额为 ${minimumAmount(blockchain)} ${blockchain}`,
       );
-      if (!checkPricesMatch) return;
+      if (!checkPricesMatch) return done(false);
 
       // 检查商品价格
       const checkCommodityPrices = () => {
         const filterBlockchain = this.findBlockchain(article.prices, blockchain);
         if (filterBlockchain.length !== 0) {
-          const { symbol, price } = filterBlockchain[0];
-          if (symbol === 'EOS') checkPricesMatch = checkPrices(amount, price / 10000, '赞赏金额不能小于商品价格');
-          else if (symbol === 'ONT') checkPricesMatch = checkPrices(amount, price, '赞赏金额不能小于商品价格');
+          const { symbol, price, decimals } = filterBlockchain[0];
+          // exponentiation operator (**)
+          if (symbol === 'EOS') checkPricesMatch = checkPrices(amount, (price / (10 ** decimals)), '赞赏金额不能小于商品价格');
+          else if (symbol === 'ONT') checkPricesMatch = checkPrices(amount, (price / (10 ** decimals)), '赞赏金额不能小于商品价格');
         }
       };
 
       // 文章是商品判断价格
       if (article.channel_id === 2) checkCommodityPrices();
-      if (!checkPricesMatch) return;
+      if (!checkPricesMatch) return done(false);
 
 
       let sponsor = this.getInvite;
@@ -525,13 +530,21 @@ export default {
           if (response.status !== 200) throw new Error(error);
         }
         this.isSupported = RewardStatus.REWARDED; // 按钮状态
-        this.$Message.success('赞赏成功！');
+        this.$toast.success({
+          duration: 1000,
+          message: '赞赏成功！',
+        });
         this.isRequest = true; // 自动请求
         this.supportModal = false; // 关闭dialog
+        done();
       } catch (error) {
-        console.error(JSON.stringify(error));
-        this.$Message.error('赞赏失败，可能是由于网络故障或账户余额不足。\n请检查网络或账户余额');
+        console.error(error);
         this.isSupported = RewardStatus.NOT_REWARD_YET;
+        this.$toast({
+          duration: 1000,
+          message: '赞赏失败，可能是由于网络故障或账户余额不足等原因。',
+        });
+        done(false);
       }
     },
     share() {
