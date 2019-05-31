@@ -180,4 +180,14 @@ export default {
   }
 }
 
+
+@media screen and (max-width: 576px) {
+  .head-list-button {
+    margin: 0 14px 0 0;
+    &.active {
+        transform: scale(1.2);
+    }
+  }
+}
+
 </style>
