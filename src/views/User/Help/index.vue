@@ -22,7 +22,7 @@
       </a>
        <div class="help-list">
         <span class="help-list-title">最新版本</span>
-        <span class="help-list-sub">v2.0.1</span>
+        <span class="help-list-sub">v2.1.0</span>
       </div>
     </div>
     <div class="signout">
