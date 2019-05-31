@@ -49,7 +49,6 @@ export default {
         {
           label: '最新',
           params: {
-            channel: 1,
           },
           apiUrl: '/posts/timeRanking',
           articles: [],
@@ -57,7 +56,6 @@ export default {
         {
           label: '最热',
           params: {
-            channel: 1,
           },
           apiUrl: '/posts/supportsRanking',
           articles: [],
@@ -66,7 +64,6 @@ export default {
           label: 'EOS',
           params: {
             symbol: 'eos',
-            channel: 1,
           },
           apiUrl: '/posts/amountRanking',
           articles: [],
@@ -75,7 +72,6 @@ export default {
           label: 'ONT',
           params: {
             symbol: 'ont',
-            channel: 1,
           },
           apiUrl: '/posts/amountRanking',
           articles: [],
