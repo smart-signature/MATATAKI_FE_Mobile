@@ -267,8 +267,7 @@ export default {
       return this.article.id;
     },
     articleCreateTimeComputed() {
-      const { createTime } = this.article;
-      if (!createTime) return '';
+      const { create_time: createTime } = this.article;
       const time = moment(createTime);
       return isNDaysAgo(2, time) ? time.format('MMMDo HH:mm') : time.fromNow();
     },
