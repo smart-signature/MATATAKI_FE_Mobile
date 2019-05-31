@@ -470,8 +470,15 @@ export default {
         return true;
       };
       // 文章赞赏金额
-      if (blockchain === 'EOS') checkPricesMatch = checkPrices(amount, 0.01, `请输入正确的金额 最小赞赏金额为 0.01 ${blockchain}`);
-      else if (blockchain === 'ONT') checkPricesMatch = checkPrices(amount, 1, `请输入正确的金额 最小赞赏金额为 1 ${blockchain}`);
+      const minimumAmount = (blockchain) => {
+        if (blockchain === 'EOS') return 0.01;
+        else if (blockchain === 'ONT') return 1;
+      };
+      checkPricesMatch = checkPrices(
+        amount, 
+        minimumAmount(blockchain),
+        `请输入正确的金额 最小赞赏金额为 ${minimumAmount(blockchain)} ${blockchain}`
+      );
       if (!checkPricesMatch) return;
 
       // 检查商品价格
