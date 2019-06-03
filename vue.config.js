@@ -7,6 +7,7 @@ process.env.VUE_APP_VERSION = require('./package.json').version;
 process.env.VUE_APP_COMMIT_HASH = process.env.COMMIT_REF;
 // console.log(process.env.NODE_ENV);
 const { NODE_ENV } = process.env;
+// console.debug(process.env.VUE_APP_SIGNATURE_CONTRACT);
 if (NODE_ENV === 'test') {
   module.exports = {
     chainWebpack: (config) => {
