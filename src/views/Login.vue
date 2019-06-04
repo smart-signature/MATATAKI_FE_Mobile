@@ -1,63 +1,40 @@
 /* eslint-disable */
 <template>
   <div class="login">
-    <za-nav-bar>
-      <div slot="left">
-        <za-icon theme="primary" type="arrow-left" @click="$router.go(-1)"></za-icon>
-      </div>
-      <div slot="title">登录 SmartSignature</div>
-      <div slot="right"></div>
-    </za-nav-bar>
-    <div class="logined-already card" v-if="scatterAccount">
-      <za-icon theme="success" type="warning-round-fill" style="font-size: 14rem;"/>
-      <h1 class="title">你已经登录啦～</h1>
-      <p class="info">你当前登录的账户为
-        <br>
-        {{currentUsername}}
-      </p>
-      <za-button block theme="warning" @click="logoutScatterAsync()">
-        退出当前账户 {{currentUsername}}
-      </za-button>
-      <za-button block theme="primary" @click="$router.go(-1)">返回上一页</za-button>
-    </div>
-    <div class="login-methods card" v-else>
-      <za-button
-        block
-        theme="primary"
-        :disabled="true"
-        @click="true"
-      >{{ true ? '使用钱包登录' : '没有检测到钱包' }}</za-button>
-      <p class="disclaimer">未注册的账号登录时将自动注册，注册则代表您已经同意用户协议和隐私政策</p>
-    </div>
+
   </div>
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters } from 'vuex';
+import { mapActions, mapGetters, mapMutations } from 'vuex';
 
 export default {
   name: 'Login Page',
   computed: {
-    ...mapGetters(['currentUsername']),
+  },
+  created() {
+    const { protocol, host } = window.location;
+    const clientID = '7e015d8ce32370079895'; // 範例值
+    const clientSecret = '2b976af0e6b6ceea2b1554aa31d1fe94ea692cd9';
+    const redirectUri = 'http://localhost:8080/oauth/redirect'; // 範例值
+
+    const { code } = this.$route.query;
+    if (!code) {
+      // 跳轉
+      window.location = `https://github.com/login/oauth/authorize?client_id=${clientID}&redirect_uri=${redirectUri}`;
+    } else {
+      this.setUserConfig({ idProvider: 'GitHub' });
+      this.idCheckandgetAuth({ code }).then(() => {
+        this.$route.push('home');
+      });
+    }
   },
   methods: {
-
+    ...mapActions(['idCheckandgetAuth']),
+    ...mapMutations(['setUserConfig']),
   },
 };
 </script>
 
 <style scoped>
-p.disclaimer {
-  font-size: 12px;
-  font-weight: 400;
-  color: #666;
-}
-p.info {
-  font-size: 24px;
-  font-weight: 400;
-  color: #666;
-}
-.za-button {
-  margin-bottom: 10px;
-}
 </style>

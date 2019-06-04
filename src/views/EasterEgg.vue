@@ -4,8 +4,7 @@
         <p>当前模式：{{env}}</p>
         <p>版本号： {{ version }}</p>
         <p v-if="checkIsBuildOnCommit">基于 commit <a :href="commitUrl">{{ commitHash }} </a> 构建</p>
-        <Button @click="recordShareTest">recordShareTest</Button>
-        <Button @click="maaaaa">maaaaa</Button>
+        <Button @click="$router.push({ name: 'Login' })">Sign in with GitHub</Button>
     </div>
 </template>
 
@@ -66,8 +65,6 @@ export default {
       // console.debug(Result);
       const { ong: ONG, ont: ONT } = Result;
       console.debug({ ONG, ONT });
-    },
-    async maaaaa() {
     },
   },
 };

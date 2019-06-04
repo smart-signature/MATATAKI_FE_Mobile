@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import ontology from './ontology';
 import scatter from './scatter';
+import github from './github';
 import {
   backendAPI, getUser, disassembleToken, getCurrentAccessToken, setAccessToken,
 } from '@/api';
@@ -14,6 +15,7 @@ export default new Vuex.Store({
   modules: {
     ontology,
     scatter,
+    github,
   },
   state: {
     userConfig: {
@@ -43,7 +45,7 @@ export default new Vuex.Store({
         balance = ontologyBalance;
       }
       else if (idProvider === 'GitHub') {
-        name = null;
+        name = state.github.account;
         balance = '... XXX';
       }
       return ({ name, balance, idProvider, nickname: state.userInfo.nickname });
@@ -100,15 +102,16 @@ export default new Vuex.Store({
     },
     async idCheckandgetAuth({
       dispatch, state, getters,
-    }) {
+    }, data) {
       const { idProvider } = state.userConfig;
       if (!idProvider) throw new Error('did not choice idProvider');
 
-      // console.debug(getters.currentUserInfo);
       const accountInfoCheck = async () => {
         if (getters.currentUserInfo.name) {
           console.log('Id check pass, id :', getters.currentUserInfo);
-          await dispatch('getAuth'); // 更新 Auth
+          if(idProvider !== 'GitHub') {
+            await dispatch('getAuth'); // 更新 Auth
+          }
           return true;
         }
         return false;
@@ -131,7 +134,7 @@ export default new Vuex.Store({
         }
       }
       // Ontology
-      if (idProvider === 'ONT') {
+      else if (idProvider === 'ONT') {
         if (!state.ontology.account) {
           const address = await dispatch('ontology/getAccount');
           let balance = null;
@@ -143,10 +146,17 @@ export default new Vuex.Store({
           console.info('ONT address :', address, 'balance :', balance);
         }
       }
+      // GitHub
+      else if (idProvider === 'GitHub') {
+        try {
+          await dispatch('github/signIn', data);
+        } catch (error) {
+        }
+      }
 
       if (await accountInfoCheck()) return true;
 
-      throw new Error('Unable to get id');
+      throw new Error(`Unable to get ${idProvider}'s id`);
     },
     async makeShare({ dispatch, getters }, share) {
       const { idProvider } = getters.currentUserInfo;

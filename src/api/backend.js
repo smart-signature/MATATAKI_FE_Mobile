@@ -247,6 +247,9 @@ const API = {
     delete data.signature;
     return accessBackend({ method: 'POST', url: '/user/withdraw', data });
   },
+  async loginGitHub(code) {
+    return axiosforApiServer.post('/login/github', { code });
+  },
 };
 
 export default API;

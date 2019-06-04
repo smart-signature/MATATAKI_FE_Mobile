@@ -28,11 +28,11 @@ export default new VueRouter({
       props: true,
       component: () => import(/* webpackChunkName: "article", webpackPrefetch: true */ './views/Article/index.vue'),
     },
-    // {
-    //   path: '/login',
-    //   name: 'Login',
-    //   component: () => import(/* webpackChunkName: "login" */ './views/Login.vue'),
-    // },
+    {
+      path: '/login/github',
+      name: 'Login',
+      component: () => import(/* webpackChunkName: "login" */ './views/Login.vue'),
+    },
     {
       path: '/user/:username',
       name: 'User',
@@ -158,6 +158,10 @@ export default new VueRouter({
     { // 幽林页面重定向进入首页 可以考虑设计 404 页面
       path: '*',
       redirect: '/',
+    },
+    { // for test
+      path: '/oauth/redirect',
+      redirect: '/login/github',
     },
   ],
 });
