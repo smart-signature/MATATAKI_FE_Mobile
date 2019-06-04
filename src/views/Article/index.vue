@@ -312,6 +312,10 @@ export default {
           id: 'pocket-btn-js', // id 不知道作用 生成的 script 有id就带着好了
           src: 'https://widgets.getpocket.com/v1/j/btn.js?v=1',
         },
+        {
+          type: 'text/javascript',
+          src: '//cdn.embedly.com/widgets/platform.js',
+        },
       ];
     },
   },

@@ -23,7 +23,7 @@ export default {
   data() {
     return {
       params: {},
-      apiUrl: 'drafts',
+      apiUrl: 'draftboxList',
       draftBoxList: [],
       delModel: false,
     };

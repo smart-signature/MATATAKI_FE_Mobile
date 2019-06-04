@@ -25,7 +25,7 @@ export default {
       params: {
         symbol: this.type,
       },
-      apiUrl: 'tokens',
+      apiUrl: 'assetList',
       asset: [],
       isObj: { type: 'newObject', key: 'data', keys: 'logs' },
       needAccessToken: true,

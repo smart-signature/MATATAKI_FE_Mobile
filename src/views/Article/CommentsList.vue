@@ -55,7 +55,7 @@ export default {
       params: {
         signid: this.signId,
       },
-      apiUrl: 'support/comments',
+      apiUrl: 'commentsList',
       articles: [],
       autoRequestTime: 0,
       timer: null,

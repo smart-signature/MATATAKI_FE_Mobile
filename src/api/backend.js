@@ -199,16 +199,32 @@ const API = {
   },
   // 获取头像
   getAvatarImage(hash) { return `${apiServer}/image/${hash}`; },
-  // 供基础组件 BasePull 使用的方法
-  // 因为目前只需要GET查询 所以不把 GET POST 等调用封装到一起，
-  // 区别 GET 用 params， POST 等用 data
-  // 所有用 BasePull 调用的接口 都带了 token 修改了 header，所以会请求两次 后续可以升级此方法来根据传进来的参数判断是否需要token
-  // 存储所有的 basepull 接口地址, 移除接口地址写在组件内
-  // const basePullList = {};
+  // BasePull 分页组件
   async getBackendData({ url, params }, needAccessToken = false) {
+    // 分页组件接口地址
+    const pullApiUrl = {
+      // home
+      homeTimeRanking: 'posts/timeRanking',
+      homeSupportsRanking: 'posts/supportsRanking',
+      homeAmountRankingEOS: 'posts/amountRanking',
+      homeAmountRankingONT: 'posts/amountRanking',
+      // article comments
+      commentsList: 'support/comments',
+      // followlist
+      followsList: 'follows',
+      fansList: 'fans',
+      // asset
+      assetList: 'tokens',
+      // user articles
+      // 原创文章-使用 homeTimeRanking 接口 地址一样
+      userArticlesSupportedList: 'posts/supported',
+      // draftbox
+      draftboxList: 'drafts',
+    };
+
     return !needAccessToken
-      ? axiosforApiServer(url, { params })
-      : accessBackend({ url: `/${url}`, params });
+      ? axiosforApiServer(pullApiUrl[url], { params })
+      : accessBackend({ url: `/${pullApiUrl[url]}`, params });
   },
   // 草稿箱api
   async draftList({ page }) {

@@ -50,14 +50,14 @@ export default {
           label: '最新',
           params: {
           },
-          apiUrl: '/posts/timeRanking',
+          apiUrl: 'homeTimeRanking',
           articles: [],
         },
         {
           label: '最热',
           params: {
           },
-          apiUrl: '/posts/supportsRanking',
+          apiUrl: 'homeSupportsRanking',
           articles: [],
         },
         {
@@ -65,7 +65,7 @@ export default {
           params: {
             symbol: 'eos',
           },
-          apiUrl: '/posts/amountRanking',
+          apiUrl: 'homeAmountRankingEOS',
           articles: [],
         },
         {
@@ -73,7 +73,7 @@ export default {
           params: {
             symbol: 'ont',
           },
-          apiUrl: '/posts/amountRanking',
+          apiUrl: 'homeAmountRankingONT',
           articles: [],
         },
       ],

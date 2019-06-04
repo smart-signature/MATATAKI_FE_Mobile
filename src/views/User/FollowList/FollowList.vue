@@ -37,7 +37,7 @@ export default {
           params: {
             user: this.username,
           },
-          apiUrl: 'follows',
+          apiUrl: 'followsList',
           articles: [],
         },
         {
@@ -45,7 +45,7 @@ export default {
           params: {
             user: this.username,
           },
-          apiUrl: 'fans',
+          apiUrl: 'fansList',
           articles: [],
         },
       ],

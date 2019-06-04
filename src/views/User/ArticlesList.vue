@@ -56,21 +56,21 @@ export default {
         {
           label: '文章列表',
           params: { author: this.username },
-          apiUrl: '/posts/timeRanking',
+          apiUrl: 'homeTimeRanking',
           articles: [],
         },
         {
           label: '他赞赏的',
           params: { user: this.username },
-          apiUrl: '/posts/supported',
+          apiUrl: 'userArticlesSupportedList',
           articles: [],
         },
       ];
     } else if (listtype === 'original') {
-      this.apiUrl = '/posts/timeRanking';
+      this.apiUrl = 'homeTimeRanking';
       this.params = { author: this.username };
     } else if (listtype === 'reward') {
-      this.apiUrl = '/posts/supported';
+      this.apiUrl = 'userArticlesSupportedList';
       this.params = { user: this.username };
     }
   },
