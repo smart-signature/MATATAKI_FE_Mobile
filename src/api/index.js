@@ -6,27 +6,27 @@ import API, { disassembleToken, getCurrentAccessToken, setAccessToken } from './
 import defaultImagesUploader from './imagesUploader';
 
 const {
-  getArticlesList,
+
   getArticleDatafromIPFS, getArticleInfo,
   getUser,
   Follow, Unfollow,
   getFansList, getFollowList,
-  getSharesbysignid, sendComment, addReadAmount, getAssets,
-  delArticle, uploadAvatar, getAvatarImage, getArticleSupports,
-  draftList, createDraft, updateDraft, delDraft, getDraft,
+  sendComment, addReadAmount,
+  delArticle, uploadAvatar, getAvatarImage,
+  createDraft, updateDraft, delDraft, getDraft,
   getMyUserData, setProfile, getMyPost,
   getBackendData, getBalance,
 } = API;
 
 export {
   API as backendAPI,
-  getArticlesList,
+
   getArticleDatafromIPFS, getArticleInfo,
   Follow, Unfollow, getUser,
   getFansList, getFollowList,
-  getSharesbysignid, sendComment, addReadAmount, getAssets,
-  delArticle, uploadAvatar, getAvatarImage, getArticleSupports,
-  draftList, createDraft, updateDraft, delDraft, getDraft,
+  sendComment, addReadAmount,
+  delArticle, uploadAvatar, getAvatarImage,
+  createDraft, updateDraft, delDraft, getDraft,
   getMyUserData, setProfile, getMyPost,
   getBackendData, getBalance,
   // 額外項

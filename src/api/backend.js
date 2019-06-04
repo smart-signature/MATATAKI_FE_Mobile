@@ -78,26 +78,6 @@ const API = {
     delete data.sponsor;
     return accessBackend({ method: 'POST', url: '/support', data });
   },
-  // 获取支持过的文章列表 page user
-  async getArticleSupports(params) { return axiosforApiServer('/supports', { params }); },
-  /**
-    * 获取按照发表时间文章排行榜 https://github.com/smart-signature/smart-signature-backend/blob/master/doc.md#获取文章列表
-    * @param {number} page： 第 {page} 页
-    * @param {string} author 作者
-  */
-  async getArticlesList(params) { return axiosforApiServer('/posts', { params }); },
-  // 获取资产明细
-  async getAssets(user, page) { return axiosforApiServer('/assets', { params: { user, page } }); },
-  /*
-    amount: 2000
-    author: "minakokojima"
-    comment: ""
-    create_time: "2019-03-26T01:04:21.000Z"
-    sign_id: 173
-  */
-  async getSharesbysignid(signid, page) {
-    return axiosforApiServer(`/shares?signid=${signid}&page=${page}`);
-  },
 
   /*
    * 根据用户名，公钥，客户端签名请求access_token
@@ -217,10 +197,6 @@ const API = {
     return !needAccessToken
       ? axiosforApiServer(pullApiUrl[url], { params })
       : accessBackend({ url: `/${pullApiUrl[url]}`, params });
-  },
-  // 草稿箱api
-  async draftList({ page }) {
-    return accessBackend({ url: '/drafts', params: { page } });
   },
   async createDraft({
     title, content, cover, fissionFactor, isOriginal,
