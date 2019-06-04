@@ -48,9 +48,6 @@ export default {
   data() {
     return {
       showModal: false,
-      userConfig: {
-        blockchin: 'EOS',
-      },
       avatar: '',
     };
   },
