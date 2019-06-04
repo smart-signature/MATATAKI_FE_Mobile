@@ -37,7 +37,7 @@
 <script>
 import {
   Follow, Unfollow, getUser,
-  setUserName, getAvatarImage, setProfile,
+  getAvatarImage, setProfile,
   uploadAvatar,
 } from '@/api';
 import imgUpload from '@/components/imgUpload/index.vue';

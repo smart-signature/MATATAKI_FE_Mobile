@@ -153,14 +153,6 @@ const API = {
     const url = '/user/stats';
     return accessBackend({ url });
   },
-  // Be used in User page.
-  async setUserName({ newname }) {
-    return accessBackend({
-      method: 'POST',
-      url: '/user/setNickname',
-      data: { nickname: newname },
-    });
-  },
   async getFansList({ username }) {
     return accessBackend({ url: `/fans?user=${username}` });
   },
