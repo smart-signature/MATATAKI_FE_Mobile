@@ -12,6 +12,7 @@ export const xssFilter = (html) => {
   whiteList.section = ['class', 'style', 'data-color', 'data-bgless', 'data-bglessp', 'data-custom', 'data-brushtype', 'data-width', 'data-role', 'data-autoskip', 'data-ratio', 'data-id', 'data-tools'];
   whiteList.span = ['class', 'style'];
   whiteList.p = ['class', 'style'];
+  whiteList.a = ['class', 'style', 'href', 'data-url'];
   whiteList.img.push('data-ratio');
   whiteList.img.push('style');
   whiteList.div.push('align');
