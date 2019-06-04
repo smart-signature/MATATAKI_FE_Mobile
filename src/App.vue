@@ -55,7 +55,7 @@ export default {
     const { idCheckandgetAuth, setUserConfig, updateNotify } = this;
 
     // 根据本地存储的状态来自动登陆
-    setUserConfig({ blockchin: localStorage.getItem('blockchin') });
+    setUserConfig({ idProvider: localStorage.getItem('idProvider') });
     idCheckandgetAuth().catch(() => {
       // 失败之后再重试一次
       idCheckandgetAuth().catch(() => setUserConfig(null));

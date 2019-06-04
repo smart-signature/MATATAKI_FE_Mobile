@@ -8,7 +8,7 @@
         <p class="info-content-title">{{modalText.text}}</p>
 
         <div class="modal-login">
-          <div class="modal-body" v-for="(item, index) in blockchain" :key="index">
+          <div class="modal-body" v-for="(item, index) in idProvider" :key="index">
             <div class="modal-body-content">
               <div class="modal-body-head">支持钱包</div>
                 <div class="modal-wallet">
@@ -69,7 +69,7 @@ export default {
       modalText: {
         text: '选择授权方式',
       },
-      blockchain: [
+      idProvider: [
         {
           url: iconEOS,
           title: 'EOS登录',
@@ -144,7 +144,7 @@ export default {
       this.$emit('changeInfo', status);
     },
     async walletLogin(type) {
-      this.setUserConfig({ blockchin: type });
+      this.setUserConfig({ idProvider: type });
       this.modalLoading = true;
       await this.signIn();
       this.modalLoading = false;
@@ -152,7 +152,7 @@ export default {
     },
     async signIn() {
       const success = () => {
-        localStorage.setItem('blockchin', this.userConfig.blockchin); // 成功存储登陆方式
+        localStorage.setItem('idProvider', this.userConfig.idProvider); // 成功存储登陆方式
       };
       try {
         await this.idCheckandgetAuth();

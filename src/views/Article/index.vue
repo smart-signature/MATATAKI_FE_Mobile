@@ -416,11 +416,11 @@ export default {
     },
     handleChange(amount) {
       let amountValue = amount;
-      const { blockchain } = this.currentUserInfo;
-      if (blockchain === 'EOS') {
+      const { idProvider } = this.currentUserInfo;
+      if (idProvider === 'EOS') {
         // 小数点后三位 如果后面需要解除限制修改正则  {0,3}
         amountValue = (amountValue.match(/^\d*(\.?\d{0,3})/g)[0]) || null;
-      } else if (blockchain === 'ONT') {
+      } else if (idProvider === 'ONT') {
         amountValue = (amountValue.match(/^\d*/g)[0]) || null;
       }
       this.amount = amountValue;
@@ -430,18 +430,18 @@ export default {
         this.showModal = true;
       }
     },
-    // 根据 blockchain 查询商品数据
-    findBlockchain(articlePrices, blockchain) {
+    // 根据 idProvider 查询商品数据
+    findBlockchain(articlePrices, idProvider) {
       const findBlockchain = (arr, symbol) => arr.filter(i => i.symbol === symbol);
-      return findBlockchain(articlePrices, blockchain);
+      return findBlockchain(articlePrices, idProvider);
     },
     // 赞赏按钮
     supportButton() {
       // 如果是商品 判断库存是否充足
       if (this.article.channel_id === 2) {
         const { currentUserInfo, findBlockchain, article } = this;
-        const { blockchain } = currentUserInfo;
-        const filterBlockchain = findBlockchain(article.prices, blockchain);
+        const { idProvider } = currentUserInfo;
+        const filterBlockchain = findBlockchain(article.prices, idProvider);
         const { stock_quantity: stockQuantity } = filterBlockchain[0];
         if (stockQuantity <= 0) {
           return this.$toast({
@@ -459,7 +459,8 @@ export default {
     async support(action, done) {
       if (action !== 'confirm') return done();
       const { article, comment, signId } = this;
-      const { blockchain } = this.currentUserInfo;
+      const { idProvider } = this.currentUserInfo;
+      if (idProvider === 'GitHub') return;
       // 默认 ‘’ 转成了 NAN
       const amount = this.amount === '' ? 0 : parseFloat(this.amount);
       // 检查金额是否符合
@@ -477,20 +478,20 @@ export default {
         return true;
       };
       // 文章赞赏金额
-      const minimumAmount = (blockchain) => {
-        if (blockchain === 'EOS') return 0.01;
-        if (blockchain === 'ONT') return 1;
+      const minimumAmount = (idProvider) => {
+        if (idProvider === 'EOS') return 0.01;
+        if (idProvider === 'ONT') return 1;
       };
       checkPricesMatch = checkPrices(
         amount,
-        minimumAmount(blockchain),
-        `请输入正确的金额 最小赞赏金额为 ${minimumAmount(blockchain)} ${blockchain}`,
+        minimumAmount(idProvider),
+        `请输入正确的金额 最小赞赏金额为 ${minimumAmount(idProvider)} ${idProvider}`,
       );
       if (!checkPricesMatch) return done(false);
 
       // 检查商品价格
       const checkCommodityPrices = () => {
-        const filterBlockchain = this.findBlockchain(article.prices, blockchain);
+        const filterBlockchain = this.findBlockchain(article.prices, idProvider);
         if (filterBlockchain.length !== 0) {
           const { symbol, price, decimals } = filterBlockchain[0];
           // exponentiation operator (**)
@@ -514,9 +515,9 @@ export default {
         // 如果是ONT true 如果是 EOS或者其他 false
         const isOntAddressVerify = ontAddressVerify(sponsor);
         // 如果是EOS账户赞赏 但是邀请人是ONT用户 则认为没有邀请
-        if (blockchain === 'EOS' && isOntAddressVerify) sponsor = null;
+        if (idProvider === 'EOS' && isOntAddressVerify) sponsor = null;
         // 如果是ONT账户赞赏 但是邀请人EOS账户 则认为没有邀请
-        else if (blockchain === 'ONT' && !isOntAddressVerify) sponsor = null;
+        else if (idProvider === 'ONT' && !isOntAddressVerify) sponsor = null;
 
         await this.makeShare({ amount, signId, sponsor });
 

@@ -130,7 +130,7 @@ describe('Ontology test', function() {
       it(`backendAPI.reportShare ${i}`, async function () {
         await backendAPI.reportShare({
           amount,
-          blockchain: 'ONT',
+          idProvider: 'ONT',
           contract: 'AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV',
           signId,
           symbol: 'ONT',
