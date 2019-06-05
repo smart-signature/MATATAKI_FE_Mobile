@@ -33,7 +33,8 @@ export default new Vuex.Store({
       'scatter/currentBalance': scatterBalance,
       'ontology/currentBalance': ontologyBalance,
     }) => {
-      const { idProvider } = state.userConfig;
+      const { userConfig, userInfo, ontology, github } = state;
+      const { idProvider } = userConfig;
       let name = null;
       let balance = null;
       if (idProvider === 'EOS') {
@@ -41,21 +42,21 @@ export default new Vuex.Store({
         balance = scatterBalance;
       }
       else if (idProvider === 'ONT') {
-        name = state.ontology.account;
+        name = ontology.account;
         balance = ontologyBalance;
       }
       else if (idProvider === 'GitHub') {
-        name = state.github.account;
+        name = github.account;
         balance = '... XXX';
       }
-      return ({ name, balance, idProvider, nickname: state.userInfo.nickname });
+      return ({ name, balance, idProvider, nickname: userInfo.nickname });
     },
     isLogined: state => state.userInfo.accessToken !== null,
     isMe: (state, { currentUserInfo }) => target => currentUserInfo.name === target,
   },
   actions: {
-    async getAuth({ commit, dispatch, getters }) {
-      const currentToken = getCurrentAccessToken();
+    async getAuth({ commit, dispatch, getters }, accessToken) {
+      const currentToken = accessToken || getCurrentAccessToken();
       const decodedData = disassembleToken(currentToken); // 拆包
       const username = currentToken ? decodedData.iss : null;
       const { name: currentUsername } = getters.currentUserInfo;
@@ -101,17 +102,18 @@ export default new Vuex.Store({
       return dispatch('getSignature', { mode: 'Auth', rawSignData: [getters.currentUserInfo.name] });
     },
     async idCheckandgetAuth({
-      dispatch, state, getters,
+      commit, dispatch, state, getters,
     }, data) {
       const { idProvider } = state.userConfig;
       if (!idProvider) throw new Error('did not choice idProvider');
 
       const accountInfoCheck = async () => {
-        if (getters.currentUserInfo.name) {
+        if(idProvider === 'GitHub') {
+          if (getters.isLogined) commit('github/setAccount', state.userInfo.accessToken);
+          return getters.isLogined;
+        } else if (getters.currentUserInfo.name) {
           console.log('Id check pass, id :', getters.currentUserInfo);
-          if(idProvider !== 'GitHub') {
-            await dispatch('getAuth'); // 更新 Auth
-          }
+          await dispatch('getAuth'); // 更新 Auth
           return true;
         }
         return false;
@@ -149,7 +151,9 @@ export default new Vuex.Store({
       // GitHub
       else if (idProvider === 'GitHub') {
         try {
-          await dispatch('github/signIn', data);
+          const accessToken = await dispatch('github/signIn', data);
+          setAccessToken(accessToken);
+          commit('setAccessToken', getCurrentAccessToken());
         } catch (error) {
         }
       }
