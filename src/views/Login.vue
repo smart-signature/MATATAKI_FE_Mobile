@@ -14,18 +14,19 @@ export default {
   },
   created() {
     const { protocol, host } = window.location;
-    const clientID = '7e015d8ce32370079895'; // 範例值
-    const clientSecret = '2b976af0e6b6ceea2b1554aa31d1fe94ea692cd9';
-    const redirectUri = 'http://localhost:8080/oauth/redirect'; // 範例值
-
-    const { code } = this.$route.query;
+    const { code, from } = this.$route.query;
+    const clientID = '889e6eafa77e2e87a08c';
+    const scope = 'read:public_repo,read:user'
+    const redirectUri = `http://localhost:8080/login/github/?from=${from}`; // 範例值
     if (!code) {
       // 跳轉
-      window.location = `https://github.com/login/oauth/authorize?client_id=${clientID}&redirect_uri=${redirectUri}`;
+      window.location = `https://github.com/login/oauth/authorize?client_id=${clientID}&redirect_uri=${redirectUri}&scope=${scope}`;
     } else {
       this.setUserConfig({ idProvider: 'GitHub' });
-      this.idCheckandgetAuth({ code }).then(() => {
-        this.$route.push('home');
+      this.idCheckandgetAuth({ code }).catch(() => {})
+      .then(() => {
+        // console.debug(from);
+        this.$router.push(from);
       });
     }
   },
