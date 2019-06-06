@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 <template>
   <div class="user mw" style="white-space:nowrap;">
-    <template v-if="isMe">
+    <template v-if="isMex">
       <BaseHeader :pageinfo="{ title: '个人中心'}" >
           <div slot="right" class="help-button" @click="jumpTo({ name: 'Help' })">
             <img src="@/assets/img/icon_user_settings.svg" alt="settings">
@@ -62,7 +62,7 @@
     </template>
     <template v-else>
       <BaseHeader :pageinfo="{ title: ''}" style="background-color: #478970" :white="true">
-      <div slot="right" v-if="!isMe">
+      <div slot="right" v-if="!isMex">
         <template v-if="!followed">
           <span class="darkBtn" @click="follow_user">关注</span>
         </template>
@@ -132,16 +132,12 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['currentUserInfo', 'displayName']),
-    isMe() {
-      const { username, currentUserInfo } = this;
-      return username === currentUserInfo.name;
-    },
+    ...mapGetters(['currentUserInfo', 'displayName', 'isMe']),
+    isMex() { return this.isMe(this.username); },
   },
   created() {
-    const { refreshUser } = this;
-    refreshUser();
-    const user = this.isMe ? '我' : this.username;
+    this.refreshUser();
+    const user = this.isMex ? '我' : this.username;
     document.title = `${user}的个人主页 - SmartSignature`;
   },
   methods: {
@@ -170,7 +166,7 @@ export default {
         };
       };
       try {
-        if (this.isMe) {
+        if (this.isMex) {
           const response = await getMyUserData();
           if (response.status !== 200) throw new Error('getUser error');
           setUser(response.data.data);
@@ -236,7 +232,7 @@ export default {
     },
   },
   watch: {
-    isMe() {
+    isMex() {
       this.refreshUser();
     },
   },
