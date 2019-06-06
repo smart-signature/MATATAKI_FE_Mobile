@@ -71,7 +71,7 @@
 <script>
 import { sleep } from "@/common/methods";
 import { strTrim } from "@/common/reg";
-import { apiServer } from "@/api/backend";
+import { urlAddress } from "@/api/backend";
 export default {
   name: 'Widget',
   props: ['widgetModal', 'id','getClipboard'],
@@ -95,7 +95,7 @@ export default {
       this.oldWidgetModalStatus = oldVal
       // 如果显示创建widget 但是没有内容
       if (newVal === 3 && !this.widgetContent) {
-        this.widgetContentIframe = `<iframe width="100%" height="150" src='${apiServer}/widget/?id=${this.id}' frameborder=0></iframe>`
+        this.widgetContentIframe = `<iframe width="100%" height="150" src='${urlAddress}/widget/?id=${this.id}' frameborder=0></iframe>`
       }
     },
     widgetModal(newVal) {
@@ -105,7 +105,7 @@ export default {
       let content = ''
       // 去前后空格防止空内容
       if (strTrim(newVal)) content = `&content=${newVal}`
-      this.widgetContentIframe = `<iframe width="100%" height="150" src='${apiServer}/widget/?id=${this.id}${content}' frameborder=0></iframe>`
+      this.widgetContentIframe = `<iframe width="100%" height="150" src='${urlAddress}/widget/?id=${this.id}${content}' frameborder=0></iframe>`
     }
   },
   computed: {

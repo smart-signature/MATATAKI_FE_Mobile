@@ -4,6 +4,7 @@ import { Base64 } from 'js-base64';
 
 // Doc : https://github.com/axios/axios
 
+export const urlAddress = process.env.VUE_APP_URL;
 export const apiServer = process.env.VUE_APP_API;
 // https://github.com/axios/axios/issues/535
 const httpsAgent = new https.Agent({ rejectUnauthorized: false });
