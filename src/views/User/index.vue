@@ -132,10 +132,10 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['currentUsername', 'displayName']),
+    ...mapGetters(['currentUserInfo', 'displayName']),
     isMe() {
-      const { username, currentUsername } = this;
-      return username === currentUsername;
+      const { username, currentUserInfo } = this;
+      return username === currentUserInfo.name;
     },
   },
   created() {
@@ -149,8 +149,8 @@ export default {
       this.$router.push(params);
     },
     async refreshUser() {
-      if (!this.username) this.username = this.currentUsername;
-      const { username, currentUsername } = this;
+      if (!this.username) this.username = this.currentUserInfo.name;
+      const { username, currentUserInfo } = this;
       const setUser = ({
         avatar, email, fans, follows, is_follow, nickname, introduction, accounts, articles, supports, drafts,
       }) => {
@@ -175,7 +175,7 @@ export default {
           if (response.status !== 200) throw new Error('getUser error');
           setUser(response.data.data);
         } else {
-          const response = await getUser({ username }, currentUsername);
+          const response = await getUser({ username }, currentUserInfo.name);
           if (response.status !== 200) throw new Error('getUser error');
           setUser(response.data);
         }
@@ -184,8 +184,8 @@ export default {
       }
     },
     async follow_user() {
-      const { username, currentUsername } = this;
-      if (!currentUsername || !username) {
+      const { username, currentUserInfo } = this;
+      if (!currentUserInfo.name || !username) {
         this.$toast.fail({
           duration: 1000,
           message: '关注失败',
@@ -193,7 +193,7 @@ export default {
         return;
       }
       try {
-        await Follow({ followed: username, username: currentUsername });
+        await Follow({ followed: username, username: currentUserInfo.name });
         this.$toast.success({
           duration: 1000,
           message: '关注成功',
@@ -208,8 +208,8 @@ export default {
       this.refreshUser();
     },
     async unfollow_user() {
-      const { username, currentUsername } = this;
-      if (!currentUsername || !username) {
+      const { username, currentUserInfo } = this;
+      if (!currentUserInfo.name || !username) {
         this.$toast.fail({
           duration: 1000,
           message: '取消关注失败',
@@ -217,7 +217,7 @@ export default {
         return;
       }
       try {
-        await Unfollow({ followed: username, username: currentUsername });
+        await Unfollow({ followed: username, username: currentUserInfo.name });
         this.$toast.success({
           duration: 1000,
           message: '取消关注',

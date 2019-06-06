@@ -22,7 +22,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['currentUsername', 'isMe']),
+    ...mapGetters(['isMe']),
   },
   methods: {
     goBack() {

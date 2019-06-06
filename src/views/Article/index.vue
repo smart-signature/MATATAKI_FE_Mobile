@@ -226,7 +226,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['currentUserInfo', 'currentUsername', 'isLogined', 'isMe']),
+    ...mapGetters(['currentUserInfo', 'isLogined', 'isMe']),
     displayPlaceholder() {
       // 报错 临时处理一下先
       // return `请输入 ${this.currentUserInfo.balance.slice(-4)} 赞赏金额`;
@@ -236,12 +236,12 @@ export default {
       return markdownIt.render(xssFilter(this.post.content));
     },
     getClipboard() {
-      const { article, currentUsername } = this;
+      const { article, currentUserInfo } = this;
       const { protocol, host } = window.location;
       // console.debug(this.article);
       const articleUrl = `${protocol}//${host}/article/${article.id}`;
       const shareLink = this.isLogined
-        ? `${articleUrl}?invite=${currentUsername}`
+        ? `${articleUrl}?invite=${currentUserInfo.name}`
         : articleUrl;
       return `《${article.title}》by ${article.username} \n${shareLink}\n赞赏好文，分享有收益 ！`;
     },
@@ -559,7 +559,7 @@ export default {
     },
     // 删除文章
     delArticleButton() {
-      if (this.article.author !== this.currentUsername) {
+      if (this.article.author !== this.v) {
         this.$Message.error('您无权删除他人文章');
         return;
       }
@@ -599,7 +599,7 @@ export default {
     },
     // 获取用户 得到头像
     async getUser(username) {
-      const response = await getUser({ username }, this.currentUsername);
+      const response = await getUser({ username }, this.currentUserInfo.name);
       if (response.status !== 200) throw new Error('getUser error');
       if (!response.data.avatar) return;
       this.articleAvatar = getAvatarImage(response.data.avatar);

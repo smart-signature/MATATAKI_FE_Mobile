@@ -60,10 +60,10 @@ export default new Vuex.Store({
       const currentToken = accessToken || getCurrentAccessToken();
       const decodedData = disassembleToken(currentToken); // 拆包
       const username = currentToken ? decodedData.iss : null;
-      const { name: currentUsername } = getters.currentUserInfo;
-      if (!currentUsername) throw new Error('no currentUsername');
+      const { name } = getters.currentUserInfo;
+      if (!name) throw new Error('no name');
       if (!currentToken || !decodedData || decodedData.exp < new Date().getTime()
-        || username !== currentUsername) {
+        || username !== name) {
         try {
           console.log('Retake authtoken...');
           const signature = await dispatch('getSignatureOfAuth');
