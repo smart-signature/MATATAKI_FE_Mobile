@@ -343,7 +343,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['idCheckandgetAuth', 'makeShare']),
+    ...mapActions(['makeShare']),
     changeInfo(status) {
       this.showModal = status;
     },

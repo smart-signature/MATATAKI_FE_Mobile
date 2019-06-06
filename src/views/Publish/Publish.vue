@@ -178,7 +178,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['idCheckandgetAuth', 'getSignatureOfArticle']),
+    ...mapActions(['getSignatureOfArticle']),
     // 通过ID拿数据
     async setArticleDataById(hash, id) {
       const articleData = await getArticleDatafromIPFS(hash);

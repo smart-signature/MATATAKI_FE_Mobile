@@ -136,7 +136,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['idCheckandgetAuth']),
+    ...mapActions(['signIn']),
     change(status) {
       if (this.modalLoading) this.modalLoading = false;
       this.showModaCopy = status;
@@ -144,21 +144,16 @@ export default {
     },
     async walletLogin(type) {
       this.modalLoading = true;
-      await this.signIn(type);
+      await this.signInx(type);
       this.modalLoading = false;
       this.change(false);
     },
-    async signIn(type) {
-      const success = () => {
-        localStorage.setItem('idProvider', this.userConfig.idProvider); // 成功存储登陆方式
-      };
+    async signInx(type) {
       try {
-        await this.idCheckandgetAuth({ idProvider: type });
-        success();
+        await this.signIn({ idProvider: type });
       } catch (error) {
         try {
-          await this.idCheckandgetAuth({ idProvider: type });
-          success();
+          await this.signIn({ idProvider: type });
         } catch (err) {
           console.log(err);
           this.$toast.fail({

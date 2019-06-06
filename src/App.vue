@@ -14,8 +14,7 @@ import { version } from '../package.json';
 
 export default {
   methods: {
-    ...mapActions(['idCheckandgetAuth']),
-    ...mapMutations(['setUserConfig']),
+    ...mapActions(['signIn']),
     updateNotify(desc) {
       const btnCommonStyle = {
         type: 'default',
@@ -44,20 +43,13 @@ export default {
       this.$router.push({ name: 'EasterEgg' });
     },
   },
-
-  computed: {
-  },
   created() { // https://juejin.im/post/5bfa4bb951882558ae3c171e
     console.info('Smart Signature version :', version);
 
-    // console.debug(moment.locale());
-
-    const { idCheckandgetAuth, updateNotify } = this;
-
-    // 根据本地存储的状态来自动登陆
+    const { signIn, updateNotify } = this;
+    // 根据本地存储的状态来自动登陆。失败之后再重试一次
     const idProvider = localStorage.getItem('idProvider');
-    // 失败之后再重试一次
-    idCheckandgetAuth({ idProvider }).catch(() => idCheckandgetAuth({ idProvider })); 
+    if (idProvider) signIn({ idProvider, recover: true }).catch(() => signIn({ idProvider, recover: true })); 
 
     window.updateNotify = updateNotify;
   },
