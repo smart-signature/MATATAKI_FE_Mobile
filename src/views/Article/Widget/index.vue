@@ -29,7 +29,7 @@
           class="widget-textarea"
           v-model="widgetContent"
           type="textarea"
-          placeholder="添加一段25字以内的简介(选填)"
+          placeholder="添加简介(选填)"
           rows="4"
           autosize
         />
@@ -54,7 +54,7 @@
           class="widget-textarea"
           v-model="widgetContentIframe"
           type="textarea"
-          placeholder="添加一段25字以内的简介(选填)"
+          placeholder=""
           rows="4"
           autosize
           id="codeIframe"
