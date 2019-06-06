@@ -175,5 +175,4 @@ export default {
   }
 }
 </style>
-
-<style src="./index.less" lang="less" scoped></style>
+<style src="./index.less" scoped lang="less"></style>

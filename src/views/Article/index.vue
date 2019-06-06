@@ -228,7 +228,9 @@ export default {
   computed: {
     ...mapGetters(['currentUserInfo', 'currentUsername', 'isLogined', 'isMe']),
     displayPlaceholder() {
-      return `请输入 ${this.currentUserInfo.balance.slice(-4)} 赞赏金额`;
+      // 报错 临时处理一下先
+      // return `请输入 ${this.currentUserInfo.balance.slice(-4)} 赞赏金额`;
+      return `请输入赞赏金额`;
     },
     compiledMarkdown() {
       return markdownIt.render(xssFilter(this.post.content));
