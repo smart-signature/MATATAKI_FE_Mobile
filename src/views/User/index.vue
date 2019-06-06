@@ -132,13 +132,10 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['currentUsername']),
+    ...mapGetters(['currentUsername', 'displayName']),
     isMe() {
       const { username, currentUsername } = this;
       return username === currentUsername;
-    },
-    displayName() {
-      return isNull(this.nickname) ? this.username : this.nickname;
     },
   },
   created() {

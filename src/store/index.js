@@ -28,12 +28,11 @@ export default new Vuex.Store({
     },
   },
   getters: {
-    currentUserInfo: (state, {
+    currentUserInfo: ({ userConfig, userInfo, ontology, github }, {
       'scatter/currentUsername': scatterUsername,
       'scatter/currentBalance': scatterBalance,
       'ontology/currentBalance': ontologyBalance,
     }) => {
-      const { userConfig, userInfo, ontology, github } = state;
       const { idProvider } = userConfig;
       let name = null;
       let balance = null;
@@ -51,7 +50,9 @@ export default new Vuex.Store({
       }
       return ({ name, balance, idProvider, nickname: userInfo.nickname });
     },
-    isLogined: state => state.userInfo.accessToken !== null,
+    //  displayName.length <= 12 ? name : name.slice(0, 12);
+    displayName: ({ userInfo }, { currentUserInfo }) => userInfo.nickname || currentUserInfo.name,
+    isLogined: ({ userInfo }) => userInfo.accessToken !== null,
     isMe: (state, { currentUserInfo }) => target => currentUserInfo.name === target,
   },
   actions: {
