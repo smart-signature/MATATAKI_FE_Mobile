@@ -33,24 +33,17 @@ import { getAvatarImage } from '@/api';
 export default {
   name: 'My-Banner',
   computed: {
-    ...mapGetters(['currentUserInfo', 'isLogined']),
+    ...mapGetters(['currentUserInfo', 'displayName', 'isLogined']),
     displayBalance() {
       return this.currentUserInfo.balance.slice(0, -4);
     },
     displayBalanceSymbol() {
       return this.currentUserInfo.balance.slice(-4);
     },
-    displayName() {
-      const { name, nickname } = this.currentUserInfo;
-      return nickname || (name.length <= 12 ? name : name.slice(0, 12));
-    },
   },
   data() {
     return {
       showModal: false,
-      userConfig: {
-        blockchin: 'EOS',
-      },
       avatar: '',
     };
   },

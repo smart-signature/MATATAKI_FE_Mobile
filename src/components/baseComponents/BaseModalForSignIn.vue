@@ -8,7 +8,7 @@
         <p class="info-content-title">{{modalText.text}}</p>
 
         <div class="modal-login">
-          <div class="modal-body" v-for="(item, index) in blockchain" :key="index">
+          <div class="modal-body" v-for="(item, index) in idProvider" :key="index">
             <div class="modal-body-content">
               <div class="modal-body-head">支持钱包</div>
                 <div class="modal-wallet">
@@ -69,7 +69,7 @@ export default {
       modalText: {
         text: '选择授权方式',
       },
-      blockchain: [
+      idProvider: [
         {
           url: iconEOS,
           title: 'EOS登录',
@@ -137,29 +137,27 @@ export default {
   },
   methods: {
     ...mapActions(['idCheckandgetAuth']),
-    ...mapMutations(['setUserConfig']),
     change(status) {
       if (this.modalLoading) this.modalLoading = false;
       this.showModaCopy = status;
       this.$emit('changeInfo', status);
     },
     async walletLogin(type) {
-      this.setUserConfig({ blockchin: type });
       this.modalLoading = true;
-      await this.signIn();
+      await this.signIn(type);
       this.modalLoading = false;
       this.change(false);
     },
-    async signIn() {
+    async signIn(type) {
       const success = () => {
-        localStorage.setItem('blockchin', this.userConfig.blockchin); // 成功存储登陆方式
+        localStorage.setItem('idProvider', this.userConfig.idProvider); // 成功存储登陆方式
       };
       try {
-        await this.idCheckandgetAuth();
+        await this.idCheckandgetAuth({ idProvider: type });
         success();
       } catch (error) {
         try {
-          await this.idCheckandgetAuth();
+          await this.idCheckandgetAuth({ idProvider: type });
           success();
         } catch (err) {
           console.log(err);

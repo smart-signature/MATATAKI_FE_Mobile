@@ -41,14 +41,14 @@ const API = {
   async sendArticle(url = '', {
     signId = null, author, hash, title, fissionFactor, cover, isOriginal,
   }, {
-    blockchain, publicKey, signature, username,
+    idProvider, publicKey, signature, username,
   }, needAccessToken = false) {
     const data = {
       author,
       cover,
       fissionFactor,
       hash,
-      platform: blockchain.toLowerCase(),
+      platform: idProvider.toLowerCase(),
       publickey: publicKey,
       sign: signature,
       signId,
@@ -68,13 +68,13 @@ const API = {
   },
   async reportShare(share) {
     const data = {
-      ...share, platform: share.blockchain.toLowerCase(), referrer: share.sponsor,
+      ...share, platform: share.idProvider.toLowerCase(), referrer: share.sponsor,
     };
-    const { blockchain } = data;
-    if (blockchain === 'EOS') {
+    const { idProvider } = data;
+    if (idProvider === 'EOS') {
       data.amount *= 10000;
     }
-    delete data.blockchain;
+    delete data.idProvider;
     delete data.sponsor;
     return accessBackend({ method: 'POST', url: '/support', data });
   },
@@ -83,10 +83,10 @@ const API = {
    * 根据用户名，公钥，客户端签名请求access_token
   */
   async auth({
-    blockchain, publicKey, signature, username,
+    idProvider, publicKey, signature, username,
   }) {
     return axiosforApiServer.post('/auth', {
-      platform: blockchain.toLowerCase(),
+      platform: idProvider.toLowerCase(),
       publickey: publicKey,
       sign: signature,
       username,
@@ -238,14 +238,17 @@ const API = {
   async withdraw(rawData) {
     const data = {
       ...rawData,
-      platform: rawData.blockchain.toLowerCase(),
+      platform: rawData.idProvider.toLowerCase(),
       publickey: rawData.signature.publicKey,
       sign: rawData.signature.signature,
     };
-    delete data.blockchain;
+    delete data.idProvider;
     delete data.tokenName;
     delete data.signature;
     return accessBackend({ method: 'POST', url: '/user/withdraw', data });
+  },
+  async loginGitHub(code) {
+    return axiosforApiServer.post('/login/github', { code });
   },
 };
 

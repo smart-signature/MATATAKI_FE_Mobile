@@ -1,8 +1,9 @@
-import { unmock } from 'unmock-node';
+// import { unmock } from 'unmock-node';
 import backendAPI from '../../src/api/backend';
+const { JSDOM } = require("jsdom");
 
 let window;
-beforeEach(async () => {
+beforeEach(async function () {
   window = (new JSDOM(``, {
     url: "http://localhost/",
     referrer: "http://localhost/",
@@ -11,19 +12,20 @@ beforeEach(async () => {
     storageQuota: 10000000,
     // runScripts: "outside-only"
   })).window;
+  /*
   window.eval(`
     // This code executes in the jsdom global scope
     globalVariable = typeof XMLHttpRequest === "function";
     navigator = {
       userAgent: 'node.js',
     };
-    // Date = Date;
-  `);
+    Date = Date;
+  `); */
   // unmock()
 });
 
-describe('backendAPI getUser()', () => {
-  it('firt test response should be 200', async () => {
+describe('backendAPI getUser()', function () {
+  it('firt test response should be 200', async function () {
     const response = await backendAPI.getUser({ username: 'megumimegumi' });
 
     expect(response.status).to.equal(200);

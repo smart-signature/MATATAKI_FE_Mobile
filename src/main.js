@@ -7,7 +7,7 @@ import Navigation from 'vue-navigation';
 import App from './App.vue';
 import router from './router';
 import store from './store';
-
+import { backendAPI } from '@/api';
 
 import './registerServiceWorker';
 
@@ -18,6 +18,8 @@ import VueClipboard from 'vue-clipboard2';
 import './plugins/iview';
 import './plugins/vant';
 import './plugins/baseComponents';
+
+Vue.prototype.$backendAPI = backendAPI;
 
 // global css
 import '@/assets/css/index.less';

@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import ontology from './ontology';
 import scatter from './scatter';
+import github from './github';
 import {
   backendAPI, getUser, disassembleToken, getCurrentAccessToken, setAccessToken,
 } from '@/api';
@@ -14,10 +15,12 @@ export default new Vuex.Store({
   modules: {
     ontology,
     scatter,
+    github,
   },
   state: {
     userConfig: {
-      blockchin: null,
+      // Identity Provider, IdP
+      idProvider: null,
     },
     userInfo: {
       accessToken: null,
@@ -25,30 +28,36 @@ export default new Vuex.Store({
     },
   },
   getters: {
-    // rule: 帳號優先級 EOS > ONT
-    // rule: EOS 帳號最長 12 位， ONT 帳號(地址)一定是 20 位
-    currentUserInfo: (state, {
-      currentUsername,
+    currentUserInfo: ({ userConfig, userInfo, ontology, github }, {
       'scatter/currentUsername': scatterUsername,
       'scatter/currentBalance': scatterBalance,
       'ontology/currentBalance': ontologyBalance,
-    }) => ({
-      name: currentUsername,
-      balance: scatterUsername
-        ? scatterBalance
-        : (state.ontology.account ? ontologyBalance : '... XXX'),
-      blockchain: currentUsername ? (currentUsername.length <= 12 ? 'EOS' : 'ONT') : null,
-      nickname: state.userInfo.nickname,
-    }),
-    currentUsername: (state, { 'scatter/currentUsername': scatterUsername }) => (
-      scatterUsername || state.ontology.account || null
-    ),
-    isLogined: state => state.userInfo.accessToken !== null,
+    }) => {
+      const { idProvider } = userConfig;
+      let name = null;
+      let balance = null;
+      if (idProvider === 'EOS') {
+        name = scatterUsername;
+        balance = scatterBalance;
+      }
+      else if (idProvider === 'ONT') {
+        name = ontology.account;
+        balance = ontologyBalance;
+      }
+      else if (idProvider === 'GitHub') {
+        name = github.account;
+        balance = '... XXX';
+      }
+      return ({ name, balance, idProvider, nickname: userInfo.nickname });
+    },
+    //  displayName.length <= 12 ? name : name.slice(0, 12);
+    displayName: ({ userInfo }, { currentUserInfo }) => userInfo.nickname || currentUserInfo.name,
+    isLogined: ({ userInfo }) => userInfo.accessToken !== null,
     isMe: (state, { currentUserInfo }) => target => currentUserInfo.name === target,
   },
   actions: {
-    async getAuth({ commit, dispatch, getters }) {
-      const currentToken = getCurrentAccessToken();
+    async getAuth({ commit, dispatch, getters }, accessToken) {
+      const currentToken = accessToken || getCurrentAccessToken();
       const decodedData = disassembleToken(currentToken); // 拆包
       const username = currentToken ? decodedData.iss : null;
       const { name: currentUsername } = getters.currentUserInfo;
@@ -58,13 +67,10 @@ export default new Vuex.Store({
         try {
           console.log('Retake authtoken...');
           const signature = await dispatch('getSignatureOfAuth');
-          const response = await backendAPI.auth(signature);
-          if (response.status !== 200) throw new Error('auth 出錯');
-          // 3. save accessToken
-          const accessToken = response.data;
+          const { status, data: accessToken } = await backendAPI.auth(signature);
+          if (status !== 200) throw new Error('auth 出錯');
           console.info('got the access token :', accessToken);
-          setAccessToken(accessToken);
-          commit('setAccessToken', getCurrentAccessToken());
+          commit('setAccessToken', accessToken);
           return accessToken;
         } catch (error) {
           console.warn('取得 access token 出錯', error);
@@ -77,16 +83,14 @@ export default new Vuex.Store({
     // output: { publicKey, signature, username }
     async getSignature({ dispatch, getters }, data) {
       // console.debug(getters.currentUserInfo, data.mode, data.rawSignData);
-      const { blockchain } = getters.currentUserInfo;
-      // const { blockchain } = data;
-      // console.log(data.blockchain);
+      const { idProvider } = getters.currentUserInfo;
       let signature = null;
-      if (blockchain === 'EOS') {
+      if (idProvider === 'EOS') {
         signature = await dispatch('scatter/getSignature', data);
-      } else if (blockchain === 'ONT') {
+      } else if (idProvider === 'ONT') {
         signature = await dispatch('ontology/getSignature', data.rawSignData);
       }
-      signature.blockchain = blockchain;
+      signature.idProvider = idProvider;
       return signature;
     },
     async getSignatureOfArticle({ dispatch }, { author, hash }) {
@@ -96,18 +100,26 @@ export default new Vuex.Store({
       return dispatch('getSignature', { mode: 'Auth', rawSignData: [getters.currentUserInfo.name] });
     },
     async idCheckandgetAuth({
-      dispatch, state, getters,
-    }) {
-      const { blockchin } = state.userConfig;
-      if (!blockchin) throw new Error('did not choice blockchin');
+      commit, dispatch, state, getters,
+    }, data) {
+      if (data && data.idProvider) commit('setUserConfig', { idProvider: data.idProvider });
+      const { idProvider } = state.userConfig;
+      // console.debug('idCheckandgetAuth :', data, idProvider);
+      if (!idProvider) throw new Error('did not choice idProvider');
 
-      // console.debug(getters.currentUserInfo);
       const accountInfoCheck = async () => {
-        if (getters.currentUserInfo.name) {
+        if(data && !data.code && idProvider === 'GitHub') {
+          console.debug('2.');
+          if (getters.isLogined) commit('github/setAccount', state.userInfo.accessToken);
+          console.debug('3.', getters.isLogined);
+          return getters.isLogined;
+        } else if (getters.currentUserInfo.name) {
+          console.debug('4.');
           console.log('Id check pass, id :', getters.currentUserInfo);
           await dispatch('getAuth'); // 更新 Auth
           return true;
         }
+        console.debug('5.');
         return false;
       };
 
@@ -117,7 +129,7 @@ export default new Vuex.Store({
       if (await accountInfoCheck()) return true;
 
       // Scatter
-      if (blockchin === 'EOS') {
+      if (idProvider === 'EOS') {
         if (!state.scatter.isConnected) {
           const result = await dispatch('scatter/connect');
           if (!result) throw new Error('faild connect to scatter');
@@ -128,7 +140,7 @@ export default new Vuex.Store({
         }
       }
       // Ontology
-      if (blockchin === 'ONT') {
+      else if (idProvider === 'ONT') {
         if (!state.ontology.account) {
           const address = await dispatch('ontology/getAccount');
           let balance = null;
@@ -140,18 +152,26 @@ export default new Vuex.Store({
           console.info('ONT address :', address, 'balance :', balance);
         }
       }
+      // GitHub
+      else if (idProvider === 'GitHub') {
+        try {
+          commit('setAccessToken', await dispatch('github/signIn', data));
+        } catch (error) {
+          console.error('GitHub signIn Failed.', error);
+        }
+      }
 
       if (await accountInfoCheck()) return true;
 
-      throw new Error('Unable to get id');
+      throw new Error(`Unable to get ${idProvider}'s id`);
     },
     async makeShare({ dispatch, getters }, share) {
-      const { blockchain } = getters.currentUserInfo;
-      share.blockchain = blockchain;
-      if (blockchain === 'EOS') {
+      const { idProvider } = getters.currentUserInfo;
+      share.idProvider = idProvider;
+      if (idProvider === 'EOS') {
         share.contract = 'eosio.token';
         share.symbol = 'EOS';
-      } else if (blockchain === 'ONT') {
+      } else if (idProvider === 'ONT') {
         share.contract = 'AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV';
         share.symbol = 'ONT';
       }
@@ -159,10 +179,10 @@ export default new Vuex.Store({
       return backendAPI.reportShare(share);
     },
     async recordShare({ dispatch }, share) {
-      const { blockchain } = share;
+      const { idProvider } = share;
       let actionName = null;
-      if (blockchain === 'EOS') actionName = 'scatter/recordShare';
-      else if (blockchain === 'ONT') actionName = 'ontology/recordShare';
+      if (idProvider === 'EOS') actionName = 'scatter/recordShare';
+      else if (idProvider === 'ONT') actionName = 'ontology/recordShare';
       return dispatch(actionName, share);
     },
     async getUser({ commit, getters }) {
@@ -172,9 +192,9 @@ export default new Vuex.Store({
       return data;
     },
     signOut({ commit, dispatch, state }) {
-      const { blockchin } = state.userConfig;
-      const EOS = blockchin === 'EOS';
-      const ONT = blockchin === 'ONT';
+      const { idProvider } = state.userConfig;
+      const EOS = idProvider === 'EOS';
+      const ONT = idProvider === 'ONT';
       if (EOS) dispatch('scatter/logout');
       if (ONT) dispatch('ontology/signOut');
       commit('setUserConfig');
@@ -185,20 +205,17 @@ export default new Vuex.Store({
     },
     // data: { amount, toaddress, memo }
     async withdraw({ dispatch, getters }, data) {
-      // const { blockchain } = getters.currentUserInfo;
-      // data.blockchain = blockchain;
-      console.log(data);
-      // console.log(blockchain);
+      console.debug(data);
 
       // 根据传进来的mode判断提现什么币
       if (data.tokenName === 'EOS') {
         data.contract = 'eosio.token';
         data.symbol = 'EOS';
-        data.blockchain = 'eos';
+        data.idProvider = 'eos';
       } else if (data.tokenName === 'ONT') {
         data.contract = 'AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV';
         data.symbol = 'ONT';
-        data.blockchain = 'ont';
+        data.idProvider = 'ont';
       }
       data.amount *= 10000; // 前端统一*10000
 
@@ -226,10 +243,12 @@ export default new Vuex.Store({
   mutations: {
     setAccessToken(state, accessToken = null) {
       state.userInfo.accessToken = accessToken;
+      setAccessToken(accessToken);
     },
     setUserConfig(state, config = null) {
-      if (config) state.userConfig.blockchin = config.blockchin;
-      else state.userConfig = { blockchin: null };
+      // only idProvider now
+      if (config) state.userConfig.idProvider = config.idProvider;
+      else state.userConfig.idProvider = null;
     },
     setNickname(state, nickname = '') {
       state.userInfo.nickname = nickname;

@@ -1,4 +1,4 @@
-import { unmock, ignoreStory } from 'unmock-node';
+// import { unmock, ignoreStory } from 'unmock-node';
 import {
   Account, Crypto, RestClient, TransactionBuilder, Wallet, // utils,
 } from 'ontology-ts-sdk';
@@ -6,9 +6,10 @@ import { ontology } from '@/config';
 import backendAPI, { getCurrentAccessToken, setAccessToken } from '../../src/api/backend';
 // --require mock-local-storage
 // https://developer.ont.io/applyOng
+const { JSDOM } = require("jsdom");
 
 let window;
-beforeEach(async () => {
+beforeEach(async function() {
   window = (new JSDOM(``, {
     url: "http://localhost/",
     referrer: "http://localhost/",
@@ -17,18 +18,19 @@ beforeEach(async () => {
     storageQuota: 10000000,
     // runScripts: "outside-only"
   })).window;
+  /*
   window.eval(`
     // This code executes in the jsdom global scope
     globalVariable = typeof XMLHttpRequest === "function";
     navigator = {
       userAgent: 'node.js',
     };
-    // Date = Date;
-  `);
+    Date = Date;
+  `); */
   // unmock(ignoreStory())
 });
 
-describe('The world', function() {
+describe('Ontology test', function() {
   this.timeout(120000);
 
   const signId = 100431;
@@ -48,9 +50,10 @@ describe('The world', function() {
     ontWallet.addAccount(Account.create(key, 'password', 'cat1'));
   }
 
-  it('給本體測試帳號打錢', async () => {
+  it('給本體測試帳號打錢', async function() {  
     for (let account of ontWallet.accounts) {
       try {
+        // https://developer.ont.io/applyOng
         await axios(`https://ont.io/api/v1/asset/transfer/${account.address.toBase58()}`);
       } catch (error) {
 
@@ -59,46 +62,48 @@ describe('The world', function() {
     return true;
   });
 
-  it('ONT 讚賞測試 part 1 合約', async () => {
+  it('ONT 讚賞測試 part 1 合約', async function() {
     const { makeTransactionsByJson, signTransaction } = TransactionBuilder;
     const restClient = new RestClient('https://polaris1.ont.io:10334');
     
     const symbol = 'ONT';
     let json = null;
+    let payer = null;
     let privateZ = null;
     let txs = [];
     let i = 0;
     for (let account of ontWallet.accounts) {
+      payer = 
       json = {
         action: 'invoke',
         params: {
-            login: true,
-            message: 'invoke smart contract test',
-            invokeConfig: {
-                contractHash: ontology.scriptHash,
-                functions: [{
-                    operation: 'RecordShare',
-                    args: [{
-                        name: 'arg0',
-                        value: `String:${account.address.toBase58()}`,
-                    }, {
-                        name: 'arg1',
-                        value: `String:${signId.toString()}`,
-                    }, {
-                        name: 'arg2',
-                        value: `String:${symbol}`,
-                    }, {
-                        name: 'arg3',
-                        value: amount,
-                    },{
-                        name: 'arg4',
-                        value: `String:${amount.toString()}`,
-                    }]
-                }],
-                gasLimit: 20000,
-                gasPrice: 500,
-                payer: account.address.toBase58()
-            }
+          login: true,
+          message: 'invoke smart contract test',
+          invokeConfig: {
+            contractHash: ontology.scriptHash,
+            functions: [{
+              operation: 'RecordShare',
+              args: [{
+                name: 'arg0',
+                value: `String:${account.address.toBase58()}`,
+              }, {
+                name: 'arg1',
+                value: `String:${signId.toString()}`,
+              }, {
+                name: 'arg2',
+                value: `String:${symbol}`,
+              }, {
+                name: 'arg3',
+                value: amount,
+              },{
+                name: 'arg4',
+                value: `String:${amount.toString()}`,
+              }]
+            }],
+            gasLimit: 20000,
+            gasPrice: 500,
+            // payer: account.address.toBase58()
+          }
         }
       };  
       txs.push((makeTransactionsByJson(json))[0]);
@@ -111,8 +116,7 @@ describe('The world', function() {
     
     return true;
   });
-
-  window.Date = Date;
+  return;
   // require('mock-local-storage');
   const ACCESS_TOKENs = [
     'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJBVDlkZUxpb2NTazNTQzZrOWdYMlU1Z3dQQ1pHbjhBU3lQIiwiZXhwIjoxNTU5Njc3OTgwNTc0LCJwbGF0Zm9ybSI6Im9udCIsImlkIjozMTF9.FOHInE1zHz75YxApyra6zoMWyo1o2VM8wngsbVyNBdQ',
@@ -123,13 +127,10 @@ describe('The world', function() {
       setAccessToken(ACCESS_TOKENs[i]);
       console.log(getCurrentAccessToken());
       // backendAPI.window = global.window ;
-      it(`backendAPI.reportShare ${i}`, async () => {
-
-
-
+      it(`backendAPI.reportShare ${i}`, async function () {
         await backendAPI.reportShare({
           amount,
-          blockchain: 'ONT',
+          idProvider: 'ONT',
           contract: 'AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV',
           signId,
           symbol: 'ONT',
@@ -153,7 +154,9 @@ describe('The world', function() {
           console.log(error.config);
         });
         // throw res.config ;
-        it(`backendAPI.sendComment ${i}`, async () => backendAPI.sendComment({ comment: `test ${i}`, signId }));
+        it(`backendAPI.sendComment ${i}`, async function () {
+          return backendAPI.sendComment({ comment: `test ${i}`, signId });
+        });
         return true;
       });
   }

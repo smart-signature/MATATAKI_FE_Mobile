@@ -9,7 +9,7 @@
     "build-for-netlify": "npm run build-dev && npm run fix-netlify-cs-routing",
     "build-prod": "vue-cli-service build --mode production",
     "fix-netlify-cs-routing": "echo '/*    /index.html   200' >> ./dist/_redirects",
-    "test": "mochapack --recursive --r tests/setup.js --webpack-config ./node_modules/@vue/cli-service/webpack.config.js  tests/unit/**/*.spec.js"
+    "test": "cross-env VUE_CLI_MODE=test mochapack --recursive --r tests/setup.js --webpack-config ./node_modules/@vue/cli-service/webpack.config.js  tests/unit/**/*.spec.js"
   },
   "dependencies": {
     "axios": "^0.19.0",
@@ -54,11 +54,13 @@
     "babel-plugin-import": "^1.11.0",
     "canvas": "^2.5.0",
     "chai": "^4.2.0",
+    "cross-env": "^5.2.0",
     "eslint": "^5.8.0",
     "eslint-plugin-vue": "^5.0.0",
     "jsdom": "15.1.0",
     "less": "^3.9.0",
     "less-loader": "^4.1.0",
+    "mitm": "^1.7.0",
     "mocha": "^6.1.4",
     "mochapack": "^1.1.1",
     "mock-local-storage": "^1.1.8",
