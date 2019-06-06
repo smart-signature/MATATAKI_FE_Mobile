@@ -72,12 +72,13 @@
 import { sleep } from "@/common/methods";
 import { strTrim } from "@/common/reg";
 import { urlAddress } from "@/api/backend";
+// const  urlAddress = 'http://localhost:8080' // 开发用
+
 export default {
   name: 'Widget',
   props: ['widgetModal', 'id','getClipboard'],
   data(){
     return {
-      // api: 'http://localhost:8080', // 开发用
       widgetModalCopy: this.widgetModal,
       // 0 默认
       // 1 创建widget

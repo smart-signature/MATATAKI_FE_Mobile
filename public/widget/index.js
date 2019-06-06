@@ -90,7 +90,7 @@
             let {data} = res.data
 
             urlSearchData.content = regRemoveContent(data.content)
-            let {title,content, img=logoImg,ups,read,username} = urlSearchData
+            let {title,content, img,ups,read,username} = urlSearchData
             setAppDom({title,content, img,ups,read, username})
           } else {
             console.error('请求失败')
@@ -114,7 +114,8 @@
             urlSearchData.ups = data.ups
             urlSearchData.read = data.read
             urlSearchData.username = data.nickname || data.username
-            let {title,content, img=logoImg,ups,read, username} = urlSearchData
+            urlSearchData.img = data.cover ? baseUrl+ '/image/' +data.cover : logoImg
+            let {title,content, img,ups,read, username} = urlSearchData
             setAppDom({title,content, img,ups,read, username})
             // 没有传递内容请求接口获取
             if (!urlSearchData.content) getArticleContent(data.hash)
