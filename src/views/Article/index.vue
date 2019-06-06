@@ -58,10 +58,6 @@
       </span>
     </div>
 
-
-            <iframe width="100%" height="150" src='http://localhost:8080/widget/index.html?id=100019' frameborder=0></iframe>
-
-
     <div class="decoration">
       <a data-pocket-label="pocket" data-pocket-count="horizontal" class="pocket-btn" data-lang="en"></a>
       <span class="is-original">
