@@ -1,74 +1,91 @@
-window.onload = () => addWidget()
+(function(){
+    const urlSearch = window.location.search.substr(1).split('&')
+    const appDom = document.querySelector('#app')
+    let url = `https://test.smartsignature.io`
+    let baseUrl = `https://apitest.smartsignature.io`
+    let logoImg = '../img/logo.png'
+    let urlSearchData = {}
 
-
-// http://localhost:8080/src/?
-// title=%E6%88%91%E6%98%AF%E6%A0%87%E9%A2%98&
-// content=%E6%88%91%E6%98%AF%E7%AE%80%E4%BB%8B%E6%88%91%E6%98%AF%E7%AE%80%E4%BB%8B%E6%88%91%E6%98%AF%E7%AE%80%E4%BB%8B%E6%88%91%E6%98%AF%E7%AE%80%E4%BB%8B%E6%88%91%E6%98%AF%E7%AE%80%E4%BB%8B%E6%88%91%E6%98%AF%E7%AE%80%E4%BB%8B%E6%88%91%E6%98%AF%E7%AE%80%E4%BB%8B%E6%88%91%E6%98%AF%E7%AE%80%E4%BB%8B&
-// id=100019&
-// img=https://apitest.smartsignature.io/image/QmdvhrqQZHcuFfk119y55jjWCuw9vvohjxq2VbWHrL3zw6
-
-
-const addWidget = async () => {
-  const urlSearch = window.location.search.substr(1).split('&')
-  const appDom = document.querySelector('#app')
-  let baseUrl = `https://apitest.smartsignature.io`
-  let defaultCoverImg = `https://api.smartsignature.io/image/QmbRLLuKxA8xMgVq23mX8dTkykmxSjirJCXUrLMH2xNt7R`
-  let urlSearchData = {}
-
-  const urlSearchDecodeURIComponent = arr => {
-    let data = {}
-    arr.forEach(i => {
-      let arrData = i.split('=')
-      data[arrData[0]] = decodeURIComponent(arrData[1])
+    const axiosApi = axios.create({
+      baseURL: baseUrl,
+      timeout: 30000,
+      headers: { Accept: '*/*', lang: 'zh' },
     });
-    return data
-  }
-
-  urlSearchData = urlSearchDecodeURIComponent(urlSearch)
-
-  const setAppDom = ({title, content, img, ups, read, value, ontvalue}) => {
-    let appDomStr = `<h1>${title}</h1>
-    <div><img src="${img}" alt="cover" /><div>
-        <p>${content}</p>
-        <p>
-          <span>点赞👍${ups}</span>
-          <span>阅读👀${read}</span>
-          <span>金额💰${value}</span>
-          <span>金额💰${ontvalue}</span>
-        </p>
-      </div>
-    </div>`
-    appDom.innerHTML = appDomStr
-  }
-
-  const getInfobyId = id => {
-    let url = `${baseUrl}/p/${id}`
-
-    const setFailAppDom = () => {
-      let {title,content, img=defaultCoverImg,ups=0,read=0, value=0, ontvalue=0} = urlSearchData
-      setAppDom({title,content, img,ups,read, value, ontvalue})
+    // url 参数解析
+    const urlSearchDecodeURIComponent = arr => {
+      let data = {}
+      arr.forEach(i => {
+        let arrData = i.split('=')
+        data[arrData[0]] = decodeURIComponent(arrData[1])
+      });
+      return data
     }
-    axios.get(url)
-      .then(function (response) {
-        if (response.status === 200 && response.data.code === 0) {
-          let {data} = response.data
-          urlSearchData.ups = data.ups
-          urlSearchData.read = data.read
-          urlSearchData.value = data.value
-          urlSearchData.ontvalue = data.ontvalue
+    urlSearchData = urlSearchDecodeURIComponent(urlSearch)
 
-          let {title,content, img=defaultCoverImg,ups,read, value, ontvalue} = urlSearchData
-          setAppDom({title,content, img,ups,read, value, ontvalue})
-        } else {
-          console.error('请求失败')
+    // 设置内容
+    const setAppDom = ({title, content, img, ups, read}) => {
+      let appDomStr = `
+      <div class="container">
+        <div class="widget">
+          <img class="logo" src="${logoImg}" alt="logo" />
+          <h1 class="jumpPage">${title || '没有获取到标题'}</h1>
+          <div class="widget-content">
+            <img class="cover jumpPage" src="${img}" alt="cover" />
+            <p class="widget-des">${content || '目前的机制完全照搬加密水浒。一个疑问，这种打赏机制与一般的打赏有何不同呢。这种打赏机制与一般的打赏有何不同呢。这种打赏…'}</p>
+          </div>
+          <p class="author">by: lojimaxxxxxxx</p>
+          <div class="readorups jumpPage">
+            <span><img src="./img/read.svg" alt="read" />${read || 0}</span>
+            <span><img src="./img/ups.svg" alt="ups" />${ups || 0}</span>
+          </di>
+        </div>
+      </div>`
+      appDom.innerHTML = appDomStr
+      // show line 4
+      $clamp(document.querySelector('.widget-des'), {clamp: 4});
+
+      // 页面跳转
+      const titleClick = () => {
+       let jumpPageDom = document.querySelectorAll('.jumpPage')
+       jumpPageDom.forEach((i, index) => {
+        jumpPageDom[index].addEventListener('click', () => {
+          window.open(`${url}/article/${urlSearchData.id || ''}`)  
+        }, false)
+       })
+      }
+      titleClick()
+
+    }
+
+    // 通过id获取信息
+    const getInfobyId = id => {
+      let url = `/p/${id}`
+
+      const setFailAppDom = () => {
+        let {title,content, img=logoImg,ups,read} = urlSearchData
+        setAppDom({title,content, img,ups,read})
+      }
+      axiosApi.get(url)
+        .then(function (response) {
+          if (response.status === 200 && response.data.code === 0) {
+            let {data} = response.data
+            // urlSearchData.title = data.title
+            urlSearchData.title = '智能签名啥啥好啊啊的啊发的 啊的 啊'
+            urlSearchData.ups = data.ups
+            urlSearchData.read = data.read
+            let {title,content, img=logoImg,ups,read} = urlSearchData
+            setAppDom({title,content, img,ups,read})
+          } else {
+            console.error('请求失败')
+            setFailAppDom()
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
           setFailAppDom()
-        }
-      })
-      .catch(function (error) {
-        console.log(error);
-        setFailAppDom()
-      })
-  }
+        })
+    }
 
-  await getInfobyId(urlSearchData.id)
-}
+    getInfobyId(urlSearchData.id)
+
+}())

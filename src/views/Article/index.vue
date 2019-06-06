@@ -58,6 +58,10 @@
       </span>
     </div>
 
+
+            <iframe width="100%" height="150" src='http://localhost:8080/widget/index.html?id=100019' frameborder=0></iframe>
+
+
     <div class="decoration">
       <a data-pocket-label="pocket" data-pocket-count="horizontal" class="pocket-btn" data-lang="en"></a>
       <span class="is-original">
@@ -123,7 +127,7 @@
       <button class="button-support" v-if="isSupported===0" disabled>赞赏中<img src="@/assets/img/icon_support.png"/></button>
       <button class="button-support" v-else-if="isSupported===1" @click="supportButton">赞赏<img src="@/assets/img/icon_support.png"/></button>
       <button class="button-support" v-else-if="isSupported===2" disabled>已赞赏<img src="@/assets/img/icon_support.png"/></button>
-      <button class="button-share" @click="share">分享<img src="@/assets/img/icon_share.png" /></button>
+      <button class="button-share" @click="widgetModal = true">分享<img src="@/assets/img/icon_share.png" /></button>
     </div>
     </footer>
 
@@ -149,6 +153,7 @@
     <!-- 文章 Info -->
     <ArticleInfo :infoModa="infoModa" @changeInfo="(status) => infoModa = status" />
     <BaseModalForSignIn :showModal="showModal" @changeInfo="changeInfo" />
+    <Widget @changeWidgetModal="(status)=> widgetModal = status" :widgetModal="widgetModal" :id="article.id" :getClipboard="getClipboard" />
   </div>
 </template>
 
@@ -166,12 +171,13 @@ import 'mavon-editor/dist/css/index.css';
 import moment from 'moment';
 import { ContentLoader } from 'vue-content-loader';
 import { xssFilter } from '@/common/xss';
-import CommentsList from './CommentsList.vue';
 import { sleep, isNDaysAgo } from '@/common/methods';
 import { ontAddressVerify } from '@/common/reg';
 import { precision } from '@/common/precisionConversion';
 
+import CommentsList from './CommentsList.vue';
 import ArticleInfo from './ArticleInfo.vue';
+import Widget from './Widget';
 
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
@@ -187,7 +193,8 @@ export default {
   name: 'Article',
   props: ['hash'],
   components: {
-    CommentsList, ArticleInfo, ContentLoader, mavonEditor,
+    CommentsList, ArticleInfo, ContentLoader,
+    mavonEditor, Widget
   },
   data() {
     return {
@@ -219,6 +226,7 @@ export default {
       isRequest: false,
       articleLoading: true, // 文章加载状态
       isOriginal: false,
+      widgetModal: false, // 分享 widget dialog
     };
   },
   computed: {
@@ -548,15 +556,6 @@ export default {
           message: '赞赏失败，可能是由于网络故障或账户余额不足等原因。',
         });
         done(false);
-      }
-    },
-    share() {
-      this.copyText(this.getClipboard);
-      try {
-        this.idCheckandgetAuth();
-      } catch (error) {
-        // console.log(error);
-        // this.$Message.error('失败');
       }
     },
     // 删除文章
