@@ -22,7 +22,8 @@ const actions = {
 
 const mutations = {
   setAccount(state, accessToken = null) {
-    state.account = accessToken ? (disassembleToken(accessToken)).iss : null;
+    state.account = (disassembleToken(accessToken)).iss;
+    console.debug(state.account);
   },
 };
 

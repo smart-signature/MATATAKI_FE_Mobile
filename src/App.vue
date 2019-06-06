@@ -52,14 +52,12 @@ export default {
 
     // console.debug(moment.locale());
 
-    const { idCheckandgetAuth, setUserConfig, updateNotify } = this;
+    const { idCheckandgetAuth, updateNotify } = this;
 
     // 根据本地存储的状态来自动登陆
-    setUserConfig({ idProvider: localStorage.getItem('idProvider') });
-    idCheckandgetAuth().catch(() => {
-      // 失败之后再重试一次
-      idCheckandgetAuth().catch(() => setUserConfig(null));
-    });
+    const idProvider = localStorage.getItem('idProvider');
+    // 失败之后再重试一次
+    idCheckandgetAuth({ idProvider }).catch(() => idCheckandgetAuth({ idProvider })); 
 
     window.updateNotify = updateNotify;
   },

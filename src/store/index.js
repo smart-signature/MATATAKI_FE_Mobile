@@ -67,13 +67,10 @@ export default new Vuex.Store({
         try {
           console.log('Retake authtoken...');
           const signature = await dispatch('getSignatureOfAuth');
-          const response = await backendAPI.auth(signature);
-          if (response.status !== 200) throw new Error('auth 出錯');
-          // 3. save accessToken
-          const accessToken = response.data;
+          const { status, data: accessToken } = await backendAPI.auth(signature);
+          if (status !== 200) throw new Error('auth 出錯');
           console.info('got the access token :', accessToken);
-          setAccessToken(accessToken);
-          commit('setAccessToken', getCurrentAccessToken());
+          commit('setAccessToken', accessToken);
           return accessToken;
         } catch (error) {
           console.warn('取得 access token 出錯', error);
@@ -105,18 +102,24 @@ export default new Vuex.Store({
     async idCheckandgetAuth({
       commit, dispatch, state, getters,
     }, data) {
+      if (data && data.idProvider) commit('setUserConfig', { idProvider: data.idProvider });
       const { idProvider } = state.userConfig;
+      // console.debug('idCheckandgetAuth :', data, idProvider);
       if (!idProvider) throw new Error('did not choice idProvider');
 
       const accountInfoCheck = async () => {
-        if(idProvider === 'GitHub') {
+        if(data && !data.code && idProvider === 'GitHub') {
+          console.debug('2.');
           if (getters.isLogined) commit('github/setAccount', state.userInfo.accessToken);
+          console.debug('3.', getters.isLogined);
           return getters.isLogined;
         } else if (getters.currentUserInfo.name) {
+          console.debug('4.');
           console.log('Id check pass, id :', getters.currentUserInfo);
           await dispatch('getAuth'); // 更新 Auth
           return true;
         }
+        console.debug('5.');
         return false;
       };
 
@@ -152,10 +155,9 @@ export default new Vuex.Store({
       // GitHub
       else if (idProvider === 'GitHub') {
         try {
-          const accessToken = await dispatch('github/signIn', data);
-          setAccessToken(accessToken);
-          commit('setAccessToken', getCurrentAccessToken());
+          commit('setAccessToken', await dispatch('github/signIn', data));
         } catch (error) {
+          console.error('GitHub signIn Failed.', error);
         }
       }
 
@@ -241,10 +243,12 @@ export default new Vuex.Store({
   mutations: {
     setAccessToken(state, accessToken = null) {
       state.userInfo.accessToken = accessToken;
+      setAccessToken(accessToken);
     },
     setUserConfig(state, config = null) {
+      // only idProvider now
       if (config) state.userConfig.idProvider = config.idProvider;
-      else state.userConfig = { idProvider: null };
+      else state.userConfig.idProvider = null;
     },
     setNickname(state, nickname = '') {
       state.userInfo.nickname = nickname;

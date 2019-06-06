@@ -554,7 +554,7 @@ export default {
     share() {
       this.copyText(this.getClipboard);
       try {
-        this.idCheckandgetAuth();
+        this.idCheckandgetAuth({});
       } catch (error) {
         // console.log(error);
         // this.$Message.error('失败');

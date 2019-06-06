@@ -22,8 +22,7 @@ export default {
       // 跳轉
       window.location = `https://github.com/login/oauth/authorize?client_id=${clientID}&redirect_uri=${redirectUri}&scope=${scope}`;
     } else {
-      this.setUserConfig({ idProvider: 'GitHub' });
-      this.idCheckandgetAuth({ code }).catch(() => {})
+      this.idCheckandgetAuth({ code, idProvider: 'GitHub' }).catch(() => {})
       .then(() => {
         // console.debug(from);
         this.$router.push(from);
@@ -32,7 +31,6 @@ export default {
   },
   methods: {
     ...mapActions(['idCheckandgetAuth']),
-    ...mapMutations(['setUserConfig']),
   },
 };
 </script>

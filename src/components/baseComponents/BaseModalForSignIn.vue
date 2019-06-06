@@ -137,29 +137,27 @@ export default {
   },
   methods: {
     ...mapActions(['idCheckandgetAuth']),
-    ...mapMutations(['setUserConfig']),
     change(status) {
       if (this.modalLoading) this.modalLoading = false;
       this.showModaCopy = status;
       this.$emit('changeInfo', status);
     },
     async walletLogin(type) {
-      this.setUserConfig({ idProvider: type });
       this.modalLoading = true;
-      await this.signIn();
+      await this.signIn(type);
       this.modalLoading = false;
       this.change(false);
     },
-    async signIn() {
+    async signIn(type) {
       const success = () => {
         localStorage.setItem('idProvider', this.userConfig.idProvider); // 成功存储登陆方式
       };
       try {
-        await this.idCheckandgetAuth();
+        await this.idCheckandgetAuth({ idProvider: type });
         success();
       } catch (error) {
         try {
-          await this.idCheckandgetAuth();
+          await this.idCheckandgetAuth({ idProvider: type });
           success();
         } catch (err) {
           console.log(err);
