@@ -73,6 +73,8 @@ import {
   getAvatarImage,
 } from '@/api';
 
+import tagColor from "@/common/tagColor";
+
 import 'mavon-editor/dist/css/index.css'; // editor css
 import VueSlider from 'vue-slider-component';
 import 'vue-slider-component/theme/default.css';
@@ -92,6 +94,9 @@ export default {
     modalPrompt,
   },
   created() {
+
+    console.log(tagColor())
+
     const { id } = this.$route.params;
     const { from, hash } = this.$route.query;
     // console.log(id, from);
