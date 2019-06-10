@@ -199,13 +199,11 @@ export default new Vuex.Store({
       commit('setUserConfig');
       commit('setAccessToken');
       commit('setNickname');
-
       localStorage.clear();
     },
     // data: { amount, toaddress, memo }
     async withdraw({ dispatch, getters }, data) {
       console.debug(data);
-
       // 根据传进来的mode判断提现什么币
       if (data.tokenName === 'EOS') {
         data.contract = 'eosio.token';
@@ -221,22 +219,18 @@ export default new Vuex.Store({
       const {
         amount, contract, symbol, toaddress, tokenName,
       } = data;
-      data.signature = await dispatch(
-        'getSignature',
-        {
-          mode: 'withdraw',
-          rawSignData: [toaddress, contract, symbol, amount],
-          tokenName,
-        },
-      );
-
-      try {
-        const res = await backendAPI.withdraw(data);
-        return res;
-      } catch (error) {
-        // 手动抛出一个promise reject error
-        return Promise.reject(error);
+      if (getters.currentUserInfo.idProvider !== 'GitHub') {
+        data.signature = await dispatch(
+          'getSignature',
+          {
+            mode: 'withdraw',
+            rawSignData: [toaddress, contract, symbol, amount],
+            tokenName,
+          },
+        );
       }
+
+      return backendAPI.withdraw(data);
     },
   },
   mutations: {

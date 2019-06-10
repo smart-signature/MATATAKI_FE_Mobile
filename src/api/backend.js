@@ -235,9 +235,11 @@ const API = {
     const data = {
       ...rawData,
       platform: rawData.idProvider.toLowerCase(),
-      publickey: rawData.signature.publicKey,
-      sign: rawData.signature.signature,
     };
+    if (rawData.signature) {
+      data.publickey = rawData.signature.publicKey;
+      data.sign = rawData.signature.signature;
+    }
     delete data.idProvider;
     delete data.tokenName;
     delete data.signature;
