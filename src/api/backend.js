@@ -45,7 +45,7 @@ const accessBackend = async (options) => {
 const API = {
   async sendArticle(url, {
     signId = null, author, hash, title, fissionFactor, cover, isOriginal, signature = null,
-  }, needAccessToken = false) {
+  }) {
     const data = {
       author,
       cover,
@@ -58,12 +58,10 @@ const API = {
       title,
       is_original: isOriginal,
     };
-    return !needAccessToken
-      ? axiosforApiServer.post(url, data)
-      : accessBackend({ method: 'POST', url, data });
+    return accessBackend({ method: 'POST', url, data });
   },
   async publishArticle(article) { return this.sendArticle('/publish', article); },
-  async editArticle(article) { return this.sendArticle('/edit', article, true); },
+  async editArticle(article) { return this.sendArticle('/edit', article); },
   async reportShare(share) {
     const data = {
       ...share, platform: 'need', referrer: share.sponsor,
