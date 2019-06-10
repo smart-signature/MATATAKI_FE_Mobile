@@ -29,6 +29,12 @@ export default new VueRouter({
       component: () => import(/* webpackChunkName: "article", webpackPrefetch: true */ './views/Article/index.vue'),
     },
     {
+      path: '/tag/:id',
+      name: 'Tag',
+      props: true,
+      component: () => import(/* webpackChunkName: "Tag" */ './views/Tag/index.vue'),
+    },
+    {
       path: '/login/github',
       name: 'Login',
       component: () => import(/* webpackChunkName: "login" */ './views/Login.vue'),
