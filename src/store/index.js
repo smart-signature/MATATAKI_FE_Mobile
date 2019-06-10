@@ -4,7 +4,7 @@ import ontology from './ontology';
 import scatter from './scatter';
 import github from './github';
 import {
-  disassembleToken, getCurrentAccessToken, setAccessToken,
+  backendAPI, disassembleToken, getCurrentAccessToken, setAccessToken,
 } from '@/api';
 
 if (!window.Vue) Vue.use(Vuex);
