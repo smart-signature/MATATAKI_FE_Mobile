@@ -43,6 +43,12 @@
         </div>
       </div>
     </div>
+    <div class="tag">
+      <p>选择标签</p>
+      <div class="tag-content">
+        <tagCard @toggleTagStatus="toggleTagStatus" v-for="(item, index) in tagCards" :key="index" :tagCard="item" />
+      </div>
+    </div>
     <div class="radio" v-if="isShowEditorMode">
       <RadioGroup v-model="saveType" vertical class="save-type">
         <Radio size="large" label="public">公开发布</Radio>
@@ -59,6 +65,7 @@
       @changeInfo="changeInfo"
       @modalCancel="modalCancel" />
     <BaseModalForSignIn :showModal="showSignInModal" @changeInfo="changeInfo2" />
+
   </div>
 </template>
 
@@ -73,8 +80,6 @@ import {
   getAvatarImage,
 } from '@/api';
 
-import tagColor from "@/common/tagColor";
-
 import 'mavon-editor/dist/css/index.css'; // editor css
 import VueSlider from 'vue-slider-component';
 import 'vue-slider-component/theme/default.css';
@@ -84,6 +89,7 @@ import { toolbars } from './toolbars'; // 编辑器配置
 import imgUpload from '@/components/imgUpload/index.vue'; // 图片上传
 import modalPrompt from './components/modalPrompt.vue'; // 弹出框提示
 
+import tagCard from "@/components/tagCard/index";
 
 export default {
   name: 'NewPost',
@@ -92,35 +98,9 @@ export default {
     VueSlider,
     imgUpload,
     modalPrompt,
+    tagCard
   },
-  created() {
-
-    console.log(tagColor())
-
-    const { id } = this.$route.params;
-    const { from, hash } = this.$route.query;
-    // console.log(id, from);
-    if (id === 'create' && !from) { // 发布文章 from 为 undefined
-      // console.log('发布文章');
-    } else if (from === 'edit') {
-      // console.log('编辑文章');
-      this.editorMode = 'edit';
-      // this.setArticleData(hash);
-      this.setArticleDataById(hash, id);
-    } else if (from === 'draft') {
-      // console.log('草稿箱');
-      this.editorMode = 'draft';
-      this.saveType = 'draft';
-      this.getDraft(id);
-    } else {
-      this.editorMode = 'create'; // 当作发布文章处理
-    }
-  },
-  mounted() {
-    this.resize();
-    this.setToolBar(this.screenWidth);
-  },
-  data: () => ({
+    data: () => ({
     title: '',
     author: '',
     markdownData: '',
@@ -147,7 +127,34 @@ export default {
       button: ['再想想', '退出'],
     },
     modalMode: null, // header 判断点击的 back 还是 home
+    tagCards: [], // 文章标签
   }),
+  created() {
+    const { id } = this.$route.params;
+    const { from, hash } = this.$route.query;
+    // console.log(id, from);
+    if (id === 'create' && !from) { // 发布文章 from 为 undefined
+      // console.log('发布文章');
+    } else if (from === 'edit') {
+      // console.log('编辑文章');
+      this.editorMode = 'edit';
+      // this.setArticleData(hash);
+      this.setArticleDataById(hash, id);
+    } else if (from === 'draft') {
+      // console.log('草稿箱');
+      this.editorMode = 'draft';
+      this.saveType = 'draft';
+      this.getDraft(id);
+    } else {
+      this.editorMode = 'create'; // 当作发布文章处理
+    }
+
+    this.getTags()
+  },
+  mounted() {
+    this.resize();
+    this.setToolBar(this.screenWidth);
+  },
   computed: {
     ...mapGetters(['currentUserInfo', 'isLogined']),
     isShowEditorMode() {
@@ -452,6 +459,24 @@ export default {
       else if (this.modalMode === 'home') this.$router.push({ name: 'home' });
       else this.$router.go(-1);
     },
+    // 获取标签
+    async getTags() {
+      await backendAPI.getTags().then(res => {
+        console.log(res)
+        if (res.status === 200) {
+          let {data} = res.data
+          data.map(i =>  i.status = false)
+          this.tagCards = data
+        }
+      }).catch(err => { console.log(err) })
+    },
+    // 切换状态
+    toggleTagStatus(data) {
+      const tagCardsIndex = this.tagCards.findIndex(i => i.id === data.id)
+      if (tagCardsIndex === -1) return
+      this.tagCards[tagCardsIndex].status = data.status
+      console.log(this.tagCards, data)
+    }
   },
   watch: {
     screenWidth(val) {
@@ -470,7 +495,6 @@ export default {
 </script>
 
 <style scoped lang="less" src="./Publish.less"></style>
-
 <style lang="less">
 /* 全局覆盖组件样式 */
 .v-note-wrapper .v-note-op{

@@ -251,6 +251,10 @@ const API = {
   async loginGitHub(code) {
     return axiosforApiServer.post('/login/github', { code });
   },
+  // 获取可用标签列表
+  async getTags() {
+    return axiosforApiServer.get('/tag/tags')
+  }
 };
 
 export default API;

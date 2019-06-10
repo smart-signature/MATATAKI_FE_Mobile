@@ -1,6 +1,7 @@
 <template>
   <Modal 
     class="widget"
+    width="375"
     class-name="widget-flex"
     :class="widgetModalStatus === 0 ? 'gray' : 'white'"
     v-model="widgetModalCopy" 
