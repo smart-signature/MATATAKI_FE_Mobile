@@ -80,6 +80,7 @@ export default {
   computed: {
   },
   methods: {
+    ...mapActions(['getCurrentUser']),
     checkSaveParams() {
       // 中文 字母 数字 1-12
       const reg = /^[\u4E00-\u9FA5A-Za-z0-9]{1,12}$/;
@@ -145,7 +146,6 @@ export default {
       });
     },
     async refreshUser() {
-      const { username } = this;
       const setUser = (data) => {
         this.nickname = data.nickname;
         this.newname = this.nickname || this.username;
@@ -156,18 +156,7 @@ export default {
         this.setAvatarImage(data.avatar);
       };
 
-      await this.$backendAPI.getUser({ uid: username }).then((res) => {
-        if (res.status === 200) setUser(res.data);
-        else {
-          this.$toast.fail({ duration: 1000, message: '失败' });
-        }
-      }).catch((err) => {
-        console.log(err);
-        this.$toast.fail({
-          duration: 1000,
-          message: '失败',
-        });
-      });
+      setUser(await this.getCurrentUser());
     },
 
     setAvatarImage(hash) {

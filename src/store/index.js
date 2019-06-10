@@ -248,7 +248,7 @@ export default new Vuex.Store({
       state.userInfo.nickname = nickname;
     },
     setUid(state, accessToken = null) {
-      state.userInfo.uid = (disassembleToken(accessToken)).uid;
+      state.userInfo.uid = (disassembleToken(accessToken)).id;
     },
   },
 });
