@@ -107,18 +107,18 @@ const API = {
     return accessBackend({ url: `/${url}/${hashOrId}` });
   },
   // Be used in User page.
-  async Follow({ username, followed }) {
+  async Follow({ followed }) {
     return accessBackend({
       method: 'POST',
       url: '/follow',
-      data: { username, followed },
+      data: { followed },
     });
   },
-  async Unfollow({ username, followed }) {
+  async Unfollow({ followed }) {
     return accessBackend({
       method: 'POST',
       url: '/unfollow',
-      data: { username, followed },
+      data: { followed },
     });
   },
   async getUser({ username }, needAccessToken = false) {
