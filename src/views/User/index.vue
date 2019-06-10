@@ -186,7 +186,7 @@ export default {
     async followUser() {
       if (!this.checkb4FoUnfo('关注失败')) return;
       try {
-        await this.$backendAPI.follow({ followed: this.username });
+        await this.$backendAPI.follow({ uid: this.username });
         this.$toast.success({ duration: 1000, message: '关注成功' });
         this.followed = true;
       } catch (error) {
@@ -197,7 +197,7 @@ export default {
     async unfollowUser() {
       if (!this.checkb4FoUnfo('取消关注失败')) return;
       try {
-        await this.$backendAPI.unfollow({ followed: this.username });
+        await this.$backendAPI.unfollow({ uid: this.username });
         this.$toast.success({ duration: 1000, message: '取消关注' });
         this.followed = false;
       } catch (error) {
