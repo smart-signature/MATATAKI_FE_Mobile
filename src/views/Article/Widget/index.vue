@@ -1,9 +1,9 @@
 <template>
-  <Modal 
+  <Modal
     class="widget"
     class-name="widget-flex"
     :class="widgetModalStatus === 0 ? 'gray' : 'white'"
-    v-model="widgetModalCopy" 
+    v-model="widgetModalCopy"
     footer-hide
     @on-visible-change="change"
     :closable="false">
@@ -69,15 +69,15 @@
 </template>
 
 <script>
-import { sleep } from "@/common/methods";
-import { strTrim } from "@/common/reg";
-import { urlAddress } from "@/api/backend";
+import { sleep } from '@/common/methods';
+import { strTrim } from '@/common/reg';
+import { urlAddress } from '@/api/backend';
 // const  urlAddress = 'http://localhost:8080' // 开发用
 
 export default {
   name: 'Widget',
-  props: ['widgetModal', 'id','getClipboard'],
-  data(){
+  props: ['widgetModal', 'id', 'getClipboard'],
+  data() {
     return {
       widgetModalCopy: this.widgetModal,
       // 0 默认
@@ -85,46 +85,46 @@ export default {
       // 2 widget help
       // 3 review widget
       widgetModalStatus: 0,
-      oldWidgetModalStatus : 0,
+      oldWidgetModalStatus: 0,
       widgetContent: '',
       widgetContentIframe: '',
-    }
+    };
   },
   watch: {
-    widgetModalStatus(newVal, oldVal){
+    widgetModalStatus(newVal, oldVal) {
       // console.log(newVal, oldVal)
-      this.oldWidgetModalStatus = oldVal
+      this.oldWidgetModalStatus = oldVal;
       // 如果显示创建widget 但是没有内容
       if (newVal === 3 && !this.widgetContent) {
-        this.widgetContentIframe = `<iframe width="100%" height="150" src='${urlAddress}/widget/?id=${this.id}' frameborder=0></iframe>`
+        this.widgetContentIframe = `<iframe width="100%" height="150" src='${urlAddress}/widget/?id=${this.id}' frameborder=0></iframe>`;
       }
     },
     widgetModal(newVal) {
       this.widgetModalCopy = newVal;
     },
-    widgetContent(newVal){
-      let content = ''
+    widgetContent(newVal) {
+      let content = '';
       // 去前后空格防止空内容
-      if (strTrim(newVal)) content = `&content=${newVal}`
-      this.widgetContentIframe = `<iframe width="100%" height="150" src='${urlAddress}/widget/?id=${this.id}${content}' frameborder=0></iframe>`
-    }
+      if (strTrim(newVal)) content = `&content=${newVal}`;
+      this.widgetContentIframe = `<iframe width="100%" height="150" src='${urlAddress}/widget/?id=${this.id}${content}' frameborder=0></iframe>`;
+    },
   },
   computed: {
   },
   methods: {
-    createWidget(){
-      this.widgetModalStatus = 1
+    createWidget() {
+      this.widgetModalStatus = 1;
     },
-    reviewHelp(){
-      this.widgetModalStatus = 2
+    reviewHelp() {
+      this.widgetModalStatus = 2;
     },
-    backPage(){
-      this.widgetModalStatus = this.oldWidgetModalStatus
+    backPage() {
+      this.widgetModalStatus = this.oldWidgetModalStatus;
     },
-    createWidgetContent(){
-      this.widgetModalStatus = 3
+    createWidgetContent() {
+      this.widgetModalStatus = 3;
     },
-    copyCode(code){
+    copyCode(code) {
       this.$copyText(code).then(() => {
         this.$toast.success({
           duration: 1000,
@@ -137,23 +137,23 @@ export default {
         });
       });
     },
-    selectValue(e){
-      event.currentTarget.select()
+    selectValue(e) {
+      event.currentTarget.select();
     },
-    resetStatus(){
-      this.widgetModalStatus = 0
-      this.widgetContent = ''
-      this.widgetContentIframe = ''
+    resetStatus() {
+      this.widgetModalStatus = 0;
+      this.widgetContent = '';
+      this.widgetContentIframe = '';
     },
-    async change(status){
+    async change(status) {
       // console.log(status)
-      this.widgetModalCopy = status
-      this.$emit('changeWidgetModal', status)
-      await sleep(300)
-      !status && this.resetStatus()
-    }
-  }
-}
+      this.widgetModalCopy = status;
+      this.$emit('changeWidgetModal', status);
+      await sleep(300);
+      !status && this.resetStatus();
+    },
+  },
+};
 </script>
 
 <style lang="less">

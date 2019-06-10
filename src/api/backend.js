@@ -96,11 +96,6 @@ const API = {
       headers: { Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==' },
     });
   },
-
-  /*
-   * 装载access_token
-  */
-
   async getArticleDatafromIPFS(hash) {
     return axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
   },

@@ -25,9 +25,9 @@
 
             </div>
             <a class="modal-doc" target="_blank" :href="item.doc.href">{{item.doc.title}}</a>
-            
+
           </div>
-          
+
         </div>
         <Divider>或者</Divider>
           <div class="modal-logo-button" :class="'active2'" @click="walletLogin('GitHub')"
@@ -78,7 +78,7 @@ export default {
       modalText: {
         text: '选择授权方式',
       },
-      iconGithub: iconGithub,
+      iconGithub,
       idProvider: [
         {
           url: iconEOS,

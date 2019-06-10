@@ -28,7 +28,9 @@ export default new Vuex.Store({
     },
   },
   getters: {
-    currentUserInfo: ({ userConfig, userInfo, ontology, github }, {
+    currentUserInfo: ({
+      userConfig, userInfo, ontology, github,
+    }, {
       'scatter/currentUsername': scatterUsername,
       'scatter/currentBalance': scatterBalance,
       'ontology/currentBalance': ontologyBalance,
@@ -39,16 +41,16 @@ export default new Vuex.Store({
       if (idProvider === 'EOS') {
         name = scatterUsername;
         balance = scatterBalance;
-      }
-      else if (idProvider === 'ONT') {
+      } else if (idProvider === 'ONT') {
         name = ontology.account;
         balance = ontologyBalance;
-      }
-      else if (idProvider === 'GitHub') {
+      } else if (idProvider === 'GitHub') {
         name = github.account;
         balance = '... XXX';
       }
-      return ({ name, balance, idProvider, nickname: userInfo.nickname });
+      return ({
+        name, balance, idProvider, nickname: userInfo.nickname,
+      });
     },
     //  displayName.length <= 12 ? name : name.slice(0, 12);
     displayName: ({ userInfo }, { currentUserInfo }) => userInfo.nickname || currentUserInfo.name,
@@ -102,10 +104,9 @@ export default new Vuex.Store({
     async signIn({
       commit, dispatch, state, getters,
     }, { code, idProvider, recover = false }) {
-      if (idProvider) { 
+      if (idProvider) {
         commit('setUserConfig', { idProvider });
-      }
-      else idProvider = state.userConfig.idProvider;
+      } else idProvider = state.userConfig.idProvider;
       // console.debug('signIn :', data, idProvider);
       if (!idProvider) throw new Error('did not choice idProvider');
 
