@@ -28,7 +28,9 @@ export default new Vuex.Store({
     },
   },
   getters: {
-    currentUserInfo: ({ userConfig, userInfo, ontology, github }, {
+    currentUserInfo: ({
+      userConfig, userInfo, ontology, github,
+    }, {
       'scatter/currentUsername': scatterUsername,
       'scatter/currentBalance': scatterBalance,
       'ontology/currentBalance': ontologyBalance,
@@ -39,16 +41,16 @@ export default new Vuex.Store({
       if (idProvider === 'EOS') {
         name = scatterUsername;
         balance = scatterBalance;
-      }
-      else if (idProvider === 'ONT') {
+      } else if (idProvider === 'ONT') {
         name = ontology.account;
         balance = ontologyBalance;
-      }
-      else if (idProvider === 'GitHub') {
+      } else if (idProvider === 'GitHub') {
         name = github.account;
         balance = '... XXX';
       }
-      return ({ name, balance, idProvider, nickname: userInfo.nickname });
+      return ({
+        name, balance, idProvider, nickname: userInfo.nickname,
+      });
     },
     //  displayName.length <= 12 ? name : name.slice(0, 12);
     displayName: ({ userInfo }, { currentUserInfo }) => userInfo.nickname || currentUserInfo.name,
@@ -102,10 +104,9 @@ export default new Vuex.Store({
     async signIn({
       commit, dispatch, state, getters,
     }, { code, idProvider, recover = false }) {
-      if (idProvider) { 
+      if (idProvider) {
         commit('setUserConfig', { idProvider });
-      }
-      else idProvider = state.userConfig.idProvider;
+      } else idProvider = state.userConfig.idProvider;
       // console.debug('signIn :', data, idProvider);
       if (!idProvider) throw new Error('did not choice idProvider');
 
@@ -198,13 +199,11 @@ export default new Vuex.Store({
       commit('setUserConfig');
       commit('setAccessToken');
       commit('setNickname');
-
       localStorage.clear();
     },
     // data: { amount, toaddress, memo }
     async withdraw({ dispatch, getters }, data) {
       console.debug(data);
-
       // 根据传进来的mode判断提现什么币
       if (data.tokenName === 'EOS') {
         data.contract = 'eosio.token';
@@ -220,22 +219,18 @@ export default new Vuex.Store({
       const {
         amount, contract, symbol, toaddress, tokenName,
       } = data;
-      data.signature = await dispatch(
-        'getSignature',
-        {
-          mode: 'withdraw',
-          rawSignData: [toaddress, contract, symbol, amount],
-          tokenName,
-        },
-      );
-
-      try {
-        const res = await backendAPI.withdraw(data);
-        return res;
-      } catch (error) {
-        // 手动抛出一个promise reject error
-        return Promise.reject(error);
+      if (getters.currentUserInfo.idProvider !== 'GitHub') {
+        data.signature = await dispatch(
+          'getSignature',
+          {
+            mode: 'withdraw',
+            rawSignData: [toaddress, contract, symbol, amount],
+            tokenName,
+          },
+        );
       }
+
+      return backendAPI.withdraw(data);
     },
   },
   mutations: {

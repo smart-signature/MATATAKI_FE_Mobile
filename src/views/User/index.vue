@@ -64,10 +64,10 @@
       <BaseHeader :pageinfo="{ title: ''}" style="background-color: #478970" :white="true">
       <div slot="right" v-if="!isMex">
         <template v-if="!followed">
-          <span class="darkBtn" @click="follow_user">关注</span>
+          <span class="darkBtn" @click="followUser">关注</span>
         </template>
         <template v-else>
-          <span class="darkBtn" @click="unfollow_user">取消关注</span>
+          <span class="darkBtn" @click="unfollowUser">取消关注</span>
         </template>
       </div>
       </BaseHeader>
@@ -132,7 +132,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['currentUserInfo', 'displayName', 'isMe']),
+    ...mapGetters(['currentUserInfo', 'displayName', 'isLogined', 'isMe']),
     isMex() { return this.isMe(this.username); },
   },
   created() {
@@ -141,9 +141,7 @@ export default {
     document.title = `${user}的个人主页 - SmartSignature`;
   },
   methods: {
-    jumpTo(params) {
-      this.$router.push(params);
-    },
+    jumpTo(params) { this.$router.push(params); },
     async refreshUser() {
       if (!this.username) this.username = this.currentUserInfo.name;
       const { username, currentUserInfo } = this;
@@ -179,51 +177,33 @@ export default {
         throw error;
       }
     },
-    async follow_user() {
-      const { username, currentUserInfo } = this;
-      if (!currentUserInfo.name || !username) {
-        this.$toast.fail({
-          duration: 1000,
-          message: '关注失败',
-        });
-        return;
+    checkb4FoUnfo(message) {
+      const { isLogined, username } = this;
+      if (!isLogined || !username) {
+        this.$toast.fail({ duration: 1000, message });
+        return false;
       }
+      return true;
+    },
+    async followUser() {
+      if (!this.checkb4FoUnfo('关注失败')) return;
       try {
-        await Follow({ followed: username, username: currentUserInfo.name });
-        this.$toast.success({
-          duration: 1000,
-          message: '关注成功',
-        });
+        await Follow({ followed: this.username });
+        this.$toast.success({ duration: 1000, message: '关注成功' });
         this.followed = true;
       } catch (error) {
-        this.$toast.fail({
-          duration: 1000,
-          message: '关注失败',
-        });
+        this.$toast.fail({ duration: 1000, message: '关注失败' });
       }
       this.refreshUser();
     },
-    async unfollow_user() {
-      const { username, currentUserInfo } = this;
-      if (!currentUserInfo.name || !username) {
-        this.$toast.fail({
-          duration: 1000,
-          message: '取消关注失败',
-        });
-        return;
-      }
+    async unfollowUser() {
+      if (!this.checkb4FoUnfo('取消关注失败')) return;
       try {
-        await Unfollow({ followed: username, username: currentUserInfo.name });
-        this.$toast.success({
-          duration: 1000,
-          message: '取消关注',
-        });
+        await Unfollow({ followed: this.username });
+        this.$toast.success({ duration: 1000, message: '取消关注' });
         this.followed = false;
       } catch (error) {
-        this.$toast.fail({
-          duration: 1000,
-          message: '取消关注失败',
-        });
+        this.$toast.fail({ duration: 1000, message: '取消关注失败' });
       }
       this.refreshUser();
     },
@@ -232,9 +212,7 @@ export default {
     },
   },
   watch: {
-    isMex() {
-      this.refreshUser();
-    },
+    isMex() { this.refreshUser(); },
   },
 };
 </script>

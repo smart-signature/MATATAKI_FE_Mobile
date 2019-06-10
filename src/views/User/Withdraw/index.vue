@@ -1,6 +1,6 @@
 <template>
   <div class="mw withdraw">
-    <BaseHeader :pageinfo="{ title: '提现'}"  />
+    <BaseHeader :pageinfo="{ title: '提现'}" />
     <div class="withdraw-head">
       <div class="withdraw-head-type">
         <img :src="withdrawData.head.logo" :alt="withdrawData.head.type" />
@@ -184,32 +184,17 @@ export default {
             this.withdrawData.list[1].value = Math.floor(amount); // ont 向下取整
           }
         } else {
-          this.$toast.fail({
-            duration: 1000,
-            message: `${res.data.message}`,
-          });
+          this.$toast.fail({ duration: 1000, message: `${res.data.message}` });
         }
-      }).catch((err) => {
-        console.log(err);
-        this.$toast.fail({
-          duration: 1000,
-          message: '获取数据失败',
-        });
+      }).catch((error) => {
+        console.error(error);
+        this.$toast.fail({ duration: 1000, message: '获取数据失败' });
       });
     },
     // 提示
     toastMessage(message, type = '') {
-      if (!type) {
-        this.$toast({
-          duration: 1000,
-          message,
-        });
-      } else {
-        this.$toast[type]({
-          duration: 1000,
-          message,
-        });
-      }
+      if (!type) this.$toast({ duration: 1000, message });
+      else this.$toast[type]({ duration: 1000, message });
     },
     async withdrawButton() {
       if (this.withdrawData.head.amount <= 0) return this.toastMessage('没有可以提现的余额');
@@ -235,19 +220,16 @@ export default {
                   this.$navigation.cleanRoutes(); // 清除路由记录
                 });
               } else this.toastMessage(res.data.message, 'fail');
-              done();
+              done(); 
             })
             .catch((err) => {
-              console.log(err);
+              console.error(err);
               this.toastMessage('提现失败', 'fail');
               done();
             });
         } else done();
       };
-      this.$dialog.confirm({
-        message: '确认提现?',
-        beforeClose,
-      });
+      this.$dialog.confirm({ message: '确认提现?', beforeClose });
       return true;
     },
     writeAddres() {

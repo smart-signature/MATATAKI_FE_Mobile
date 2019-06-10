@@ -19,10 +19,10 @@ import './plugins/iview';
 import './plugins/vant';
 import './plugins/baseComponents';
 
-Vue.prototype.$backendAPI = backendAPI;
-
 // global css
 import '@/assets/css/index.less';
+
+Vue.prototype.$backendAPI = backendAPI;
 
 Vue.use(VueClipboard);
 

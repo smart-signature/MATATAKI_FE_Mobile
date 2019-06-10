@@ -189,8 +189,11 @@ export default {
   name: 'Article',
   props: ['hash'],
   components: {
-    CommentsList, ArticleInfo, ContentLoader,
-    mavonEditor, Widget
+    CommentsList,
+    ArticleInfo,
+    ContentLoader,
+    mavonEditor,
+    Widget,
   },
   data() {
     return {

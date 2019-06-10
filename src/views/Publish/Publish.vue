@@ -336,7 +336,7 @@ export default {
       }
       if (this.fissionFactor === '') this.fissionFactor = 2; // 用户不填写裂变系数则默认为2
 
-      
+
       const {
         currentUserInfo,
         title,

@@ -49,7 +49,7 @@ export default {
     const { signIn, updateNotify } = this;
     // 根据本地存储的状态来自动登陆。失败之后再重试一次
     const idProvider = localStorage.getItem('idProvider');
-    if (idProvider) signIn({ idProvider, recover: true }).catch(() => signIn({ idProvider, recover: true })); 
+    if (idProvider) signIn({ idProvider, recover: true }).catch(() => signIn({ idProvider, recover: true }));
 
     window.updateNotify = updateNotify;
   },

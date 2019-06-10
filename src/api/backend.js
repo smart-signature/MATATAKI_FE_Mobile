@@ -96,11 +96,6 @@ const API = {
       headers: { Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==' },
     });
   },
-
-  /*
-   * 装载access_token
-  */
-
   async getArticleDatafromIPFS(hash) {
     return axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
   },
@@ -112,18 +107,18 @@ const API = {
     return accessBackend({ url: `/${url}/${hashOrId}` });
   },
   // Be used in User page.
-  async Follow({ username, followed }) {
+  async Follow({ followed }) {
     return accessBackend({
       method: 'POST',
       url: '/follow',
-      data: { username, followed },
+      data: { followed },
     });
   },
-  async Unfollow({ username, followed }) {
+  async Unfollow({ followed }) {
     return accessBackend({
       method: 'POST',
       url: '/unfollow',
-      data: { username, followed },
+      data: { followed },
     });
   },
   async getUser({ username }, needAccessToken = false) {
@@ -240,9 +235,11 @@ const API = {
     const data = {
       ...rawData,
       platform: rawData.idProvider.toLowerCase(),
-      publickey: rawData.signature.publicKey,
-      sign: rawData.signature.signature,
     };
+    if (rawData.signature) {
+      data.publickey = rawData.signature.publicKey;
+      data.sign = rawData.signature.signature;
+    }
     delete data.idProvider;
     delete data.tokenName;
     delete data.signature;
