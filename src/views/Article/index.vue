@@ -19,11 +19,11 @@
       </div>
     </BaseHeader>
 
-    <ContentLoader v-if="articleLoading">
-        <circle cx="36.98272" cy="24.082720000000002" r="11.98272" />
-        <rect x="54" y="14.8" rx="0" ry="0" width="63.8" height="7.0666" />
-        <rect x="54" y="25.8" rx="0" ry="0" width="30.83" height="5.759600000000001" />
-        <rect x="26" y="47.8" rx="0" ry="0" width="334.43" height="120" />
+    <ContentLoader v-if="articleLoading" class="content-loader" :height="300">
+   		<circle cx="36" cy="24" r="12" /> 
+      <rect x="54" y="14" rx="0" ry="0" width="64" height="10" /> 
+      <rect x="54" y="26" rx="0" ry="0" width="30" height="8" /> 
+      <rect x="27" y="46" rx="0" ry="0" width="334" height="240" />
     </ContentLoader>
     <template v-else>
       <header class="ta_header">
@@ -47,26 +47,31 @@
       </header>
       <mavon-editor v-show="false" style="display: none;"/>
       <div class="markdown-body" v-html="compiledMarkdown"></div>
+
+      <!-- don't tag hide -->
+      <div class="tag-review" v-if="article.tags !== undefined && article.tags.length !== 0">
+        <tag-card v-for="(item, index) in article.tags" :key="index" :tagCard="item" :tagMode="false" />
+      </div>
+
+      <div class="ipfs-hash">
+        <img
+          @click="copyText(getCopyIpfsHash)"
+          src="@/assets/img/icon_copy.svg" class="copy-hash" alt="hash">
+        <span >
+          IPFS Hash: {{article.hash || 'Loading...'}}
+        </span>
+      </div>
+
+      <div class="decoration">
+        <a data-pocket-label="pocket" data-pocket-count="horizontal" class="pocket-btn" data-lang="en"></a>
+        <span class="is-original">
+          本文发布于智能签名<br />
+          <template v-if="isOriginal">
+            未经授权禁止转载
+          </template>
+        </span>
+      </div>
     </template>
-
-    <div class="ipfs-hash">
-      <img
-        @click="copyText(getCopyIpfsHash)"
-        src="@/assets/img/icon_copy.svg" class="copy-hash" alt="hash">
-      <span >
-        IPFS Hash: {{article.hash || 'Loading...'}}
-      </span>
-    </div>
-
-    <div class="decoration">
-      <a data-pocket-label="pocket" data-pocket-count="horizontal" class="pocket-btn" data-lang="en"></a>
-      <span class="is-original">
-        本文发布于智能签名<br />
-        <template v-if="isOriginal">
-          未经授权禁止转载
-        </template>
-      </span>
-    </div>
 
     <div class="comments-list">
       <div class="commentslist-title">
@@ -174,6 +179,8 @@ import { precision } from '@/common/precisionConversion';
 import CommentsList from './CommentsList.vue';
 import ArticleInfo from './ArticleInfo.vue';
 import Widget from './Widget';
+import tagCard from "@/components/tagCard/index";
+
 
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
@@ -194,6 +201,7 @@ export default {
     ContentLoader,
     mavonEditor,
     Widget,
+    tagCard
   },
   data() {
     return {

@@ -46,7 +46,7 @@
     <div class="tag">
       <p>选择标签</p>
       <div class="tag-content">
-        <tagCard @toggleTagStatus="toggleTagStatus" v-for="(item, index) in tagCards" :key="index" :tagCard="item" />
+        <tag-card @toggleTagStatus="toggleTagStatus" v-for="(item, index) in tagCards" :key="index" :tagCard="item" />
       </div>
     </div>
     <div class="radio" v-if="isShowEditorMode">
@@ -272,6 +272,20 @@ export default {
     },
     // 发布文章
     async publishArticle(article) {
+      // 文章标签 tag
+      const articleTag = tagCards => {
+        let tags = ''
+        const tagCardsFilter = tagCards.filter(i => i.status === true)
+        if (tagCardsFilter.length !== 0) {
+          tagCardsFilter.map((i,index) => {
+            if (index === 0) tags += i.id
+            else tags += `,${i.id}`
+          })
+        }
+        return tags
+      }
+      article.tags = articleTag(this.tagCards)
+
       const { failed, success } = this;
       try {
         const { author, hash } = article;
@@ -475,7 +489,7 @@ export default {
       const tagCardsIndex = this.tagCards.findIndex(i => i.id === data.id)
       if (tagCardsIndex === -1) return
       this.tagCards[tagCardsIndex].status = data.status
-      console.log(this.tagCards, data)
+      // console.log(this.tagCards, data)
     }
   },
   watch: {

@@ -39,11 +39,11 @@ const accessBackend = async (options) => {
 };
 
 const API = {
-  async sendArticle(url = '', {
-    signId = null, author, hash, title, fissionFactor, cover, isOriginal,
-  }, {
-    idProvider, publicKey, signature, username,
-  }, needAccessToken = false) {
+  async sendArticle(
+    url = '',
+    { signId = null, author, hash, title, fissionFactor, cover, isOriginal, tags},
+    { idProvider, publicKey, signature, username}, 
+    needAccessToken = false) {
     const data = {
       author,
       cover,
@@ -56,6 +56,7 @@ const API = {
       title,
       username,
       is_original: isOriginal,
+      tags
     };
     return !needAccessToken
       ? axiosforApiServer.post(url, data)

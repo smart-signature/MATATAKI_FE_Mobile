@@ -11,7 +11,16 @@ import tagColor from "@/common/tagColor";
 
 export default {
   name: 'tagColor',
-  props: ['tagCard'],
+  props: {
+    tagCard: {
+      type: Object,
+      required: true,
+    },
+    tagMode: {
+      type: Boolean,
+      default: true, // true 可编辑 false 预览
+    }
+  },
   data(){
     return {
       tagColors: {},
@@ -26,7 +35,7 @@ export default {
   created() {
     this.tagColors = tagColor()
     // console.log(tagColor())
-    this.setStyle()
+    this.setStyle(!this.tagMode)
   },
   methods: {
     // status: true 选中状态 false 默认状态
@@ -42,6 +51,7 @@ export default {
       this.tagStyleObject.border = `1px solid ${tagColor}`
     },
     toggleTagStatus(status) {
+      if (!this.tagMode) return
       this.tagCardCopy.status = !status
       this.setStyle(!status)
       // 向父级传递数据
