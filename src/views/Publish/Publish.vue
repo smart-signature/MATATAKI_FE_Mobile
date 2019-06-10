@@ -149,7 +149,7 @@ export default {
     modalMode: null, // header 判断点击的 back 还是 home
   }),
   computed: {
-    ...mapGetters(['currentUserInfo', 'currentUsername', 'isLogined']),
+    ...mapGetters(['currentUserInfo', 'isLogined']),
     isShowEditorMode() {
       // 创建和草稿的时候是否可以显示编辑器模式（单选按钮显示
       return !!(this.editorMode === 'create' || this.editorMode === 'draft');
@@ -183,7 +183,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['idCheckandgetAuth', 'getSignatureOfArticle']),
+    ...mapActions(['getSignatureOfArticle']),
     // 通过ID拿数据
     async setArticleDataById(hash, id) {
       const articleData = await getArticleDatafromIPFS(hash);
@@ -329,14 +329,16 @@ export default {
       }
       if (this.fissionFactor === '') this.fissionFactor = 2; // 用户不填写裂变系数则默认为2
 
+      
       const {
+        currentUserInfo,
         title,
         markdownData: content,
-        currentUsername: author,
         fissionFactor,
         cover,
         editorMode, saveType,
       } = this;
+      const { name: author } = currentUserInfo;
       const isOriginal = Number(this.isOriginal);
       console.log('sendThePost mode :', editorMode, saveType);
       if (editorMode === 'create' && saveType === 'public') { // 发布文章

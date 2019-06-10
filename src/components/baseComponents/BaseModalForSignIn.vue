@@ -25,8 +25,16 @@
 
             </div>
             <a class="modal-doc" target="_blank" :href="item.doc.href">{{item.doc.title}}</a>
+            
           </div>
+          
         </div>
+        <Divider>或者</Divider>
+          <div class="modal-logo-button" :class="'active2'" @click="walletLogin('GitHub')"
+            style="text-align: center;"
+          >
+            <img :src="iconGithub" :alt="'iconGithub'" />
+          </div>
         <div class="modal-loading" v-if="modalLoading">
           <van-loading type="spinner" color="#1989fa" />
         </div>
@@ -45,6 +53,7 @@ import iconCyano from '@/assets/img/icon_cyano.svg';
 import iconLeafwallet from '@/assets/img/icon_leafwallet.svg';
 import iconChallte from '@/assets/img/icon_challte.svg';
 import iconMeet from '@/assets/img/icon_meet.svg';
+import iconGithub from '@/assets/img/icon_logo_github.svg';
 
 export default {
   name: 'BaseModalForSignIn',
@@ -69,6 +78,7 @@ export default {
       modalText: {
         text: '选择授权方式',
       },
+      iconGithub: iconGithub,
       idProvider: [
         {
           url: iconEOS,
@@ -136,7 +146,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['idCheckandgetAuth']),
+    ...mapActions(['signIn']),
     change(status) {
       if (this.modalLoading) this.modalLoading = false;
       this.showModaCopy = status;
@@ -144,21 +154,20 @@ export default {
     },
     async walletLogin(type) {
       this.modalLoading = true;
-      await this.signIn(type);
+      if (type === 'GitHub') {
+        this.$router.push({ name: 'Login' });
+        return;
+      }
+      await this.signInx(type);
       this.modalLoading = false;
       this.change(false);
     },
-    async signIn(type) {
-      const success = () => {
-        localStorage.setItem('idProvider', this.userConfig.idProvider); // 成功存储登陆方式
-      };
+    async signInx(type) {
       try {
-        await this.idCheckandgetAuth({ idProvider: type });
-        success();
+        await this.signIn({ idProvider: type });
       } catch (error) {
         try {
-          await this.idCheckandgetAuth({ idProvider: type });
-          success();
+          await this.signIn({ idProvider: type });
         } catch (err) {
           console.log(err);
           this.$toast.fail({

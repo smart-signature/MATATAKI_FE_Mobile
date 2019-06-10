@@ -22,15 +22,16 @@ export default {
       // 跳轉
       window.location = `https://github.com/login/oauth/authorize?client_id=${clientID}&redirect_uri=${redirectUri}&scope=${scope}`;
     } else {
-      this.idCheckandgetAuth({ code, idProvider: 'GitHub' }).catch(() => {})
+      this.signIn({ code, idProvider: 'GitHub' }).catch(() => {})
       .then(() => {
         // console.debug(from);
+        // this.$router.push('/');
         this.$router.push(from);
       });
     }
   },
   methods: {
-    ...mapActions(['idCheckandgetAuth']),
+    ...mapActions(['signIn']),
   },
 };
 </script>

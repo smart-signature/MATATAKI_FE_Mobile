@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 <template>
   <div class="user mw" style="white-space:nowrap;">
-    <template v-if="isMe">
+    <template v-if="isMex">
       <BaseHeader :pageinfo="{ title: '个人中心'}" >
           <div slot="right" class="help-button" @click="jumpTo({ name: 'Help' })">
             <img src="@/assets/img/icon_user_settings.svg" alt="settings">
@@ -62,7 +62,7 @@
     </template>
     <template v-else>
       <BaseHeader :pageinfo="{ title: ''}" style="background-color: #478970" :white="true">
-      <div slot="right" v-if="!isMe">
+      <div slot="right" v-if="!isMex">
         <template v-if="!followed">
           <span class="darkBtn" @click="follow_user">关注</span>
         </template>
@@ -132,16 +132,12 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['currentUsername', 'displayName']),
-    isMe() {
-      const { username, currentUsername } = this;
-      return username === currentUsername;
-    },
+    ...mapGetters(['currentUserInfo', 'displayName', 'isMe']),
+    isMex() { return this.isMe(this.username); },
   },
   created() {
-    const { refreshUser } = this;
-    refreshUser();
-    const user = this.isMe ? '我' : this.username;
+    this.refreshUser();
+    const user = this.isMex ? '我' : this.username;
     document.title = `${user}的个人主页 - SmartSignature`;
   },
   methods: {
@@ -149,8 +145,8 @@ export default {
       this.$router.push(params);
     },
     async refreshUser() {
-      if (!this.username) this.username = this.currentUsername;
-      const { username, currentUsername } = this;
+      if (!this.username) this.username = this.currentUserInfo.name;
+      const { username, currentUserInfo } = this;
       const setUser = ({
         avatar, email, fans, follows, is_follow, nickname, introduction, accounts, articles, supports, drafts,
       }) => {
@@ -170,12 +166,12 @@ export default {
         };
       };
       try {
-        if (this.isMe) {
+        if (this.isMex) {
           const response = await getMyUserData();
           if (response.status !== 200) throw new Error('getUser error');
           setUser(response.data.data);
         } else {
-          const response = await getUser({ username }, currentUsername);
+          const response = await getUser({ username }, currentUserInfo.name);
           if (response.status !== 200) throw new Error('getUser error');
           setUser(response.data);
         }
@@ -184,8 +180,8 @@ export default {
       }
     },
     async follow_user() {
-      const { username, currentUsername } = this;
-      if (!currentUsername || !username) {
+      const { username, currentUserInfo } = this;
+      if (!currentUserInfo.name || !username) {
         this.$toast.fail({
           duration: 1000,
           message: '关注失败',
@@ -193,7 +189,7 @@ export default {
         return;
       }
       try {
-        await Follow({ followed: username, username: currentUsername });
+        await Follow({ followed: username, username: currentUserInfo.name });
         this.$toast.success({
           duration: 1000,
           message: '关注成功',
@@ -208,8 +204,8 @@ export default {
       this.refreshUser();
     },
     async unfollow_user() {
-      const { username, currentUsername } = this;
-      if (!currentUsername || !username) {
+      const { username, currentUserInfo } = this;
+      if (!currentUserInfo.name || !username) {
         this.$toast.fail({
           duration: 1000,
           message: '取消关注失败',
@@ -217,7 +213,7 @@ export default {
         return;
       }
       try {
-        await Unfollow({ followed: username, username: currentUsername });
+        await Unfollow({ followed: username, username: currentUserInfo.name });
         this.$toast.success({
           duration: 1000,
           message: '取消关注',
@@ -236,7 +232,7 @@ export default {
     },
   },
   watch: {
-    isMe() {
+    isMex() {
       this.refreshUser();
     },
   },

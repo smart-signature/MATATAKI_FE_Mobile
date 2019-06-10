@@ -169,9 +169,5 @@ export default new VueRouter({
       path: '*',
       redirect: '/',
     },
-    { // for test
-      path: '/oauth/redirect',
-      redirect: '/login/github',
-    },
   ],
 });

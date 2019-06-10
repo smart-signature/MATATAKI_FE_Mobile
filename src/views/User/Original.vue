@@ -20,7 +20,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['currentUsername', 'isMe']),
+    ...mapGetters(['isMe']),
   },
   watch: {
     isMe() {

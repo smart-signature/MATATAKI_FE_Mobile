@@ -60,10 +60,10 @@ export default new Vuex.Store({
       const currentToken = accessToken || getCurrentAccessToken();
       const decodedData = disassembleToken(currentToken); // 拆包
       const username = currentToken ? decodedData.iss : null;
-      const { name: currentUsername } = getters.currentUserInfo;
-      if (!currentUsername) throw new Error('no currentUsername');
+      const { name } = getters.currentUserInfo;
+      if (!name) throw new Error('no name');
       if (!currentToken || !decodedData || decodedData.exp < new Date().getTime()
-        || username !== currentUsername) {
+        || username !== name) {
         try {
           console.log('Retake authtoken...');
           const signature = await dispatch('getSignatureOfAuth');
@@ -99,71 +99,69 @@ export default new Vuex.Store({
     async getSignatureOfAuth({ dispatch, getters }) {
       return dispatch('getSignature', { mode: 'Auth', rawSignData: [getters.currentUserInfo.name] });
     },
-    async idCheckandgetAuth({
+    async signIn({
       commit, dispatch, state, getters,
-    }, data) {
-      if (data && data.idProvider) commit('setUserConfig', { idProvider: data.idProvider });
-      const { idProvider } = state.userConfig;
-      // console.debug('idCheckandgetAuth :', data, idProvider);
+    }, { code, idProvider, recover = false }) {
+      if (idProvider) { 
+        commit('setUserConfig', { idProvider });
+      }
+      else idProvider = state.userConfig.idProvider;
+      // console.debug('signIn :', data, idProvider);
       if (!idProvider) throw new Error('did not choice idProvider');
 
-      const accountInfoCheck = async () => {
-        if(data && !data.code && idProvider === 'GitHub') {
-          console.debug('2.');
-          if (getters.isLogined) commit('github/setAccount', state.userInfo.accessToken);
-          console.debug('3.', getters.isLogined);
-          return getters.isLogined;
-        } else if (getters.currentUserInfo.name) {
-          console.debug('4.');
-          console.log('Id check pass, id :', getters.currentUserInfo);
-          await dispatch('getAuth'); // 更新 Auth
-          return true;
+      const errorFailed = new Error(`Unable to get ${idProvider}'s id`);
+      console.debug(recover);
+      if (recover) {
+        if (idProvider === 'GitHub') {
+          commit('setAccessToken', getCurrentAccessToken());
+          commit('github/setAccount', state.userInfo.accessToken);
         }
-        console.debug('5.');
-        return false;
-      };
-
-      console.log('Start id check ...');
-      console.info('Ontology status :', state.ontology.account);
-      console.info('Scatter connect status :', state.scatter.isConnected);
-      if (await accountInfoCheck()) return true;
+        return true;
+      }
 
       // Scatter
       if (idProvider === 'EOS') {
-        if (!state.scatter.isConnected) {
-          const result = await dispatch('scatter/connect');
-          if (!result) throw new Error('faild connect to scatter');
-        }
-        if (state.scatter.isConnected && !state.scatter.isLoggingIn) {
-          const result = await dispatch('scatter/login');
-          if (!result) throw new Error('scatter login faild');
+        try {
+          if (!state.scatter.isConnected) {
+            const result = await dispatch('scatter/connect');
+            if (!result) throw new Error('Scatter: connection failed');
+          }
+          if (!state.scatter.isLoggingIn) {
+            const result = await dispatch('scatter/login');
+            if (!result) throw new Error('Scatter: login failed');
+          }
+          await dispatch('getAuth');
+        } catch (error) {
+          console.error(error);
+          throw errorFailed;
         }
       }
       // Ontology
       else if (idProvider === 'ONT') {
-        if (!state.ontology.account) {
-          const address = await dispatch('ontology/getAccount');
-          let balance = null;
+        try {
+          if (!state.ontology.account) await dispatch('ontology/getAccount');
           try {
-            balance = await dispatch('ontology/getBalance');
+            await dispatch('ontology/getBalance');
           } catch (error) {
-            console.warn('Failed to get balance :', error);
+            console.warn('Ontology: Failed to get balance :', error);
           }
-          console.info('ONT address :', address, 'balance :', balance);
+          await dispatch('getAuth');
+        } catch (error) {
+          console.error(error);
+          throw errorFailed;
         }
       }
       // GitHub
       else if (idProvider === 'GitHub') {
         try {
-          commit('setAccessToken', await dispatch('github/signIn', data));
+          commit('setAccessToken', await dispatch('github/signIn', { code }));
         } catch (error) {
-          console.error('GitHub signIn Failed.', error);
+          console.error('GitHub: signIn Failed.', error);
+          throw errorFailed;
         }
       }
 
-      if (await accountInfoCheck()) return true;
-
-      throw new Error(`Unable to get ${idProvider}'s id`);
+      localStorage.setItem('idProvider', state.userConfig.idProvider);
     },
     async makeShare({ dispatch, getters }, share) {
       const { idProvider } = getters.currentUserInfo;
