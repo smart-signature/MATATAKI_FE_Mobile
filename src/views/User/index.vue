@@ -102,7 +102,6 @@
 // 这个页面被改完了 还有一堆没有的方法待删除 -- 希望修改的时候改干净吧 :(
 import { mapGetters } from 'vuex';
 import {
-  Follow, Unfollow, getUser,
   getAvatarImage,
   uploadAvatar, getMyUserData,
 } from '@/api';
@@ -169,8 +168,7 @@ export default {
           if (response.status !== 200) throw new Error('getUser error');
           setUser(response.data.data);
         } else {
-          const response = await getUser({ username }, currentUserInfo.name);
-          if (response.status !== 200) throw new Error('getUser error');
+          const response = await this.$backendAPI.getUser({ uid: username });
           setUser(response.data);
         }
       } catch (error) {
@@ -188,7 +186,7 @@ export default {
     async followUser() {
       if (!this.checkb4FoUnfo('关注失败')) return;
       try {
-        await Follow({ followed: this.username });
+        await this.$backendAPI.follow({ followed: this.username });
         this.$toast.success({ duration: 1000, message: '关注成功' });
         this.followed = true;
       } catch (error) {
@@ -199,7 +197,7 @@ export default {
     async unfollowUser() {
       if (!this.checkb4FoUnfo('取消关注失败')) return;
       try {
-        await Unfollow({ followed: this.username });
+        await this.$backendAPI.unfollow({ followed: this.username });
         this.$toast.success({ duration: 1000, message: '取消关注' });
         this.followed = false;
       } catch (error) {

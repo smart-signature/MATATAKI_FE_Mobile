@@ -36,7 +36,6 @@
 
 <script>
 import {
-  Follow, Unfollow, getUser,
   getAvatarImage, setProfile,
   uploadAvatar,
 } from '@/api';
@@ -157,13 +156,10 @@ export default {
         this.setAvatarImage(data.avatar);
       };
 
-      await getUser({ username }).then((res) => {
+      await this.$backendAPI.getUser({ uid: username }).then((res) => {
         if (res.status === 200) setUser(res.data);
         else {
-          this.$toast.fail({
-            duration: 1000,
-            message: '失败',
-          });
+          this.$toast.fail({ duration: 1000, message: '失败' });
         }
       }).catch((err) => {
         console.log(err);

@@ -4,7 +4,7 @@ import ontology from './ontology';
 import scatter from './scatter';
 import github from './github';
 import {
-  backendAPI, getUser, disassembleToken, getCurrentAccessToken, setAccessToken,
+  disassembleToken, getCurrentAccessToken, setAccessToken,
 } from '@/api';
 
 if (!window.Vue) Vue.use(Vuex);
@@ -25,6 +25,7 @@ export default new Vuex.Store({
     userInfo: {
       accessToken: null,
       nickname: '',
+      uid: null,
     },
   },
   getters: {
@@ -49,7 +50,7 @@ export default new Vuex.Store({
         balance = '... XXX';
       }
       return ({
-        name, balance, idProvider, nickname: userInfo.nickname,
+        name, balance, idProvider, ...userInfo,
       });
     },
     //  displayName.length <= 12 ? name : name.slice(0, 12);
@@ -69,10 +70,10 @@ export default new Vuex.Store({
         try {
           console.log('Retake authtoken...');
           const signature = await dispatch('getSignatureOfAuth');
-          const { status, data: accessToken } = await backendAPI.auth(signature);
-          if (status !== 200) throw new Error('auth 出錯');
+          const { data: accessToken } = await backendAPI.auth(signature);
           console.info('got the access token :', accessToken);
           commit('setAccessToken', accessToken);
+          commit('setUid', accessToken);
           return accessToken;
         } catch (error) {
           console.warn('取得 access token 出錯', error);
@@ -184,8 +185,8 @@ export default new Vuex.Store({
       else if (idProvider === 'ONT') actionName = 'ontology/recordShare';
       return dispatch(actionName, share);
     },
-    async getUser({ commit, getters }) {
-      const { data } = await getUser({ username: getters.currentUserInfo.name });
+    async getCurrentUser({ commit, getters }) {
+      const { data } = await backendAPI.getUser({ uid: getters.currentUserInfo.uid });
       console.log(data);
       commit('setNickname', data.nickname);
       return data;
@@ -245,6 +246,9 @@ export default new Vuex.Store({
     },
     setNickname(state, nickname = '') {
       state.userInfo.nickname = nickname;
+    },
+    setUid(state, accessToken = null) {
+      state.userInfo.uid = (disassembleToken(accessToken)).uid;
     },
   },
 });

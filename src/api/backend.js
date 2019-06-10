@@ -7,11 +7,10 @@ import { Base64 } from 'js-base64';
 export const urlAddress = process.env.VUE_APP_URL;
 export const apiServer = process.env.VUE_APP_API;
 // https://github.com/axios/axios/issues/535
-const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 const axiosforApiServer = axios.create({
   baseURL: apiServer,
   headers: { Accept: '*/*', lang: 'zh' },
-  httpsAgent,
+  httpsAgent: new https.Agent({ rejectUnauthorized: false }),
 });
 
 // localStorage
@@ -30,16 +29,14 @@ export const disassembleToken = (token) => {
 };
 
 /* eslint no-param-reassign: ["error", { "props": false }] */
-const accessBackend = async (options) => {
-  // https://blog.fundebug.com/2018/07/25/es6-const/
+const accessBackend = async (config) => {
   const token = getCurrentAccessToken();
-  options.headers = {
-    'x-access-token': token,
-  };
-  if (options.data.platform && options.data.platform === 'need') {
-    options.data.platform = (disassembleToken(token)).platform;
+  // https://blog.fundebug.com/2018/07/25/es6-const/
+  config.headers = { 'x-access-token': token };
+  if (config.data && config.data.platform && config.data.platform === 'need') {
+    config.data.platform = (disassembleToken(token)).platform;
   }
-  return axiosforApiServer(options);
+  return axiosforApiServer(config);
 };
 
 const API = {
@@ -101,35 +98,24 @@ const API = {
     const url = reg.test(hashOrId) ? 'p' : 'post';
     return accessBackend({ url: `/${url}/${hashOrId}` });
   },
-  // Be used in User page.
-  async Follow({ followed }) {
+  async follow({ uid }) {
     return accessBackend({
       method: 'POST',
       url: '/follow',
-      data: { followed },
+      data: { uid },
     });
   },
-  async Unfollow({ followed }) {
+  async unfollow({ uid }) {
     return accessBackend({
       method: 'POST',
       url: '/unfollow',
-      data: { followed },
+      data: { uid },
     });
   },
-  async getUser({ username }, needAccessToken = false) {
-    const url = `/user/${username}`;
-    return !needAccessToken ? axiosforApiServer(url) : accessBackend({ url });
-  },
-  async getMyUserData() {
-    const url = '/user/stats';
-    return accessBackend({ url });
-  },
-  async getFansList({ username }) {
-    return accessBackend({ url: `/fans?user=${username}` });
-  },
-  async getFollowList({ username }) {
-    return accessBackend({ url: `/follows?user=${username}` });
-  },
+  // async getFansList({ uid }) { return accessBackend({ url: '/fans', params: { uid } }); },
+  // async getFollowList({ uid }) { return accessBackend({ url: '/follows', params: { uid } }); },
+  async getMyUserData() { return accessBackend({ url: '/user/stats' }); },
+  async getUser({ uid }) { return accessBackend({ url: `/user/${uid}` }); },
   async sendComment({ comment, signId }) {
     return accessBackend({
       method: 'POST',
@@ -211,11 +197,8 @@ const API = {
       },
     });
   },
-  async delDraft({ id }) {
-    return accessBackend({ method: 'DELETE', url: `/draft/${id}` });
-  },
+  async delDraft({ id }) { return accessBackend({ method: 'DELETE', url: `/draft/${id}` }); },
   async getDraft({ id }) { return accessBackend({ url: `/draft/${id}` }); },
-  // Be used in User page.
   async setProfile({ nickname, introduction, email }) {
     return accessBackend({
       method: 'POST',
@@ -227,10 +210,7 @@ const API = {
   // 获取账户资产列表 暂时没有EOS数据
   async getBalance() { return accessBackend({ url: '/balance' }); },
   async withdraw(rawData) {
-    const data = {
-      ...rawData,
-      platform: 'need',
-    };
+    const data = { ...rawData, platform: 'need' };
     if (rawData.signature) {
       data.publickey = rawData.signature.publicKey;
       data.sign = rawData.signature.signature;

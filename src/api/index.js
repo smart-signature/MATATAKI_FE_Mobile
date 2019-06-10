@@ -6,11 +6,7 @@ import API, { disassembleToken, getCurrentAccessToken, setAccessToken } from './
 import defaultImagesUploader from './imagesUploader';
 
 const {
-
   getArticleDatafromIPFS, getArticleInfo,
-  getUser,
-  Follow, Unfollow,
-  getFansList, getFollowList,
   sendComment, addReadAmount,
   delArticle, uploadAvatar, getAvatarImage,
   createDraft, updateDraft, delDraft, getDraft,
@@ -20,10 +16,7 @@ const {
 
 export {
   API as backendAPI,
-
   getArticleDatafromIPFS, getArticleInfo,
-  Follow, Unfollow, getUser,
-  getFansList, getFollowList,
   sendComment, addReadAmount,
   delArticle, uploadAvatar, getAvatarImage,
   createDraft, updateDraft, delDraft, getDraft,
