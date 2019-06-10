@@ -32,44 +32,41 @@ export const disassembleToken = (token) => {
 /* eslint no-param-reassign: ["error", { "props": false }] */
 const accessBackend = async (options) => {
   // https://blog.fundebug.com/2018/07/25/es6-const/
+  const token = getCurrentAccessToken();
   options.headers = {
-    'x-access-token': getCurrentAccessToken(),
+    'x-access-token': token,
   };
+  if (options.data.platform && options.data.platform === 'need') {
+    options.data.platform = (disassembleToken(token)).platform;
+  }
   return axiosforApiServer(options);
 };
 
 const API = {
-  async sendArticle(url = '', {
-    signId = null, author, hash, title, fissionFactor, cover, isOriginal,
-  }, {
-    idProvider, publicKey, signature, username,
+  async sendArticle(url, {
+    signId = null, author, hash, title, fissionFactor, cover, isOriginal, signature = null,
   }, needAccessToken = false) {
     const data = {
       author,
       cover,
       fissionFactor,
       hash,
-      platform: idProvider.toLowerCase(),
-      publickey: publicKey,
-      sign: signature,
+      platform: 'need',
+      publickey: signature ? signature.publicKey : null,
+      sign: signature ? signature.signature : null,
       signId,
       title,
-      username,
       is_original: isOriginal,
     };
     return !needAccessToken
       ? axiosforApiServer.post(url, data)
       : accessBackend({ method: 'POST', url, data });
   },
-  async publishArticle(article, signature) {
-    return this.sendArticle('/publish', article, signature);
-  },
-  async editArticle(article, signature) {
-    return this.sendArticle('/edit', article, signature, true);
-  },
+  async publishArticle(article) { return this.sendArticle('/publish', article); },
+  async editArticle(article) { return this.sendArticle('/edit', article, true); },
   async reportShare(share) {
     const data = {
-      ...share, platform: share.idProvider.toLowerCase(), referrer: share.sponsor,
+      ...share, platform: 'need', referrer: share.sponsor,
     };
     const { idProvider } = data;
     if (idProvider === 'EOS') {
@@ -234,7 +231,7 @@ const API = {
   async withdraw(rawData) {
     const data = {
       ...rawData,
-      platform: rawData.idProvider.toLowerCase(),
+      platform: 'need',
     };
     if (rawData.signature) {
       data.publickey = rawData.signature.publicKey;

@@ -263,11 +263,12 @@ export default {
       const { failed, success } = this;
       try {
         const { author, hash } = article;
-        const signature = await this.getSignatureOfArticle({ author, hash });
-        const response = await backendAPI.publishArticle(article, signature);
-        if (response.data.code !== 0) {
-          throw new Error(response.data.message);
+        let signature = null;
+        if (this.currentUserInfo.idProvider !== 'GitHub') {
+          signature = await this.getSignatureOfArticle({ author, hash });
         }
+        const response = await backendAPI.publishArticle({ article, signature });
+        if (response.data.code !== 0) throw new Error(response.data.message);
         success(response.data.data);
         console.log(response);
         return 'success';
@@ -287,7 +288,10 @@ export default {
     // 编辑文章
     async editArticle(data) {
       const { author, hash } = data;
-      const signature = await this.getSignatureOfArticle({ author, hash });
+      let signature = null;
+      if (this.currentUserInfo.idProvider !== 'GitHub') {
+        signature = await this.getSignatureOfArticle({ author, hash });
+      }
       const response = await backendAPI.editArticle(data, signature);
       if (response.status === 200 && response.data.code === 0) this.success(response.data.data);
       else this.failed('失败请重试');
