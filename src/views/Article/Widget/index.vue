@@ -8,20 +8,18 @@
     @on-visible-change="change"
     :closable="false">
       <div class="widget-content-button" v-if="widgetModalStatus === 0">
-
         <div class="widget-button" @click="createWidget">
           <div class="widget-button-img">
             <img src="@/assets/img/widget/widget.svg" alt="widget" />
           </div>
           <p>创建widget</p>
         </div>
-
-          <div class="widget-button" @click="copyCode(getClipboard)">
-            <div class="widget-button-img">
-              <img src="@/assets/img/widget/link.svg" alt="link" />
-            </div>
-            <p>复制邀请链接</p>
+        <div class="widget-button" @click="copyCode(getClipboard)">
+          <div class="widget-button-img">
+            <img src="@/assets/img/widget/link.svg" alt="link" />
           </div>
+          <p>复制邀请链接</p>
+        </div>
       </div>
       <div class="widget-writecontent" v-if="widgetModalStatus === 1">
         <p class="widget-title">创建widget</p>
