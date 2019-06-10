@@ -33,11 +33,7 @@ export default new VueRouter({
       name: 'Login',
       component: () => import(/* webpackChunkName: "login" */ './views/Login.vue'),
       beforeEnter: (to, from, next) => {
-        // eslint-disable-next-line eqeqeq
-        //to.params.from = 'xxx'
-         // to.query.from = from.path;
         if(!to.query.from) {
-          // console.debug('add from')
           next({ name: 'Login', query: { ...to.query, from: from.path } });
         }
         else next();
