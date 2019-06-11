@@ -2,13 +2,14 @@
 <template>
   <div class="article" @click.stop="opr = false">
     <BaseHeader :pageinfo="{ title: '文章详情' }">
-      <div slot="right" class="more">
-        <img  src="@/assets/more.svg" alt="more" @click.stop="opr = !opr" v-if="isMe(article.author)">
+      <div slot="right" class="more" @click.stop="opr = !opr" v-if="isMe(article.author)">
+        <img  src="@/assets/more.svg" alt="more">
         <transition name="fade" mode="out-in">
           <div class="dropdown" v-show="opr">
             <div
               class="dropdown-item"
               @click="$router.push({name: 'Publish', params: { id: article.id }, query: { from: 'edit', hash: article.hash }})">编辑</div>
+            <div class="dropdown-item">转让</div>
             <div class="dropdown-item" @click="delArticleButton">删除</div>
           </div>
         </transition>
