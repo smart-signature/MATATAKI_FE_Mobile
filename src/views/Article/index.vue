@@ -380,7 +380,7 @@ export default {
           // 默认会执行获取文章方法，更新文章调用则不需要获取内容
           if (!supportDialog) {
             this.getArticleDatafromIPFS(res.data.data.hash);
-            this.$backendAPI.getUser({ uid: res.data.data.author });
+            this.setAvatar(res.data.data.author);
           }
         } else {
           this.$toast({
@@ -609,11 +609,11 @@ export default {
       });
     },
     // 获取用户 得到头像
-    async getUser(username) {
-      const response = await this.$backendAPI.getUser({ uid: username });
-      if (response.status !== 200) throw new Error('getUser error');
-      if (!response.data.avatar) return;
-      this.articleAvatar = getAvatarImage(response.data.avatar);
+    async setAvatar(username) {
+      const { data, status } = await this.$backendAPI.getUser({ uid: username });
+      if (status !== 200) throw new Error('getUser error');
+      if (!data.avatar) return;
+      this.articleAvatar = getAvatarImage(data.avatar);
     },
     // 切换赞赏总额显示
     toggleAmount(name) {
