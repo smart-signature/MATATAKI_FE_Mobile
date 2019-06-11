@@ -9,7 +9,7 @@
             <div
               class="dropdown-item"
               @click="$router.push({name: 'Publish', params: { id: article.id }, query: { from: 'edit', hash: article.hash }})">编辑</div>
-            <div class="dropdown-item">转让</div>
+            <div class="dropdown-item" @click="transferModal = true">转让</div>
             <div class="dropdown-item" @click="delArticleButton">删除</div>
           </div>
         </transition>
@@ -156,6 +156,7 @@
     <ArticleInfo :infoModa="infoModa" @changeInfo="(status) => infoModa = status" />
     <BaseModalForSignIn :showModal="showModal" @changeInfo="changeInfo" />
     <Widget @changeWidgetModal="(status)=> widgetModal = status" :widgetModal="widgetModal" :id="article.id" :getClipboard="getClipboard" />
+    <article-transfer @changeTransferModal="(status)=> transferModal = status" :transferModal="transferModal" />
   </div>
 </template>
 
@@ -180,6 +181,7 @@ import { precision } from '@/common/precisionConversion';
 import CommentsList from './CommentsList.vue';
 import ArticleInfo from './ArticleInfo.vue';
 import Widget from './Widget';
+import articleTransfer from '@/components/articleTransfer';
 import tagCard from "@/components/tagCard/index";
 
 
@@ -202,7 +204,8 @@ export default {
     ContentLoader,
     mavonEditor,
     Widget,
-    tagCard
+    tagCard,
+    articleTransfer
   },
   data() {
     return {
@@ -235,6 +238,7 @@ export default {
       articleLoading: true, // 文章加载状态
       isOriginal: false,
       widgetModal: false, // 分享 widget dialog
+      transferModal: false, // 转让
     };
   },
   computed: {
