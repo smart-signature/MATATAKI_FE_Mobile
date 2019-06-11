@@ -1,7 +1,8 @@
 /* eslint-disable no-shadow */
 <template>
   <div class="user mw" style="white-space:nowrap;">
-    <template v-if="isMex">
+    <!-- <template v-if="isMex"> -->
+    <template v-if="true">
       <BaseHeader :pageinfo="{ title: '个人中心'}" >
           <div slot="right" class="help-button" @click="jumpTo({ name: 'Help' })">
             <img src="@/assets/img/icon_user_settings.svg" alt="settings">
@@ -59,6 +60,16 @@
           </span>
         </div>
       </div>
+
+       <div class="user-block">
+        <div class="user-block-list" @click="jumpTo({})">
+          <span class="user-block-list-title">购买记录</span>
+          <span class="user-block-list-des">
+            <img class="arrow" src="@/assets/img/icon_arrow.svg" alt="查看">
+          </span>
+        </div>
+      </div>
+
     </template>
     <template v-else>
       <BaseHeader :pageinfo="{ title: ''}" style="background-color: #478970" :white="true">

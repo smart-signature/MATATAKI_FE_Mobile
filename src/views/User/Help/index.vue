@@ -1,10 +1,19 @@
 <template>
   <div class="mw help">
-    <BaseHeader :pageinfo="{ title: '帮助'}"  />
+    <BaseHeader :pageinfo="{ title: '设置'}"  />
     <div class="help-block">
       <div class="help-list" v-for="(item, index) in helpDoc" :key="index" @click="jumpTo({name: item.name})">
         <span class="help-list-title">{{item.title}}</span>
         <img src="@/assets/img/icon_arrow.svg" alt="view">
+      </div>
+    </div>
+
+      <div class="help-block">
+       <div class="help-list">
+        <span class="help-list-title">接受文章转让</span>
+        <span class="help-list-sub">
+          <van-switch size="22px" v-model="articleTransfer" active-color="#56A56B" inactive-color="#F0F0F0" />
+        </span>
       </div>
     </div>
 
@@ -38,6 +47,7 @@ export default {
   naem: 'Help',
   data() {
     return {
+      articleTransfer: false,
       helpDoc: [
         {
           title: '规则介绍',
