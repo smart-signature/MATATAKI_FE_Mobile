@@ -28,29 +28,21 @@ export default new Vuex.Store({
     },
   },
   getters: {
-    currentUserInfo: ({
-      userConfig, userInfo, ontology, github,
-    }, {
-      'scatter/currentUsername': scatterUsername,
+    currentUserInfo: ({ userConfig, userInfo }, {
       'scatter/currentBalance': scatterBalance,
       'ontology/currentBalance': ontologyBalance,
     }) => {
       const { idProvider } = userConfig;
-      let name = null;
       let balance = null;
       if (idProvider === 'EOS') {
-        name = scatterUsername;
         balance = scatterBalance;
       } else if (idProvider === 'ONT') {
-        name = ontology.account;
         balance = ontologyBalance;
       } else if (idProvider === 'GitHub') {
-        name = github.account;
         balance = '... XXX';
       }
-      return ({
-        idProvider, name, balance, id: (disassembleToken(userInfo.accessToken)).id, ...userInfo,
-      });
+      const { id, iss: name } = disassembleToken(userInfo.accessToken);
+      return { id, idProvider, name, balance, ...userInfo };
     },
     //  displayName.length <= 12 ? name : name.slice(0, 12);
     displayName: ({ userInfo }, { currentUserInfo }) => userInfo.nickname || currentUserInfo.name,
@@ -58,28 +50,21 @@ export default new Vuex.Store({
     isMe: (state, { currentUserInfo }) => target => currentUserInfo.name === target,
   },
   actions: {
-    async getAuth({ commit, dispatch, getters }, accessToken) {
-      const currentToken = accessToken || getCurrentAccessToken();
-      const decodedData = disassembleToken(currentToken); // 拆包
-      const username = currentToken ? decodedData.iss : null;
-      const { name } = getters.currentUserInfo;
+    async getAuth({ dispatch, getters }, name = null) {
       if (!name) throw new Error('no name');
-      if (!currentToken || !decodedData || decodedData.exp < new Date().getTime()
-        || username !== name) {
+      let { accessToken } = getters.currentUserInfo;
+      const { exp, iss: username } = disassembleToken(accessToken);
+      if (!username || username !== name || exp < new Date().getTime()) {
         try {
           console.log('Retake authtoken...');
-          const signature = await dispatch('getSignatureOfAuth');
-          const { data: accessToken } = await backendAPI.auth(signature);
-          console.info('got the access token :', accessToken);
-          commit('setAccessToken', accessToken);
-          return accessToken;
+          const { data } = await backendAPI.auth(await dispatch('getSignatureOfAuth', { name }));
+          accessToken = data;
         } catch (error) {
           console.warn('取得 access token 出錯', error);
           throw error;
         }
       }
-      commit('setAccessToken', getCurrentAccessToken());
-      return currentToken;
+      return accessToken;
     },
     // output: { publicKey, signature, username }
     async getSignature({ dispatch, getters }, data = { mode: null, rawSignData: null }) {
@@ -95,27 +80,22 @@ export default new Vuex.Store({
     async getSignatureOfArticle({ dispatch }, { author, hash }) {
       return dispatch('getSignature', { mode: 'Article', rawSignData: [author, hash] });
     },
-    async getSignatureOfAuth({ dispatch, getters }) {
-      return dispatch('getSignature', { mode: 'Auth', rawSignData: [getters.currentUserInfo.name] });
+    async getSignatureOfAuth({ dispatch }, { name = null }) {
+      return dispatch('getSignature', { mode: 'Auth', rawSignData: [name] });
     },
     async signIn({
       commit, dispatch, state, getters,
-    }, { code, idProvider, recover = false }) {
-      if (idProvider) {
-        commit('setUserConfig', { idProvider });
-      } else idProvider = state.userConfig.idProvider;
-      // console.debug('signIn :', data, idProvider);
+    }, { code = null, idProvider = null, accessToken = null }) {
       if (!idProvider) throw new Error('did not choice idProvider');
+      commit('setUserConfig', { idProvider });
+
+      // recover
+      if (accessToken) {
+        commit('setAccessToken', accessToken);
+        if (idProvider === 'GitHub') return true;
+      }
 
       const errorFailed = new Error(`Unable to get ${idProvider}'s id`);
-      console.debug(recover);
-      if (recover) {
-        if (idProvider === 'GitHub') {
-          commit('setAccessToken', getCurrentAccessToken());
-          commit('github/setAccount', state.userInfo.accessToken);
-        }
-        return true;
-      }
 
       // Scatter
       if (idProvider === 'EOS') {
@@ -128,7 +108,7 @@ export default new Vuex.Store({
             const result = await dispatch('scatter/login');
             if (!result) throw new Error('Scatter: login failed');
           }
-          await dispatch('getAuth');
+          accessToken = await dispatch('getAuth', getters['scatter/currentUsername']);
         } catch (error) {
           console.error(error);
           throw errorFailed;
@@ -143,7 +123,7 @@ export default new Vuex.Store({
           } catch (error) {
             console.warn('Ontology: Failed to get balance :', error);
           }
-          await dispatch('getAuth');
+          accessToken = await dispatch('getAuth', state.ontology.account);
         } catch (error) {
           console.error(error);
           throw errorFailed;
@@ -152,13 +132,13 @@ export default new Vuex.Store({
       // GitHub
       else if (idProvider === 'GitHub') {
         try {
-          commit('setAccessToken', await dispatch('github/signIn', { code }));
+          accessToken = await dispatch('github/signIn', { code });
         } catch (error) {
           console.error('GitHub: signIn Failed.', error);
           throw errorFailed;
         }
       }
-
+      commit('setAccessToken', accessToken);
       localStorage.setItem('idProvider', state.userConfig.idProvider);
     },
     async makeShare({ dispatch, getters }, share) {
@@ -233,6 +213,7 @@ export default new Vuex.Store({
     setAccessToken(state, accessToken = null) {
       state.userInfo.accessToken = accessToken;
       setAccessToken(accessToken);
+      console.info('set access token :', accessToken);
     },
     setNickname(state, nickname = '') {
       state.userInfo.nickname = nickname;
