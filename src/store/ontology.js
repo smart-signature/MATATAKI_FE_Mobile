@@ -30,7 +30,7 @@ const actions = {
     commit('setBalance', balance);
     return balance;
   },
-  async getSignature({ state }, rawSignData) {
+  async getSignature({ state }, { rawSignData }) {
     const { account } = state;
     // console.log(state);
     if (!account) throw new Error('no account');

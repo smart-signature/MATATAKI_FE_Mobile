@@ -84,17 +84,15 @@ export default new Vuex.Store({
       return currentToken;
     },
     // output: { publicKey, signature, username }
-    async getSignature({ dispatch, getters }, data) {
+    async getSignature({ dispatch, getters }, data = { mode: null, rawSignData: null }) {
       // console.debug(getters.currentUserInfo, data.mode, data.rawSignData);
       const { idProvider } = getters.currentUserInfo;
-      let signature = null;
       if (idProvider === 'EOS') {
-        signature = await dispatch('scatter/getSignature', data);
-      } else if (idProvider === 'ONT') {
-        signature = await dispatch('ontology/getSignature', data.rawSignData);
+        return { idProvider, ...(await dispatch('scatter/getSignature', data)) };
       }
-      signature.idProvider = idProvider;
-      return signature;
+      if (idProvider === 'ONT') {
+        return { idProvider, ...(await dispatch('ontology/getSignature', data)) };
+      }
     },
     async getSignatureOfArticle({ dispatch }, { author, hash }) {
       return dispatch('getSignature', { mode: 'Article', rawSignData: [author, hash] });
