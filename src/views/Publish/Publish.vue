@@ -1,6 +1,7 @@
 <template>
   <div class="new-post">
     <BaseHeader
+      ref="baseHeader"
       :isCenter="false"
       :pageinfo="{ title: editorText, rightPage: 'home' }"
       :customizeBackFunc="true"
@@ -13,7 +14,7 @@
       </div>
     </BaseHeader>
     <div class="edit-content">
-    <input class="edit-title" v-model="title" placeholder="请输入你的文章标题..." size="large" clearable />
+      <input class="edit-title" v-model="title" placeholder="请输入你的文章标题..." size="large" clearable />
 
       <mavon-editor ref=md v-model="markdownData"
       class="editor"
@@ -65,7 +66,6 @@
       @changeInfo="changeInfo"
       @modalCancel="modalCancel" />
     <BaseModalForSignIn :showModal="showSignInModal" @changeInfo="changeInfo2" />
-
   </div>
 </template>
 
@@ -292,6 +292,7 @@ export default {
     async publishArticle(article) {
       // 设置文章标签 🏷️
       article.tags = this.setArticleTag(this.tagCards)
+      console.log(article)
       const { failed, success } = this;
       try {
         const { author, hash } = article;
@@ -318,15 +319,15 @@ export default {
       this.$router.go(-1);
     },
     // 编辑文章
-    async editArticle(data) {
+    async editArticle(article) {
       // 设置文章标签 🏷️
-      data.tags = this.setArticleTag(this.tagCards)
-      const { author, hash } = data;
+      article.tags = this.setArticleTag(this.tagCards)
+      const { author, hash } = article;
       let signature = null;
       if (this.currentUserInfo.idProvider !== 'GitHub') {
         signature = await this.getSignatureOfArticle({ author, hash });
       }
-      const response = await backendAPI.editArticle(data, signature);
+      const response = await backendAPI.editArticle({article, signature});
       if (response.status === 200 && response.data.code === 0) this.success(response.data.data);
       else this.failed('失败请重试');
     },

@@ -40,9 +40,11 @@ const accessBackend = async (config) => {
 };
 
 const API = {
-  async sendArticle(url, {
-    signId = null, author, hash, title, fissionFactor, cover, isOriginal, signature = null, tags
-  }) {
+  async sendArticle(
+    url,
+    { signId = null, author, hash, title, fissionFactor, cover, isOriginal, tags},
+    signature = null
+    ) {
     const data = {
       author,
       cover,
@@ -58,8 +60,12 @@ const API = {
     };
     return accessBackend({ method: 'POST', url, data });
   },
-  async publishArticle(article) { return this.sendArticle('/publish', article); },
-  async editArticle(article) { return this.sendArticle('/edit', article); },
+  async publishArticle({article,signature}) { return this.sendArticle('/publish', article,signature)},
+  async editArticle({article,signature}) { 
+    console.log(article,signature);
+    
+    return this.sendArticle('/edit', article,signature);
+   },
   async reportShare(share) {
     const data = {
       ...share, platform: 'need', referrer: share.sponsor,
