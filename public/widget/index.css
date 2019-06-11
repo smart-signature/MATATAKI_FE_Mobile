@@ -364,6 +364,7 @@ body {
 .container {
   height: 150px;
 }
+
 .widget {
   width: 375px;
   background-color: #333333;
@@ -381,7 +382,6 @@ body {
   border-radius: 50%;
   overflow: hidden;
 }
-
 
 .widget h1 {
   padding: 0 40px 0 0;
@@ -503,3 +503,5 @@ body {
     width: 100%;
   }
 }
+
+/* 上线前需要添加前缀和压缩 */
