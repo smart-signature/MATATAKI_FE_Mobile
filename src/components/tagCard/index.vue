@@ -51,11 +51,21 @@ export default {
       this.tagStyleObject.border = `1px solid ${tagColor}`
     },
     toggleTagStatus(status) {
-      if (!this.tagMode) return
-      this.tagCardCopy.status = !status
-      this.setStyle(!status)
-      // 向父级传递数据
-      this.$emit('toggleTagStatus', this.tagCardCopy)
+      if (!this.tagMode) {
+        this.$router.push({
+          name: 'Tag',
+          params: {
+            id: this.tagCard.id,
+            name: this.tagCard.name
+          }
+        })
+      } else {
+        this.tagCardCopy.status = !status
+        this.setStyle(!status)
+        // 向父级传递数据
+        this.$emit('toggleTagStatus', this.tagCardCopy)
+      }
+
     }
   }
 }

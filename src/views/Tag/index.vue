@@ -4,7 +4,7 @@
     <div class="tag-banner" :style="{backgroundColor: tagBanner}">
       <div class="tag-banner-title">
         <img src="@/assets/img/icon_article_tag.svg" alt="tag" />
-        <span>深剖区块链</span>
+        <span>{{tagTitle}}</span>
       </div>
     </div>
     <p class="tag-title">最新</p>
@@ -32,14 +32,18 @@ export default {
   components: { ArticleCard },
   data(){
     return {
-      tagBanner: '#eee',
+      tagTitle: '',
+      tagBanner: '#000',
       tagList: [],
-      params: {},
-      apiUrl: 'homeTimeRanking',
+      params: {
+        tagid: this.id
+      },
+      apiUrl: 'getPostByTagById',
     }
   },
   created() {
-    this.tagBanner = tagColor()[this.id]
+    this.tagBanner = tagColor()[this.id] || '#000'
+    this.tagTitle = this.$route.params.name
   },
   methods: {
     getListData(res) {

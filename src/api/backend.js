@@ -170,6 +170,8 @@ const API = {
       userArticlesSupportedList: 'posts/supported',
       // draftbox
       draftboxList: 'drafts',
+      // tag by id
+      getPostByTagById: 'posts/getPostByTag',
     };
 
     return !needAccessToken
@@ -227,7 +229,7 @@ const API = {
   // 获取可用标签列表
   async getTags() {
     return axiosforApiServer.get('/tag/tags')
-  }
+  },
 };
 
 export default API;
