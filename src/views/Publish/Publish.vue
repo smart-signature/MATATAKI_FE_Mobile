@@ -481,11 +481,11 @@ export default {
     async getTags() {
       await backendAPI.getTags().then(res => {
         console.log(res)
-        if (res.status === 200) {
+        if (res.status === 200 && res.data.code === 0) {
           let {data} = res.data
           data.map(i =>  i.status = false)
           this.tagCards = data
-        }
+        } else console.log(res.data.message)
       }).catch(err => { console.log(err) })
     },
     // 切换状态
