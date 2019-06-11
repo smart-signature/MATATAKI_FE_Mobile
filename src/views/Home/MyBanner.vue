@@ -52,7 +52,7 @@ export default {
     if (isLogined) { refreshUser(); }
   },
   methods: {
-    ...mapActions(['getUser']),
+    ...mapActions(['getCurrentUser']),
     toUserPage(username) {
       this.$router.push({ name: 'User', params: { username } });
     },
@@ -60,7 +60,7 @@ export default {
       if (hash) this.avatar = getAvatarImage(hash);
     },
     async refreshUser() {
-      const { avatar } = await this.getUser();
+      const { avatar } = await this.getCurrentUser();
       this.getAvatarImage(avatar);
     },
     // 改变modal
