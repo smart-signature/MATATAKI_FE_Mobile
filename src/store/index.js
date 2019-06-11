@@ -25,7 +25,6 @@ export default new Vuex.Store({
     userInfo: {
       accessToken: null,
       nickname: '',
-      uid: null,
     },
   },
   getters: {
@@ -50,7 +49,7 @@ export default new Vuex.Store({
         balance = '... XXX';
       }
       return ({
-        name, balance, idProvider, ...userInfo,
+        idProvider, name, balance, id: (disassembleToken(userInfo.accessToken)).id, ...userInfo,
       });
     },
     //  displayName.length <= 12 ? name : name.slice(0, 12);
@@ -73,7 +72,6 @@ export default new Vuex.Store({
           const { data: accessToken } = await backendAPI.auth(signature);
           console.info('got the access token :', accessToken);
           commit('setAccessToken', accessToken);
-          commit('setUid', accessToken);
           return accessToken;
         } catch (error) {
           console.warn('取得 access token 出錯', error);
@@ -84,17 +82,15 @@ export default new Vuex.Store({
       return currentToken;
     },
     // output: { publicKey, signature, username }
-    async getSignature({ dispatch, getters }, data) {
+    async getSignature({ dispatch, getters }, data = { mode: null, rawSignData: null }) {
       // console.debug(getters.currentUserInfo, data.mode, data.rawSignData);
       const { idProvider } = getters.currentUserInfo;
-      let signature = null;
       if (idProvider === 'EOS') {
-        signature = await dispatch('scatter/getSignature', data);
-      } else if (idProvider === 'ONT') {
-        signature = await dispatch('ontology/getSignature', data.rawSignData);
+        return { idProvider, ...(await dispatch('scatter/getSignature', data)) };
       }
-      signature.idProvider = idProvider;
-      return signature;
+      if (idProvider === 'ONT') {
+        return { idProvider, ...(await dispatch('ontology/getSignature', data)) };
+      }
     },
     async getSignatureOfArticle({ dispatch }, { author, hash }) {
       return dispatch('getSignature', { mode: 'Article', rawSignData: [author, hash] });
@@ -186,17 +182,15 @@ export default new Vuex.Store({
       return dispatch(actionName, share);
     },
     async getCurrentUser({ commit, getters }) {
-      const { data } = await backendAPI.getUser({ uid: getters.currentUserInfo.uid });
-      console.log(data);
+      const { data } = await backendAPI.getUser({ uid: getters.currentUserInfo.id });
+      console.info(data);
       commit('setNickname', data.nickname);
       return data;
     },
     signOut({ commit, dispatch, state }) {
       const { idProvider } = state.userConfig;
-      const EOS = idProvider === 'EOS';
-      const ONT = idProvider === 'ONT';
-      if (EOS) dispatch('scatter/logout');
-      if (ONT) dispatch('ontology/signOut');
+      if (idProvider === 'EOS') dispatch('scatter/logout');
+      if (idProvider === 'ONT') dispatch('ontology/signOut');
       commit('setUserConfig');
       commit('setAccessToken');
       commit('setNickname');
@@ -239,16 +233,13 @@ export default new Vuex.Store({
       state.userInfo.accessToken = accessToken;
       setAccessToken(accessToken);
     },
+    setNickname(state, nickname = '') {
+      state.userInfo.nickname = nickname;
+    },
     setUserConfig(state, config = null) {
       // only idProvider now
       if (config) state.userConfig.idProvider = config.idProvider;
       else state.userConfig.idProvider = null;
-    },
-    setNickname(state, nickname = '') {
-      state.userInfo.nickname = nickname;
-    },
-    setUid(state, accessToken = null) {
-      state.userInfo.uid = (disassembleToken(accessToken)).id;
     },
   },
 });
