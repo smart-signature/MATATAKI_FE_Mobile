@@ -32,9 +32,21 @@ export default {
       tagCardCopy: Object.assign({}, this.tagCard)
     }
   },
+  watch: {
+    tagCard: {
+      handler(newVal) {
+        // console.log(newVal)
+        this.tagCardCopy = Object.assign({}, newVal)
+        this.setStyle(this.tagCard.status)
+      },
+      immediate: true,
+      deep: true
+    }
+  },
   created() {
     this.tagColors = tagColor()
-    // console.log(tagColor())
+    // console.log(this.tagCard)
+    // 初始化根据模式设置
     this.setStyle(!this.tagMode)
   },
   methods: {
@@ -50,6 +62,7 @@ export default {
       }
       this.tagStyleObject.border = `1px solid ${tagColor}`
     },
+    // 切换状态
     toggleTagStatus(status) {
       if (!this.tagMode) {
         this.$router.push({
@@ -65,7 +78,6 @@ export default {
         // 向父级传递数据
         this.$emit('toggleTagStatus', this.tagCardCopy)
       }
-
     }
   }
 }

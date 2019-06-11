@@ -128,6 +128,7 @@ export default {
     },
     modalMode: null, // header 判断点击的 back 还是 home
     tagCards: [], // 文章标签
+    articleData: {}, // 文章数据 
   }),
   created() {
     const { id } = this.$route.params;
@@ -135,13 +136,10 @@ export default {
     // console.log(id, from);
     if (id === 'create' && !from) { // 发布文章 from 为 undefined
       // console.log('发布文章');
-    } else if (from === 'edit') {
-      // console.log('编辑文章');
+    } else if (from === 'edit') { // 编辑文章
       this.editorMode = 'edit';
-      // this.setArticleData(hash);
       this.setArticleDataById(hash, id);
-    } else if (from === 'draft') {
-      // console.log('草稿箱');
+    } else if (from === 'draft') { // 草稿箱
       this.editorMode = 'draft';
       this.saveType = 'draft';
       this.getDraft(id);
@@ -150,6 +148,7 @@ export default {
     }
 
     this.getTags()
+
   },
   mounted() {
     this.resize();
@@ -202,6 +201,13 @@ export default {
           this.cover = data.data.cover;
           this.signId = data.data.id;
           this.isOriginal = Boolean(data.data.is_original);
+          
+          this.articleData = data.data // 设置文章数据
+
+          // 编辑的时候设置tag状态
+          const { from } = this.$route.query;
+          if (from && from === 'edit' || from === 'draft') this.setTagStatus()
+
         } else {
           this.$Notice.error({ title: data.message });
           this.$router.push({ name: 'home' });
@@ -270,22 +276,22 @@ export default {
       if (data.code !== 200) this.failed('1st step : send post to ipfs failed');
       return data;
     },
+    // 文章标签 tag
+    setArticleTag(tagCards) { 
+      let tags = ''
+      const tagCardsFilter = tagCards.filter(i => i.status === true)
+      if (tagCardsFilter.length !== 0) {
+        tagCardsFilter.map((i,index) => {
+          if (index === 0) tags += i.id
+          else tags += `,${i.id}`
+        })
+      }
+      return tags
+    },
     // 发布文章
     async publishArticle(article) {
-      // 文章标签 tag
-      const articleTag = tagCards => {
-        let tags = ''
-        const tagCardsFilter = tagCards.filter(i => i.status === true)
-        if (tagCardsFilter.length !== 0) {
-          tagCardsFilter.map((i,index) => {
-            if (index === 0) tags += i.id
-            else tags += `,${i.id}`
-          })
-        }
-        return tags
-      }
-      article.tags = articleTag(this.tagCards)
-
+      // 设置文章标签 🏷️
+      article.tags = this.setArticleTag(this.tagCards)
       const { failed, success } = this;
       try {
         const { author, hash } = article;
@@ -313,6 +319,8 @@ export default {
     },
     // 编辑文章
     async editArticle(data) {
+      // 设置文章标签 🏷️
+      data.tags = this.setArticleTag(this.tagCards)
       const { author, hash } = data;
       let signature = null;
       if (this.currentUserInfo.idProvider !== 'GitHub') {
@@ -480,7 +488,6 @@ export default {
     // 获取标签
     async getTags() {
       await backendAPI.getTags().then(res => {
-        console.log(res)
         if (res.status === 200 && res.data.code === 0) {
           let {data} = res.data
           data.map(i =>  i.status = false)
@@ -494,6 +501,14 @@ export default {
       if (tagCardsIndex === -1) return
       this.tagCards[tagCardsIndex].status = data.status
       // console.log(this.tagCards, data)
+    },
+    // 设置标签状态
+    setTagStatus() {
+      let tagCardsCopy = this.tagCards
+      this.articleData.tags.map(i => {
+        tagCardsCopy.map((j, index) => { if(i.id === j.id) tagCardsCopy[index].status = true });
+      })
+      this.tagCards = tagCardsCopy
     }
   },
   watch: {
