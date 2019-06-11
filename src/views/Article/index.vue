@@ -615,10 +615,9 @@ export default {
     },
     // 获取用户 得到头像
     async setAvatar(username) {
-      const { data, status } = await this.$backendAPI.getUser({ uid: username });
-      if (status !== 200) throw new Error('getUser error');
-      if (!data.avatar) return;
-      this.articleAvatar = getAvatarImage(data.avatar);
+      let { data } = await this.$backendAPI.getUser({ uid: username });
+      data = data.data;
+      if (data.avatar) this.articleAvatar = getAvatarImage(data.avatar);
     },
     // 切换赞赏总额显示
     toggleAmount(name) {

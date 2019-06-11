@@ -147,14 +147,14 @@ export default {
   },
   created() {
     this.refreshUser();
-    const user = this.isMex ? '我' : this.username;
+    const { isMe, username } = this;
+    const user = isMe(username) ? '我' : username;
     document.title = `${user}的个人主页 - SmartSignature`;
   },
   methods: {
     jumpTo(params) { this.$router.push(params); },
     async refreshUser() {
-      if (!this.username) this.username = this.currentUserInfo.name;
-      const { username, currentUserInfo } = this;
+      const { isMe, username } = this;
       const setUser = ({
         avatar, email, fans, follows, is_follow, nickname, introduction, accounts, articles, supports, drafts,
       }) => {
@@ -173,22 +173,19 @@ export default {
           drafts,
         };
       };
-      try {
-        if (this.isMex) {
-          const response = await getMyUserData();
-          if (response.status !== 200) throw new Error('getUser error');
-          setUser(response.data.data);
-        } else {
-          const response = await this.$backendAPI.getUser({ uid: username });
-          setUser(response.data);
-        }
-      } catch (error) {
-        throw error;
+
+      let response = null;
+      if (isMe(username)) {
+        response = await getMyUserData();
+        if (response.status !== 200) throw new Error('getMyUserData error');
+      } else {
+        response = await this.$backendAPI.getUser({ uid: username });
       }
+      // console.debug(response.data);
+      setUser(response.data.data);
     },
     checkb4FoUnfo(message) {
-      const { isLogined, username } = this;
-      if (!isLogined || !username) {
+      if (!this.isLogined) {
         this.$toast.fail({ duration: 1000, message });
         return false;
       }
@@ -221,7 +218,7 @@ export default {
     },
   },
   watch: {
-    isMex() { this.refreshUser(); },
+    isLogined() { this.refreshUser(); },
   },
 };
 </script>

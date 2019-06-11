@@ -182,7 +182,8 @@ export default new Vuex.Store({
       return dispatch(actionName, share);
     },
     async getCurrentUser({ commit, getters }) {
-      const { data } = await backendAPI.getUser({ uid: getters.currentUserInfo.id });
+      let { data } = await backendAPI.getUser({ uid: getters.currentUserInfo.id });
+      data = data.data;
       console.info(data);
       commit('setNickname', data.nickname);
       return data;
