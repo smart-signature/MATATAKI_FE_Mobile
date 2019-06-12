@@ -219,7 +219,7 @@ const API = {
   // 获取账户资产列表 暂时没有EOS数据
   async getBalance() { return accessBackend({ url: '/balance' }); },
   async withdraw(rawData) {
-    const data = { ...rawData, platform: 'need' };
+    const data = { ...rawData, platform: rawData.tokenName.toLowerCase() };
     if (rawData.signature) {
       data.publickey = rawData.signature.publicKey;
       data.sign = rawData.signature.signature;
