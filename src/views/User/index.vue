@@ -1,8 +1,7 @@
 /* eslint-disable no-shadow */
 <template>
   <div class="user mw" style="white-space:nowrap;">
-    <!-- <template v-if="isMex"> -->
-    <template v-if="true">
+    <template v-if="isMex">
       <BaseHeader :pageinfo="{ title: '个人中心'}" >
           <div slot="right" class="help-button" @click="jumpTo({ name: 'Help' })">
             <img src="@/assets/img/icon_user_settings.svg" alt="settings">
