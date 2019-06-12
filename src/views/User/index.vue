@@ -58,7 +58,7 @@
       </div>
 
        <div class="user-block">
-        <div class="user-block-list" @click="jumpTo({name: 'BuyHistory', params: { id }})">
+        <div class="user-block-list" @click="jumpTo({name: 'BuyHistory'})">
           <span class="user-block-list-title">购买记录</span>
           <span class="user-block-list-des">
             <img class="arrow" src="@/assets/img/icon_arrow.svg" alt="查看">
