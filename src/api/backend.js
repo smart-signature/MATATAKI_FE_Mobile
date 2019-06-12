@@ -242,6 +242,14 @@ const API = {
     if (from === 'article') return accessBackend({ method: 'POST', url: '/post/transferOwner', data: { signid: articleId, uid }});
     else if (from === 'draft') return accessBackend({ method: 'POST', url: '/draft/transferOwner', data: { draftid: articleId, uid }});
   },
+  // 通过用户名搜索
+  async searchUsername(username) {
+    return axiosforApiServer.get('/search', {
+      params: {
+        q: username
+      }
+    })
+  },
 };
 
 export default API;

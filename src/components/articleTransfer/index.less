@@ -93,12 +93,67 @@
   }
 }
 
+.widget-input-container {
+  position: relative;
+  .widget-input-user {
+    position: absolute;
+    top: 32px;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #B2B2B2;
+    border-radius: 8px;
+    border-top: none;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    align-items: center;
+    padding: 22px 0 10px 20px;
+    box-sizing: border-box;
+    span {
+      font-size:14px;
+      font-weight:400;
+      color:rgba(178,178,178,1);
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+   
+  }
+  .widget-input-avater {
+    width: 30px;
+    height: 30px;
+    background-color: #eee;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 10px;
+    flex: 0 0 30px;
+    img {
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .error-info {
+    font-size:12px;
+    font-weight:400;
+    color:rgba(224,32,32,1);
+    padding: 5px 0 0 15px;
+    display: inline-block;
+  }
+
+}
+
 
 // 公用输入框
 .widget-input {
   background: #F1F1F1;
   min-width: 275px;
   border-radius: 8px;
+  position: relative;
+  z-index: 1;
 }
 
 // 公用标题
@@ -129,5 +184,9 @@
     background-color: #2B2B2B;
     text-align: center;
     cursor: pointer;
+    margin-right: 2px;
+    &.gray {
+      background-color: #B2B2B2;
+    }
   }
 }

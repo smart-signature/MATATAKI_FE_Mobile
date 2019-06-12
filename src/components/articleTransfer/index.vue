@@ -9,10 +9,29 @@
     :closable="false">
       <div class="widget-writecontent" v-if="widgetModalStatus === 0">
         <p class="widget-title">转让文章的ownership</p>
-        <van-field class="widget-input" v-model="transferId" placeholder="请输入想要转让的用户id" />
+        <div class="widget-input-container">
+          <van-field 
+            class="widget-input" 
+            v-model="transferUsername"
+            @input="changeTransferId"
+            placeholder="请输入想要转让的用户名" />
+          <div class="widget-input-user" 
+            v-if="resultUser" 
+            @click="continueUser">
+            <div class="widget-input-avater">
+              <img :src="userAvatar" alt="avatar" />
+            </div>
+            <span>{{searchUsernameInfo.nickname || searchUsernameInfo.username}}</span>
+          </div>
+          <span class="error-info" v-if="errorMessage">用户不存在</span>
+        </div>
         <div class="widget-footer">
           <a class="help" href="javascript:;" @click="reviewHelp">如何转让ownership？</a>
-          <a class="create" href="javascript:;" @click="transferArticle">转让文章</a>
+          <a 
+            class="create" 
+            href="javascript:;" 
+            :class="[!buttonStatus && 'gray']"
+            @click="transferArticle">转让文章</a>
         </div>
       </div>
       <div class="widget-help" v-if="widgetModalStatus === 1">
@@ -29,6 +48,7 @@
 import { sleep } from '@/common/methods';
 import { strTrim } from '@/common/reg';
 import { backendAPI } from '@/api';
+import debounce from 'lodash/debounce';
 
 export default {
   name: 'ArticleTransfer',
@@ -40,7 +60,11 @@ export default {
       // 1 转让
       widgetModalStatus: 0,
       oldWidgetModalStatus: 0,
-      transferId: '',
+      transferUsername: '',
+      errorMessage: false, // 错误信息 默认不显示
+      resultUser: false, // 搜索结果  默认不显示
+      buttonStatus: false, // 转让按钮 默认无法点击
+      searchUsernameInfo: null, // 用户信息
     };
   },
   watch: {
@@ -49,6 +73,10 @@ export default {
     },
   },
   computed: {
+    userAvatar() {
+      let avatar = this.searchUsernameInfo.avatar
+      return backendAPI.getAvatarImage(avatar)
+    }
   },
   methods: {
     reviewHelp() {
@@ -58,13 +86,10 @@ export default {
       this.widgetModalStatus = this.oldWidgetModalStatus;
     },
     async transferArticle() {
-      let transferId = this.transferId
-      console.log(this.articleId)
-      if (!strTrim(transferId)) return this.$toast({duration: 1000,message: '用户Id不能为空'});
-
+      if (!this.buttonStatus) return
+      let transferUsername = this.searchUsernameInfo.id
       try {
-        const res = await backendAPI.transferOwner(this.from, this.articleId, this.transferId)
-        console.log(res)
+        const res = await backendAPI.transferOwner(this.from, this.articleId, transferUsername)
         if (res.status === 200 && res.data.code === 0) {
           this.$toast({duration: 1000,message: '转让成功,自动返回首页'});
           this.change(false);
@@ -80,15 +105,51 @@ export default {
     },
     resetStatus() {
       this.widgetModalStatus = 0;
-      this.transferId = '';
+      this.transferUsername = '';
+      this.errorMessage = false;
+      this.resultUser = false;
+      this.buttonStatus = false;
+      this.searchUsernameInfo = null;
     },
     async change(status) {
-      // console.log(status)
       this.transferModalCopy = status;
       this.$emit('changeTransferModal', status);
       await sleep(300);
       !status && this.resetStatus();
     },
+    setSearchUserInfo(data) {
+      this.searchUsernameInfo = data
+    },
+    changeTransferId: debounce(async function() {
+      if (!strTrim(this.transferUsername)) {
+        this.resultUser = false
+        this.errorMessage = false
+        return
+      }
+     try {
+        console.log(this.transferUsername)
+        const res = await backendAPI.searchUsername(this.transferUsername)
+        console.log(res);
+        if (res.status === 200 && res.data.code === 0) {
+          this.setSearchUserInfo(res.data.data)
+          this.resultUser = true
+          this.errorMessage = false
+        } else {
+          this.resultUser = false
+          this.errorMessage = true
+          this.buttonStatus = false
+        }
+     } catch (error) {
+        console.log(error)
+        this.resultUser = false
+        this.errorMessage = true
+        this.buttonStatus = false
+     }
+    }, 300),
+    continueUser() {
+      this.resultUser = false
+      this.buttonStatus = true
+    }
   },
 };
 </script>
