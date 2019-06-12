@@ -9,8 +9,16 @@
       :customizeHeaderBc="'#fff'"
       @headerBackFunc="headerBackFunc"
       @headerHomeFunc="headerHomeFunc">
-      <div slot="right">
+      <div slot="right" class="header-right-slot">
         <span class="send-button" @click="sendThePost">{{sendBtnText}}</span>
+        <div v-if="isShowTransfer" slot="right" class="more" @click.stop="transferButton = !transferButton">
+          <img  src="@/assets/more.svg" alt="more">
+          <transition name="fade" mode="out-in">
+            <div class="dropdown">
+              <div class="dropdown-item" @click="transferModal = true">转让</div>
+            </div>
+          </transition>
+        </div>
       </div>
     </BaseHeader>
     <div class="edit-content">
@@ -66,6 +74,8 @@
       @changeInfo="changeInfo"
       @modalCancel="modalCancel" />
     <BaseModalForSignIn :showModal="showSignInModal" @changeInfo="changeInfo2" />
+    <article-transfer v-if="isShowTransfer" @changeTransferModal="(status)=> transferModal = status" :transferModal="transferModal" :articleId=" $route.params.id" :from="$route.query.from" />
+
   </div>
 </template>
 
@@ -90,6 +100,8 @@ import imgUpload from '@/components/imgUpload/index.vue'; // 图片上传
 import modalPrompt from './components/modalPrompt.vue'; // 弹出框提示
 
 import tagCard from "@/components/tagCard/index";
+import articleTransfer from '@/components/articleTransfer';
+
 
 export default {
   name: 'NewPost',
@@ -98,7 +110,8 @@ export default {
     VueSlider,
     imgUpload,
     modalPrompt,
-    tagCard
+    tagCard,
+    articleTransfer
   },
     data: () => ({
     title: '',
@@ -129,6 +142,8 @@ export default {
     modalMode: null, // header 判断点击的 back 还是 home
     tagCards: [], // 文章标签
     articleData: {}, // 文章数据 
+    transferButton: false, // 转让按钮
+    transferModal: false, // 转让弹框
   }),
   created() {
     const { id } = this.$route.params;
@@ -187,6 +202,9 @@ export default {
     coverEditor() {
       return getAvatarImage(this.cover);
     },
+    isShowTransfer() {
+      return this.$route.query.from === 'draft'
+    }
   },
   methods: {
     ...mapActions(['getSignatureOfArticle']),
