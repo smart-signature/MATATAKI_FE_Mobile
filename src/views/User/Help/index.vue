@@ -12,7 +12,12 @@
        <div class="help-list">
         <span class="help-list-title">接受文章转让</span>
         <span class="help-list-sub">
-          <van-switch size="22px" v-model="articleTransfer" active-color="#56A56B" inactive-color="#F0F0F0" />
+          <van-switch 
+          size="22px" 
+          v-model="articleTransfer" 
+          active-color="#56A56B" 
+          inactive-color="#F0F0F0"
+          @change="changeTransfer" />
         </span>
       </div>
     </div>
@@ -42,7 +47,7 @@
 
 <script>
 import { mapActions } from 'vuex';
-
+import { backendAPI } from '@/api';
 export default {
   naem: 'Help',
   data() {
@@ -64,6 +69,9 @@ export default {
       ],
     };
   },
+  created() {
+    this.getMyUserData()
+  },
   methods: {
     ...mapActions(['signOut']),
     btnsignOut() {
@@ -74,6 +82,31 @@ export default {
       if (!params.name) return;
       this.$router.push(params);
     },
+    // 获取用户信息 - 转让状态
+    async getMyUserData() {
+     try {
+        const res = await backendAPI.getMyUserData()
+        if (res.status === 200 && res.data.code === 0) this.articleTransfer = !!res.data.data.accept
+        else console.log('获取转让状态失败')
+     } catch (error) { console.log(`获取转让状态失败${error}`) }
+    },
+    // 改变转让状态
+    async changeTransfer(status) {
+      try {
+        this.articleTransfer = status
+        let accept = status ? 1 : 0
+        const res = await backendAPI.setProfile({accept})
+        if (res.status === 200 && res.data.code === 0) return this.$toast.success({ duration: 1000, message: '成功' });
+        else {
+          this.$toast.fail({ duration: 1000, message: '失败' });
+          this.articleTransfer = !status        
+        }
+      } catch (error) {
+        this.articleTransfer = !status 
+        console.log(`转让状态错误${error}`)    
+        this.$toast.fail({ duration: 1000, message: '失败' });
+      }
+    }
   },
 
 };
