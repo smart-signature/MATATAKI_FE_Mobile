@@ -156,7 +156,7 @@
     <ArticleInfo :infoModa="infoModa" @changeInfo="(status) => infoModa = status" />
     <BaseModalForSignIn :showModal="showModal" @changeInfo="changeInfo" />
     <Widget @changeWidgetModal="(status)=> widgetModal = status" :widgetModal="widgetModal" :id="article.id" :getClipboard="getClipboard" />
-    <article-transfer @changeTransferModal="(status)=> transferModal = status" :transferModal="transferModal" />
+    <article-transfer @changeTransferModal="(status)=> transferModal = status" :transferModal="transferModal" :articleId="article.id" :from="'article'" />
   </div>
 </template>
 

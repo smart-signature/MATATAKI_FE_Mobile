@@ -28,10 +28,11 @@
 <script>
 import { sleep } from '@/common/methods';
 import { strTrim } from '@/common/reg';
+import { backendAPI } from '@/api';
 
 export default {
   name: 'ArticleTransfer',
-  props: ['transferModal'],
+  props: ['transferModal', 'articleId', 'from'],
   data() {
     return {
       transferModalCopy: this.transferModal,
@@ -56,12 +57,25 @@ export default {
     backPage() {
       this.widgetModalStatus = this.oldWidgetModalStatus;
     },
-    transferArticle() {
+    async transferArticle() {
       let transferId = this.transferId
+      console.log(this.articleId)
       if (!strTrim(transferId)) return this.$toast({duration: 1000,message: '用户Id不能为空'});
 
-      this.$toast({duration: 1000,message: '对方未开启转让权限，请告知对方开启！'});
-      // this.$toast({duration: 1000,message: '用户不存在'});
+      try {
+        const res = await backendAPI.transferOwner(this.from, this.articleId, this.transferId)
+        console.log(res)
+        if (res.status === 200 && res.data.code === 0) {
+          this.$toast({duration: 1000,message: '转让成功,自动返回首页'});
+          this.change(false);
+          this.$router.push({name: 'Home'})
+        } else {
+          this.$toast({duration: 1000,message: '对方未开启转让权限、用户不存在或不是你的文章'});
+        }
+      } catch (error) {
+        console.log(error)
+        this.$toast({duration: 1000,message: '对方未开启转让权限、用户不存在或不是你的文章'});
+      }
     },
     resetStatus() {
       this.widgetModalStatus = 0;
