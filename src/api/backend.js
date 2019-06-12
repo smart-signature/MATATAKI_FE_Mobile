@@ -185,13 +185,13 @@ const API = {
       : accessBackend({ url: `/${pullApiUrl[url]}`, params });
   },
   async createDraft({
-    title, content, cover, fissionFactor, isOriginal,
+    title, content, cover, fissionFactor, isOriginal, tags
   }) {
     return accessBackend({
       method: 'POST',
       url: '/draft/save',
       data: {
-        title, content, cover, fissionFactor, isOriginal,
+        title, content, cover, fissionFactor, isOriginal, tags
       },
     });
   },
@@ -208,11 +208,11 @@ const API = {
   },
   async delDraft({ id }) { return accessBackend({ method: 'DELETE', url: `/draft/${id}` }); },
   async getDraft({ id }) { return accessBackend({ url: `/draft/${id}` }); },
-  async setProfile({ nickname, introduction, email }) {
+  async setProfile({ nickname, introduction, email, accept }) {
     return accessBackend({
       method: 'POST',
       url: '/user/setProfile',
-      data: { nickname, introduction, email },
+      data: { nickname, introduction, email, accept },
     });
   },
   async getMyPost(id) { return accessBackend({ url: `/mypost/${id}` }); },
@@ -235,6 +235,12 @@ const API = {
   // 获取可用标签列表
   async getTags() {
     return axiosforApiServer.get('/tag/tags')
+  },
+  // 文章转让
+  async transferOwner(from, articleId, uid) {
+    console.log(from, articleId, uid)
+    if (from === 'article') return accessBackend({ method: 'POST', url: '/post/transferOwner', data: { signid: articleId, uid }});
+    else if (from === 'draft') return accessBackend({ method: 'POST', url: '/draft/transferOwner', data: { draftid: articleId, uid }});
   },
 };
 
