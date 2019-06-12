@@ -87,7 +87,7 @@ export default {
       this.tabsData[res.index].articles = res.list;
     },
     async getUsername(id) {
-      const { data: { data } } = await getUser({ id });
+      const { data: { data } } = await this.$backendAPI.getUser({ id });
       return data.username;
     },
   },
