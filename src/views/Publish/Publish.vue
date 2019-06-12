@@ -14,7 +14,7 @@
         <div v-if="isShowTransfer" slot="right" class="more" @click.stop="transferButton = !transferButton">
           <img  src="@/assets/more.svg" alt="more">
           <transition name="fade" mode="out-in">
-            <div class="dropdown">
+            <div class="dropdown" v-show="transferButton">
               <div class="dropdown-item" @click="transferModal = true">转让</div>
             </div>
           </transition>
