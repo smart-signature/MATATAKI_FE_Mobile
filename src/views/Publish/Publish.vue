@@ -357,6 +357,7 @@ export default {
         const response = await updateDraft(article);
         if (response.data.msg !== 'success') this.failed('失败请重试');
         this.$Notice.success({ title: '草稿更新成功' });
+        this.$navigation.cleanRoutes(); // 清除路由记录
         this.$router.go(-1);
       } catch (error) {
         this.failed('失败请重试');
