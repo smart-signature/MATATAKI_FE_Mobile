@@ -1,5 +1,5 @@
 <template>
-  <div class="new-post">
+  <div class="new-post" @click.stop="transferButton = false">
     <BaseHeader
       ref="baseHeader"
       :isCenter="false"
