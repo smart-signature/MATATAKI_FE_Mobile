@@ -190,6 +190,13 @@ export default {
   },
   methods: {
     ...mapActions(['getSignatureOfArticle']),
+    setTag(data){
+      console.log(data)
+      this.articleData = data // 设置文章数据
+      // 编辑的时候设置tag状态
+      const { from } = this.$route.query;
+      if (from && from === 'edit' || from === 'draft') this.setTagStatus()
+    },
     // 通过ID拿数据
     async setArticleDataById(hash, id) {
       const articleData = await getArticleDatafromIPFS(hash);
@@ -202,12 +209,7 @@ export default {
           this.signId = data.data.id;
           this.isOriginal = Boolean(data.data.is_original);
           
-          this.articleData = data.data // 设置文章数据
-
-          // 编辑的时候设置tag状态
-          const { from } = this.$route.query;
-          if (from && from === 'edit' || from === 'draft') this.setTagStatus()
-
+          this.setTag(data.data)
         } else {
           this.$Notice.error({ title: data.message });
           this.$router.push({ name: 'home' });
@@ -250,6 +252,8 @@ export default {
       this.markdownData = data.content;
       this.id = id;
       this.isOriginal = Boolean(data.is_original);
+
+      this.setTag(data)
     },
     // 错误提示
     failed(error) {
@@ -346,9 +350,11 @@ export default {
       }
     },
     // 更新草稿
-    async updateDraft(data) {
+    async updateDraft(article) {
+      // 设置文章标签 🏷️
+      article.tags = this.setArticleTag(this.tagCards)
       try {
-        const response = await updateDraft(data);
+        const response = await updateDraft(article);
         if (response.data.msg !== 'success') this.failed('失败请重试');
         this.$Notice.success({ title: '草稿更新成功' });
         this.$router.go(-1);

@@ -196,13 +196,13 @@ const API = {
     });
   },
   async updateDraft({
-    id, title, content, cover, fissionFactor, isOriginal,
+    id, title, content, cover, fissionFactor, isOriginal, tags
   }) {
     return accessBackend({
       method: 'POST',
       url: '/draft/save',
       data: {
-        id, title, content, cover, fissionFactor, isOriginal,
+        id, title, content, cover, fissionFactor, isOriginal, tags
       },
     });
   },
