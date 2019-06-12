@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 <template>
   <div class="user mw" style="white-space:nowrap;">
-    <template v-if="isMex">
+    <template v-if="isMe(id)">
       <BaseHeader :pageinfo="{ title: '个人中心'}" >
           <div slot="right" class="help-button" @click="jumpTo({ name: 'Help' })">
             <img src="@/assets/img/icon_user_settings.svg" alt="settings">
@@ -13,11 +13,8 @@
         </div>
         <div class="texts">
           <p class="user-info">
-            <span class="username">{{displayName}}</span>
-            <a href="javascript:;"
-                    class="edit-button"
-                    @click="jumpTo({ name: 'UserEdit', params: { username }})"
-                  >编辑</a>
+            <span class="nmae">{{name}}</span>
+            <router-link class="edit-button" :to="{ name: 'User', params: { id }}">编辑</router-link>
           </p>
           <p class="userstatus">
             <router-link :to="{ name: 'FollowList', params: { listtype: '关注' }}">关注：{{follows}}</router-link>
@@ -27,7 +24,7 @@
       </div>
 
       <div class="user-block">
-        <div class="user-block-list" @click="jumpTo({ name: 'Asset', params: { username }})">
+        <div class="user-block-list" @click="jumpTo({ name: 'Asset', params: { id }})">
           <span class="user-block-list-title">账户资产</span>
           <span class="user-block-list-des">
             已绑定{{stats.accounts}}个账户
@@ -37,21 +34,21 @@
       </div>
 
       <div class="user-block">
-        <div class="user-block-list" @click="jumpTo({ name: 'Original', params: { username }})">
+        <div class="user-block-list" @click="jumpTo({ name: 'Original', params: { id }})">
           <span class="user-block-list-title">原创文章</span>
           <span class="user-block-list-des">
             {{stats.articles}}篇
             <img class="arrow" src="@/assets/img/icon_arrow.svg" alt="查看">
           </span>
         </div>
-        <div class="user-block-list" @click="jumpTo({ name: 'Reward', params: { username }})">
+        <div class="user-block-list" @click="jumpTo({ name: 'Reward', params: { id }})">
           <span class="user-block-list-title">赞赏文章</span>
           <span class="user-block-list-des">
             {{stats.supports}}篇
             <img class="arrow" src="@/assets/img/icon_arrow.svg" alt="查看">
           </span>
         </div>
-        <div class="user-block-list" @click="jumpTo({ name: 'DraftBox', params: { username }})">
+        <div class="user-block-list" @click="jumpTo({ name: 'DraftBox', params: { id }})">
           <span class="user-block-list-title">草稿箱</span>
           <span class="user-block-list-des">
             {{stats.drafts}}篇
@@ -72,7 +69,7 @@
     </template>
     <template v-else>
       <BaseHeader :pageinfo="{ title: ''}" style="background-color: #478970" :white="true">
-      <div slot="right" v-if="!isMex">
+      <div slot="right" v-if="!isMe(id)">
         <template v-if="!followed">
           <span class="darkBtn" @click="followUser">关注</span>
         </template>
@@ -88,8 +85,7 @@
       </div>
       <div class="otherUsertextsOutter">
         <div class="otherUsertexts">
-          <p class="username"
-          >{{nickname === "" ? username : nickname}}</p>
+          <p class="name">{{name}}</p>
           <p class="userstatus">
             <router-link :to="{ name: 'FollowList', params: { listtype: '关注' }}">
               <span class="statusNumber">{{follows}}</span>
@@ -103,7 +99,7 @@
           <p>简介：{{introduction || '暂无'}}</p>
         </div>
       </div>
-      <ArticlesList ref="ArticlesList" :listtype="'others'" :username="username" />
+      <ArticlesList ref="ArticlesList" :listtype="'others'" :id="id" />
     </template>
   </div>
 </template>
@@ -111,24 +107,18 @@
 <script>
 // 这个页面被改完了 还有一堆没有的方法待删除 -- 希望修改的时候改干净吧 :(
 import { mapGetters } from 'vuex';
-import {
-  getAvatarImage,
-  uploadAvatar, getMyUserData,
-} from '@/api';
 import ArticlesList from './ArticlesList.vue';
-import { isNull } from '@/common/methods';
 
 export default {
   name: 'User',
-  props: ['username'],
+  props: ['id'],
   components: { ArticlesList },
   data() {
     return {
       followed: false,
       follows: 0,
       fans: 0,
-      nickname: '',
-      newname: '',
+      name: '',
       email: '',
       avatar: '',
       introduction: '',
@@ -142,46 +132,34 @@ export default {
   },
   computed: {
     ...mapGetters(['currentUserInfo', 'displayName', 'isLogined', 'isMe']),
-    isMex() { return this.isMe(this.username); },
   },
   created() {
     this.refreshUser();
-    const { isMe, username } = this;
-    const user = isMe(username) ? '我' : username;
+    const { isMe, id } = this;
+    const user = isMe(id) ? '我' : id;
     document.title = `${user}的个人主页 - SmartSignature`;
   },
   methods: {
     jumpTo(params) { this.$router.push(params); },
     async refreshUser() {
-      const { isMe, username } = this;
+      const { isMe, id } = this;
       const setUser = ({
-        avatar, email, fans, follows, is_follow, nickname, introduction, accounts, articles, supports, drafts,
+        avatar, email, fans, follows, is_follow, nickname, introduction, username, accounts, articles, supports, drafts,
       }) => {
-        this.nickname = nickname;
         this.email = email;
-        this.newname = isNull(this.nickname) ? this.username : this.nickname;
-        this.setAvatarImage(avatar);
-        this.follows = follows;
         this.fans = fans;
-        this.followed = is_follow;
+        this.follows = follows;
         this.introduction = introduction;
-        this.stats = {
-          accounts,
-          articles,
-          supports,
-          drafts,
-        };
+        this.followed = is_follow;
+        this.name = nickname || username;
+        this.setAvatarImage(avatar);
+        this.stats = { accounts, articles, supports, drafts };
       };
 
-      let response = null;
-      if (isMe(username)) {
-        response = await getMyUserData();
-        if (response.status !== 200) throw new Error('getMyUserData error');
-      } else {
-        response = await this.$backendAPI.getUser({ uid: username });
-      }
-      // console.debug(response.data);
-      setUser(response.data.data);
+      const { getMyUserData, getUser } = this.$backendAPI;
+      const { data: { data } } = await ( isMe(id) ? getMyUserData() : getUser({ id }));
+      // console.debug(data);
+      setUser(data);
     },
     checkb4FoUnfo(message) {
       if (!this.isLogined) {
@@ -193,7 +171,7 @@ export default {
     async followUser() {
       if (!this.checkb4FoUnfo('关注失败')) return;
       try {
-        await this.$backendAPI.follow({ uid: this.username });
+        await this.$backendAPI.follow({ id: this.id });
         this.$toast.success({ duration: 1000, message: '关注成功' });
         this.followed = true;
       } catch (error) {
@@ -204,7 +182,7 @@ export default {
     async unfollowUser() {
       if (!this.checkb4FoUnfo('取消关注失败')) return;
       try {
-        await this.$backendAPI.unfollow({ uid: this.username });
+        await this.$backendAPI.unfollow({ id: this.id });
         this.$toast.success({ duration: 1000, message: '取消关注' });
         this.followed = false;
       } catch (error) {
@@ -212,9 +190,7 @@ export default {
       }
       this.refreshUser();
     },
-    setAvatarImage(hash) {
-      if (hash) this.avatar = getAvatarImage(hash);
-    },
+    setAvatarImage(hash) { if (hash) this.avatar = this.$backendAPI.getAvatarImage(hash); },
   },
   watch: {
     isLogined() { this.refreshUser(); },

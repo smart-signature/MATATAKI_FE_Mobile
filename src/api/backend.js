@@ -105,24 +105,24 @@ const API = {
     const url = reg.test(hashOrId) ? 'p' : 'post';
     return accessBackend({ url: `/${url}/${hashOrId}` });
   },
-  async follow({ uid }) {
+  async follow({ id }) {
     return accessBackend({
       method: 'POST',
       url: '/follow',
-      data: { uid },
+      data: { uid: id },
     });
   },
-  async unfollow({ uid }) {
+  async unfollow({ id }) {
     return accessBackend({
       method: 'POST',
       url: '/unfollow',
-      data: { uid },
+      data: { uid: id },
     });
   },
   // async getFansList({ uid }) { return accessBackend({ url: '/fans', params: { uid } }); },
   // async getFollowList({ uid }) { return accessBackend({ url: '/follows', params: { uid } }); },
   async getMyUserData() { return accessBackend({ url: '/user/stats' }); },
-  async getUser({ uid }) { return accessBackend({ url: `/user/${uid}` }); },
+  async getUser({ id }) { return accessBackend({ url: `/user/${id}` }); },
   async sendComment({ comment, signId }) {
     return accessBackend({
       method: 'POST',
@@ -219,7 +219,7 @@ const API = {
   // 获取账户资产列表 暂时没有EOS数据
   async getBalance() { return accessBackend({ url: '/balance' }); },
   async withdraw(rawData) {
-    const data = { ...rawData, platform: 'need' };
+    const data = { ...rawData, platform: rawData.tokenName.toLowerCase() };
     if (rawData.signature) {
       data.publickey = rawData.signature.publicKey;
       data.sign = rawData.signature.signature;

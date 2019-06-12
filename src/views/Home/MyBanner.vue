@@ -6,14 +6,16 @@
            <img v-if="avatar" :src="avatar">
         </div>
          <div>
-            <p class="username">{{displayName}}</p>
+            <p class="name">{{displayName}}</p>
             <p class="my-balance">
               {{displayBalance}}
               <span class="coin-symbol">{{displayBalanceSymbol}}</span>
             </p>
          </div>
       </div>
-      <a class="my-user-page" href="javascript:;" @click="toUserPage(currentUserInfo.name)">我的主页</a>
+      <router-link class="my-user-page" :to="{ name: 'User', params: { id: currentUserInfo.id }}">
+        我的主页
+      </router-link>
     </template>
     <template v-else>
       <div>
@@ -34,12 +36,8 @@ export default {
   name: 'My-Banner',
   computed: {
     ...mapGetters(['currentUserInfo', 'displayName', 'isLogined']),
-    displayBalance() {
-      return this.currentUserInfo.balance.slice(0, -4);
-    },
-    displayBalanceSymbol() {
-      return this.currentUserInfo.balance.slice(-4);
-    },
+    displayBalance() { return this.currentUserInfo.balance.slice(0, -4); },
+    displayBalanceSymbol() { return this.currentUserInfo.balance.slice(-4); },
   },
   data() {
     return {
@@ -53,9 +51,6 @@ export default {
   },
   methods: {
     ...mapActions(['getCurrentUser']),
-    toUserPage(username) {
-      this.$router.push({ name: 'User', params: { username } });
-    },
     async getAvatarImage(hash) {
       if (hash) this.avatar = getAvatarImage(hash);
     },
@@ -110,7 +105,7 @@ export default {
       object-fit: cover;
     }
   }
-  .username {
+  .name {
     font-size: 14px;
     font-weight: bold;
     font-family:PingFangSC-Regular;

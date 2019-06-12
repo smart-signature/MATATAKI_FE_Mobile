@@ -39,8 +39,6 @@ export default {
   created() {
     document.title = '首页 - SmartSignature';
   },
-  computed: {
-  },
   data() {
     return {
       visible1: false,

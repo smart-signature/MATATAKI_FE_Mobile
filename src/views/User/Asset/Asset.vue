@@ -42,7 +42,7 @@
     </div>
 
     <div class="detailtext">明细</div>
-    <AssetList :username="username" :type="type" @getOtherAsset="getOtherAsset"/>
+    <AssetList :id="id" :type="type" @getOtherAsset="getOtherAsset"/>
   </div>
 </template>
 
@@ -53,14 +53,12 @@ import { precision } from '@/common/precisionConversion';
 
 export default {
   name: 'AssetType',
-  props: ['username', 'type'],
+  props: ['id', 'type'],
   components: { AssetList },
   created() {
     // 认为是用户手动切换非法地址  考虑要不要移到路由里面去拦截
     const assetTypeArr = ['EOS', 'ONT'];
-    if (!assetTypeArr.includes(this.type)) {
-      this.$router.push({ name: 'home' });
-    }
+    if (!assetTypeArr.includes(this.type)) this.$router.push('/');
   },
   data() {
     return {
@@ -102,17 +100,10 @@ export default {
     // 提现按钮单击
     withdrawButton() {
       if (this.playerincome <= 0) {
-        this.$toast.fail({
-          duration: 1000,
-          message: '无提现余额',
-        });
+        this.$toast.fail({ duration: 1000, message: '无提现余额' });
         return;
       }
-      const { username, type } = this;
-      this.$router.push({
-        name: 'Withdraw',
-        params: { username, type },
-      });
+      this.$router.push({ name: 'Withdraw', params: { id: this.id, type: this.type } });
     },
   },
 };

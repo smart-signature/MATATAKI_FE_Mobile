@@ -46,9 +46,7 @@ export default {
         title: '确定删除？',
         content: '<p>确定删除草稿箱文章？</p>',
         loading: true,
-        onOk: () => {
-          this.asyncSuccessDel(id, index);
-        },
+        onOk: () => { this.asyncSuccessDel(id, index); },
       });
     },
     // 删除草稿

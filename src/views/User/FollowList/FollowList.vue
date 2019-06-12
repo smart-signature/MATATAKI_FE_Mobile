@@ -27,24 +27,20 @@ import { getAvatarImage } from '@/api';
 
 export default {
   name: 'DeaftBox',
-  props: ['username', 'listtype'],
+  props: ['id', 'listtype'],
   components: { list },
   data() {
     return {
       tabsData: [
         {
           label: '关注',
-          params: {
-            user: this.username,
-          },
+          params: { uid: this.id },
           apiUrl: 'followsList',
           articles: [],
         },
         {
           label: '粉丝',
-          params: {
-            user: this.username,
-          },
+          params: { uid: this.id },
           apiUrl: 'fansList',
           articles: [],
         },

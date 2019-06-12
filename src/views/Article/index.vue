@@ -2,7 +2,7 @@
 <template>
   <div class="article" @click.stop="opr = false">
     <BaseHeader :pageinfo="{ title: '文章详情' }">
-      <div slot="right" class="more" @click.stop="opr = !opr" v-if="isMe(article.author)">
+      <div slot="right" class="more" @click.stop="opr = !opr" v-if="isMe(article.uid)">
         <img  src="@/assets/more.svg" alt="more">
         <transition name="fade" mode="out-in">
           <div class="dropdown" v-show="opr">
@@ -29,12 +29,12 @@
     <template v-else>
       <header class="ta_header">
         <div class="avatar-info">
-          <div class="avatar" @click="() => $router.push({ name: 'User', params: { username:article.author }})">
+          <div class="avatar" @click="() => $router.push({ name: 'User', params: { id: article.uid }})">
             <img :src="articleAvatar" @error="() => { this.avatar = require('../../assets/logo.png'); }" class="avatar-size" alt="avatar">
           </div>
           <div class="avatar-right">
-            <p class="author" @click="() => $router.push({ name: 'User', params: { username:article.author }})">
-              {{article.nickname || post.author}}
+            <p class="author" @click="() => $router.push({ name: 'User', params: { id: article.uid }})">
+              {{article.nickname || article.author}}
             </p>
             <p class="other">
               <img src="@/assets/img/icon_date.svg" class="avatar-date" alt="avatar">
@@ -44,7 +44,7 @@
             </p>
           </div>
         </div>
-        <h1>{{post.title}}</h1>
+        <h1>{{article.title}}</h1>
       </header>
       <mavon-editor v-show="false" style="display: none;"/>
       <div class="markdown-body" v-html="compiledMarkdown"></div>
@@ -58,9 +58,7 @@
         <img
           @click="copyText(getCopyIpfsHash)"
           src="@/assets/img/icon_copy.svg" class="copy-hash" alt="hash">
-        <span >
-          IPFS Hash: {{article.hash || 'Loading...'}}
-        </span>
+        <span>IPFS Hash: {{article.hash || 'Loading...'}}</span>
       </div>
 
       <div class="decoration">
@@ -161,7 +159,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import { mavonEditor } from 'mavon-editor';
 import {
   getArticleDatafromIPFS,
@@ -248,9 +246,7 @@ export default {
       // return `请输入 ${this.currentUserInfo.balance.slice(-4)} 赞赏金额`;
       return `请输入赞赏金额`;
     },
-    compiledMarkdown() {
-      return markdownIt.render(xssFilter(this.post.content));
-    },
+    compiledMarkdown() { return markdownIt.render(xssFilter(this.post.content)); },
     getClipboard() {
       const { article, currentUserInfo } = this;
       const { protocol, host } = window.location;
@@ -259,14 +255,10 @@ export default {
       const shareLink = this.isLogined
         ? `${articleUrl}?invite=${currentUserInfo.name}`
         : articleUrl;
-      return `《${article.title}》by ${article.username} \n${shareLink}\n赞赏好文，分享有收益 ！`;
+      return `《${article.title}》by ${article.uid} \n${shareLink}\n赞赏好文，分享有收益 ！`;
     },
-    getCopyIpfsHash() {
-      return `${this.article.hash}`;
-    },
-    getDisplayedFissionFactor() {
-      return this.article.fission_factor / 1000;
-    },
+    getCopyIpfsHash() { return `${this.article.hash}`; },
+    getDisplayedFissionFactor() { return this.article.fission_factor / 1000; },
     getUrl() {
       const { article } = this;
       const { protocol, host } = window.location;
@@ -285,9 +277,7 @@ export default {
       else isSupported = RewardStatus.NOT_LOGGINED;
       return isSupported;
     },
-    signId() {
-      return this.article.id;
-    },
+    signId() { return this.article.id; },
     articleCreateTimeComputed() {
       const { create_time: createTime } = this.article;
       const time = moment(createTime);
@@ -366,15 +356,9 @@ export default {
     // 复制hash
     copyText(getCopyIpfsHash) {
       this.$copyText(getCopyIpfsHash).then(() => {
-        this.$toast.success({
-          duration: 1000,
-          message: '复制成功',
-        });
+        this.$toast.success({ duration: 1000, message: '复制成功' });
       }, () => {
-        this.$toast.fail({
-          duration: 1000,
-          message: '复制失败',
-        });
+        this.$toast.fail({ duration: 1000, message: '复制失败' });
       });
     },
     // 得到文章信息 hash id, supportDialog 为 true 则只更新文章信息
@@ -388,17 +372,11 @@ export default {
             this.setAvatar(res.data.data.author);
           }
         } else {
-          this.$toast({
-            duration: 1000,
-            message: res.data.message,
-          });
+          this.$toast({ duration: 1000, message: res.data.message });
         }
       }).catch((err) => {
-        console.log(err);
-        this.$toast({
-          duration: 1000,
-          message: '获取文章信息失败',
-        });
+        console.error(err);
+        this.$toast({ duration: 1000, message: '获取文章信息失败' });
       });
     },
     // 获取文章内容 from ipfs
@@ -407,7 +385,7 @@ export default {
         // console.log(data);
         this.setPost(data.data);
       }).catch((err) => {
-        console.log(err);
+        console.error(err);
         this.$Message.error('获取文章内容失败请重试');
       });
     },
@@ -466,10 +444,7 @@ export default {
         const filterBlockchain = findBlockchain(article.prices, idProvider);
         const { stock_quantity: stockQuantity } = filterBlockchain[0];
         if (stockQuantity <= 0) {
-          return this.$toast({
-            duration: 1000,
-            message: '库存不足',
-          });
+          return this.$toast({ duration: 1000, message: '库存不足' });
         }
       }
       // 如果是商品 判断库存是否充足 end
@@ -491,10 +466,7 @@ export default {
       // 检查价格
       const checkPrices = (prices, range, message) => {
         if (prices < range) {
-          this.$toast({
-            duration: 1000,
-            message,
-          });
+          this.$toast({ duration: 1000, message });
           return false;
         }
         return true;
@@ -528,11 +500,8 @@ export default {
 
 
       let sponsor = this.getInvite;
-      // console.log('sponsor :', sponsor);
-
       try {
         this.isSupported = RewardStatus.LOADING;
-
 
         // 如果是ONT true 如果是 EOS或者其他 false
         const isOntAddressVerify = ontAddressVerify(sponsor);
@@ -556,10 +525,7 @@ export default {
           if (response.status !== 200) throw new Error(error);
         }
         this.isSupported = RewardStatus.REWARDED; // 按钮状态
-        this.$toast.success({
-          duration: 1000,
-          message: '赞赏成功！',
-        });
+        this.$toast.success({ duration: 1000, message: '赞赏成功！' });
         this.isRequest = true; // 自动请求
         this.supportModal = false; // 关闭dialog
         done();
@@ -614,20 +580,18 @@ export default {
       });
     },
     // 获取用户 得到头像
-    async setAvatar(username) {
-      let { data } = await this.$backendAPI.getUser({ uid: username });
-      data = data.data;
+    async setAvatar(id) {
+      const { data: { data } } = await this.$backendAPI.getUser({ id });
       if (data.avatar) this.articleAvatar = getAvatarImage(data.avatar);
     },
     // 切换赞赏总额显示
     toggleAmount(name) {
       if (name === 'eos') {
         this.totalSupportedAmount.show = this.totalSupportedAmount.eos;
-        this.totalSupportedAmount.showName = 'eos';
       } else if (name === 'ont') {
         this.totalSupportedAmount.show = this.totalSupportedAmount.ont;
-        this.totalSupportedAmount.showName = 'ont';
       }
+      this.totalSupportedAmount.showName = name;
     },
   },
 };

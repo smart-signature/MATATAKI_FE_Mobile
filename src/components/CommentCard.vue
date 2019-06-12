@@ -1,11 +1,11 @@
 <template>
   <div class="comment">
     <div class="comment-info">
-      <div class="comment-avatar" @click="jumpTo({ name: 'User', params: { username: comment.username }})">
+      <div class="comment-avatar" @click="$router.push({ name: 'User', params: { id: comment.id }})">
         <img :src="avatar" @error="() => { this.avatar = require('../assets/logo.png'); }" alt="avatar">
       </div>
       <div class="comment-head">
-        <router-link class="comment-author" :to="{ name: 'User', params: { username: comment.username }}">
+        <router-link class="comment-author" :to="{ name: 'User', params: { id: comment.id }}">
           {{comment.nickname || comment.username }}
         </router-link>
         赞赏了
@@ -44,11 +44,6 @@ export default {
     avatar() {
       if (!this.comment.avatar) return require('../assets/logo.png');
       return getAvatarImage(this.comment.avatar);
-    },
-  },
-  methods: {
-    jumpTo(params) {
-      this.$router.push(params);
     },
   },
 };

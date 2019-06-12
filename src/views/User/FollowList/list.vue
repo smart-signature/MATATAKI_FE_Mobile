@@ -1,5 +1,5 @@
 <template>
-  <div class="card" @click="jumpToUser( list.username || list.followed )">
+  <div class="card" @click="jumpToUser( list.id || list.followed )">
     <div class="avatar">
       <img :src="list.avatar" alt="avatar" @error="() => { list.avatar = require('../../../assets/logo.png'); }" />
     </div>
@@ -17,9 +17,7 @@
 export default {
   props: ['list'],
   methods: {
-    jumpToUser(username) {
-      this.$router.push({ name: 'User', params: { username } });
-    },
+    jumpToUser(id) { this.$router.push({ name: 'User', params: { id } }); },
   },
 };
 </script>

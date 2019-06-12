@@ -42,37 +42,42 @@ export default {
       type: String,
       required: true,
     },
-    username: {
+    id: {
       type: String,
     },
   },
   components: {
     ArticleCard,
   },
+  computed: {
+
+  },
   created() {
     const { listtype } = this;
-    if (listtype === 'others') {
-      this.tabsData = [
-        {
-          label: '文章列表',
-          params: { author: this.username },
-          apiUrl: 'homeTimeRanking',
-          articles: [],
-        },
-        {
-          label: '他赞赏的',
-          params: { user: this.username },
-          apiUrl: 'userArticlesSupportedList',
-          articles: [],
-        },
-      ];
-    } else if (listtype === 'original') {
-      this.apiUrl = 'homeTimeRanking';
-      this.params = { author: this.username };
-    } else if (listtype === 'reward') {
-      this.apiUrl = 'userArticlesSupportedList';
-      this.params = { user: this.username };
-    }
+    this.getUsername(this.id).then((username) => {
+      if (listtype === 'others') {
+        this.tabsData = [
+          {
+            label: '文章列表',
+            params: { author: username },
+            apiUrl: 'homeTimeRanking',
+            articles: [],
+          },
+          {
+            label: '他赞赏的',
+            params: { user: username },
+            apiUrl: 'userArticlesSupportedList',
+            articles: [],
+          },
+        ];
+      } else if (listtype === 'original') {
+        this.apiUrl = 'homeTimeRanking';
+        this.params = { author: username };
+      } else if (listtype === 'reward') {
+        this.apiUrl = 'userArticlesSupportedList';
+        this.params = { user: username };
+      }
+    });
   },
   methods: {
     getListData(res) {
@@ -80,6 +85,10 @@ export default {
     },
     getListDataTab(res) {
       this.tabsData[res.index].articles = res.list;
+    },
+    async getUsername(id) {
+      const { data: { data } } = await this.$backendAPI.getUser({ id });
+      return data.username;
     },
   },
   data() {

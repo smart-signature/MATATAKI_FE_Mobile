@@ -26,7 +26,7 @@ beforeEach(async function () {
 
 describe('backendAPI getUser()', function () {
   it('firt test response should be 200', async function () {
-    const response = await backendAPI.getUser({ username: 'megumimegumi' });
+    const response = await backendAPI.getUser({ id: 105 });
 
     expect(response.status).to.equal(200);
   });
