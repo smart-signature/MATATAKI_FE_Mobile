@@ -40,6 +40,7 @@ import {
   uploadAvatar,
 } from '@/api';
 import imgUpload from '@/components/imgUpload/index.vue';
+import { mapActions } from "vuex";
 
 export default {
   name: 'User',

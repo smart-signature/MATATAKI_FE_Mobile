@@ -14,7 +14,7 @@
         <div class="texts">
           <p class="user-info">
             <span class="nmae">{{name}}</span>
-            <router-link class="edit-button" :to="{ name: 'User', params: { id }}">编辑</router-link>
+            <router-link class="edit-button" :to="{ name: 'UserEdit', params: { id }}">编辑</router-link>
           </p>
           <p class="userstatus">
             <router-link :to="{ name: 'FollowList', params: { listtype: '关注' }}">关注：{{follows}}</router-link>
