@@ -49,9 +49,11 @@ export default {
 
     const { signIn, updateNotify } = this;
     // 根据本地存储的状态来自动登陆。失败之后再重试一次
-    const idProvider = localStorage.getItem('idProvider');
-    const accessToken = getCurrentAccessToken();
-    if (idProvider && accessToken) signIn({ idProvider, accessToken }).catch(() => signIn({ idProvider, accessToken }));
+    const data = {
+      accessToken: getCurrentAccessToken(),
+      idProvider: localStorage.getItem('idProvider'),
+    };
+    if (data.idProvider && data.accessToken) signIn(data).catch(() => signIn(data));
 
     window.updateNotify = updateNotify;
   },
