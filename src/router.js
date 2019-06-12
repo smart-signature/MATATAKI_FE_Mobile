@@ -45,79 +45,80 @@ export default new VueRouter({
       },
     },
     {
-      path: '/user/:username',
+      path: '/user/:id',
       name: 'User',
       props: true,
       component: () => import(/* webpackChunkName: "user" */ './views/User/index.vue'),
     },
     {
-      path: '/user/edit/:username',
+      path: '/user/edit/:id',
       name: 'UserEdit',
       props: true,
       component: () => import(/* webpackChunkName: "user" */ './views/User/edit.vue'),
       beforeEnter: (to, from, next) => {
-        const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
-        // eslint-disable-next-line eqeqeq
-        if (to.params.username != tokenUserName) next({ name: 'User', params: { username: to.params.username } });
+        const { id } = to.params;
+        const { id: idOfToken } = disassembleToken(localStorage.getItem('ACCESS_TOKEN'));
+        if (id != idOfToken) next({ name: 'User', params: { id } });
         else { next(); }
       },
     },
     {
-      path: '/user/asset/:username',
+      path: '/user/asset/:id',
       name: 'Asset',
       props: true,
       component: () => import(/* webpackChunkName: "user" */ './views/User/Asset/index.vue'),
       beforeEnter: (to, from, next) => {
-        const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
-        // eslint-disable-next-line eqeqeq
-        if (to.params.username != tokenUserName) next({ name: 'User', params: { username: to.params.username } });
+        const { id } = to.params;
+        const { id: idOfToken } = disassembleToken(localStorage.getItem('ACCESS_TOKEN'));
+        if (id != idOfToken) next({ name: 'User', params: { id } });
         else { next(); }
       }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
     },
     {
-      path: '/user/asset/:username/:type',
+      path: '/user/asset/:id/:type',
       name: 'AssetType',
       props: true,
       component: () => import(/* webpackChunkName: "user" */ './views/User/Asset/Asset.vue'),
       beforeEnter: (to, from, next) => {
-        const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
-        // eslint-disable-next-line eqeqeq
-        if (to.params.username != tokenUserName) next({ name: 'User', params: { username: to.params.username } });
+        const { id } = to.params;
+        const { id: idOfToken } = disassembleToken(localStorage.getItem('ACCESS_TOKEN'));
+        if (id != idOfToken) next({ name: 'User', params: { id } });
         else { next(); }
       }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
     },
     {
-      path: '/user/withdraw/:username/:type',
+      path: '/user/withdraw/:id/:type',
       name: 'Withdraw',
       props: true,
       component: () => import(/* webpackChunkName: "Withdraw" */ './views/User/Withdraw'),
       beforeEnter: (to, from, next) => {
-        const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
-        if (to.params.username !== tokenUserName) next({ name: 'User', params: { username: to.params.username } });
+        const { id } = to.params;
+        const { id: idOfToken } = disassembleToken(localStorage.getItem('ACCESS_TOKEN'));
+        if (id != idOfToken) next({ name: 'User', params: { id } });
         else { next(); }
       },
     },
     {
-      path: '/user/:username/original',
+      path: '/user/:id/original',
       name: 'Original',
       props: true,
       component: () => import(/* webpackChunkName: "user" */ './views/User/Original.vue'),
       beforeEnter: (to, from, next) => {
-        const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
-        // eslint-disable-next-line eqeqeq
-        if (to.params.username != tokenUserName) next({ name: 'User', params: { username: to.params.username } });
+        const { id } = to.params;
+        const { id: idOfToken } = disassembleToken(localStorage.getItem('ACCESS_TOKEN'));
+        if (id != idOfToken) next({ name: 'User', params: { id } });
         else { next(); }
       }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
     },
     {
-      path: '/user/:username/reward',
+      path: '/user/:id/reward',
       name: 'Reward',
       props: true,
       component: () => import(/* webpackChunkName: "user" */ './views/User/Reward.vue'),
       beforeEnter: (to, from, next) => {
-        const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
-        // eslint-disable-next-line eqeqeq
-        if (to.params.username != tokenUserName) next({ name: 'User', params: { username: to.params.username } });
+        const { id } = to.params;
+        const { id: idOfToken } = disassembleToken(localStorage.getItem('ACCESS_TOKEN'));
+        if (id != idOfToken) next({ name: 'User', params: { id } });
         else { next(); }
       }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
     },
@@ -137,20 +138,20 @@ export default new VueRouter({
       },
     },
     {
-      path: '/followlist/:username',
+      path: '/followlist/:id',
       name: 'FollowList',
       props: true,
       component: () => import(/* webpackChunkName: "followlist" */ './views/User/FollowList/FollowList.vue'),
     },
     {
-      path: '/draftbox/:username',
+      path: '/draftbox/:id',
       name: 'DraftBox',
       props: true,
       component: () => import(/* webpackChunkName: "draftbox" */ './views/User/DraftBox.vue'),
       beforeEnter: (to, from, next) => {
-        const tokenUserName = disassembleToken(localStorage.getItem('ACCESS_TOKEN')).iss;
-        // eslint-disable-next-line eqeqeq
-        if (to.params.username != tokenUserName) next({ name: 'User', params: { username: to.params.username } });
+        const { id } = to.params;
+        const { id: idOfToken } = disassembleToken(localStorage.getItem('ACCESS_TOKEN'));
+        if (id != idOfToken) next({ name: 'User', params: { id } });
         else { next(); }
       }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
     },

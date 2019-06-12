@@ -18,7 +18,7 @@
 
       <div class="edit-card-list">
         <span>昵称</span>
-        <input v-model="newname" placeholder="1-12位字符,包含中文、英文、数字" />
+        <input v-model="newNickName" placeholder="1-12位字符,包含中文、英文、数字" />
       </div>
 
        <div class="edit-card-list">
@@ -43,14 +43,14 @@ import imgUpload from '@/components/imgUpload/index.vue';
 
 export default {
   name: 'User',
-  props: ['username'],
+  props: ['id'],
   components: { imgUpload },
   data() {
     return {
       playerincome: 0,
       editing: false,
       nickname: '', // 昵称
-      newname: '', // 昵称
+      newNickName: '', // 昵称
       avatar: '',
       imgUploadDone: 0, // 图片是否上传完成
       introduction: '', // 简介
@@ -62,18 +62,18 @@ export default {
   },
   watch: {
     // 监听内容修改 如果内容改动则改变setProfile
-    newname(newVal) {
+    newNickName(newVal) {
       if (newVal !== this.nickname || this.introduction !== this.newIntroduction || this.email !== this.newEmail) this.setProfile = true;
       else this.setProfile = false;
     },
     // 监听内容修改 如果内容改动则改变setProfile
     newIntroduction(newVal) {
-      if (newVal !== this.introduction || this.nickname !== this.newname || this.email !== this.newEmail) this.setProfile = true;
+      if (newVal !== this.introduction || this.nickname !== this.newNickName || this.email !== this.newEmail) this.setProfile = true;
       else this.setProfile = false;
     },
     // 监听内容修改 如果内容改动则改变setProfile
     newEmail(newVal) {
-      if (newVal !== this.email || this.introduction !== this.newIntroduction || this.nickname !== this.newname) this.setProfile = true;
+      if (newVal !== this.email || this.introduction !== this.newIntroduction || this.nickname !== this.newNickName) this.setProfile = true;
       else this.setProfile = false;
     },
   },
@@ -86,7 +86,7 @@ export default {
       const reg = /^[\u4E00-\u9FA5A-Za-z0-9]{1,12}$/;
       const regEmail = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
       let canSetProfile = true;
-      if (!reg.test(this.newname)) {
+      if (!reg.test(this.newNickName)) {
         this.myToasted('昵称长度为1-12位,中文、英文、数字但不包括下划线等符号');
         canSetProfile = false;
       }
@@ -100,22 +100,17 @@ export default {
       }
       return canSetProfile;
     },
-    myToasted(notice) {
-      this.$toast({
-        duration: 1000,
-        message: notice,
-      });
-    },
+    myToasted(message) { this.$toast({ duration: 1000, message }); },
     async save() {
       // 如果没有改动返回上一页
       if (!this.setProfile) return this.$router.go(-1);
       if (!this.checkSaveParams()) return;
       const requestData = {
-        nickname: this.newname,
+        nickname: this.newNickName,
         introduction: this.newIntroduction,
         email: this.newEmail,
       };
-      if (this.newname === this.nickname) delete requestData.nickname;
+      if (this.newNickName === this.nickname) delete requestData.nickname;
       if (this.newIntroduction === this.introduction) delete requestData.introduction;
       if (this.newEmail === this.email) delete requestData.email;
       console.log(requestData);
@@ -123,11 +118,8 @@ export default {
       await setProfile(requestData).then((res) => {
         console.log(res);
         if (res.status === 200 && res.data.code === 0) {
-          this.$toast.success({
-            duration: 1000,
-            message: res.data.message,
-          });
-          this.nickname = this.newname;
+          this.$toast.success({ duration: 1000, message: res.data.message });
+          this.nickname = this.newNickName;
           this.$navigation.cleanRoutes(); // 清除路由记录
         } else this.myToasted(res.data.message);
       }).catch((error) => {
@@ -148,17 +140,16 @@ export default {
     async refreshUser() {
       const setUser = (data) => {
         this.nickname = data.nickname;
-        this.newname = this.nickname || this.username;
+        this.newNickName = this.nickname || data.username;
         this.email = data.email;
-        this.newEmail = data.email;
+        this.newEmail = this.email;
         this.introduction = data.introduction;
-        this.newIntroduction = data.introduction;
+        this.newIntroduction = this.introduction;
         this.setAvatarImage(data.avatar);
       };
 
       setUser(await this.getCurrentUser());
     },
-
     setAvatarImage(hash) {
       if (hash) this.avatar = getAvatarImage(hash);
     },
@@ -170,17 +161,11 @@ export default {
         if (res.status === 201) {
           this.setAvatarImage(avatar);
         } else {
-          this.$toast.fail({
-            duration: 1000,
-            message: '上传失败',
-          });
+          this.$toast.fail({ duration: 1000, message: '上传失败' });
         }
       }).catch((err) => {
-        console.log(err);
-        this.$toast.fail({
-          duration: 1000,
-          message: '上传失败',
-        });
+        console.error(err);
+        this.$toast.fail({ duration: 1000, message: '上传失败' });
       });
       this.imgUploadDone += Date.now();
     },

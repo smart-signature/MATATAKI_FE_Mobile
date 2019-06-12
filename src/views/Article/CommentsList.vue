@@ -22,9 +22,7 @@ import { mapGetters } from 'vuex';
 
 export default {
   props: ['signId', 'isRequest'],
-  components: {
-    CommentCard,
-  },
+  components: { CommentCard },
   watch: {
     signId(newVal) {
       this.params = {

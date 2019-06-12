@@ -56,7 +56,7 @@ import iconRMB from '@/assets/img/icon_RMB.svg';
 
 export default {
   name: 'Asset',
-  props: ['username'],
+  props: ['id'],
   data() {
     return {
       assetList: [
@@ -142,11 +142,8 @@ export default {
           });
         }
       }).catch((err) => {
-        console.log(err);
-        this.$toast.fail({
-          duration: 1000,
-          message: '获取数据失败',
-        });
+        console.error(err);
+        this.$toast.fail({ duration: 1000, message: '获取数据失败' });
       });
     },
   },

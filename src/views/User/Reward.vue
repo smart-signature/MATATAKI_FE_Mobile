@@ -1,7 +1,7 @@
 <template>
   <div class="original mw">
-    <BaseHeader :pageinfo="{ left: 'back', title: userTitle, rightPage: 'home' }"/>
-    <ArticlesList :listtype="'reward'" :username='username' ref='ArticlesList'/>
+    <BaseHeader :pageinfo="{ left: 'back', title: pageTitle, rightPage: 'home' }"/>
+    <ArticlesList :listtype="'reward'" :id='id' ref='ArticlesList'/>
   </div>
 </template>
 
@@ -11,29 +11,27 @@ import ArticlesList from './ArticlesList.vue';
 
 export default {
   name: 'Original',
-  props: ['username'],
+  props: ['id'],
   components: { ArticlesList },
   data() {
     return {
       playerincome: null,
       editing: false,
       user: '',
-      userTitle: '',
+      pageTitle: '',
     };
   },
   computed: {
     ...mapGetters(['isMe']),
   },
-  methods: {
-    goBack() {
-      this.$router.go(-1);
-    },
-  },
   created() {
-    const { isMe, username } = this;
-    this.user = isMe(username) ? '我的用户页' : `${username} 的用户页`;
-    this.userTitle = isMe(username) ? '我赞赏的文章' : `${username} 赞赏的文章`;
+    const { isMe, id } = this;
+    this.user = isMe(id) ? '我的用户页' : `${id} 的用户页`;
+    this.pageTitle = isMe(id) ? '我赞赏的文章' : `${id} 赞赏的文章`;
     document.title = `${this.user} - SmartSignature`;
+  },
+  methods: {
+    goBack() { this.$router.go(-1); },
   },
 };
 </script>

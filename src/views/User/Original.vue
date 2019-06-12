@@ -1,7 +1,7 @@
 <template>
   <div class="original mw">
-    <BaseHeader :pageinfo="{ title: userTitle }"/>
-    <ArticlesList :listtype="'original'" :username='username' ref='ArticlesList'/>
+    <BaseHeader :pageinfo="{ title: pageTitle }"/>
+    <ArticlesList :listtype="'original'" :id='id' ref='ArticlesList'/>
   </div>
 </template>
 
@@ -11,7 +11,7 @@ import ArticlesList from './ArticlesList.vue';
 
 export default {
   name: 'Original',
-  props: ['username'],
+  props: ['id'],
   components: { ArticlesList },
   data() {
     return {
@@ -29,8 +29,8 @@ export default {
   },
   methods: {
     toggleTitle() {
-      const { isMe, username } = this;
-      this.userTitle = isMe(username) ? '我的原创文章' : '他的原创文章';
+      const { isMe, id } = this;
+      this.pageTitle = isMe(id) ? '我的原创文章' : '他的原创文章';
     },
   },
   created() {

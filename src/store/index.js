@@ -48,7 +48,7 @@ export default new Vuex.Store({
     //  displayName.length <= 12 ? name : name.slice(0, 12);
     displayName: ({ userInfo }, { currentUserInfo }) => userInfo.nickname || currentUserInfo.name,
     isLogined: ({ userInfo: { accessToken } }) => accessToken !== null,
-    isMe: (state, { currentUserInfo: { name } }) => target => name === target,
+    isMe: (state, { currentUserInfo: { id } }) => target => id === target,
     prefixOfType: ({ userConfig: { idProvider } }) => {
       if (idProvider === 'EOS') return 'scatter';
       if (idProvider === 'ONT') return 'ontology';
@@ -59,8 +59,8 @@ export default new Vuex.Store({
     async getAuth({ dispatch, getters: { currentUserInfo } }, name = null) {
       if (!name) throw new Error('no name');
       let { accessToken } = currentUserInfo;
-      const { exp, iss: username } = disassembleToken(accessToken);
-      if (!username || username !== name || exp < new Date().getTime()) {
+      const { exp, iss } = disassembleToken(accessToken);
+      if (!iss || iss !== name || exp < new Date().getTime()) {
         try {
           console.log('Retake authtoken...');
           const { data } = await backendAPI.auth(await dispatch('getSignatureOfAuth', { name }));
@@ -163,7 +163,7 @@ export default new Vuex.Store({
       return dispatch(actionName, share);
     },
     async getCurrentUser({ commit, getters }) {
-      let { data } = await backendAPI.getUser({ uid: getters.currentUserInfo.id });
+      let { data } = await backendAPI.getUser({ id: getters.currentUserInfo.id });
       data = data.data;
       console.info(data);
       commit('setNickname', data.nickname);

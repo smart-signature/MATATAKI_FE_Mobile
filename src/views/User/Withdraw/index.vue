@@ -51,7 +51,7 @@ import { strTrim } from '@/common/reg';
 
 export default {
   name: 'Withdraw',
-  props: ['username', 'type'],
+  props: ['id', 'type'],
   data() {
     return {
       eosWithdraw: {
