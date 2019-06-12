@@ -123,6 +123,12 @@ export default new VueRouter({
       }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
     },
     {
+      path: '/user/:id/buyHistory',
+      name: 'BuyHistory',
+      props: true,
+      component: () => import(/* webpackChunkName: "BuyHistory" */ './views/User/buyHistory'),
+    },
+    {
       // id 用于编辑文章或者草稿的时候动态传值使用
       // 发布文章后面可以为  publish/create
       // 编辑文章后面接id publish/id？from=”edit“ 通过query来区分

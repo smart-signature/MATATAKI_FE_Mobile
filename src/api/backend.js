@@ -178,6 +178,8 @@ const API = {
       draftboxList: 'drafts',
       // tag by id
       getPostByTagById: 'posts/getPostByTag',
+      // buy
+      buyHistory: 'support/products'
     };
 
     return !needAccessToken
