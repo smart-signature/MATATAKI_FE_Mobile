@@ -292,7 +292,6 @@ export default {
     async publishArticle(article) {
       // 设置文章标签 🏷️
       article.tags = this.setArticleTag(this.tagCards)
-      console.log(article)
       const { failed, success } = this;
       try {
         const { author, hash } = article;
@@ -312,8 +311,10 @@ export default {
       }
     },
     // 创建草稿
-    async createDraft(data) {
-      const response = await createDraft(data);
+    async createDraft(article) {
+      // 设置文章标签 🏷️
+      article.tags = this.setArticleTag(this.tagCards)
+      const response = await createDraft(article);
       if (response.data.msg !== 'success') this.failed('失败请重试');
       this.$Notice.success({ title: '草稿保存成功' });
       this.$router.go(-1);
