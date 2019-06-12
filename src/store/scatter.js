@@ -72,9 +72,9 @@ const actions = {
   // tokenName 传进来判断是提现什么币
   async getSignature({ dispatch, state }, { mode, rawSignData, tokenName }) {
     const api = await dispatch('getAPI');
-    const { eosClient } = await import(/* webpackChunkName: "EOS-scatter" */ '@/api/scatter');
+    const { eos } = await import(/* webpackChunkName: "EOS-scatter" */ '@/api/scatter');
     const { account } = state;
-    const result = await eosClient.getAccount(account.name);
+    const result = await eos().getAccount(account.name);
     // 获取当前权限
     const permissions = result.permissions.find(x => x.perm_name === account.authority);
     // 获取当前权限的public key

@@ -1,6 +1,6 @@
 /* eslint-disable */
-import ScatterJS from 'scatterjs-core';
-import ScatterEOS from 'scatterjs-plugin-eosjs';
+import ScatterJS from '@scatterjs/core';
+import ScatterEOS from '@scatterjs/eosjs';
 import Eos from 'eosjs';
 import * as config from '@/config';
 import PriceFormatter from './priceFormatter';
@@ -14,9 +14,13 @@ const currentNetwork = config.network.eos.mainnet[0];
 // @trick: use function to lazy eval Scatter eos, in order to avoid no ID problem.
 export const eos = () => ScatterJS.scatter.eos(currentNetwork, Eos, { expireInSeconds: 60 });
 export const currentEOSAccount = () => ScatterJS.scatter.identity && API.getAccount();
-export const eosClient = Eos({
-  chainId: "aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906",
-  httpEndpoint: "https://proxy.eosnode.tools",
+
+const network = ScatterJS.Network.fromJson({
+  blockchain:'eos',
+  chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906',
+  host:'nodes.get-scatter.com',
+  port:443,
+  protocol:'https'
 });
 
 const API = {
@@ -32,19 +36,10 @@ const API = {
       },
     });
   },
-  connectScatterAsync() {
-    return ScatterJS.scatter.connect(config.dappName, { initTimeout: 2000 });
-  },
-  loginScatterAsync() {
-    const requiredFields = { accounts: [currentNetwork] };
-    return ScatterJS.scatter.getIdentity(requiredFields);
-  },
-  logoutScatterAsync() {
-    return ScatterJS.scatter.forgetIdentity();
-  },
-  suggestNetworkAsync() {
-    return ScatterJS.scatter.suggestNetwork(currentNetwork);
-  },
+  connectScatterAsync() { return ScatterJS.connect(config.dappName, { network }); },
+  loginScatterAsync() { return ScatterJS.getIdentity({ accounts: [currentNetwork] }); },
+  logoutScatterAsync() { return ScatterJS.forgetIdentity(); },
+  suggestNetworkAsync() { return ScatterJS.suggestNetwork(currentNetwork); },
   transferEOSAsync({
     to,
     memo = '',
@@ -76,21 +71,11 @@ const API = {
       },
     );
   },
-  getAccount() {
-    return ScatterJS.scatter.identity.accounts.find(x => x.blockchain === 'eos');
-  },
+  getAccount() { return ScatterJS.identity.accounts.find(x => x.blockchain === 'eos'); },
   getArbitrarySignature(publicKey, data, memo) { 
-    return ScatterJS.scatter.getArbitrarySignature(publicKey, data, memo);
+    return ScatterJS.getArbitrarySignature(publicKey, data, memo);
   },
-  getPublicKey() {
-    return ScatterJS.scatter.getPublicKey('eos').then((publicKey) => {
-      console.log(publicKey);
-      return publicKey;
-    }).catch((error) => {
-      // todo(minakokojima): better error message.
-      alert(error);
-    });
-  },
+  async getPublicKey() { return ScatterJS.getPublicKey('eos'); },
 };
 
 export default API;
