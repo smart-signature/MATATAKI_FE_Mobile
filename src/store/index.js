@@ -28,11 +28,10 @@ export default new Vuex.Store({
     },
   },
   getters: {
-    currentUserInfo: ({ userConfig, userInfo }, {
+    currentUserInfo: ({ userConfig: { idProvider }, userInfo }, {
       'scatter/currentBalance': scatterBalance,
       'ontology/currentBalance': ontologyBalance,
     }) => {
-      const { idProvider } = userConfig;
       let balance = null;
       if (idProvider === 'EOS') {
         balance = scatterBalance;
@@ -42,17 +41,24 @@ export default new Vuex.Store({
         balance = '... XXX';
       }
       const { id, iss: name } = disassembleToken(userInfo.accessToken);
-      return { id, idProvider, name, balance, ...userInfo };
+      return {
+        id, idProvider, name, balance, ...userInfo,
+      };
     },
     //  displayName.length <= 12 ? name : name.slice(0, 12);
     displayName: ({ userInfo }, { currentUserInfo }) => userInfo.nickname || currentUserInfo.name,
-    isLogined: ({ userInfo }) => userInfo.accessToken !== null,
-    isMe: (state, { currentUserInfo }) => target => currentUserInfo.name === target,
+    isLogined: ({ userInfo: { accessToken } }) => accessToken !== null,
+    isMe: (state, { currentUserInfo: { name } }) => target => name === target,
+    prefixOfType: ({ userConfig: { idProvider } }) => {
+      if (idProvider === 'EOS') return 'scatter';
+      if (idProvider === 'ONT') return 'ontology';
+      return null;
+    },
   },
   actions: {
-    async getAuth({ dispatch, getters }, name = null) {
+    async getAuth({ dispatch, getters: { currentUserInfo } }, name = null) {
       if (!name) throw new Error('no name');
-      let { accessToken } = getters.currentUserInfo;
+      let { accessToken } = currentUserInfo;
       const { exp, iss: username } = disassembleToken(accessToken);
       if (!username || username !== name || exp < new Date().getTime()) {
         try {
@@ -69,13 +75,9 @@ export default new Vuex.Store({
     // output: { publicKey, signature, username }
     async getSignature({ dispatch, getters }, data = { mode: null, rawSignData: null }) {
       // console.debug(getters.currentUserInfo, data.mode, data.rawSignData);
-      const { idProvider } = getters.currentUserInfo;
-      if (idProvider === 'EOS') {
-        return { idProvider, ...(await dispatch('scatter/getSignature', data)) };
-      }
-      if (idProvider === 'ONT') {
-        return { idProvider, ...(await dispatch('ontology/getSignature', data)) };
-      }
+      const { currentUserInfo, prefixOfType } = getters;
+      const { idProvider } = currentUserInfo;
+      return { idProvider, ...(await dispatch(`${prefixOfType}/getSignature`, data)) };
     },
     async getSignatureOfArticle({ dispatch }, { author, hash }) {
       return dispatch('getSignature', { mode: 'Article', rawSignData: [author, hash] });
@@ -141,8 +143,7 @@ export default new Vuex.Store({
       commit('setAccessToken', accessToken);
       localStorage.setItem('idProvider', state.userConfig.idProvider);
     },
-    async makeShare({ dispatch, getters }, share) {
-      const { idProvider } = getters.currentUserInfo;
+    async makeShare({ dispatch, state: { userConfig: { idProvider } } }, share) {
       share.idProvider = idProvider;
       if (idProvider === 'EOS') {
         share.contract = 'eosio.token';
@@ -168,10 +169,8 @@ export default new Vuex.Store({
       commit('setNickname', data.nickname);
       return data;
     },
-    signOut({ commit, dispatch, state }) {
-      const { idProvider } = state.userConfig;
-      if (idProvider === 'EOS') dispatch('scatter/logout');
-      if (idProvider === 'ONT') dispatch('ontology/signOut');
+    signOut({ commit, dispatch, getters: { prefixOfType } }) {
+      dispatch(`${prefixOfType}/logout`);
       commit('setUserConfig');
       commit('setAccessToken');
       commit('setNickname');
