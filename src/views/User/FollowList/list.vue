@@ -1,7 +1,7 @@
 <template>
   <div class="card" @click="$router.push({ name: 'User', params: { id } })">
     <div class="avatar">
-      <img :src="list.avatar" alt="avatar" @error="() => { list.avatar = require('../../../assets/logo.png'); }" />
+      <img v-if="list.avatar" :src="avatarList" alt="avatar" />
     </div>
     <div class="card-list">
       <div>
@@ -14,13 +14,17 @@
 </template>
 
 <script>
+import { backendAPI } from "@/api";
 export default {
   props: ['list', 'ownerId'],
   computed: {
     id() { 
       const { list, ownerId } = this;
-      return list.uid === ownerId ? list.fuid : list.uid;
+      return list.uid == ownerId ? list.fuid : list.uid
     },
+    avatarList() {
+      return backendAPI.getAvatarImage(this.list.avatar)
+    }
   },
 };
 </script>

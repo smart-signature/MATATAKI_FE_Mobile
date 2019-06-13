@@ -62,7 +62,6 @@ export default {
   },
   methods: {
     getListData(res) {
-      res.list.map(i => i.avatar = getAvatarImage(i.avatar));
       this.tabsData[res.index].articles = res.list;
     },
   },
