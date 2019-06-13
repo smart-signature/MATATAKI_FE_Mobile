@@ -42,26 +42,29 @@ const accessBackend = async (config) => {
 const API = {
   async sendArticle(
     url,
-    { signId = null, author, hash, title, fissionFactor, cover, isOriginal, tags},
-    signature = null
-    ) {
-    const data = {
-      author,
-      cover,
-      fissionFactor,
-      hash,
-      platform: 'need',
-      publickey: signature ? signature.publicKey : null,
-      sign: signature ? signature.signature : null,
-      signId,
-      title,
-      is_original: isOriginal,
-      tags
-    };
-    return accessBackend({ method: 'POST', url, data });
+    { signId = null, author, hash, title, fissionFactor, cover, isOriginal, tags },
+    signature = null,
+  ) { 
+    return accessBackend({
+      method: 'POST',
+      url,
+      data: {
+        author,
+        cover,
+        fissionFactor,
+        hash,
+        platform: 'need',
+        publickey: signature ? signature.publicKey : null,
+        sign: signature ? signature.signature : null,
+        signId,
+        title,
+        is_original: isOriginal,
+        tags,
+      },
+    });
   },
-  async publishArticle({article,signature}) { return this.sendArticle('/publish', article,signature)},
-  async editArticle({article,signature}) { 
+  async publishArticle({ article, signature }) { return this.sendArticle('/publish', article, signature)},
+  async editArticle({ article, signature }) { 
     console.log(article,signature);
     
     return this.sendArticle('/edit', article,signature);
@@ -83,21 +86,16 @@ const API = {
    * 根据用户名，公钥，客户端签名请求access_token
   */
   async auth({
-    idProvider, publicKey, signature, username,
+    idProvider, publicKey: publickey, signature: sign, username,
   }) {
     return axiosforApiServer.post('/auth', {
-      platform: idProvider.toLowerCase(),
-      publickey: publicKey,
-      sign: signature,
-      username,
+      platform: idProvider.toLowerCase(), publickey, sign, username,
     },
     {
       headers: { Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==' },
     });
   },
-  async getArticleDatafromIPFS(hash) {
-    return axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
-  },
+  async getArticleDatafromIPFS(hash) { return axios.get(`${apiServer}/ipfs/catJSON/${hash}`); },
   // 获取单篇文章的信息 by hash or id  需要 token 否则无法获取赞赏状态
   async getArticleInfo(hashOrId) {
     const reg = /^[0-9]*$/;
@@ -146,11 +144,11 @@ const API = {
     });
   },
   // 设置头像
-  async uploadAvatar({ avatar }) {
+  async uploadAvatar(data = { avatar: null }) {
     return accessBackend({
       method: 'POST',
       url: '/user/setAvatar',
-      data: { avatar },
+      data,
     });
   },
   // 获取头像
@@ -192,9 +190,7 @@ const API = {
     return accessBackend({
       method: 'POST',
       url: '/draft/save',
-      data: {
-        title, content, cover, fissionFactor, isOriginal, tags
-      },
+      data: { title, content, cover, fissionFactor, isOriginal, tags },
     });
   },
   async updateDraft({
@@ -203,9 +199,7 @@ const API = {
     return accessBackend({
       method: 'POST',
       url: '/draft/save',
-      data: {
-        id, title, content, cover, fissionFactor, isOriginal, tags
-      },
+      data: { id, title, content, cover, fissionFactor, isOriginal, tags },
     });
   },
   async delDraft({ id }) { return accessBackend({ method: 'DELETE', url: `/draft/${id}` }); },
