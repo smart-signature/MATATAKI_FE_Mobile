@@ -14,7 +14,7 @@
           :isObj="{ type: 'Object', key: 'list' }"
           @getListData="getListData"
           >
-            <list :list="item" v-for="(item, index) in item.articles" :key="index"/>
+            <list :list="item" :ownerId="id" v-for="(item, index) in item.articles" :key="index"/>
         </BasePull>
       </TabPane>
     </Tabs>

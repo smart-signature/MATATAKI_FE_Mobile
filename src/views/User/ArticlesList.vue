@@ -27,7 +27,7 @@
         >
           <ArticleCard :article="item" v-for="(item, index) in articles" :key="index"/>
       </BasePull>
-      </div>
+    </div>
   </div>
 </template>
 
@@ -46,46 +46,36 @@ export default {
       type: String,
     },
   },
-  components: {
-    ArticleCard,
-  },
-  computed: {
-
-  },
+  components: { ArticleCard },
+  computed: {},
   created() {
-    const { listtype } = this;
-    this.getUsername(this.id).then((username) => {
-      if (listtype === 'others') {
-        this.tabsData = [
-          {
-            label: '文章列表',
-            params: { author: username },
-            apiUrl: 'homeTimeRanking',
-            articles: [],
-          },
-          {
-            label: '他赞赏的',
-            params: { user: username },
-            apiUrl: 'userArticlesSupportedList',
-            articles: [],
-          },
-        ];
-      } else if (listtype === 'original') {
-        this.apiUrl = 'homeTimeRanking';
-        this.params = { author: username };
-      } else if (listtype === 'reward') {
-        this.apiUrl = 'userArticlesSupportedList';
-        this.params = { user: username };
-      }
-    });
+    const { id, listtype } = this;
+    if (listtype === 'others') {
+      this.tabsData = [
+        {
+          label: '文章列表',
+          params: { author: id },
+          apiUrl: 'homeTimeRanking',
+          articles: [],
+        },
+        {
+          label: '他赞赏的',
+          params: { user: id },
+          apiUrl: 'userArticlesSupportedList',
+          articles: [],
+        },
+      ];
+    } else if (listtype === 'original') {
+      this.apiUrl = 'homeTimeRanking';
+      this.params = { author: id };
+    } else if (listtype === 'reward') {
+      this.apiUrl = 'userArticlesSupportedList';
+      this.params = { user: id };
+    }
   },
   methods: {
-    getListData(res) {
-      this.articles = res.list;
-    },
-    getListDataTab(res) {
-      this.tabsData[res.index].articles = res.list;
-    },
+    getListData({ list }) { this.articles = list; },
+    getListDataTab({ index, list }) { this.tabsData[index].articles = list; },
     async getUsername(id) {
       const { data: { data } } = await this.$backendAPI.getUser({ id });
       return data.username;
