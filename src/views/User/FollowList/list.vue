@@ -1,5 +1,5 @@
 <template>
-  <div class="card" @click="jumpToUser( list.id || list.followed )">
+  <div class="card" @click="$router.push({ name: 'User', params: { id } })">
     <div class="avatar">
       <img :src="list.avatar" alt="avatar" @error="() => { list.avatar = require('../../../assets/logo.png'); }" />
     </div>
@@ -15,9 +15,12 @@
 
 <script>
 export default {
-  props: ['list'],
-  methods: {
-    jumpToUser(id) { this.$router.push({ name: 'User', params: { id } }); },
+  props: ['list', 'ownerId'],
+  computed: {
+    id() { 
+      const { list, ownerId } = this;
+      return list.uid === ownerId ? list.fuid : list.uid;
+    },
   },
 };
 </script>
