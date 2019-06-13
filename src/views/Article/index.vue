@@ -255,7 +255,7 @@ export default {
       const shareLink = this.isLogined
         ? `${articleUrl}?invite=${currentUserInfo.name}`
         : articleUrl;
-      return `《${article.title}》by ${article.uid} \n${shareLink}\n赞赏好文，分享有收益 ！`;
+      return `《${article.title}》by ${article.username} \n${shareLink}\n赞赏好文，分享有收益 ！`;
     },
     getCopyIpfsHash() { return `${this.article.hash}`; },
     getDisplayedFissionFactor() { return this.article.fission_factor / 1000; },
