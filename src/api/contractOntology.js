@@ -19,7 +19,7 @@ export const recordShare = async ({
     { type: 'Integer', value: amount },
     { type: 'String', value: amount.toString() },
   ];
-  if (sponsor) args.push({ type: 'String', value: sponsor });
+  if (sponsor) args.push({ type: 'String', value: sponsor.username });
   const response = await API.invoke({
     scriptHash,
     operation: 'RecordShare',

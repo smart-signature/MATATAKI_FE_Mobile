@@ -29,7 +29,7 @@ export const recordShare = ({ amount = null, signId = null, sponsor = null }) =>
   if (!signId) { throw new Error('signId cant be falsy'); }
   return transferEOS({
     amount,
-    memo: sponsor ? `support ${signId} ${sponsor}` : `support ${signId}`,
+    memo: sponsor ? `support ${signId} ${sponsor.username}` : `support ${signId}`,
   });
 };
 

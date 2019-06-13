@@ -71,7 +71,7 @@ const API = {
    },
   async reportShare(share) {
     const data = {
-      ...share, platform: 'need', referrer: share.sponsor,
+      ...share, platform: 'need', referrer: share.sponsor ? share.sponsor.id : null,
     };
     const { idProvider } = data;
     if (idProvider === 'EOS') {

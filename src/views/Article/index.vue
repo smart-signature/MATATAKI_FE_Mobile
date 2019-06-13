@@ -252,7 +252,7 @@ export default {
       // console.debug(this.article);
       const articleUrl = `${protocol}//${host}/article/${article.id}`;
       const shareLink = this.isLogined
-        ? `${articleUrl}?invite=${currentUserInfo.name}`
+        ? `${articleUrl}?invite=${currentUserInfo.id}`
         : articleUrl;
       return `《${article.title}》by ${article.username} \n${shareLink}\n赞赏好文，分享有收益 ！`;
     },
@@ -265,7 +265,7 @@ export default {
     },
     getInvite() {
       const { invite } = this.$route.query;
-      return !invite ? null : invite;
+      return invite ? invite : null;
     },
     // 这里发现有问题 应该是下面直接设置了属性报错 后续需要修改
     // errorinfo - vue.js:634 [Vue warn]: Computed property "isSupported" was assigned to but it has no setter.
@@ -498,12 +498,22 @@ export default {
       if (!checkPricesMatch) return done(false);
 
 
-      let sponsor = this.getInvite;
+      const toSponsor = (idOrName) => {
+        if (!idOrName) return null;
+        if (/^(0|[1-9][0-9]*)$/.test(idOrName)) {
+          const id = idOrName;
+          const { data: { data } } = await this.$backendAPI.getUser({ id });
+          return { id, username: data.username };
+        }
+        return { id: null, username: idOrName };
+      }
+      
+      let sponsor = toSponsor(this.getInvite());
       try {
         this.isSupported = RewardStatus.LOADING;
-
+        
         // 如果是ONT true 如果是 EOS或者其他 false
-        const isOntAddressVerify = ontAddressVerify(sponsor);
+        const isOntAddressVerify = ontAddressVerify(sponsor.username);
         // 如果是EOS账户赞赏 但是邀请人是ONT用户 则认为没有邀请
         if (idProvider === 'EOS' && isOntAddressVerify) sponsor = null;
         // 如果是ONT账户赞赏 但是邀请人EOS账户 则认为没有邀请
