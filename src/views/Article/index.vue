@@ -540,31 +540,27 @@ export default {
     },
     // 删除文章
     delArticleButton() {
-      if (this.article.author !== this.v) {
-        this.$Message.error('您无权删除他人文章');
-        return;
-      }
       const jumpTo = name => this.$router.push({ name });
       const delSuccess = async () => {
         this.$Modal.remove();
-        this.$Notice.success({
-          title: '删除成功',
-          desc: '三秒后自动跳转到首页',
+        this.$toast({
+          duration: 2000,
+          message: '删除成功,三秒后自动跳转到首页',
         });
         await sleep(3000);
         jumpTo('home');
       };
       const fail = (err) => {
         this.$Modal.remove();
-        this.$Message.error('删除错误');
+        this.$toast({ duration: 1000, message: '删除失败'});
         console.log('error', err);
       };
       const delArticleFunc = async (id) => {
         if (!id) return fail('没有id');
         try {
           const response = await delArticle({ id });
-          if (response.status !== 200) return fail(error);
-          delSuccess();
+          if (response.status === 200 && response.data.code === 0) delSuccess();
+          else fail(`删除文章错误${error}`);
         } catch (error) {
           return fail(error);
         }
