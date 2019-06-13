@@ -38,10 +38,19 @@
         </div>
       </div>
       <div class="widget-help" v-if="widgetModalStatus === 2">
-        <p class="widget-help-title">如何使用widget</p>
+        <p class="widget-help-title">什么是文章widget</p>
         <p class="widget-help-content">
-          目前的机制完全照搬加密水浒。一个疑问，这种打赏机制与一般的打赏有何不同呢。要点在于，Incentive，打赏之后，你就和这篇文章这枚 Token 成为了一个利益共同体。你可以通过传播这篇文章，使得自己获得收益。
+          widget功能可以为当前文章生成一个精美的展示卡片。您可以将widget代码复制到智能签名的文章编辑器中，这样就可以在您的文章中插入精美的文章展示卡片。当然，您展示的文章卡片同样也会具有邀请链接的功能。
         </p>
+        <br />
+        <p class="widget-help-title">操作步骤</p>
+        <p class="widget-help-content">
+          1.你可以选择自定义展示卡片上的简介内容<br />
+          2.点击“创建widget”按钮获取代码<br />
+          3.点击“复制代码”按钮获取widget代码<br />
+          4.粘贴代码到智能签名编辑器中即可展示<br />
+        </p>
+
         <a class="widget-help-button" href="javascript:;" @click="backPage">知道了</a>
       </div>
       <div class="widget-review" v-if="widgetModalStatus === 3">
@@ -96,7 +105,7 @@ export default {
       // 如果显示创建widget 但是没有内容
       if (newVal === 3 && !this.widgetContent) {
       let invite = this.invite ? `&invite=${this.invite}` : ''
-      this.widgetContentIframe = `<iframe width="100%" height="150" src='${urlAddress}/widget/?id=${this.id}${invite}' frameborder=0></iframe>`;
+      this.widgetContentIframe = `<iframe width="100%" height="160" src='${urlAddress}/widget/?id=${this.id}${invite}' frameborder=0></iframe>`;
       }
     },
     widgetModal(newVal) {
@@ -107,7 +116,7 @@ export default {
       let invite = this.invite ? `&invite=${this.invite}` : ''
       // 去前后空格防止空内容
       if (strTrim(newVal)) content = `&content=${newVal}`;
-      this.widgetContentIframe = `<iframe width="100%" height="150" src='${urlAddress}/widget/?id=${this.id}${content}${invite}' frameborder=0></iframe>`;
+      this.widgetContentIframe = `<iframe width="100%" height="160" src='${urlAddress}/widget/?id=${this.id}${content}${invite}' frameborder=0></iframe>`;
     },
   },
   computed: {

@@ -362,7 +362,7 @@ body {
   /* font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol; */
 }
 .container {
-  height: 150px;
+  height: 170px;
 }
 
 .widget {
@@ -409,10 +409,10 @@ body {
 .widget-content .widget-des {
   padding: 0;
   margin: 0;
-  font-size:10px;
-  font-weight:400;
-  color:rgba(255,255,255,1);
-  line-height:14px;
+  font-size: 10px;
+  font-weight: 400;
+  color: rgba(255,255,255,1);
+  line-height: 18px;
 }
 .widget .author {
   font-size: 10px;

@@ -66,8 +66,8 @@
         </div>
       </div>`
       appDom.innerHTML = appDomStr
-      // show line 4
-      $clamp(document.querySelector('.widget-des'), {clamp: 4});
+      // show line 3
+      $clamp(document.querySelector('.widget-des'), {clamp: 3});
 
       // 页面跳转
       const titleClick = () => {
