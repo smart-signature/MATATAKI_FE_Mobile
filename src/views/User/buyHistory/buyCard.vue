@@ -1,5 +1,5 @@
 <template>
-  <div class="buy-block">
+  <div class="buy-block" @click="jumpPage(buy.sign_id)">
     <div class="buy-list">
       <div class="buy-head">
         <span class="buy-title">{{buy.title}}</span>
@@ -38,6 +38,9 @@ export default {
       }, () => {
         this.$toast.fail({ duration: 1000, message: '复制失败' });
       });
+    },
+    jumpPage(id) {
+      this.$router.push({ name: 'Article', params: { hash: id }})
     }
   }
 }
