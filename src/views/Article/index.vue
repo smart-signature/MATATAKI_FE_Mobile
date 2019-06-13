@@ -30,7 +30,7 @@
       <header class="ta_header">
         <div class="avatar-info">
           <div class="avatar" @click="() => $router.push({ name: 'User', params: { id: article.uid }})">
-            <img :src="articleAvatar" @error="() => { this.avatar = require('../../assets/logo.png'); }" class="avatar-size" alt="avatar">
+            <img v-if="articleAvatar" :src="articleAvatar" class="avatar-size" alt="avatar">
           </div>
           <div class="avatar-right">
             <p class="author" @click="() => $router.push({ name: 'User', params: { id: article.uid }})">
@@ -166,7 +166,7 @@ import {
   getArticleInfo,
   addReadAmount, sendComment,
   delArticle,
-  getAvatarImage,
+  backendAPI
 } from '@/api';
 import 'mavon-editor/dist/css/index.css';
 import moment from 'moment';
@@ -218,8 +218,7 @@ export default {
         fission_factor: 0,
         id: null,
       },
-      // eslint-disable-next-line global-require
-      articleAvatar: require('../../assets/logo.png'),
+      articleAvatar: '',
       amount: '',
       comment: '',
       totalSupportedAmount: {
@@ -369,7 +368,7 @@ export default {
           // 默认会执行获取文章方法，更新文章调用则不需要获取内容
           if (!supportDialog) {
             this.getArticleDatafromIPFS(res.data.data.hash);
-            this.setAvatar(res.data.data.author);
+            this.setAvatar(res.data.data.uid);
           }
         } else {
           this.$toast({ duration: 1000, message: res.data.message });
@@ -581,8 +580,14 @@ export default {
     },
     // 获取用户 得到头像
     async setAvatar(id) {
-      const { data: { data } } = await this.$backendAPI.getUser({ id });
-      if (data.avatar) this.articleAvatar = getAvatarImage(data.avatar);
+      try {
+        const res = await backendAPI.getUser({ id });
+      if (res.status === 200 && res.data.code === 0) {
+        if (res.data.data.avatar) this.articleAvatar = backendAPI.getAvatarImage(res.data.data.avatar);
+      } else console.log('获取用户信息错误')
+      } catch (error) {
+        console.log(`获取用户信息错误${error}`)
+      }
     },
     // 切换赞赏总额显示
     toggleAmount(name) {
