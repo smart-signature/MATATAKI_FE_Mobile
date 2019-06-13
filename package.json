@@ -29,6 +29,7 @@
     "ontology-dapi": "^0.4.7",
     "qs": "^6.6.0",
     "register-service-worker": "^1.5.2",
+    "scatterjs-core": "^2.7.18",
     "vant": "^1.6.19",
     "vue": "^2.6.6",
     "vue-clipboard2": "^0.3.0",

@@ -526,6 +526,7 @@ export default {
     toggleTagStatus(data) {
       const tagCardsIndex = this.tagCards.findIndex(i => i.id === data.id)
       if (tagCardsIndex === -1) return
+      this.tagCards.map(i => i.status = false)
       this.tagCards[tagCardsIndex].status = data.status
       // console.log(this.tagCards, data)
     },
