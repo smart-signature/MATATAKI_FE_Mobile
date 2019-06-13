@@ -74,7 +74,8 @@
        let jumpPageDom = document.querySelectorAll('.jumpPage')
        jumpPageDom.forEach((i, index) => {
         jumpPageDom[index].addEventListener('click', () => {
-          window.open(`${url}/article/${urlSearchData.id || ''}`)  
+          let invite = urlSearchData.invite ? `?invite=${urlSearchData.invite}` : ''
+          window.open(`${url}/article/${urlSearchData.id || ''}${invite}`)  
         }, false)
        })
       }
