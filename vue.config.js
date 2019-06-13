@@ -70,13 +70,14 @@ module.exports = {
   },
   configureWebpack: {
     externals: [
+      'axios',
       {
         vue: 'Vue',
         'vue-router': 'VueRouter',
         vuex: 'Vuex',
         'mavon-editor': 'MavonEditor',
+        // eosjs: 'Eos',
       },
-      'axios',
       'moment',
       'encoding',
       'bufferutil',
@@ -112,6 +113,7 @@ module.exports = {
         modules: [
           {
             name: 'axios',
+            var: 'axios',
             path: 'dist/axios.min.js',
           },
           {
@@ -144,6 +146,10 @@ module.exports = {
             var: 'mavonEditor',
             prodUrl: 'https://cdn.jsdelivr.net/gh/zhaokuohaha/mavonEditor@feature/lib-name/dist/mavon-editor.js',
           },
+          /* {
+            name: 'eosjs',
+            var: 'Eos',
+          }, */
         ],
         publicPath: '/node_modules',
         crossOrigin: true,
