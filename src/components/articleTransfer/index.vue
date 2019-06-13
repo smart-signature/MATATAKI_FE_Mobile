@@ -35,10 +35,17 @@
         </div>
       </div>
       <div class="widget-help" v-if="widgetModalStatus === 1">
-        <p class="widget-help-title">如何转让ownership</p>
+        <p class="widget-help-title">什么是文章权限转移</p>
         <p class="widget-help-content">
-          目前的机制完全照搬加密水浒。一个疑问，这种打赏机制与一般的打赏有何不同呢。要点在于，Incentive，打赏之后，你就和这篇文章这枚 Token 成为了一个利益共同体。你可以通过传播这篇文章，使得自己获得收益。
+          使用此功能可以将文章的署名权和收益权转移给另一名用户。接受权限转移的选项默认为关闭状态，需要在设置中手动开启。可转移对象为已发表文章和草稿箱中的文章。请勿滥用此功能！
         </p>
+        <br />
+        <p class="widget-help-title">转移步骤</p>
+         <p class="widget-help-content">
+           1.在搜索框中完整输入对方昵称<br />
+           2.请仔细核对被转移账户的信息<br />
+           3.核对后点击“转让文章”来移交权限
+          </p>
         <a class="widget-help-button" href="javascript:;" @click="backPage">知道了</a>
       </div>
   </Modal>
