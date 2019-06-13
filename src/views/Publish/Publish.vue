@@ -276,17 +276,13 @@ export default {
     // 错误提示
     failed(error) {
       console.error('发送失败', error);
-      this.$Notice.error({ title: '发送失败', desc: error });
+      this.$toast({duration: 1000, message: error});
     },
     // 跳转页面
     jumpToArticle(hash) { this.$router.push({ name: 'Article', params: { hash } }); },
     // 成功提示
     async success(hash) {
-      this.$Notice.success({
-        title: '发送成功',
-        desc: '3秒后跳转到你发表的文章',
-      });
-
+      this.$toast({duration: 1000, message: '发送成功,3秒后跳转到你发表的文章'});
       await sleep(3000); // 休眠三秒
       this.jumpToArticle(hash);
     },
@@ -374,7 +370,7 @@ export default {
       try {
         const response = await updateDraft(article);
         if (response.data.msg !== 'success') this.failed('失败请重试');
-        this.$Notice.success({ title: '草稿更新成功' });
+        this.$toast({duration: 1000, message: '草稿更新成功'});
         this.$navigation.cleanRoutes(); // 清除路由记录
         this.$router.go(-1);
       } catch (error) {
@@ -403,7 +399,7 @@ export default {
       console.log('sendThePost mode :', editorMode, saveType);
       if (editorMode === 'create' && saveType === 'public') { // 发布文章
         if (!this.isLogined) {
-          this.$Message.warning('本功能需登录');
+        this.$toast({duration: 1000, message: '本功能需登录'});
           this.showSignInModal = true;
           return;
         }

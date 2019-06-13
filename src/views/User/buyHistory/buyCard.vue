@@ -7,10 +7,10 @@
           <span class="buy-money-amount">-{{buyAmount}}</span>
           {{buy.symbol}}</span>
       </div>
-      <p class="buy-content">地址: {{buy.digital_copy}}</p>
+      <p class="buy-content">{{buy.digital_copy}}</p>
       <div class="buy-footer">
         <span class="buy-time">购买于 {{buyTime}}</span>
-        <a href="javascript:;" @click="copyText(buy.digital_copy)">复制</a>
+        <a href="javascript:;" @click.stop="copyText(buy.digital_copy)">复制</a>
       </div>
     </div>
   </div>

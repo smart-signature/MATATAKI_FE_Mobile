@@ -98,15 +98,15 @@ export default {
       try {
         const res = await backendAPI.transferOwner(this.from, this.articleId, transferUsername)
         if (res.status === 200 && res.data.code === 0) {
-          this.$toast({duration: 1000,message: '转让成功,自动返回首页'});
+          this.$toast({duration: 1000,position: 'bottom', message: '转让成功,自动返回首页'});
           this.change(false);
           this.$router.push({ name: 'home' });
         } else {
-          this.$toast({duration: 1000,message: '对方未开启转让权限、用户不存在或不是你的文章'});
+          this.$toast({duration: 1000,position: 'bottom', message: '对方未开启转让权限或用户昵称不存在'});
         }
       } catch (error) {
         console.log(error)
-        this.$toast({duration: 1000,message: '对方未开启转让权限、用户不存在或不是你的文章'});
+        this.$toast({duration: 1000,position: 'bottom', message: '对方未开启转让权限或用户昵称不存在'});
       }
     },
     resetStatus() {
