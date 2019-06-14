@@ -34,6 +34,7 @@ const accessBackend = async (config) => {
   config.headers = { 'x-access-token': token };
   if (config.data && config.data.platform && config.data.platform === 'need') {
     config.data.platform = (accessTokenAPI.disassemble(token)).platform;
+    if (!config.data.platform) config.data.platform = 'ont';
   }
   return axiosforApiServer(config);
 };
