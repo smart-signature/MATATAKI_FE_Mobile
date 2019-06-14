@@ -90,7 +90,8 @@ export default new Vuex.Store({
     }, { code = null, idProvider = null, accessToken = null }) {
       if (!idProvider) throw new Error('did not choice idProvider');
       commit('setUserConfig', { idProvider });
-
+      
+      console.debug('debug :', code, idProvider, accessToken);
       // recover
       if (accessToken) {
         commit('setAccessToken', accessToken);

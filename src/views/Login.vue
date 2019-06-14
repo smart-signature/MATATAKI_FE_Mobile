@@ -27,7 +27,7 @@ export default {
         .then(() => {
         // console.debug(from);
         // this.$router.push('/');
-          this.$router.push(from);
+          // this.$router.push(from);
         });
     }
   },
