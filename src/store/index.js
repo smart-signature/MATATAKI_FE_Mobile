@@ -98,7 +98,7 @@ export default new Vuex.Store({
       }
 
       const errorFailed = new Error(`Unable to get ${idProvider}'s id`);
-
+      const { prefixOfType } = getters;
       // Scatter
       if (idProvider === 'EOS') {
         try {
