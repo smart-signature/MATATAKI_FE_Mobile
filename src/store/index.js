@@ -52,6 +52,7 @@ export default new Vuex.Store({
     prefixOfType: ({ userConfig: { idProvider } }) => {
       if (idProvider === 'EOS') return 'scatter';
       if (idProvider === 'ONT') return 'ontology';
+      if (idProvider === 'GitHub') return 'github';
       return null;
     },
   },
@@ -88,10 +89,11 @@ export default new Vuex.Store({
     async signIn({
       commit, dispatch, state, getters,
     }, { code = null, idProvider = null, accessToken = null }) {
+      console.debug('debug :', code, idProvider, accessToken);
+
       if (!idProvider) throw new Error('did not choice idProvider');
       commit('setUserConfig', { idProvider });
       
-      console.debug('debug :', code, idProvider, accessToken);
       // recover
       if (accessToken) {
         commit('setAccessToken', accessToken);

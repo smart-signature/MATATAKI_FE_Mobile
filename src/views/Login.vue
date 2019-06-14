@@ -24,11 +24,7 @@ export default {
       window.location = `https://github.com/login/oauth/authorize?client_id=${clientID}&redirect_uri=${redirectUri}&scope=${scope}`;
     } else {
       this.signIn({ code, idProvider: 'GitHub' }).catch(() => {})
-        .then(() => {
-        // console.debug(from);
-        // this.$router.push('/');
-          // this.$router.push(from);
-        });
+        .then(() => { this.$router.push(from); });
     }
   },
   methods: {
