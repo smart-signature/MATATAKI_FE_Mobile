@@ -241,9 +241,7 @@ export default {
   computed: {
     ...mapGetters(['currentUserInfo', 'isLogined', 'isMe']),
     displayPlaceholder() {
-      // 报错 临时处理一下先
-      // return `请输入 ${this.currentUserInfo.balance.slice(-4)} 赞赏金额`;
-      return `请输入赞赏金额`;
+      return `请输入 ${this.currentUserInfo.idProvider} 赞赏金额`;
     },
     compiledMarkdown() { return markdownIt.render(xssFilter(this.post.content)); },
     getClipboard() {
@@ -436,6 +434,7 @@ export default {
     },
     // 赞赏按钮
     supportButton() {
+      if (this.currentUserInfo.idProvider === 'GitHub') return this.$toast({ duration: 1000, message: 'Github账号暂不支持赞赏功能' });
       // 如果是商品 判断库存是否充足
       if (this.article.channel_id === 2) {
         const { currentUserInfo, findBlockchain, article } = this;

@@ -35,8 +35,8 @@
         <img class="arrow" src="@/assets/img/icon_arrow.svg" alt="view">
       </a>
        <div class="help-list">
-        <span class="help-list-title">最新版本</span>
-        <span class="help-list-sub">v2.1.0</span>
+        <span class="help-list-title">当前版本</span>
+        <span class="help-list-sub">v2.2.0</span>
       </div>
     </div>
     <div class="signout">

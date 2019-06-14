@@ -102,11 +102,11 @@ export default {
           this.change(false);
           this.$router.push({ name: 'home' });
         } else {
-          this.$toast({duration: 1000,position: 'bottom', message: '对方未开启转让权限或用户昵称不存在'});
+          this.$toast({duration: 1000,position: 'bottom', message: '对方未开启转让权限'});
         }
       } catch (error) {
         console.log(error)
-        this.$toast({duration: 1000,position: 'bottom', message: '对方未开启转让权限或用户昵称不存在'});
+        this.$toast({duration: 1000,position: 'bottom', message: '对方未开启转让权限'});
       }
     },
     resetStatus() {
