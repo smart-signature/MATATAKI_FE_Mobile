@@ -3,7 +3,7 @@ import {
   Account, Crypto, RestClient, TransactionBuilder, Wallet, // utils,
 } from 'ontology-ts-sdk';
 import { ontology } from '@/config';
-import backendAPI, { getCurrentAccessToken, setAccessToken } from '../../src/api/backend';
+import backendAPI, { accessTokenAPI } from '../../src/api/backend';
 // --require mock-local-storage
 // https://developer.ont.io/applyOng
 const { JSDOM } = require("jsdom");
@@ -124,8 +124,8 @@ describe('Ontology test', function() {
     'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJBYWNjeWdDMURUZWcyNHhTcVdaRWI3cU13dFJLUWR1Tk5NIiwiZXhwIjoxNTU5NzMzNDMwMDkwLCJwbGF0Zm9ybSI6Im9udCIsImlkIjozMTV9._U9EDjRnnbg2XqE3j2L_fa6lRYhCxxA9xGYpv4ZlvMo',
   ];
   for (let i = 0 ; i < ontWallet.accounts.length; i++) {
-      setAccessToken(ACCESS_TOKENs[i]);
-      console.log(getCurrentAccessToken());
+      // setAccessToken(ACCESS_TOKENs[i]);
+      // console.log(getCurrentAccessToken());
       // backendAPI.window = global.window ;
       it(`backendAPI.reportShare ${i}`, async function () {
         await backendAPI.reportShare({

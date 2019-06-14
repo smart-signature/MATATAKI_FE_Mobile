@@ -2,7 +2,7 @@
 // 使用例子
 // 之前: `import { xxx } from '@/api/backend'`
 // 之后: `import { xxx } from '@/api/'`
-import API, { disassembleToken, getCurrentAccessToken, setAccessToken } from './backend';
+import API, { accessTokenAPI } from './backend';
 import defaultImagesUploader from './imagesUploader';
 
 const {
@@ -23,6 +23,6 @@ export {
   getMyUserData, setProfile, getMyPost,
   getBackendData, getBalance,
   // 額外項
-  disassembleToken, getCurrentAccessToken, setAccessToken,
+  accessTokenAPI,
   defaultImagesUploader,
 };

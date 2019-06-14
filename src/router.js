@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Home from './views/Home/index.vue';
-import { disassembleToken } from '@/api';
+import { accessTokenAPI } from '@/api';
 
 if (!window.VueRouter) Vue.use(VueRouter);
 
@@ -57,7 +57,7 @@ export default new VueRouter({
       component: () => import(/* webpackChunkName: "user" */ './views/User/edit.vue'),
       beforeEnter: (to, from, next) => {
         const { id } = to.params;
-        const { id: idOfToken } = disassembleToken(localStorage.getItem('ACCESS_TOKEN'));
+        const { id: idOfToken } = accessTokenAPI.disassemble(accessTokenAPI.get());
         if (id != idOfToken) next({ name: 'User', params: { id } });
         else { next(); }
       },
@@ -69,7 +69,7 @@ export default new VueRouter({
       component: () => import(/* webpackChunkName: "user" */ './views/User/Asset/index.vue'),
       beforeEnter: (to, from, next) => {
         const { id } = to.params;
-        const { id: idOfToken } = disassembleToken(localStorage.getItem('ACCESS_TOKEN'));
+        const { id: idOfToken } = accessTokenAPI.disassemble(accessTokenAPI.get());
         if (id != idOfToken) next({ name: 'User', params: { id } });
         else { next(); }
       }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
@@ -81,7 +81,7 @@ export default new VueRouter({
       component: () => import(/* webpackChunkName: "user" */ './views/User/Asset/Asset.vue'),
       beforeEnter: (to, from, next) => {
         const { id } = to.params;
-        const { id: idOfToken } = disassembleToken(localStorage.getItem('ACCESS_TOKEN'));
+        const { id: idOfToken } = accessTokenAPI.disassemble(accessTokenAPI.get());
         if (id != idOfToken) next({ name: 'User', params: { id } });
         else { next(); }
       }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
@@ -93,7 +93,7 @@ export default new VueRouter({
       component: () => import(/* webpackChunkName: "Withdraw" */ './views/User/Withdraw'),
       beforeEnter: (to, from, next) => {
         const { id } = to.params;
-        const { id: idOfToken } = disassembleToken(localStorage.getItem('ACCESS_TOKEN'));
+        const { id: idOfToken } = accessTokenAPI.disassemble(accessTokenAPI.get());
         if (id != idOfToken) next({ name: 'User', params: { id } });
         else { next(); }
       },
@@ -105,7 +105,7 @@ export default new VueRouter({
       component: () => import(/* webpackChunkName: "user" */ './views/User/Original.vue'),
       beforeEnter: (to, from, next) => {
         const { id } = to.params;
-        const { id: idOfToken } = disassembleToken(localStorage.getItem('ACCESS_TOKEN'));
+        const { id: idOfToken } = accessTokenAPI.disassemble(accessTokenAPI.get());
         if (id != idOfToken) next({ name: 'User', params: { id } });
         else { next(); }
       }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
@@ -117,7 +117,7 @@ export default new VueRouter({
       component: () => import(/* webpackChunkName: "user" */ './views/User/Reward.vue'),
       beforeEnter: (to, from, next) => {
         const { id } = to.params;
-        const { id: idOfToken } = disassembleToken(localStorage.getItem('ACCESS_TOKEN'));
+        const { id: idOfToken } = accessTokenAPI.disassemble(accessTokenAPI.get());
         if (id != idOfToken) next({ name: 'User', params: { id } });
         else { next(); }
       }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
@@ -156,7 +156,7 @@ export default new VueRouter({
       component: () => import(/* webpackChunkName: "draftbox" */ './views/User/DraftBox.vue'),
       beforeEnter: (to, from, next) => {
         const { id } = to.params;
-        const { id: idOfToken } = disassembleToken(localStorage.getItem('ACCESS_TOKEN'));
+        const { id: idOfToken } = accessTokenAPI.disassemble(accessTokenAPI.get());
         if (id != idOfToken) next({ name: 'User', params: { id } });
         else { next(); }
       }, // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？

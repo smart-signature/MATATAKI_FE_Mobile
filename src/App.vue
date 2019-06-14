@@ -11,7 +11,7 @@
 import Konami from 'konami';
 import { mapActions, mapMutations } from 'vuex';
 import { version } from '../package.json';
-import { getCurrentAccessToken } from '@/api';
+import { accessTokenAPI } from '@/api';
 
 export default {
   methods: {
@@ -50,7 +50,7 @@ export default {
     const { signIn, updateNotify } = this;
     // 根据本地存储的状态来自动登陆。失败之后再重试一次
     const data = {
-      accessToken: getCurrentAccessToken(),
+      accessToken: accessTokenAPI.get(),
       idProvider: localStorage.getItem('idProvider'),
     };
     if (data.idProvider && data.accessToken) signIn(data).catch(() => signIn(data));

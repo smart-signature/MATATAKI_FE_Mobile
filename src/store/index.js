@@ -3,9 +3,7 @@ import Vuex from 'vuex';
 import ontology from './ontology';
 import scatter from './scatter';
 import github from './github';
-import {
-  backendAPI, disassembleToken, getCurrentAccessToken, setAccessToken,
-} from '@/api';
+import { backendAPI, accessTokenAPI } from '@/api';
 
 if (!window.Vue) Vue.use(Vuex);
 
@@ -40,7 +38,7 @@ export default new Vuex.Store({
       } else if (idProvider === 'GitHub') {
         balance = null;
       }
-      const { id, iss: name } = disassembleToken(userInfo.accessToken);
+      const { id, iss: name } = accessTokenAPI.disassemble(userInfo.accessToken);
       return {
         id, idProvider, name, balance, ...userInfo,
       };
@@ -60,7 +58,7 @@ export default new Vuex.Store({
     async getAuth({ dispatch, getters: { currentUserInfo } }, name = null) {
       if (!name) throw new Error('no name');
       let { accessToken } = currentUserInfo;
-      const { exp, iss } = disassembleToken(accessToken);
+      const { exp, iss } = accessTokenAPI.disassemble(accessToken);
       if (!iss || iss !== name || exp < new Date().getTime()) {
         try {
           console.log('Retake authtoken...');
@@ -206,7 +204,8 @@ export default new Vuex.Store({
   mutations: {
     setAccessToken(state, accessToken = null) {
       state.userInfo.accessToken = accessToken;
-      setAccessToken(accessToken);
+      if (accessToken) accessTokenAPI.set(accessToken);
+      else accessTokenAPI.rm();
       console.info('set access token :', accessToken);
     },
     setNickname(state, nickname = '') {

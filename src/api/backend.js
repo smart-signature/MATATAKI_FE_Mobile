@@ -13,28 +13,27 @@ const axiosforApiServer = axios.create({
   httpsAgent: new https.Agent({ rejectUnauthorized: false }),
 });
 
-// localStorage
-export const getCurrentAccessToken = () => window.localStorage.getItem('ACCESS_TOKEN');
-export const setAccessToken = token => window.localStorage.setItem('ACCESS_TOKEN', token);
-
-/*
- * 拆token，返回json对象
-*/
-export const disassembleToken = (token) => {
-  if (!token) { return { id: null, iss: null, exp: 0 }; }
-  let tokenPayload = token.substring(token.indexOf('.') + 1);
-  tokenPayload = tokenPayload.substring(0, tokenPayload.indexOf('.'));
-  return JSON.parse(Base64.decode(tokenPayload));
-  // {iss:用户名，exp：token的过期时间，用ticks的形式表示}
+// accessToken with localStorage
+export const accessTokenAPI = {
+  get() { window.localStorage.getItem('ACCESS_TOKEN'); },
+  set(token) { window.localStorage.setItem('ACCESS_TOKEN', token); },
+  rm() { window.localStorage.removeItem('ACCESS_TOKEN'); },
+  disassemble(token) { // 拆token，返回json对象
+    if (!token) { return { id: null, iss: null, exp: 0 }; }
+    let tokenPayload = token.substring(token.indexOf('.') + 1);
+    tokenPayload = tokenPayload.substring(0, tokenPayload.indexOf('.'));
+    return JSON.parse(Base64.decode(tokenPayload));
+    // {iss:用户名，exp：token的过期时间，用ticks的形式表示}
+  },
 };
 
 /* eslint no-param-reassign: ["error", { "props": false }] */
 const accessBackend = async (config) => {
-  const token = getCurrentAccessToken();
+  const token = accessTokenAPI.get();
   // https://blog.fundebug.com/2018/07/25/es6-const/
   config.headers = { 'x-access-token': token };
   if (config.data && config.data.platform && config.data.platform === 'need') {
-    config.data.platform = (disassembleToken(token)).platform;
+    config.data.platform = (accessTokenAPI.disassemble(token)).platform;
   }
   return axiosforApiServer(config);
 };
