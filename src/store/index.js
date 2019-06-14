@@ -103,7 +103,7 @@ export default new Vuex.Store({
       if (idProvider === 'EOS') {
         try {
           if (!state.scatter.isConnected) {
-            const result = await dispatch(`${prefixOfType}/connectq`);
+            const result = await dispatch(`${prefixOfType}/connect`);
             if (!result) throw new Error('Scatter: connection failed');
           }
           if (!state.scatter.isLoggingIn) {
