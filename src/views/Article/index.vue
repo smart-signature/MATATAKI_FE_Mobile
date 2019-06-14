@@ -499,12 +499,11 @@ export default {
 
 
       const toSponsor = async (idOrName) => {
-        if (!idOrName) return null;
+        if (!idOrName) return { id: null, username: idOrName };
         if (/^(0|[1-9][0-9]*)$/.test(idOrName)) {
           try {
             const id = idOrName;
             const res = await this.$backendAPI.getUser({ id });
-            console.log('507', res)
             if (res.status === 200 && res.data.code === 0) return { id, username: res.data.data.username };
             else return { id: null, username: idOrName };
           } catch (error) {
@@ -515,7 +514,8 @@ export default {
         return { id: null, username: idOrName };
       }
       
-      let sponsor = toSponsor(this.getInvite());
+      let sponsor = null
+      await toSponsor(this.getInvite).then((res) => { sponsor = res })
       try {
         this.isSupported = RewardStatus.LOADING;
         
