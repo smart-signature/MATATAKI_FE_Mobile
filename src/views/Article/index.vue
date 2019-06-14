@@ -498,12 +498,19 @@ export default {
       if (!checkPricesMatch) return done(false);
 
 
-      const toSponsor = (idOrName) => {
+      const toSponsor = async (idOrName) => {
         if (!idOrName) return null;
         if (/^(0|[1-9][0-9]*)$/.test(idOrName)) {
-          const id = idOrName;
-          const { data: { data } } = await this.$backendAPI.getUser({ id });
-          return { id, username: data.username };
+          try {
+            const id = idOrName;
+            const res = await this.$backendAPI.getUser({ id });
+            console.log('507', res)
+            if (res.status === 200 && res.data.code === 0) return { id, username: res.data.data.username };
+            else return { id: null, username: idOrName };
+          } catch (error) {
+            console.log(error)
+            return { id: null, username: idOrName };
+          }
         }
         return { id: null, username: idOrName };
       }
@@ -553,10 +560,7 @@ export default {
       const jumpTo = name => this.$router.push({ name });
       const delSuccess = async () => {
         this.$Modal.remove();
-        this.$toast({
-          duration: 2000,
-          message: '删除成功,三秒后自动跳转到首页',
-        });
+        this.$toast({ duration: 2000, message: '删除成功,三秒后自动跳转到首页'});
         await sleep(3000);
         jumpTo('home');
       };
