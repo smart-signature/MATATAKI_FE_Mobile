@@ -10,7 +10,6 @@ import {
   Scroll,
 } from 'iview';
 
-import './my-theme/dist/iview.css';
 import 'iview/dist/styles/iview.css';
 
 Vue.prototype.$Message = Message;
