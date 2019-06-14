@@ -80,7 +80,7 @@
 import { sleep } from '@/common/methods';
 import { strTrim } from '@/common/reg';
 import { urlAddress } from '@/api/backend';
-// const  urlAddress = 'http://localhost:8080' // 开发用
+// const urlAddress = 'http://localhost:8080'; // 开发用
 
 export default {
   name: 'Widget',
@@ -104,8 +104,8 @@ export default {
       this.oldWidgetModalStatus = oldVal;
       // 如果显示创建widget 但是没有内容
       if (newVal === 3 && !this.widgetContent) {
-      let invite = this.invite ? `&invite=${this.invite}` : ''
-      this.widgetContentIframe = `<iframe width="100%" height="170" src='${urlAddress}/widget/?id=${this.id}${invite}' frameborder=0></iframe>`;
+        const invite = this.invite ? `&invite=${this.invite}` : '';
+        this.widgetContentIframe = `<iframe width="100%" height="180" src='${urlAddress}/widget/?id=${this.id}${invite}' frameborder=0></iframe>`;
       }
     },
     widgetModal(newVal) {
@@ -113,10 +113,10 @@ export default {
     },
     widgetContent(newVal) {
       let content = '';
-      let invite = this.invite ? `&invite=${this.invite}` : ''
+      const invite = this.invite ? `&invite=${this.invite}` : '';
       // 去前后空格防止空内容
       if (strTrim(newVal)) content = `&content=${newVal}`;
-      this.widgetContentIframe = `<iframe width="100%" height="170" src='${urlAddress}/widget/?id=${this.id}${content}${invite}' frameborder=0></iframe>`;
+      this.widgetContentIframe = `<iframe width="100%" height="180" src='${urlAddress}/widget/?id=${this.id}${content}${invite}' frameborder=0></iframe>`;
     },
   },
   computed: {
