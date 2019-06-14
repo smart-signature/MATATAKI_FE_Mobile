@@ -6,8 +6,8 @@
         <p class="avatar">{{article.nickname || article.author}}</p>
         <p class="date">
           {{friendlyDate}} ·
-          <img src="../assets/img/icon_eos_article.svg" alt="eos" />{{articleValue}}
-          <img src="../assets/img/icon_ont_article.svg" alt="ont" />{{articleOntValue}}
+          <img src="../assets/img/icon_eos_article.svg" alt="eos"/>{{articleValue}}
+          <img src="../assets/img/icon_ont_article.svg" alt="ont"/>{{articleOntValue}}
         </p>
       </div>
       <div class="img-outer" v-if="cover">

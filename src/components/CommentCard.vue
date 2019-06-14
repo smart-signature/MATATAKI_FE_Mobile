@@ -2,7 +2,7 @@
   <div class="comment">
     <div class="comment-info">
       <div class="comment-avatar" @click="$router.push({ name: 'User', params: { id: comment.id }})">
-        <img :src="avatar" @error="() => { this.avatar = require('../assets/logo.png'); }" alt="avatar">
+        <img v-if="avatar" :src="avatar" alt="avatar" v-lazy="avatar">
       </div>
       <div class="comment-head">
         <router-link class="comment-author" :to="{ name: 'User', params: { id: comment.id }}">
@@ -42,8 +42,7 @@ export default {
       return precision(this.comment.amount, this.comment.platform) + this.comment.platform.toUpperCase();
     },
     avatar() {
-      if (!this.comment.avatar) return require('../assets/logo.png');
-      return getAvatarImage(this.comment.avatar);
+      if (this.comment.avatar) return getAvatarImage(this.comment.avatar);
     },
   },
 };

@@ -1,7 +1,7 @@
 <template>
   <div class="card" @click="$router.push({ name: 'User', params: { id } })">
     <div class="avatar">
-      <img v-if="list.avatar" :src="avatarList" alt="avatar" />
+      <img v-if="avatarList" :src="avatarList" alt="avatar" v-lazy="avatarList" />
     </div>
     <div class="card-list">
       <div>
@@ -23,7 +23,7 @@ export default {
       return list.uid == ownerId ? list.fuid : list.uid
     },
     avatarList() {
-      return backendAPI.getAvatarImage(this.list.avatar)
+      return this.list.avatar ? backendAPI.getAvatarImage(this.list.avatar) : ''
     }
   },
 };

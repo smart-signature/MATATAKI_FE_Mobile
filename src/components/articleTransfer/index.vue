@@ -19,7 +19,7 @@
             v-if="resultUser" 
             @click="continueUser">
             <div class="widget-input-avater">
-              <img :src="userAvatar" alt="avatar" />
+              <img :src="userAvatar" alt="avatar" v-lazy="userAvatar" />
             </div>
             <span>{{searchUsernameInfo.nickname || searchUsernameInfo.username}}</span>
           </div>
