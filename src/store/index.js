@@ -38,7 +38,7 @@ export default new Vuex.Store({
       } else if (idProvider === 'ONT') {
         balance = ontologyBalance;
       } else if (idProvider === 'GitHub') {
-        balance = '... XXX';
+        balance = null;
       }
       const { id, iss: name } = disassembleToken(userInfo.accessToken);
       return {
@@ -103,14 +103,14 @@ export default new Vuex.Store({
       if (idProvider === 'EOS') {
         try {
           if (!state.scatter.isConnected) {
-            const result = await dispatch('scatter/connect');
+            const result = await dispatch(`${prefixOfType}/connectq`);
             if (!result) throw new Error('Scatter: connection failed');
           }
           if (!state.scatter.isLoggingIn) {
-            const result = await dispatch('scatter/login');
+            const result = await dispatch(`${prefixOfType}/login`);
             if (!result) throw new Error('Scatter: login failed');
           }
-          accessToken = await dispatch('getAuth', getters['scatter/currentUsername']);
+          accessToken = await dispatch('getAuth', getters[`${prefixOfType}/currentUsername`]);
         } catch (error) {
           console.error(error);
           throw errorFailed;
@@ -119,7 +119,7 @@ export default new Vuex.Store({
       // Ontology
       else if (idProvider === 'ONT') {
         try {
-          if (!state.ontology.account) await dispatch('ontology/getAccount');
+          if (!state.ontology.account) await dispatch(`${prefixOfType}/getAccount`);
           try {
             await dispatch('ontology/getBalance');
           } catch (error) {
@@ -134,7 +134,7 @@ export default new Vuex.Store({
       // GitHub
       else if (idProvider === 'GitHub') {
         try {
-          accessToken = await dispatch('github/signIn', { code });
+          accessToken = await dispatch(`${prefixOfType}/signIn`, { code });
         } catch (error) {
           console.error('GitHub: signIn Failed.', error);
           throw errorFailed;
@@ -143,7 +143,7 @@ export default new Vuex.Store({
       commit('setAccessToken', accessToken);
       localStorage.setItem('idProvider', state.userConfig.idProvider);
     },
-    async makeShare({ dispatch, state: { userConfig: { idProvider } } }, share) {
+    async makeShare({ dispatch, getters, state: { userConfig: { idProvider } } }, share) {
       share.idProvider = idProvider;
       if (idProvider === 'EOS') {
         share.contract = 'eosio.token';
@@ -152,19 +152,11 @@ export default new Vuex.Store({
         share.contract = 'AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV';
         share.symbol = 'ONT';
       }
-      await dispatch('recordShare', share);
+      await dispatch(`${getters.prefixOfType}/recordShare`, share);
       return backendAPI.reportShare(share);
     },
-    async recordShare({ dispatch }, share) {
-      const { idProvider } = share;
-      let actionName = null;
-      if (idProvider === 'EOS') actionName = 'scatter/recordShare';
-      else if (idProvider === 'ONT') actionName = 'ontology/recordShare';
-      return dispatch(actionName, share);
-    },
-    async getCurrentUser({ commit, getters }) {
-      let { data } = await backendAPI.getUser({ id: getters.currentUserInfo.id });
-      data = data.data;
+    async getCurrentUser({ commit, getters: { currentUserInfo } }) {
+      const { data: { data } } = await backendAPI.getUser({ id: currentUserInfo.id });
       console.info(data);
       commit('setNickname', data.nickname);
       return data;
