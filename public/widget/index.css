@@ -386,7 +386,7 @@ body {
 .widget h1 {
   padding: 0 40px 0 0;
   margin: 6px 0 0 0;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   color: rgba(255,255,255,1);
   text-overflow: ellipsis;
@@ -402,20 +402,20 @@ body {
 }
 
 .widget-content .cover {
-  height: 52px;
+  height: 70px;
   margin-right: 10px;
 }
 
 .widget-content .widget-des {
   padding: 0;
   margin: 0;
-  font-size: 10px;
+  font-size: 14px;
   font-weight: 400;
   color: rgba(255,255,255,1);
-  line-height: 18px;
+  line-height: 24px;
 }
 .widget .author {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 400;
   color: rgba(255,255,255,1);
   padding: 0 150px 0 0;
@@ -438,7 +438,7 @@ body {
 
 .widget .readorups span {
   margin: 0 4px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight:500;
   color:rgba(255,255,255,1);
   display: flex;
