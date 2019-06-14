@@ -16,7 +16,7 @@ export default {
     const { protocol, host } = window.location;
     const { path, query } = this.$route;
     const { code, from } = query;
-    const clientID = '889e6eafa77e2e87a08c';
+    const clientID = process.env.VUE_APP_GITHUB_CLIENT_ID;
     const scope = 'read:public_repo,read:user';
     const redirectUri = `${protocol}//${host}${path}?from=${from}`; // 範例值
     if (!code) {
