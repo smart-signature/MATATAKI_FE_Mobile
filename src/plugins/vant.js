@@ -6,7 +6,8 @@ import {
   Loading,
   Dialog,
   Field,
-  Switch
+  Switch,
+  Lazyload
 } from 'vant';
 
 import 'vant/lib/button/style';
@@ -24,3 +25,4 @@ Vue.component('vanSwitch', Switch); // 加载中
 Vue.use(Toast); // 轻提示
 Vue.use(Dialog); // 对话框
 Vue.use(Field); // 输入框
+Vue.use(Lazyload); // 

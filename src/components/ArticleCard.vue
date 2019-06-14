@@ -11,7 +11,7 @@
         </p>
       </div>
       <div class="img-outer" v-if="cover">
-        <img :src="cover" alt="" class="img-inner">
+        <img :src="cover" alt="" class="img-inner" v-lazy="cover">
       </div>
     </div>
   </router-link>
