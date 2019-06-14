@@ -229,12 +229,12 @@ export default {
           
           this.setTag(data.data)
         } else {
-          this.$Notice.error({ title: data.message });
+          this.$toast({duration: 1000, message: data.message});
           this.$router.push({ name: 'home' });
         }
       } catch (error) {
         console.error(error);
-        this.$Notice.error({ title: '获取文章信息发生错误' });
+        this.$toast({duration: 1000, message: '获取文章信息发生错误'});
         this.$router.push({ name: 'home' });
       }
       // 设置文章内容
@@ -334,7 +334,7 @@ export default {
       article.tags = this.setArticleTag(this.tagCards)
       const response = await createDraft(article);
       if (response.data.msg !== 'success') this.failed('失败请重试');
-      this.$Notice.success({ title: '草稿保存成功' });
+      this.$toast.success({duration: 1000, message: '保存成功'});
       this.$router.go(-1);
     },
     // 编辑文章
