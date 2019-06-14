@@ -15,7 +15,7 @@ const axiosforApiServer = axios.create({
 
 // accessToken with localStorage
 export const accessTokenAPI = {
-  get() { window.localStorage.getItem('ACCESS_TOKEN'); },
+  get() { return window.localStorage.getItem('ACCESS_TOKEN'); },
   set(token) { window.localStorage.setItem('ACCESS_TOKEN', token); },
   rm() { window.localStorage.removeItem('ACCESS_TOKEN'); },
   disassemble(token) { // 拆token，返回json对象
