@@ -133,6 +133,9 @@ export default {
   computed: {
     ...mapGetters(['currentUserInfo', 'displayName', 'isLogined', 'isMe']),
   },
+  watch: {
+    isLogined() { this.refreshUser(); },
+  },
   created() {
     this.refreshUser();
     const { isMe, id } = this;
@@ -191,9 +194,6 @@ export default {
       this.refreshUser();
     },
     setAvatarImage(hash) { if (hash) this.avatar = this.$backendAPI.getAvatarImage(hash); },
-  },
-  watch: {
-    isLogined() { this.refreshUser(); },
   },
 };
 </script>
