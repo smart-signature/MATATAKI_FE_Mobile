@@ -511,7 +511,7 @@ export default {
         return { id: null, username: idOrName };
       }
       
-      let sponsor = await toSponsor(this.getInvite());
+      let sponsor = await toSponsor(this.getInvite);
       try {
         this.isSupported = RewardStatus.LOADING;
         
