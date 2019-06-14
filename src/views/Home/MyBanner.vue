@@ -30,14 +30,19 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import { getAvatarImage } from '@/api';
 
 export default {
   name: 'My-Banner',
   computed: {
     ...mapGetters(['currentUserInfo', 'displayName', 'isLogined']),
-    displayBalance() { return this.currentUserInfo.balance.slice(0, -4); },
-    displayBalanceSymbol() { return this.currentUserInfo.balance.slice(-4); },
+    displayBalance() {
+      const { balance } = this.currentUserInfo;
+      return balance ? balance.slice(0, -4) : '';
+    },
+    displayBalanceSymbol() { 
+      const { balance } = this.currentUserInfo;
+      return balance ? balance.slice(-4) : '';
+    },
   },
   data() {
     return {
@@ -51,12 +56,9 @@ export default {
   },
   methods: {
     ...mapActions(['getCurrentUser']),
-    async getAvatarImage(hash) {
-      if (hash) this.avatar = getAvatarImage(hash);
-    },
     async refreshUser() {
       const { avatar } = await this.getCurrentUser();
-      this.getAvatarImage(avatar);
+      if (avatar) this.avatar = this.$backendAPI.getAvatarImage(avatar);
     },
     // 改变modal
     changeInfo(status) {
@@ -64,11 +66,7 @@ export default {
     },
   },
   watch: {
-    isLogined(newState) {
-      if (newState) {
-        this.refreshUser();
-      }
-    },
+    isLogined(newState) { if (newState) this.refreshUser(); },
   },
 };
 </script>
