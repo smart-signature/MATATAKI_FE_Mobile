@@ -141,7 +141,7 @@ export default {
 }
 
 .head-list {
-  padding: 0 10px;
+  padding: 0 0 0 10px;
   &-button {
     font-size:16px;
     font-weight:600;
@@ -184,6 +184,9 @@ export default {
 @media screen and (max-width: 576px) {
   .head-list-button {
     margin: 0 14px 0 0;
+    &:nth-last-child(1) {
+      margin: 0;
+    }
     &.active {
         transform: scale(1.2);
     }
