@@ -159,11 +159,9 @@ export default {
       const avatar = res.hash;
       // 更新图像
       await uploadAvatar({ avatar }).then((res) => {
-        if (res.status === 201) {
-          this.setAvatarImage(avatar);
-        } else {
-          this.$toast.fail({ duration: 1000, message: '上传失败' });
-        }
+        console.log(res)
+        if (res.status === 200 && res.data.code === 0) this.setAvatarImage(avatar);
+        else this.$toast.fail({ duration: 1000, message: '上传失败' })
       }).catch((err) => {
         console.error(err);
         this.$toast.fail({ duration: 1000, message: '上传失败' });
