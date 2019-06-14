@@ -153,7 +153,9 @@ export default new Vuex.Store({
         share.contract = 'AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV';
         share.symbol = 'ONT';
       }
-      await dispatch(`${getters.prefixOfType}/recordShare`, share);
+      await dispatch(`${getters.prefixOfType}/recordShare`, {
+        ...share, sponsor: share.sponsor.username
+      });
       return backendAPI.reportShare(share);
     },
     async getCurrentUser({ commit, getters: { currentUserInfo } }) {

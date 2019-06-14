@@ -498,32 +498,29 @@ export default {
 
 
       const toSponsor = async (idOrName) => {
-        if (!idOrName) return { id: null, username: idOrName };
+        if (!idOrName) return { id: null, username: null };
         if (/^(0|[1-9][0-9]*)$/.test(idOrName)) {
           try {
             const id = idOrName;
-            const res = await this.$backendAPI.getUser({ id });
-            if (res.status === 200 && res.data.code === 0) return { id, username: res.data.data.username };
-            else return { id: null, username: idOrName };
+            const { status, data } = await this.$backendAPI.getUser({ id });
+            if (status === 200 && data.code === 0) return { id, username: data.data.username };
           } catch (error) {
-            console.log(error)
-            return { id: null, username: idOrName };
+            console.error(error)
           }
         }
         return { id: null, username: idOrName };
       }
       
-      let sponsor = null
-      await toSponsor(this.getInvite).then((res) => { sponsor = res })
+      let sponsor = await toSponsor(this.getInvite());
       try {
         this.isSupported = RewardStatus.LOADING;
         
         // 如果是ONT true 如果是 EOS或者其他 false
         const isOntAddressVerify = ontAddressVerify(sponsor.username);
         // 如果是EOS账户赞赏 但是邀请人是ONT用户 则认为没有邀请
-        if (idProvider === 'EOS' && isOntAddressVerify) sponsor = null;
+        if (idProvider === 'EOS' && isOntAddressVerify) sponsor = { id: null, username: null };
         // 如果是ONT账户赞赏 但是邀请人EOS账户 则认为没有邀请
-        else if (idProvider === 'ONT' && !isOntAddressVerify) sponsor = null;
+        else if (idProvider === 'ONT' && !isOntAddressVerify) sponsor = { id: null, username: null };
 
         await this.makeShare({ amount, signId, sponsor });
 
