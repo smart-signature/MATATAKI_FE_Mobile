@@ -20,7 +20,7 @@ export default {
   computed: {
     id() { 
       const { list, ownerId } = this;
-      return list.uid == ownerId ? list.fuid : list.uid
+      return Number(list.uid) === Number(ownerId) ? list.fuid : list.uid
     },
     avatarList() {
       return this.list.avatar ? backendAPI.getAvatarImage(this.list.avatar) : ''
