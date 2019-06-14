@@ -46,7 +46,7 @@ export default new Vuex.Store({
     //  displayName.length <= 12 ? name : name.slice(0, 12);
     displayName: ({ userInfo }, { currentUserInfo }) => userInfo.nickname || currentUserInfo.name,
     isLogined: ({ userInfo: { accessToken } }) => accessToken !== null,
-    isMe: (state, { currentUserInfo: { id } }) => target => id === target,
+    isMe: (state, { currentUserInfo: { id } }) => target => id === Number(target),
     prefixOfType: ({ userConfig: { idProvider } }) => {
       if (idProvider === 'EOS') return 'scatter';
       if (idProvider === 'ONT') return 'ontology';
