@@ -3,7 +3,7 @@
     <template v-if="isLogined">
       <div class="banner-text">
         <div class="round_icon">
-           <img v-if="avatar" :src="avatar">
+           <img v-if="avatar" :src="avatar" v-lazy="avatar">
         </div>
          <div>
             <p class="name">{{displayName}}</p>

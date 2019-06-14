@@ -9,7 +9,7 @@
       </BaseHeader>
       <div class="usercard">
         <div class="user-avatar">
-          <img v-if="avatar" :src="avatar" />
+          <img v-if="avatar" :src="avatar" v-lazy="avatar" />
         </div>
         <div class="texts">
           <p class="user-info">
@@ -80,7 +80,7 @@
       </BaseHeader>
       <div class="otherUser">
         <div class="user-avatar">
-          <img class="userpic" :src="avatar" @error="() => { this.avatar = require('../../assets/logo.png');}" />
+          <img class="userpic" v-if="avatar" :src="avatar" v-lazy="avatar" />
         </div>
       </div>
       <div class="otherUsertextsOutter">

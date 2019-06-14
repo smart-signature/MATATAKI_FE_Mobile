@@ -11,7 +11,7 @@
         <span>头像</span>
         <img-upload class="imgcard" :imgUploadDone="imgUploadDone" @doneImageUpload="doneImageUpload">
           <div class="user-avatar" slot="uploadButton">
-            <img :src="avatar" alt="" slot="description">
+            <img v-if="avatar" :src="avatar" alt="" slot="description" v-lazy="avatar">
           </div>
         </img-upload>
       </div>
