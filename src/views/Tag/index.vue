@@ -23,35 +23,34 @@
 </template>
 
 <script>
-import tagColor from "@/common/tagColor";
+import tagColor from '@/common/tagColor';
 import { ArticleCard } from '@/components/';
 
 export default {
   name: 'Tag',
-  props: ['id'],
   components: { ArticleCard },
-  data(){
+  data() {
     return {
       tagTitle: '',
       tagBanner: '#000',
       tagList: [],
       params: {
-        tagid: this.id
+        tagid: this.$route.query.id,
       },
       apiUrl: 'getPostByTagById',
-    }
+    };
   },
   created() {
-    this.tagBanner = tagColor()[this.id] || '#000'
-    this.tagTitle = this.$route.params.name
+    this.tagBanner = tagColor()[this.$route.query.id] || '#000';
+    this.tagTitle = this.$route.query.name;
   },
   methods: {
     getListData(res) {
-      console.log(res)
+      // console.log(res);
       this.tagList = res.list;
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style src="./index.less" scoped lang="less"></style>
