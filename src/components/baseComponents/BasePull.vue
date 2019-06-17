@@ -161,7 +161,7 @@ export default {
 
       // 获取数据
       await getBackendData({ url, params }, this.needAccessToken).then((res) => {
-        if (res.status === 200) getDataSuccess(res.data);
+        if (res.status === 200 && res.data.code === 0) getDataSuccess(res.data);
         else getDataFail();
       }).catch((err) => {
         console.log(err);

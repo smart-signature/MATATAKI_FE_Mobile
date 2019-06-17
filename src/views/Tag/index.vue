@@ -29,9 +29,11 @@ import { ArticleCard } from '@/components/';
 export default {
   name: 'Tag',
   components: { ArticleCard },
+  inject: ['reload', 'openReload'],
+  beforeRouteEnter: (to, from, next) => next(vm => vm.reload()),
   data() {
     return {
-      tagTitle: '',
+      tagTitle: this.$route.query.name,
       tagBanner: '#000',
       tagList: [],
       params: {
@@ -42,11 +44,9 @@ export default {
   },
   created() {
     this.tagBanner = tagColor()[this.$route.query.id] || '#000';
-    this.tagTitle = this.$route.query.name;
   },
   methods: {
     getListData(res) {
-      // console.log(res);
       this.tagList = res.list;
     },
   },

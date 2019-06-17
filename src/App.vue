@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <navigation>
+    <navigation v-if="isRouterAlive" >
       <router-view />
     </navigation>
     <BackTop :bottom="80"></BackTop>
@@ -14,6 +14,16 @@ import { version } from '../package.json';
 import { accessTokenAPI } from '@/api';
 
 export default {
+  data() {
+    return {
+      isRouterAlive: true,
+    };
+  },
+  provide() {
+    return {
+      reload: this.reload,
+    };
+  },
   methods: {
     ...mapActions(['signIn']),
     updateNotify(desc) {
@@ -42,6 +52,14 @@ export default {
       // 当用户在键盘输入 ⬆️⬆️⬇️⬇️⬅️➡️⬅️➡️BA 时触发这个函数
       this.$Message.info('恭喜你找到了隐藏彩蛋！');
       this.$router.push({ name: 'EasterEgg' });
+    },
+    reload() {
+      this.isRouterAlive = false;
+      this.$nextTick(() => {
+        setTimeout(() => {
+          this.isRouterAlive = true;
+        }, 150);
+      });
     },
   },
   created() { // https://juejin.im/post/5bfa4bb951882558ae3c171e

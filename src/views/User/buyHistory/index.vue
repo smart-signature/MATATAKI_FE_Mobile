@@ -17,28 +17,28 @@
 </template>
 
 <script>
-import { backendAPI } from "@/api";
-import buyCard from "./buyCard";
+import buyCard from './buyCard.vue';
+
 export default {
   name: 'BuyHistory',
   components: {
-    buyCard
+    buyCard,
   },
-  data(){
+  data() {
     return {
       buyList: [],
       params: '',
       apiUrl: 'buyHistory',
-    }
+    };
   },
   created() {
   },
   methods: {
     getListData(res) {
       this.buyList = res.list;
-    } 　
-  }
-}
+    },
+  },
+};
 </script>
 
 

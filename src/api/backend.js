@@ -41,9 +41,11 @@ const accessBackend = async (config) => {
 const API = {
   async sendArticle(
     url,
-    { signId = null, author, hash, title, fissionFactor, cover, isOriginal, tags },
+    {
+      signId = null, author, hash, title, fissionFactor, cover, isOriginal, tags,
+    },
     signature = null,
-  ) { 
+  ) {
     return accessBackend({
       method: 'POST',
       url,
@@ -62,12 +64,12 @@ const API = {
       },
     });
   },
-  async publishArticle({ article, signature }) { return this.sendArticle('/publish', article, signature)},
-  async editArticle({ article, signature }) { 
-    console.log(article,signature);
-    
-    return this.sendArticle('/edit', article,signature);
-   },
+  async publishArticle({ article, signature }) { return this.sendArticle('/publish', article, signature); },
+  async editArticle({ article, signature }) {
+    console.log(article, signature);
+
+    return this.sendArticle('/edit', article, signature);
+  },
   async reportShare(share) {
     const data = {
       ...share, platform: 'need', referrer: share.sponsor.id,
@@ -176,38 +178,46 @@ const API = {
       // tag by id
       getPostByTagById: 'posts/getPostByTag',
       // buy
-      buyHistory: 'support/products'
+      buyHistory: 'support/products',
     };
 
     return !needAccessToken
-      ? axiosforApiServer(pullApiUrl[url], { params })
+      ? axiosforApiServer.get(pullApiUrl[url], { params })
       : accessBackend({ url: `/${pullApiUrl[url]}`, params });
   },
   async createDraft({
-    title, content, cover, fissionFactor, isOriginal, tags
+    title, content, cover, fissionFactor, isOriginal, tags,
   }) {
     return accessBackend({
       method: 'POST',
       url: '/draft/save',
-      data: { title, content, cover, fissionFactor, isOriginal, tags },
+      data: {
+        title, content, cover, fissionFactor, isOriginal, tags,
+      },
     });
   },
   async updateDraft({
-    id, title, content, cover, fissionFactor, isOriginal, tags
+    id, title, content, cover, fissionFactor, isOriginal, tags,
   }) {
     return accessBackend({
       method: 'POST',
       url: '/draft/save',
-      data: { id, title, content, cover, fissionFactor, isOriginal, tags },
+      data: {
+        id, title, content, cover, fissionFactor, isOriginal, tags,
+      },
     });
   },
   async delDraft({ id }) { return accessBackend({ method: 'DELETE', url: `/draft/${id}` }); },
   async getDraft({ id }) { return accessBackend({ url: `/draft/${id}` }); },
-  async setProfile({ nickname, introduction, email, accept }) {
+  async setProfile({
+    nickname, introduction, email, accept,
+  }) {
     return accessBackend({
       method: 'POST',
       url: '/user/setProfile',
-      data: { nickname, introduction, email, accept },
+      data: {
+        nickname, introduction, email, accept,
+      },
     });
   },
   async getMyPost(id) { return accessBackend({ url: `/mypost/${id}` }); },
@@ -229,21 +239,21 @@ const API = {
   },
   // 获取可用标签列表
   async getTags() {
-    return axiosforApiServer.get('/tag/tags')
+    return axiosforApiServer.get('/tag/tags');
   },
   // 文章转让
   async transferOwner(from, articleId, uid) {
-    console.log(from, articleId, uid)
-    if (from === 'article') return accessBackend({ method: 'POST', url: '/post/transferOwner', data: { signid: articleId, uid }});
-    else if (from === 'draft') return accessBackend({ method: 'POST', url: '/draft/transferOwner', data: { draftid: articleId, uid }});
+    console.log(from, articleId, uid);
+    if (from === 'article') return accessBackend({ method: 'POST', url: '/post/transferOwner', data: { signid: articleId, uid } });
+    if (from === 'draft') return accessBackend({ method: 'POST', url: '/draft/transferOwner', data: { draftid: articleId, uid } });
   },
   // 通过用户名搜索
   async searchUsername(username) {
     return axiosforApiServer.get('/search', {
       params: {
-        q: username
-      }
-    })
+        q: username,
+      },
+    });
   },
 };
 
