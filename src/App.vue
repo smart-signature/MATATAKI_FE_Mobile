@@ -57,7 +57,7 @@ export default {
     async reload() {
       this.isRouterAlive = false;
       await this.$nextTick();
-      await sleep(300);
+      await sleep(500);
       this.isRouterAlive = true;
     },
   },
