@@ -17,7 +17,6 @@
   // eslint-disable-next-line no-undef
   const axiosApi = axios.create({
     baseURL: baseUrl,
-    timeout: 30000,
   });
 
   // 提取内容 删除多余的标签
