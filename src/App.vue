@@ -12,6 +12,7 @@ import Konami from 'konami';
 import { mapActions, mapMutations } from 'vuex';
 import { version } from '../package.json';
 import { accessTokenAPI } from '@/api';
+import { sleep } from '@/common/methods';
 
 export default {
   data() {
@@ -53,13 +54,11 @@ export default {
       this.$Message.info('恭喜你找到了隐藏彩蛋！');
       this.$router.push({ name: 'EasterEgg' });
     },
-    reload() {
+    async reload() {
       this.isRouterAlive = false;
-      this.$nextTick(() => {
-        setTimeout(() => {
-          this.isRouterAlive = true;
-        }, 150);
-      });
+      await this.$nextTick();
+      await sleep(300);
+      this.isRouterAlive = true;
     },
   },
   created() { // https://juejin.im/post/5bfa4bb951882558ae3c171e
