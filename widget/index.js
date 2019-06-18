@@ -15,7 +15,7 @@ const appDom = document.querySelector('#app');
 // 地址
 const urlMode = {
   development: {
-    url: 'http://test.smartsignature.io',
+    url: 'https://test.smartsignature.io',
     api: 'https://apitest.smartsignature.io',
   },
   production: {
