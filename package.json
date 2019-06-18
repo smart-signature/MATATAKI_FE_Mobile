@@ -5,9 +5,9 @@
   "scripts": {
     "serve": "vue-cli-service serve --mode development",
     "lint": "vue-cli-service lint",
-    "build-dev": "vue-cli-service build --mode development",
+    "build-dev": "vue-cli-service build --mode development && cd widget && npm run build-dev && cd ..",
+    "build-prod": "vue-cli-service build --mode production && cd widget && npm run build-prod && cd ..",
     "build-for-netlify": "npm run build-dev && npm run fix-netlify-cs-routing",
-    "build-prod": "vue-cli-service build --mode production",
     "fix-netlify-cs-routing": "echo '/*    /index.html   200' >> ./dist/_redirects",
     "test": "cross-env VUE_CLI_MODE=test mochapack --recursive --r tests/setup.js --webpack-config ./node_modules/@vue/cli-service/webpack.config.js  tests/unit/**/*.spec.js"
   },
