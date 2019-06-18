@@ -5,8 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve --mode development",
     "lint": "vue-cli-service lint",
-    "build-dev": "vue-cli-service build --mode development && cd widget && npm run build-dev && cd ..",
-    "build-prod": "vue-cli-service build --mode production && cd widget && npm run build-prod && cd ..",
+    "build-dev": "vue-cli-service build --mode development && cd widget && npm i && npm run build-dev && cd ..",
+    "build-prod": "vue-cli-service build --mode production && cd widget && npm i && npm run build-prod && cd ..",
     "build-for-netlify": "npm run build-dev && npm run fix-netlify-cs-routing",
     "fix-netlify-cs-routing": "echo '/*    /index.html   200' >> ./dist/_redirects",
     "test": "cross-env VUE_CLI_MODE=test mochapack --recursive --r tests/setup.js --webpack-config ./node_modules/@vue/cli-service/webpack.config.js  tests/unit/**/*.spec.js"
@@ -68,7 +68,6 @@
     "unmock-node": "0.0.55",
     "vue-cli-plugin-iview": "^1.0.6",
     "vue-template-compiler": "^2.6.6",
-    "webpack": "^4.31.0",
     "webpack-bundle-analyzer": "^3.3.2",
     "webpack-cdn-plugin": "^3.1.1"
   }
