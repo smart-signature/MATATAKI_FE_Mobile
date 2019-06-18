@@ -68,6 +68,7 @@
     "unmock-node": "0.0.55",
     "vue-cli-plugin-iview": "^1.0.6",
     "vue-template-compiler": "^2.6.6",
+    "webpack": "^4.34.0",
     "webpack-bundle-analyzer": "^3.3.2",
     "webpack-cdn-plugin": "^3.1.1"
   }
