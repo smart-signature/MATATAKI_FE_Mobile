@@ -73,12 +73,12 @@ const setAppDom = ({
       <div class="container">
         <div class="widget">
           <img class="logo" src="${logoImg}" alt="logo" />
-          <h1 class="jumpPage">${title || '没有获取到标题......'}</h1>
+          <h1 class="jumpPage">${title || '标题找不到啦~'}</h1>
           <div class="widget-content">
             <img class="cover jumpPage" src="${img || logoImg}" alt="cover" />
-            <p class="widget-des">${content || '没有获取到内容......'}</p>
+            <p class="widget-des">${content || '没有简介信息'}</p>
           </div>
-          <p class="author">by: ${username || '没有获取到作者信息...'}</p>
+          <p class="author">by: ${username || ''}</p>
           <div class="readorups jumpPage">
             <span><img src="${readImg}" alt="read" />${read || 0}</span>
             <span><img src="${upsImg}" alt="ups" />${ups || 0}</span>
