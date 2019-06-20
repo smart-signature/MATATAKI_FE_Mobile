@@ -125,6 +125,7 @@ export default {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: all 0.3s;
   }
   .full {
     position: absolute;
@@ -184,9 +185,13 @@ export default {
 // 因为不开放适配 所以媒体查询放大
 @media screen and (min-width: 750px) {
   .card {
+    padding: 15px 20px;
     &:hover {
       transform: translate(0, -4px);
       box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.1);
+      .img-outer .img-inner {
+        transform: scale(1.04);
+      }
     }
   }
 
