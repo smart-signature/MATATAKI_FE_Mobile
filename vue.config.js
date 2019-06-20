@@ -186,11 +186,11 @@ module.exports = {
   },
   productionSourceMap: NODE_ENV === 'development', // 去掉map文件
   // 代理
-  // devServer: {
-  //   proxy: {
-  //     '/': {
-  //       target: 'https://apitest.smartsignature.io',
-  //     },
-  //   },
-  // },
+  devServer: {
+    proxy: {
+      '/': {
+        target: 'https://apitest.smartsignature.io',
+      },
+    },
+  },
 };

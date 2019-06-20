@@ -1,178 +1,228 @@
 <template>
-  <div class='home' @click='addShow=false'>
-    <div class='head'>
-      <link rel='icon' type='image/png' sizes='32x32' href='./img/Andoromeda logo@2x.png'>
-      <link rel='icon' type='image/png' sizes='16x16' href='./img/Andoromeda logo.png'>
-      <div class='add'>
-        <Button class='publish' @click.stop='addShow=!addShow'>
-          <Icon class='publish-icon' type="md-add" size='24'
-            style="margin-top: -8px;margin-left: -12px;;line-height: 16px;"
-           />
-        </Button>
-        <div v-show='addShow' class='add-menu'>
-          <a href='javascript:void(0);'>搬运</a>
-          <a href='javascript:void(0);' @click="$router.push({name: 'Publish', params: {id: 'create'}})">创作</a>
-        </div>
-      </div>
-      <div class='titles'>
-        <h1 class='title'>-SmartSignature-</h1>
-        <h2 class='subtitle'>赞赏好文，分享有收益！</h2>
-        <Button class="title-button" @click="$router.push({name: 'About'})">投资攻略</Button>
-        <a href="https://t.me/smartsignature_io" target="_blank">
-          <Button class="title-button">加入电报</Button>
-        </a>
-      </div>
-      <my-banner/>
-      <div class="head-bc"></div>
+  <div class="home mw">
+    <!-- 首页头部 -->
+    <home-head :nav="navList" :now-index="nowIndex" @toggleNav="toggleNav" />
+
+    <!-- 首页内容 -->
+    <div
+      v-for="(item, index) in content"
+      v-show="nowIndex === index"
+      :key="index"
+      class="home-content"
+    >
+      <!-- 首页内容导航 -->
+      <home-nav
+        :nav-menu="item.navMenu"
+        :active-index="item.activeIndex"
+        @toggleNavMenu="index => (item.activeIndex = index)"
+      />
+
+      <homeSlide
+        v-show="isShowSlide"
+        :recommend="item.recommend"
+        :slide-index="index"
+        :now-index="nowIndex"
+      />
+
+      <div class="now-title" :class="!isShowSlide && 'nav-hide'">{{ contentTitle }}</div>
+
+      <BasePull
+        v-for="(itemList, indexList) in item.navMenu"
+        v-show="item.activeIndex === indexList"
+        :key="indexList"
+        :params="itemList.params"
+        :api-url="itemList.apiUrl"
+        :active-index="item.activeIndex"
+        :now-index="indexList"
+        :is-obj="{ type: 'Object', key: 'data' }"
+        :auto-request-time="item.autoRequestTime"
+        @getListData="getListData"
+      >
+        <template v-if="itemList.articles.length === 0">
+          <ContentLoader
+            v-for="itemLoader in [0, 1, 2]"
+            :key="itemLoader"
+            :height="80"
+            :speed="2"
+            primary-color="#f3f3f3"
+            secondary-color="#ecebeb"
+          >
+            <rect x="20" y="20" rx="4" ry="4" width="120" height="60" />
+            <rect x="150" y="20" rx="0" ry="0" width="235" height="30" />
+            <rect x="150" y="60" rx="0" ry="0" width="235" height="20" />
+          </ContentLoader>
+        </template>
+        <template v-else>
+          <ArticleCard
+            v-for="(itemArticle, indexArticle) in itemList.articles"
+            :key="indexArticle"
+            :now-index="nowIndex"
+            :article="itemArticle"
+          />
+        </template>
+      </BasePull>
     </div>
-    <ArticleRankings ref='ArticleRankings'/>
   </div>
 </template>
 
 <script>
-import MyBanner from './MyBanner.vue';
-import ArticleRankings from './ArticlesRankings.vue';
+import { ContentLoader } from "vue-content-loader";
+import homeHead from "./components/homeHead.vue";
+import homeNav from "./components/homeNav.vue";
+import homeSlide from "./components/homeSlide.vue";
+
+import { ArticleCard } from "@/components/";
+
+import { backendAPI } from "@/api";
 
 export default {
-  name: 'Home',
-  components: { ArticleRankings, MyBanner },
-  created() {
-    document.title = '首页 - SmartSignature';
+  name: "Home",
+  components: {
+    homeHead,
+    homeNav,
+    homeSlide,
+    ArticleCard,
+    ContentLoader
   },
   data() {
     return {
-      visible1: false,
-      actions1: [
+      navList: ["文章", "商品"], // head data
+      nowIndex: 0,
+      // 防止数据嵌套太多 把内容提取出来
+      content: [
         {
-          text: 'English',
-          onClick: () => console.log('action 1'),
+          navMenu: [
+            {
+              label: "最新",
+              title: "最新文章",
+              params: {
+                channel: 1
+              },
+              apiUrl: "homeTimeRanking",
+              articles: []
+            },
+            {
+              label: "最热",
+              title: "最热文章",
+              params: {
+                channel: 1
+              },
+              apiUrl: "homeSupportsRanking",
+              articles: []
+            },
+            {
+              label: "EOS",
+              title: "最多EOS",
+              params: {
+                channel: 1,
+                symbol: "eos"
+              },
+              apiUrl: "homeAmountRankingEOS",
+              articles: []
+            },
+            {
+              label: "ONT",
+              title: "最多ONT",
+              params: {
+                channel: 1,
+                symbol: "ont"
+              },
+              apiUrl: "homeAmountRankingONT",
+              articles: []
+            }
+          ],
+          autoRequestTime: 0,
+          activeIndex: 0,
+          recommend: {
+            title: "推荐文章",
+            list: []
+          }
         },
         {
-          text: '简体中文',
-          onClick: () => console.log('action 2'),
-        },
-        {
-          text: '日本語',
-          onClick: () => console.log('action 3'),
-        },
-        {
-          theme: 'error',
-          text: '取消',
-          onClick: () => console.log('action -1'),
-        },
-      ],
-      addShow: false, // 显示新增菜单
+          navMenu: [
+            {
+              label: "最新",
+              title: "最新商品",
+              params: {
+                channel: 2
+              },
+              apiUrl: "homeTimeRanking",
+              articles: []
+            },
+            {
+              label: "最热",
+              title: "最热商品",
+              params: {
+                channel: 2
+              },
+              apiUrl: "homeSupportsRanking",
+              articles: []
+            }
+          ],
+          autoRequestTime: 0,
+          activeIndex: 0,
+          recommend: {
+            title: "推荐商品",
+            list: []
+          }
+        }
+      ]
     };
   },
-  methods: {
-    cancelCb(reason, event) {
-      console.log(reason, event);
+  computed: {
+    // 内容标题
+    contentTitle() {
+      const index = this.content[this.nowIndex].activeIndex;
+      return this.content[this.nowIndex].navMenu[index].title;
     },
+    // 是否显示推荐文章或者商品
+    isShowSlide() {
+      return this.content[this.nowIndex].activeIndex === 0;
+    },
+    isHaveArticle() {
+      const index = this.content[this.nowIndex].activeIndex;
+      const status = this.content[this.nowIndex].navMenu[index].articles.length;
+      console.log(status);
+      return status;
+    }
   },
+  created() {
+    document.title = "首页 - SmartSignature";
+    this.postsRecommend(1);
+    this.postsRecommend(2);
+  },
+  mounted() {},
+  methods: {
+    toggleNav(index) {
+      this.nowIndex = index;
+      if (this.content[this.nowIndex].autoRequestTime === 0 && this.nowIndex === 1)
+        this.content[this.nowIndex].autoRequestTime += Date.now();
+    },
+    // 获取文章列表数据
+    getListData(res) {
+      console.log(this.nowIndex, res.index);
+      this.content[this.nowIndex].navMenu[res.index].articles = res.list;
+    },
+    // 获取推荐文章或者商品
+    async postsRecommend(channel) {
+      console.log(channel);
+      await backendAPI
+        .postsRecommend(channel)
+        .then(res => {
+          console.log(res);
+          if (res.status === 200 && res.data.code === 0) {
+            if (channel === 1) this.content[0].recommend.list = res.data.data;
+            else if (channel === 2) this.content[1].recommend.list = res.data.data;
+          } else {
+            console.log("获取推荐失败");
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+  }
 };
 </script>
 
-<style scoped lang="less">
-.home {
-  min-height: 100%;
-}
-.head {
-  color: #fff;
-  padding-top: 10px;
-  text-align: center;
-  align-items: center;
-  vertical-align: middle;
-  position: relative;
-  &-bc{
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 55px;
-    left: 0;
-    z-index: -1;
-    background: #478970;
-  }
-}
-.titles {
-  margin: 40px auto 24px;
-}
-h1.title {
-  font-size: 32px;
-  /* padding-top: 101px; */
-  font-family: BodoniSvtyTwoSCITCTT-Book;
-  font-weight: normal;
-  width: 100%;
-  color: rgba(255, 255, 255, 1);
-  line-height: 27px;
-  letter-spacing: 2px;
-}
-h2.subtitle {
-  font-size: 16px;
-  font-family: PingFangSC-Light;
-  font-weight: 300;
-  color: rgba(255, 255, 255, 1);
-  line-height: 18px;
-  letter-spacing: 1px;
-  margin-top: 6px;
-  margin: 6px 0 18px;
-}
-.title-button {
-  margin: 0 4px;
-  border-radius: 3px;
-  border: none;
-}
-button.publish {
-  background: #478970;
-  color: rgb(255, 255, 255);
-  float: right;
-  width: 27px;
-  height: 27px;
-  margin-right: 14px;
-}
-.MyBanner {
-  margin-top: 28px;
-}
-
-/* 添加 */
-.add {
-  position: relative;
-}
-.add::after {
-  display: block;
-  content: '';
-  width: 0;
-  height: 0;
-  clear: both;
-}
-.add .add-menu {
-  position: absolute;
-  top: 40px;
-  right: 14px;
-  background-color: RGBA(52, 98, 83, 1);
-  border-radius: 3px;
-}
-.add .add-menu::after {
-  display: block;
-  content: '';
-  width: 0;
-  height: 0;
-  position: absolute;
-  top: -14px;
-  right: 14px;
-  border-width: 7px;
-  border-style: solid;
-  border-color: transparent transparent RGBA(52, 98, 83, 1) transparent;
-}
-.add .add-menu a {
-  display: block;
-  padding: 8px 12px;
-  margin: 0 12px;
-  text-decoration: none;
-  color: rgba(255, 255, 255, 1);
-  font-size: 12px;
-  letter-spacing: 1px;
-}
-.add .add-menu a:nth-of-type(1) {
-  border-bottom: 1px solid rgba(133, 255, 223, 0.18);
-}
-</style>
+<style scoped lang="less" src="./index.less"></style>

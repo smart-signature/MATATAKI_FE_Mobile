@@ -208,7 +208,7 @@ export default {
 }
 /* 加载更多提示 */
 .pull-message {
-  margin: 20px 0;
+  padding: 20px 0;
   color: #999;
   font-size: 14px;
   text-align: center;

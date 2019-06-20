@@ -1,17 +1,31 @@
 <template>
   <router-link :to="{ name: 'Article', params: { hash }}">
-    <div class="card">
-      <div class="article-text">
-        <h2 class="title">{{article.title}}</h2>
-        <p class="avatar">{{article.nickname || article.author}}</p>
+    <div
+      class="card">
+      <div class="img-outer">
+        <img :src="cover" alt="" class="img-inner" v-lazy="cover">
+        <div class="full"></div>
+      </div>
+      <div class="card-text" v-if="nowIndex === 0">
+        <h2 class="title" v-clampy="2">{{article.title}}</h2>
         <p class="date">
-          {{friendlyDate}} ·
-          <img src="../assets/img/icon_eos_article.svg" alt="eos"/>{{articleValue}}
-          <img src="../assets/img/icon_ont_article.svg" alt="ont"/>{{articleOntValue}}
+          <span>{{friendlyDate}}</span>
+          <span>
+            <img class="read" src="../assets/img/icon_article_read.svg" alt="read"/>{{article.read}}
+            <img class="eos" src="../assets/img/icon_article_ont.svg" alt="ont"/>{{articleOntValue}}
+            <img class="ont" src="../assets/img/icon_eos_article.svg" alt="eos"/>{{articleValue}}
+          </span>
         </p>
       </div>
-      <div class="img-outer" v-if="cover">
-        <img :src="cover" alt="" class="img-inner" v-lazy="cover">
+      <div class="card-text" v-else>
+        <h2 class="title" v-clampy="2">{{article.title}}</h2>
+        <p class="date">
+          <span>销量: {{article.read}}</span>
+          <span>
+            <img class="eos" src="../assets/img/icon_article_ont_orange.svg" alt="ont"/>{{articleOntValue}}
+            <img class="ont orange" src="../assets/img/icon_article_eos_orange.svg" alt="eos"/>{{articleValue}}
+          </span>
+        </p>
       </div>
     </div>
   </router-link>
@@ -23,9 +37,23 @@ import { isNDaysAgo } from '@/common/methods';
 import { precision } from '@/common/precisionConversion';
 import { getAvatarImage } from '@/api';
 
+import clampy from '@clampy-js/vue-clampy';
+import Vue from 'vue';
+
+Vue.use(clampy);
+
 export default {
   name: 'ArticleCard',
-  props: ['article'],
+  props: ['article', 'nowIndex'],
+  directives: {
+    clampy,
+  },
+  data() {
+    return {
+    };
+  },
+  mounted() {
+  },
   computed: {
     friendlyDate() {
       const time = moment(this.article.create_time);
@@ -48,76 +76,93 @@ export default {
 };
 </script>
 
-<style scoped>
-.article-text {
-  flex: 1;
-  overflow: hidden;
-}
-.img-outer {
-  flex: 0 0 80px;
-  width: 80px;
-  height: 80px;
-  margin-left: 10px;
-}
-.img-inner {
-  width: 100%;
-  height: 100%;
-  display: block;
-  border-radius: 3px;
-  object-fit: cover;
-}
-/* 文章card */
+<style scoped lang="less">
+
 .card {
-  margin: 10px 20px;
+  margin: 20px;
   text-align: left;
-  box-shadow: 0px 1px 4px 0 rgba(0, 0, 0, 0.1);
-  border-radius: 3px;
   box-sizing: border-box;
   background-color: #fff;
-  padding: 14px 20px;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  position: relative;
-}
-.card a {
-  color: #000;
-  text-decoration: none;
 }
 
 .card .title {
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-  font-size: 18px;
-  font-weight: 600;
-  color: rgb(76,76,76);
+  font-size:14px;
+  font-weight:500;
+  color:rgba(0,0,0,1);
+  line-height:18px;
 }
 
-.card .avatar {
-  color: #4D4D4D;
-  text-overflow: ellipsis;
+.img-outer {
+  flex: 0 0 120px;
+  width: 120px;
+  height: 60px;
+  background:#fff;
+  border-radius:6px;
   overflow: hidden;
-  white-space: nowrap;
-  font-size:14px;
-  font-weight:400;
-  letter-spacing:1px;
-  margin-top: 4px;
+  position: relative;
+  margin-right: 10px;
+  .img-inner {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .full {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.05);
+  }
 }
+
+.card-text {
+  flex: 1;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 60px;
+  justify-content: space-between;
+}
+
 .card .date {
-  font-size:14px;
-  font-family:PingFangSC-Regular;
-  font-weight:400;
-  letter-spacing:1px;
-  color: #A5A5A5;
   display: flex;
   align-items: center;
-  margin-top: 2px;
+  font-size:12px;
+  font-weight:400;
+  color:rgba(178,178,178,1);
+  justify-content: space-between;
+  span {
+    display: flex;
+    align-items: center;
+  }
+  img {
+    margin: 0 4px 0 8px;
+    &:nth-child(1) {
+      margin-left: 0
+    }
+    &.read {
+      width:20px;
+      height:14px;
+    }
+    &.ont {
+      width:12px;
+      height:18px;
+      opacity: .6;
+      &.orange {
+        opacity: 1;
+      }
+    }
+    &.eos {
+      width:15px;
+      height:14px;
+    }
+  }
 }
-.card .date img {
-  width: 12px;
-  margin: 0 8px;
-  opacity: 0.7;
-}
+
 </style>
