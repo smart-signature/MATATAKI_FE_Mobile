@@ -14,7 +14,6 @@
       </div>
     </div>
     <p class="comment-message">{{displayMessage}}</p>
-    <div class="comment-line"></div>
   </div>
 </template>
 
@@ -50,23 +49,24 @@ export default {
 
 <style scoped lang="less">
 .comment {
-    margin: 10px 24px;
+    margin: 20px 0;
     text-align: left;
 }
 
 .comment-info {
   display: flex;
+  align-items: center;
 }
 .comment-head {
   font-size:14px;
   font-family:PingFangSC-Regular;
   font-weight:400;
-  color:#A6A6A6;
+  color: #B2B2B2;
   line-height:20px;
   letter-spacing:1px;
 }
 .comment-avatar {
-  margin-right: 12px;
+  margin-right: 10px;
   flex: 0 0 30px;
   width: 30px;
   height: 30px;
@@ -80,10 +80,10 @@ export default {
   }
 }
 .comment-author {
-  color: rgba(0,0,0,0.70);
+  color: #000000;
   font-size:14px;
   font-family:PingFangSC-Regular;
-  font-weight:400;
+  font-weight: 700;
   color:rgba(0,0,0,1);
   line-height:20px;
   letter-spacing:1px;
@@ -91,16 +91,16 @@ export default {
 }
 .comment-quantity {
   font-family:PingFangSC-Medium;
-  font-weight:500;
-  color:rgba(71,137,112,1);
+  font-weight: 700;
+  color: #1C9CFE;
   line-height:20px;
   letter-spacing:1px;
 }
 .comment-timestamp {
-  font-size:12px;
+  font-size:10px;
   font-family:PingFangSC-Regular;
   font-weight:400;
-  color:#A6A6A6;
+  color: #B2B2B2;
   line-height:17px;
   letter-spacing:1px;
 }
@@ -112,7 +112,7 @@ export default {
   font-weight: 400;
   line-height: 20px;
   letter-spacing: 1px;
-  margin: 8px 0 14px 44px;
+  margin: 5px 0 20px 40px;
   word-break: break-all;
 }
 .comment-line {

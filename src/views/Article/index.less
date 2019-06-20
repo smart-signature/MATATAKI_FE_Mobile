@@ -172,25 +172,25 @@
 }
 
 .ta_header {
-  margin: 12px 24px 18px;
+  margin: 20px;
   padding: 0;
 }
 .ta_header h1 {
-  font-size: 18px;
+  font-size: 20px;
   color: #333;
-  margin: 14px 0 0;
   word-break: break-word;
   font-family: PingFangSC-Regular;
   font-weight: bolder;
   line-height: 1.5;
+  margin-bottom: 10px;
 }
 .avatar-info {
   display: flex;
   align-items: center;
   .avatar {
-    flex: 0 0 40px;
-    width: 40px;
-    height: 40px;
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
     overflow: hidden;
     background-color: #eee;
     border-radius: 50%;
@@ -205,20 +205,20 @@
   .author {
     font-size:14px;
     font-family:PingFangSC-Medium;
-    font-weight:500;
-    color:#343434;
+    font-weight:700;
+    color:#000000;
     padding: 0;
-    margin: 2px 0;
-    line-height: 1.5;
+    margin: 0;
+    line-height: 1;
     cursor: pointer;
     word-break: break-word;
   }
   .other {
-    font-size:14px;
+    font-size:10px;
     font-family:PingFangSC-Regular;
     font-weight:400;
-    color: #818181;
-    line-height: 1.5;
+    color: #B2B2B2;
+    line-height: 1;
     padding: 0;
     margin: 2px 0;
     display: flex;
@@ -229,8 +229,8 @@
     }
     .avatar-read {
       width: 14px;
-      margin-left: 8px;
-      margin-right: 2px;
+      margin-left: 10px;
+      margin-right: 3px;
     }
   }
 }
@@ -241,22 +241,22 @@
 
 /* markdown */
 .markdown-body {
-  margin: 8px 24px;
-  padding: 0 0 38px 0;
+  margin: 20px;
+  padding: 0 0 20px 0;
   font-family: -apple-system,SF UI Text,Arial,
               PingFang SC,Hiragino Sans GB,
               Microsoft YaHei,WenQuanYi Micro Hei,sans-serif;
-  color: #2f2f2f;
+  color: #000000;
 }
 
 .ipfs-hash {
-  background:rgba(246,246,246,.73);
-  border-radius:16px;
-  padding: 8px 20px;
-  margin: 0 20px 20px;
-  font-size:14px;
+  background-color: #F1F1F1;
+  border-radius: 16px;
+  padding: 4px 16px;
+  margin: 0 20px;
+  font-size: 12px;
   font-family:PingFangSC-Light;
-  color:rgba(0,0,0,.5);
+  color: #B2B2B2;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -270,14 +270,14 @@
 }
 
 .tag-review {
-  margin: 30px 20px;
+  margin: 20px 20px;
   padding: 15px 0;
   border-top: 1px solid #f1f1f1;
   border-bottom: 1px solid #f1f1f1;
 }
 
 .decoration {
-  padding: 0 20px 20px;
+  margin: 20px;
   display: flex;
   justify-content: space-between;
   // align-items: center;
@@ -285,15 +285,18 @@
     font-size:12px;
     font-family:PingFangSC-Light;
     font-weight:300;
-    color:rgba(0,0,0,.445);
+    color: #B2B2B2;
     line-height:16px;
   }
 }
 
 
 .comments-list {
-  background-color: #F5F5F5;
-  padding-top: 10px;
+  margin: 0 20px;
+  .comment-title {
+    font-size: 20px;
+    color: #000000;
+  }
 }
 
 .commentslist-title {
@@ -371,7 +374,7 @@
   align-items: center;
   font-size: 13px;
   font-weight:400;
-  color:#494949;
+  color:#000000;
   cursor: pointer;
 }
 .footer-block .amount div,
@@ -398,13 +401,13 @@
   background-repeat: no-repeat;
   background-position: center;
   &.eos{
-    background-image: url(../../assets/img/icon_eos_article.svg);
+    background-image: url(../../assets/newimg/eos_icon.svg);
   }
   &.ont {
     background-image: url(../../assets/img/icon_ont_article.svg);
   }
   &.fission {
-    background-image: url(../../assets/img/icon_fission.svg);
+    background-image: url(../../assets/newimg/liebian.svg);
   }
 }
 .footer-block .amount-text {
@@ -417,22 +420,22 @@
 .footer-block .button-share {
   outline: none;
   border: none;
-  padding: 6px 10px;
+  padding: 6px 16px;
   font-size:13px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  border-radius:3px;
+  border-radius:6px;
 }
 .footer-block .button-support {
-  background:rgba(71,137,112,1);
+  background:#1C9CFE;
   font-family:PingFangSC-Medium;
   font-weight:500;
   color:rgba(255,255,255,1);
   letter-spacing:1px;
-  border:1px solid rgba(71,137,112,1);
+  border:1px solid #1C9CFE;
 }
 .footer-block .button-support:disabled {
   background: #D7D7D7;
@@ -440,16 +443,16 @@
   border:1px solid #D7D7D7;
 }
 .footer-block .button-share {
-  border:1px solid rgba(41,139,111,1);
+  border:1px solid #1C9CFE;
   font-family:PingFangSC-Semibold;
   font-weight:600;
-  color:rgba(71,137,112,1);
+  color:#1C9CFE;
   background-color: #fff;
   letter-spacing:1px;
   margin-left: 8px;
 }
 .footer-block .button-support img {
-  width: 12px;
+  width: 14px;
   margin-left: 4px;
 }
 .footer-block .button-share img {
@@ -537,7 +540,7 @@
     font-size:12px;
     font-family:PingFangSC-Medium;
     font-weight:500;
-    color:rgba(0,176,97,1);
+    color:#1C9CFE;
     line-height:17px;
     letter-spacing:1px;
   }
@@ -590,3 +593,64 @@
   }
 
 }
+.top-image {
+  width: 100%;
+  height: 187px;
+  object-fit: cover;
+  background: #cccccc;
+}
+.follow-btn {
+  background: #333333;
+  color: #ffffff;
+  font-size: 12px;
+  min-width: 63px;
+  text-align: center;
+  height: 25px;
+  line-height: 25px;
+  border-radius: 6px;
+  span {
+    margin-right: 4px;
+  }
+}
+.userinfo-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.footer-number {
+  color: #1C9CFE;
+  font-weight: 700;
+  font-size: 14px;
+}
+.buy-alert {
+  margin: 20px;
+  box-sizing: border-box;
+  border-radius: 6px;
+  background-color: #1C9CFE;
+  background-image: url(../../assets/newimg/bought_alert.svg);
+  background-repeat: no-repeat;
+  line-height: 60px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: #ffffff;
+}
+.footer-block {
+  .bg-yellow {
+    background: #F7B500;
+  }
+  .border-yellow {
+    border-color: #F7B500;
+  }
+  .text-yellow {
+    color: #F7B500;
+  }
+}
+.footer-info {
+  justify-content: flex-start;
+  padding: 10px 0 10px 10px;
+}
+/*.footer-btn {
+  justify-content: flex-end;
+  padding: 10px 10px 10px 0;
+}*/
