@@ -80,6 +80,7 @@ export default {
     setWrapperScroll(index) {
       this.$nextTick(() => {
         new Bscroll(this.$refs[`wrapper${index}`], {
+          click: true,
           scrollX: true,
           scrollY: false
         });
