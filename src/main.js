@@ -10,7 +10,7 @@ import store from "./store";
 import { backendAPI } from "@/api";
 
 import "./registerServiceWorker";
-// import "amfe-flexible";
+// import "lib-flexible"; // 适配
 
 // 复制内容
 import VueClipboard from "vue-clipboard2";

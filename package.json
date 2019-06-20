@@ -14,7 +14,6 @@
   "dependencies": {
     "@clampy-js/vue-clampy": "^1.0.6",
     "@vant/touch-emulator": "^1.0.0",
-    "amfe-flexible": "^2.2.1",
     "axios": "^0.19.0",
     "better-scroll": "^2.0.0-alpha.15",
     "compressorjs": "^1.0.5",
@@ -25,6 +24,7 @@
     "iview": "^3.3.0",
     "js-base64": "^2.5.1",
     "konami": "^1.6.2",
+    "lib-flexible": "^0.3.2",
     "lodash": "^4.17.11",
     "mavon-editor": "^2.7.0",
     "moment": "^2.24.0",
@@ -33,7 +33,6 @@
     "register-service-worker": "^1.5.2",
     "scatterjs-core": "^2.7.18",
     "scatterjs-plugin-eosjs": "^1.5.1",
-    "scrollreveal": "^4.0.5",
     "vant": "^1.6.19",
     "vue": "^2.6.6",
     "vue-clipboard2": "^0.3.0",

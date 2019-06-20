@@ -1,6 +1,6 @@
-import axios from 'axios';
-import https from 'https';
-import { Base64 } from 'js-base64';
+import axios from "axios";
+import https from "https";
+import { Base64 } from "js-base64";
 
 // Doc : https://github.com/axios/axios
 
@@ -8,35 +8,44 @@ export const urlAddress = process.env.VUE_APP_URL;
 // 获取图片直接使用接口地址
 export const apiServer = process.env.VUE_APP_API;
 // 代理使用地址
-export const apiServerAdders = process.env.NODE_ENV === 'development' ? '/' : process.env.VUE_APP_API;
+// export const apiServerAdders = process.env.NODE_ENV === 'development' ? '/' : process.env.VUE_APP_API;
 // https://github.com/axios/axios/issues/535
 const axiosforApiServer = axios.create({
-  baseURL: apiServerAdders,
-  headers: { Accept: '*/*', lang: 'zh' },
-  httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+  baseURL: apiServer,
+  headers: { Accept: "*/*", lang: "zh" },
+  httpsAgent: new https.Agent({ rejectUnauthorized: false })
 });
 
 // accessToken with localStorage
 export const accessTokenAPI = {
-  get() { return window.localStorage.getItem('ACCESS_TOKEN'); },
-  set(token) { window.localStorage.setItem('ACCESS_TOKEN', token); },
-  rm() { window.localStorage.removeItem('ACCESS_TOKEN'); },
-  disassemble(token) { // 拆token，返回json对象
-    if (!token) { return { id: null, iss: null, exp: 0 }; }
-    let tokenPayload = token.substring(token.indexOf('.') + 1);
-    tokenPayload = tokenPayload.substring(0, tokenPayload.indexOf('.'));
+  get() {
+    return window.localStorage.getItem("ACCESS_TOKEN");
+  },
+  set(token) {
+    window.localStorage.setItem("ACCESS_TOKEN", token);
+  },
+  rm() {
+    window.localStorage.removeItem("ACCESS_TOKEN");
+  },
+  disassemble(token) {
+    // 拆token，返回json对象
+    if (!token) {
+      return { id: null, iss: null, exp: 0 };
+    }
+    let tokenPayload = token.substring(token.indexOf(".") + 1);
+    tokenPayload = tokenPayload.substring(0, tokenPayload.indexOf("."));
     return JSON.parse(Base64.decode(tokenPayload));
     // {iss:用户名，exp：token的过期时间，用ticks的形式表示}
-  },
+  }
 };
 
 /* eslint no-param-reassign: ["error", { "props": false }] */
-const accessBackend = async (config) => {
+const accessBackend = async config => {
   const token = accessTokenAPI.get();
   // https://blog.fundebug.com/2018/07/25/es6-const/
-  config.headers = { 'x-access-token': token };
-  if (config.data && config.data.platform && config.data.platform === 'need') {
-    config.data.platform = (accessTokenAPI.disassemble(token)).platform;
+  config.headers = { "x-access-token": token };
+  if (config.data && config.data.platform && config.data.platform === "need") {
+    config.data.platform = accessTokenAPI.disassemble(token).platform;
   }
   return axiosforApiServer(config);
 };
@@ -44,188 +53,218 @@ const accessBackend = async (config) => {
 const API = {
   async sendArticle(
     url,
-    {
-      signId = null, author, hash, title, fissionFactor, cover, isOriginal, tags,
-    },
-    signature = null,
+    { signId = null, author, hash, title, fissionFactor, cover, isOriginal, tags },
+    signature = null
   ) {
     return accessBackend({
-      method: 'POST',
+      method: "POST",
       url,
       data: {
         author,
         cover,
         fissionFactor,
         hash,
-        platform: 'need',
+        platform: "need",
         publickey: signature ? signature.publicKey : null,
         sign: signature ? signature.signature : null,
         signId,
         title,
         is_original: isOriginal,
-        tags,
-      },
+        tags
+      }
     });
   },
-  async publishArticle({ article, signature }) { return this.sendArticle('/publish', article, signature); },
+  async publishArticle({ article, signature }) {
+    return this.sendArticle("/publish", article, signature);
+  },
   async editArticle({ article, signature }) {
     console.log(article, signature);
 
-    return this.sendArticle('/edit', article, signature);
+    return this.sendArticle("/edit", article, signature);
   },
   async reportShare(share) {
     const data = {
-      ...share, platform: 'need', referrer: share.sponsor.id,
+      ...share,
+      platform: "need",
+      referrer: share.sponsor.id
     };
     const { idProvider } = data;
-    if (idProvider === 'EOS') {
+    if (idProvider === "EOS") {
       data.amount *= 10000;
     }
     delete data.idProvider;
     delete data.sponsor;
-    return accessBackend({ method: 'POST', url: '/support', data });
+    return accessBackend({ method: "POST", url: "/support", data });
   },
 
   /*
    * 根据用户名，公钥，客户端签名请求access_token
-  */
-  async auth({
-    idProvider, publicKey: publickey, signature: sign, username,
-  }) {
-    return axiosforApiServer.post('/auth', {
-      platform: idProvider.toLowerCase(), publickey, sign, username,
-    },
-    {
-      headers: { Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==' },
-    });
+   */
+  async auth({ idProvider, publicKey: publickey, signature: sign, username }) {
+    return axiosforApiServer.post(
+      "/auth",
+      {
+        platform: idProvider.toLowerCase(),
+        publickey,
+        sign,
+        username
+      },
+      {
+        headers: { Authorization: "Basic bXlfYXBwOm15X3NlY3JldA==" }
+      }
+    );
   },
-  async getArticleDatafromIPFS(hash) { return axios.get(`${apiServer}/ipfs/catJSON/${hash}`); },
+  async getArticleDatafromIPFS(hash) {
+    return axios.get(`${apiServer}/ipfs/catJSON/${hash}`);
+  },
   // 获取单篇文章的信息 by hash or id  需要 token 否则无法获取赞赏状态
   async getArticleInfo(hashOrId) {
     const reg = /^[0-9]*$/;
     // post hash获取  ， p id 短链接
-    const url = reg.test(hashOrId) ? 'p' : 'post';
+    const url = reg.test(hashOrId) ? "p" : "post";
     return accessBackend({ url: `/${url}/${hashOrId}` });
   },
   async follow({ id }) {
     return accessBackend({
-      method: 'POST',
-      url: '/follow',
-      data: { uid: id },
+      method: "POST",
+      url: "/follow",
+      data: { uid: id }
     });
   },
   async unfollow({ id }) {
     return accessBackend({
-      method: 'POST',
-      url: '/unfollow',
-      data: { uid: id },
+      method: "POST",
+      url: "/unfollow",
+      data: { uid: id }
     });
   },
   // async getFansList({ uid }) { return accessBackend({ url: '/fans', params: { uid } }); },
   // async getFollowList({ uid }) { return accessBackend({ url: '/follows', params: { uid } }); },
-  async getMyUserData() { return accessBackend({ url: '/user/stats' }); },
-  async getUser({ id }) { return accessBackend({ url: `/user/${id}` }); },
+  async getMyUserData() {
+    return accessBackend({ url: "/user/stats" });
+  },
+  async getUser({ id }) {
+    return accessBackend({ url: `/user/${id}` });
+  },
   async sendComment({ comment, signId }) {
     return accessBackend({
-      method: 'POST',
-      url: '/post/comment',
+      method: "POST",
+      url: "/post/comment",
       // eslint-disable-next-line camelcase
-      data: { comment, sign_id: signId },
+      data: { comment, sign_id: signId }
     });
   },
   // be Used in Article Page
   async addReadAmount({ articlehash }) {
     return accessBackend({
-      method: 'POST',
-      url: `/post/show/${articlehash}`,
+      method: "POST",
+      url: `/post/show/${articlehash}`
     });
   },
   // 删除文章
   async delArticle({ id }) {
     return accessBackend({
-      method: 'DELETE',
-      url: `/post/${id}`,
+      method: "DELETE",
+      url: `/post/${id}`
     });
   },
   // 设置头像
   async uploadAvatar(data = { avatar: null }) {
     return accessBackend({
-      method: 'POST',
-      url: '/user/setAvatar',
-      data,
+      method: "POST",
+      url: "/user/setAvatar",
+      data
     });
   },
   // 获取头像
-  getAvatarImage(hash) { return `${apiServer}/image/${hash}`; },
+  getAvatarImage(hash) {
+    return `${apiServer}/image/${hash}`;
+  },
   // BasePull 分页组件
   async getBackendData({ url, params }, needAccessToken = false) {
     // 分页组件接口地址
     const pullApiUrl = {
       // home
-      homeTimeRanking: 'posts/timeRanking',
-      homeSupportsRanking: 'posts/supportsRanking',
-      homeAmountRankingEOS: 'posts/amountRanking',
-      homeAmountRankingONT: 'posts/amountRanking',
+      homeTimeRanking: "posts/timeRanking",
+      homeSupportsRanking: "posts/supportsRanking",
+      homeAmountRankingEOS: "posts/amountRanking",
+      homeAmountRankingONT: "posts/amountRanking",
       // article comments
-      commentsList: 'support/comments',
+      commentsList: "support/comments",
       // followlist
-      followsList: 'follows',
-      fansList: 'fans',
+      followsList: "follows",
+      fansList: "fans",
       // asset
-      assetList: 'tokens',
+      assetList: "tokens",
       // user articles
       // 原创文章-使用 homeTimeRanking 接口 地址一样
-      userArticlesSupportedList: 'posts/supported',
+      userArticlesSupportedList: "posts/supported",
       // draftbox
-      draftboxList: 'drafts',
+      draftboxList: "drafts",
       // tag by id
-      getPostByTagById: 'posts/getPostByTag',
+      getPostByTagById: "posts/getPostByTag",
       // buy
-      buyHistory: 'support/products',
+      buyHistory: "support/products"
     };
 
     return !needAccessToken
       ? axiosforApiServer.get(pullApiUrl[url], { params })
       : accessBackend({ url: `/${pullApiUrl[url]}`, params });
   },
-  async createDraft({
-    title, content, cover, fissionFactor, isOriginal, tags,
-  }) {
+  async createDraft({ title, content, cover, fissionFactor, isOriginal, tags }) {
     return accessBackend({
-      method: 'POST',
-      url: '/draft/save',
+      method: "POST",
+      url: "/draft/save",
       data: {
-        title, content, cover, fissionFactor, isOriginal, tags,
-      },
+        title,
+        content,
+        cover,
+        fissionFactor,
+        isOriginal,
+        tags
+      }
     });
   },
-  async updateDraft({
-    id, title, content, cover, fissionFactor, isOriginal, tags,
-  }) {
+  async updateDraft({ id, title, content, cover, fissionFactor, isOriginal, tags }) {
     return accessBackend({
-      method: 'POST',
-      url: '/draft/save',
+      method: "POST",
+      url: "/draft/save",
       data: {
-        id, title, content, cover, fissionFactor, isOriginal, tags,
-      },
+        id,
+        title,
+        content,
+        cover,
+        fissionFactor,
+        isOriginal,
+        tags
+      }
     });
   },
-  async delDraft({ id }) { return accessBackend({ method: 'DELETE', url: `/draft/${id}` }); },
-  async getDraft({ id }) { return accessBackend({ url: `/draft/${id}` }); },
-  async setProfile({
-    nickname, introduction, email, accept,
-  }) {
+  async delDraft({ id }) {
+    return accessBackend({ method: "DELETE", url: `/draft/${id}` });
+  },
+  async getDraft({ id }) {
+    return accessBackend({ url: `/draft/${id}` });
+  },
+  async setProfile({ nickname, introduction, email, accept }) {
     return accessBackend({
-      method: 'POST',
-      url: '/user/setProfile',
+      method: "POST",
+      url: "/user/setProfile",
       data: {
-        nickname, introduction, email, accept,
-      },
+        nickname,
+        introduction,
+        email,
+        accept
+      }
     });
   },
-  async getMyPost(id) { return accessBackend({ url: `/mypost/${id}` }); },
+  async getMyPost(id) {
+    return accessBackend({ url: `/mypost/${id}` });
+  },
   // 获取账户资产列表 暂时没有EOS数据
-  async getBalance() { return accessBackend({ url: '/balance' }); },
+  async getBalance() {
+    return accessBackend({ url: "/balance" });
+  },
   async withdraw(rawData) {
     const data = { ...rawData, platform: rawData.tokenName.toLowerCase() };
     if (rawData.signature) {
@@ -235,37 +274,47 @@ const API = {
     delete data.idProvider;
     delete data.tokenName;
     delete data.signature;
-    return accessBackend({ method: 'POST', url: '/user/withdraw', data });
+    return accessBackend({ method: "POST", url: "/user/withdraw", data });
   },
   async loginGitHub(code) {
-    return axiosforApiServer.post('/login/github', { code });
+    return axiosforApiServer.post("/login/github", { code });
   },
   // 获取可用标签列表
   async getTags() {
-    return axiosforApiServer.get('/tag/tags');
+    return axiosforApiServer.get("/tag/tags");
   },
   // 文章转让
   async transferOwner(from, articleId, uid) {
     console.log(from, articleId, uid);
-    if (from === 'article') return accessBackend({ method: 'POST', url: '/post/transferOwner', data: { signid: articleId, uid } });
-    if (from === 'draft') return accessBackend({ method: 'POST', url: '/draft/transferOwner', data: { draftid: articleId, uid } });
+    if (from === "article")
+      return accessBackend({
+        method: "POST",
+        url: "/post/transferOwner",
+        data: { signid: articleId, uid }
+      });
+    if (from === "draft")
+      return accessBackend({
+        method: "POST",
+        url: "/draft/transferOwner",
+        data: { draftid: articleId, uid }
+      });
   },
   // 通过用户名搜索
   async searchUsername(username) {
-    return axiosforApiServer.get('/search', {
+    return axiosforApiServer.get("/search", {
       params: {
-        q: username,
-      },
+        q: username
+      }
     });
   },
   // 获取推荐文章或者商品
   postsRecommend(channel) {
-    return axiosforApiServer.get('/posts/recommend', {
+    return axiosforApiServer.get("/posts/recommend", {
       params: {
-        channel,
-      },
+        channel
+      }
     });
-  },
+  }
 };
 
 export default API;
