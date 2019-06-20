@@ -1,7 +1,12 @@
 <template>
   <div class="home mw">
     <!-- 首页头部 -->
-    <home-head :nav="navList" :now-index="nowIndex" @toggleNav="toggleNav" />
+    <home-head
+      :nav="navList"
+      :now-index="nowIndex"
+      @toggleNav="toggleNav"
+      @login="showSidebar = true"
+    />
 
     <!-- 首页内容 -->
     <div
@@ -62,6 +67,8 @@
         </template>
       </BasePull>
     </div>
+
+    <Sidebar v-model="showSidebar"></Sidebar>
   </div>
 </template>
 
@@ -70,7 +77,7 @@ import { ContentLoader } from "vue-content-loader";
 import homeHead from "./components/homeHead.vue";
 import homeNav from "./components/homeNav.vue";
 import homeSlide from "./components/homeSlide.vue";
-
+import Sidebar from "./Sidebar.vue";
 import { ArticleCard } from "@/components/";
 
 import { backendAPI } from "@/api";
@@ -82,10 +89,12 @@ export default {
     homeNav,
     homeSlide,
     ArticleCard,
-    ContentLoader
+    ContentLoader,
+    Sidebar
   },
   data() {
     return {
+      showSidebar: false,
       navList: ["文章", "商品"], // head data
       nowIndex: 0,
       // 防止数据嵌套太多 把内容提取出来

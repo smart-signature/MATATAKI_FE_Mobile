@@ -1,37 +1,41 @@
 <template>
-    <div class="home-fixed home-head mw">
-      <div class="home-head-avatar" v-if="true">
-        <img src="https://avatars2.githubusercontent.com/u/24250627?s=460&v=4" alt="" />
-      </div>
-      <a v-else href="javascript:void(0);" @click="loginButton" class="home-head-notlogin">登陆</a>
-
-      <div class="home-head-nav">
-        <a
-          v-for="(item, index) in nav"
-          :class="nowIndex === index && 'active'"
-          @click="$emit('toggleNav', index)"
-          :key="index" href="javascript:void(0);">
-            <span>{{item}}</span>
-          </a>
-      </div>
-
-      <img
-        @click="$router.push({name: 'Publish', params: {id: 'create'}})"
-        class="home-head-create"
-        src="@/assets/img/icon_home_create.svg"
-        alt="create"/>
+  <div class="home-fixed home-head mw">
+    <div v-if="false" class="home-head-avatar">
+      <img src="https://avatars2.githubusercontent.com/u/24250627?s=460&v=4" alt="" />
     </div>
+    <a v-else href="javascript:void(0);" class="home-head-notlogin" @click="$emit('login')">登陆</a>
+
+    <div class="home-head-nav">
+      <a
+        v-for="(item, index) in nav"
+        :key="index"
+        :class="nowIndex === index && 'active'"
+        href="javascript:void(0);"
+        @click="$emit('toggleNav', index)"
+      >
+        <span>{{ item }}</span>
+      </a>
+    </div>
+
+    <img
+      class="home-head-create"
+      src="@/assets/img/icon_home_create.svg"
+      alt="create"
+      @click="$router.push({ name: 'Publish', params: { id: 'create' } })"
+    />
+  </div>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
-  name: 'homeHead',
-  props: ['nav', 'nowIndex'],
-  methods: {
-    loginButton() {
-      console.log('login');
-    },
+  name: "HomeHead",
+  props: ["nav", "nowIndex"],
+  computed: {
+    ...mapGetters(["isLogined"])
   },
+  methods: {}
 };
 </script>
 
@@ -47,7 +51,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #DBDBDB;
+  border-bottom: 1px solid #dbdbdb;
   padding: 10px 20px;
   background-color: #fff;
   box-sizing: border-box;
@@ -63,39 +67,39 @@ export default {
     }
   }
   &-notlogin {
-    font-size:10px;
-    font-weight:500;
-    color:rgba(255,255,255,1);
-    letter-spacing:2px;
+    font-size: 10px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 1);
+    letter-spacing: 2px;
     padding: 4px 8px;
     background: #000;
     border-radius: 6px;
   }
   &-nav {
     a {
-      font-size:20px;
-      font-weight:600;
-      color:rgba(178,178,178,1);
+      font-size: 20px;
+      font-weight: 600;
+      color: rgba(178, 178, 178, 1);
       margin: 0 12px;
       position: relative;
       text-align: center;
-      transition: all .18s ease-in-out;
+      transition: all 0.18s ease-in-out;
       span {
         z-index: 2;
         position: relative;
       }
       &.active {
-        color:rgba(0,0,0,1);
+        color: rgba(0, 0, 0, 1);
       }
       &.active::after {
-        content: '';
+        content: "";
         position: absolute;
         bottom: 2px;
         left: -2px;
         right: -2px;
         display: block;
         height: 5px;
-        background-color: #1C9CFE;
+        background-color: #1c9cfe;
       }
     }
   }
@@ -105,5 +109,4 @@ export default {
     height: 20px;
   }
 }
-
 </style>
