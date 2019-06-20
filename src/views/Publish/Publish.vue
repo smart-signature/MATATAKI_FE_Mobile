@@ -169,8 +169,7 @@ export default {
     toolbars: {},
     screenWidth: document.body.clientWidth || document.documentElement.clientWidth,
     mavonStyle: {
-      // 367 其他元素高度剩余的总高度
-      minHeight: `${(document.body.clientHeight || document.documentElement.clientHeight) - 367}px`
+      minHeight: `${(document.body.clientHeight || document.documentElement.clientHeight) - 174}px`
     },
     fissionNum: 2,
     cover: "",
@@ -568,7 +567,7 @@ export default {
         const clientWidth = document.body.clientWidth || document.documentElement.clientWidth;
         this.screenWidth = clientWidth;
         this.mavonStyle = {
-          minHeight: `${clientHeight - 367}px`
+          minHeight: `${clientHeight - 174}px`
         };
       }, 150);
     },
