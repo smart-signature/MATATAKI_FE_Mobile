@@ -15,7 +15,7 @@
         </transition>
       </div>
       <div class="information" slot="info" @click="infoModa = true">
-        <img src="@/assets/information.svg" alt="information">
+        <img src="@/assets/newimg/gonglue_innovationbar.svg" alt="information">
         <span>攻略</span>
       </div>
     </BaseHeader>
@@ -27,32 +27,32 @@
       <rect x="27" y="46" rx="0" ry="0" width="334" height="240" />
     </ContentLoader>
     <template v-else>
+      <img :src="cover" alt="" class="top-image" v-lazy="cover">
       <header class="ta_header">
-        <div class="avatar-info">
-          <div class="avatar" @click="() => $router.push({ name: 'User', params: { id: article.uid }})">
-            <img v-if="articleAvatar" :src="articleAvatar" class="avatar-size" alt="avatar">
-          </div>
-          <div class="avatar-right">
-            <p class="author" @click="() => $router.push({ name: 'User', params: { id: article.uid }})">
-              {{article.nickname || article.author}}
-            </p>
-            <p class="other">
-              <img src="@/assets/img/icon_date.svg" class="avatar-date" alt="avatar">
-              {{articleCreateTimeComputed}}
-              <img src="@/assets/img/icon_read.svg" class="avatar-read" alt="avatar">
-              {{article.read || 0}}阅读
-            </p>
-          </div>
-        </div>
         <h1>{{article.title}}</h1>
+        <div class="userinfo-container">
+          <div class="avatar-info">
+            <div class="avatar" @click="() => $router.push({ name: 'User', params: { id: article.uid }})">
+              <img v-if="articleAvatar" :src="articleAvatar" class="avatar-size" alt="avatar">
+            </div>
+            <div class="avatar-right">
+              <p class="author" @click="() => $router.push({ name: 'User', params: { id: article.uid }})">
+                {{article.nickname || article.author}}
+              </p>
+              <p class="other">
+                发布于
+                {{articleCreateTimeComputed}}
+                <img src="@/assets/img/icon_read.svg" class="avatar-read" alt="avatar">
+                {{article.read || 0}}阅读
+              </p>
+            </div>
+          </div>
+          <div class="follow-btn">
+            <span>+</span> 关注</div>
+        </div>
       </header>
       <mavon-editor v-show="false" style="display: none;"/>
       <div class="markdown-body" v-html="compiledMarkdown"></div>
-
-      <!-- don't tag hide -->
-      <div class="tag-review" v-if="article.tags !== undefined && article.tags.length !== 0">
-        <tag-card v-for="(item, index) in article.tags" :key="index" :tagCard="item" :tagMode="false" />
-      </div>
 
       <div class="ipfs-hash">
         <img
@@ -70,35 +70,43 @@
           </template>
         </span>
       </div>
+      <!-- don't tag hide -->
+      <div class="tag-review" v-if="article.tags !== undefined && article.tags.length !== 0">
+        <tag-card v-for="(item, index) in article.tags" :key="index" :tagCard="item" :tagMode="false" />
+      </div>
     </template>
+    <router-link :to="{ name: 'BuyHistory' }">
+      <div class="buy-alert" v-if="article.product">已购买成功，请前往“购买记录”页面查看！</div>
+    </router-link>
 
     <div class="comments-list">
-      <div class="commentslist-title">
+      <h1 class="comment-title">
+        {{article.channel_id === 2 ? '购买队列' : '赞赏队列'}} {{article.ups || 0}}</h1>
+      <!--<div class="commentslist-title">
         <span>赞赏队列 {{article.ups || 0}}</span>
-      </div>
-      <div class="product" v-if="article.product">
+      </div>-->
+      <!--<div class="product" v-if="article.product">
         <div class="product-list" v-for="(item, index) in article.product" :key="index">
-          <span>《{{item.title}}》--key: {{item.digital_copy}}</span>
+          <span>《{{item.title}}》&#45;&#45;key: {{item.digital_copy}}</span>
           <img
             src="@/assets/img/icon_copy.svg"
             class="copy-product-info"
             alt="hash"
-            @click="copyText('《' + item.title + '》--key:'+ item.digital_copy)">
+            @click="copyText('《' + item.title + '》&#45;&#45;key:'+ item.digital_copy)">
         </div>
-      </div>
+      </div>-->
       <CommentsList class="comments" :signId="signId" :isRequest="isRequest" @stopAutoRequest="(status) => isRequest = status" />
     </div>
 
     <footer class="footer">
-      <div class="footer-block">
-          <div class="amount">
+      <div class="footer-block footer-info">
+        <div class="amount">
             <Dropdown trigger="click" @on-click="toggleAmount">
               <div>
                 <div
                   :class="totalSupportedAmount.showName === 'eos' ? 'eos' : 'ont'"
                   class="amount-img"></div>
-                {{totalSupportedAmount.show}}
-                &nbsp;
+                <span class="footer-number" :class="{'text-yellow': article.channel_id === 2}">{{totalSupportedAmount.show}}</span>&nbsp;
                 <Icon type="ios-arrow-up" />
               </div>
               <DropdownMenu slot="list">
@@ -112,23 +120,31 @@
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
-            <div class="amount-text">赞赏总额</div>
-          </div>
-          <div class="fission">
-            <div>
-              <div class="amount-img fission"></div>
-              {{getDisplayedFissionFactor}}
+            <div class="amount-text">
+              {{article.channel_id === 2 ? '总收益' : '赞赏总额'}}
             </div>
-            <div class="amount-text">裂变系数</div>
           </div>
-    </div>
-    <div class="footer-block">
-      <button class="button-support" v-if="isSupported===-1" @click="b4support">赞赏<img src="@/assets/img/icon_support.png"/></button>
-      <button class="button-support" v-if="isSupported===0" disabled>赞赏中<img src="@/assets/img/icon_support.png"/></button>
-      <button class="button-support" v-else-if="isSupported===1" @click="supportButton">赞赏<img src="@/assets/img/icon_support.png"/></button>
-      <button class="button-support" v-else-if="isSupported===2" disabled>已赞赏<img src="@/assets/img/icon_support.png"/></button>
-      <button class="button-share" @click="widgetModal = true">分享<img src="@/assets/img/icon_share.png" /></button>
-    </div>
+          <div class="fission" v-if="article.channel_id !== 2"><div>
+          <div class="amount-img fission"></div>
+          <span class="footer-number">{{getDisplayedFissionFactor}}</span>
+          </div>
+          <div class="amount-text">裂变系数</div>
+        </div>
+      </div>
+      <div class="footer-block footer-btn" v-if="article.channel_id === 2">
+        <button class="button-support bg-yellow border-yellow" v-if="isSupported===-1" @click="b4support">购买<img src="@/assets/newimg/goumai.svg"/></button>
+        <button class="button-support bg-yellow border-yellow" v-if="isSupported===0" disabled>购买中<img src="@/assets/newimg/goumai.svg"/></button>
+        <button class="button-support bg-yellow border-yellow" v-else-if="isSupported===1" @click="supportButton">购买<img src="@/assets/newimg/goumai.svg"/></button>
+        <button class="button-support bg-yellow border-yellow" v-else-if="isSupported===2" disabled>已购买<img src="@/assets/newimg/goumai.svg"/></button>
+        <button class="button-share border-yellow text-yellow" @click="widgetModal = true">分享<img src="@/assets/newimg/share2.svg" /></button>
+      </div>
+      <div class="footer-block footer-btn" v-else>
+        <button class="button-support" v-if="isSupported===-1" @click="b4support">赞赏<img src="@/assets/newimg/zanshang.svg"/></button>
+        <button class="button-support" v-if="isSupported===0" disabled>赞赏中<img src="@/assets/newimg/zanshang.svg"/></button>
+        <button class="button-support" v-else-if="isSupported===1" @click="supportButton">赞赏<img src="@/assets/newimg/zanshang.svg"/></button>
+        <button class="button-support" v-else-if="isSupported===2" disabled>已赞赏<img src="@/assets/newimg/zanshang.svg"/></button>
+        <button class="button-share" @click="widgetModal = true">分享<img src="@/assets/newimg/share.svg" /></button>
+      </div>
     </footer>
 
     <van-dialog
@@ -166,7 +182,8 @@ import {
   getArticleInfo,
   addReadAmount, sendComment,
   delArticle,
-  backendAPI
+  backendAPI,
+  getAvatarImage
 } from '@/api';
 import 'mavon-editor/dist/css/index.css';
 import moment from 'moment';
@@ -240,6 +257,10 @@ export default {
   },
   computed: {
     ...mapGetters(['currentUserInfo', 'isLogined', 'isMe']),
+    cover() {
+      if (this.article.cover) return getAvatarImage(this.article.cover);
+      return null;
+    },
     displayPlaceholder() {
       return `请输入 ${this.currentUserInfo.idProvider} 赞赏金额`;
     },

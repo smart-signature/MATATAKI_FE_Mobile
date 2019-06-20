@@ -33,7 +33,7 @@ Vue.use(Navigation, { router, store, keyName: 'CACHE' });
   VueHead,
 ].map(c => Vue.use(c));
 
-
+Vue.config.devtools = true
 Vue.config.productionTip = false;
 
 // Register moment's default language

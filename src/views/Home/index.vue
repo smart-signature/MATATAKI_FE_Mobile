@@ -3,6 +3,7 @@
     <div class='head'>
       <link rel='icon' type='image/png' sizes='32x32' href='./img/Andoromeda logo@2x.png'>
       <link rel='icon' type='image/png' sizes='16x16' href='./img/Andoromeda logo.png'>
+      <button @click="showSidebar = true">123</button>
       <div class='add'>
         <Button class='publish' @click.stop='addShow=!addShow'>
           <Icon class='publish-icon' type="md-add" size='24'
@@ -26,21 +27,24 @@
       <div class="head-bc"></div>
     </div>
     <ArticleRankings ref='ArticleRankings'/>
+    <Sidebar v-model="showSidebar"></Sidebar>
   </div>
 </template>
 
 <script>
 import MyBanner from './MyBanner.vue';
 import ArticleRankings from './ArticlesRankings.vue';
+import Sidebar from './Sidebar.vue';
 
 export default {
   name: 'Home',
-  components: { ArticleRankings, MyBanner },
+  components: { ArticleRankings, MyBanner, Sidebar },
   created() {
     document.title = '首页 - SmartSignature';
   },
   data() {
     return {
+      showSidebar: false,
       visible1: false,
       actions1: [
         {
