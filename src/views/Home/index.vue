@@ -45,7 +45,7 @@
       >
         <template v-if="itemList.articles.length === 0">
           <ContentLoader
-            v-for="itemLoader in [0, 1, 2]"
+            v-for="itemLoader in [0, 1]"
             :key="itemLoader"
             :height="80"
             :speed="2"

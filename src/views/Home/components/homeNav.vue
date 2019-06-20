@@ -1,30 +1,30 @@
 <template>
-    <ul
-      class="home-fixed mw"
-      :class="!navShow && 'show'">
+  <ul class="home-fixed mw" :class="!navShow && 'show'">
     <li
       v-for="(item, index) in navMenu"
+      :key="index"
       :class="activeIndex === index && 'active'"
       @click="$emit('toggleNavMenu', index)"
-      :key="index">{{item.label}}</li>
+    >
+      {{ item.label }}
+    </li>
   </ul>
 </template>
 
 <script>
-import throttle from 'lodash/throttle';
-import { setTimeout } from 'timers';
+import throttle from "lodash/throttle";
+import { setTimeout } from "timers";
 
 export default {
-  name: 'homeNav',
-  props: ['navMenu', 'activeIndex'],
+  name: "HomeNav",
+  props: ["navMenu", "activeIndex"],
   data() {
     return {
       navShow: true,
-      oldScrollTop: 100,
+      oldScrollTop: 100
     };
   },
-  created() {
-  },
+  created() {},
   mounted() {
     setTimeout(() => {
       this.addHandleScroll();
@@ -35,11 +35,11 @@ export default {
   },
   methods: {
     addHandleScroll() {
-      window.addEventListener('scroll', throttle(this.handleScroll, 300));
+      window.addEventListener("scroll", throttle(this.handleScroll, 300));
     },
     handleScroll() {
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
-      console.log(111, scrollTop);
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
       if (scrollTop - this.oldScrollTop > 0) {
         // console.log('fix');
         this.navShow = false;
@@ -48,14 +48,13 @@ export default {
         this.navShow = true;
       }
       this.oldScrollTop = scrollTop;
-      // console.log(scrollTop);
-      // if (scrollTop > 296) this.isFixedHead = true;
-      // else this.isFixedHead = false;
+
+      if (scrollTop <= 50) this.navShow = true;
     },
     removeHandleScroll() {
-      window.removeEventListener('scroll', this.handleScroll);
-    },
-  },
+      window.removeEventListener("scroll", this.handleScroll);
+    }
+  }
 };
 </script>
 
@@ -66,7 +65,7 @@ export default {
   right: 0;
   left: 0;
   z-index: 98;
-  transition: all .3s;
+  transition: all 0.3s;
   &.show {
     top: 0;
   }
@@ -77,14 +76,14 @@ ul {
   align-items: center;
   background-color: #fff;
   li {
-    font-size:20px;
-    font-weight:400;
-    color:rgba(219,219,219,1);
+    font-size: 20px;
+    font-weight: 400;
+    color: rgba(219, 219, 219, 1);
     margin: 0 12px;
     padding: 0;
-    transition: all .18s ease-in-out;
+    transition: all 0.18s ease-in-out;
     &.active {
-      color:rgba(51,51,51,1);
+      color: rgba(51, 51, 51, 1);
     }
   }
 }

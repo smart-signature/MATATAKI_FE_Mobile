@@ -94,7 +94,7 @@ export default {
 
 <style scoped lang="less">
 .card {
-  margin: 20px;
+  padding: 10px 20px;
   text-align: left;
   box-sizing: border-box;
   background-color: #fff;
@@ -102,6 +102,7 @@ export default {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  transition: all 0.2s;
 }
 
 .card .title {
@@ -176,6 +177,37 @@ export default {
     &.eos {
       width: 15px;
       height: 14px;
+    }
+  }
+}
+
+// 因为不开放适配 所以媒体查询放大
+@media screen and (min-width: 750px) {
+  .card {
+    &:hover {
+      transform: translate(0, -4px);
+      box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .img-outer {
+    flex: 0 0 228px;
+    width: 228px;
+    height: 114px;
+    margin-right: 20px;
+  }
+
+  .card-text {
+    height: 100px;
+    .title {
+      font-size: 18px;
+    }
+  }
+
+  .card .date {
+    font-size: 15px;
+    img {
+      margin: 0 4px 0 16px;
     }
   }
 }
