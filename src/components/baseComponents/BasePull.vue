@@ -2,89 +2,103 @@
   <div>
     <!-- 复制了一份 来区别是否支持刷新 目前没有想到别的好办法 -->
     <!-- 负责刷新 -->
-    <van-pull-refresh v-model="refreshing" @refresh="refresh" v-if="isRefresh">
-        <slot></slot>
+    <van-pull-refresh v-if="isRefresh" v-model="refreshing" @refresh="refresh">
+      <slot></slot>
     </van-pull-refresh>
     <slot v-else></slot>
     <!-- 负责滚动 -->
-    <infinite-loading :identifier="infiniteId" spinner="circles" @infinite="infiniteHandler" ref="infiniteLoading">
-      <div class="pull-message" slot="no-results">{{loadingTextComputed}}</div>
-       <div slot="no-more"></div>
+    <InfiniteLoading
+      ref="infiniteLoading"
+      :identifier="infiniteId"
+      spinner="circles"
+      @infinite="infiniteHandler"
+    >
+      <div slot="no-results" class="pull-message">{{ loadingTextComputed }}</div>
+      <div slot="no-more"></div>
       <div slot="error" slot-scope="{ trigger }">
         <p class="error-message">您的网络似乎不太给力,请稍后重试</p>
         <a class="error-refresh" href="javascript:;" @click="trigger">重新加载</a>
       </div>
-    </infinite-loading>
+    </InfiniteLoading>
   </div>
 </template>
 
 <script>
-import { getBackendData } from '@/api';
-import InfiniteLoading from 'vue-infinite-loading';
+import { getBackendData } from "@/api";
+import InfiniteLoading from "vue-infinite-loading";
 
 export default {
-  name: 'BasePull',
+  name: "BasePull",
   components: {
-    InfiniteLoading,
+    InfiniteLoading
   },
   props: {
     // 加载完的文字提示
     loadingText: {
       type: Object,
       default: () => ({
-        nomore: '🎉 哇，你真勤奋，所有文章已经加载完了～ 🎉', // 没有更多
-        noresults: '无文章', // 没有数据
-      }),
+        nomore: "🎉 哇，你真勤奋，所有文章已经加载完了～ 🎉", // 没有更多
+        noresults: "无文章" // 没有数据
+      })
     },
     // 传进来的params
     params: {
-      type: Object,
+      type: Object
     },
     // api 地址
     apiUrl: {
       type: String,
-      required: true,
+      required: true
     },
     // 当前聚焦索引
     activeIndex: {
       type: Number,
-      default: 0,
+      default: 0
     },
     // 当前索引
     nowIndex: {
       type: Number,
-      default: 0,
+      default: 0
     },
     // 返回的数据是对象还是数组
     isObj: {
       type: Object,
       default: () => ({
-        type: 'Array',
-        key: '',
-        keys: null,
-      }),
+        type: "Array",
+        key: "",
+        keys: null
+      })
     },
     // 是否支持刷新
     isRefresh: {
       type: Boolean,
-      default: true,
+      default: true
     },
     // 自动请求时间
     autoRequestTime: {
       type: Number,
-      default: 0,
+      default: 0
     },
     // 是否需要token
     needAccessToken: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
+  },
+  data() {
+    return {
+      refreshing: false, // 刷新
+      page: 1, // 分页
+      articles: [],
+      activeIndexCopy: this.activeIndex,
+      infiniteId: +new Date()
+    };
   },
   computed: {
     loadingTextComputed() {
       if (this.articles.length <= 0) return this.loadingText.noresults;
       return this.loadingText.nomore;
-    },
+    }
   },
   watch: {
     // 改变tab
@@ -101,7 +115,7 @@ export default {
     // 自动请求 通过time++
     autoRequestTime() {
       this.refresh();
-    },
+    }
   },
   created() {},
   methods: {
@@ -118,19 +132,22 @@ export default {
       const url = this.apiUrl;
 
       // 获取数据成功执行
-      const getDataSuccess = (data) => {
+      const getDataSuccess = data => {
         if (isEmptyArray) this.articles.length = 0; // 清空数组
         const isObjType = this.isObj.type; // 传进来的类型
         let resDataList = []; // 请求回来的list 通过长度判断是否请求完毕
 
-        if (isObjType === 'Array') { // 如果返回的数据是 Array 返回整个 data
+        if (isObjType === "Array") {
+          // 如果返回的数据是 Array 返回整个 data
           this.articles = [...this.articles, ...data];
           resDataList = data;
-        } else if (isObjType === 'Object') { // 如果返回的是 Object 根据传进来的字段获取相应的 list
+        } else if (isObjType === "Object") {
+          // 如果返回的是 Object 根据传进来的字段获取相应的 list
           const resData = data[this.isObj.key];
           resDataList = resData;
           this.articles = [...this.articles, ...resData];
-        } else if (isObjType === 'newObject') { // 接口新格式 后面统一格式就能去掉一个判断
+        } else if (isObjType === "newObject") {
+          // 接口新格式 后面统一格式就能去掉一个判断
           // 如果返回的是 Object 根据传进来的字段获取相应的 list
           let resData = [];
 
@@ -145,10 +162,10 @@ export default {
           else throw new Error(data.message);
         }
 
-        this.$emit('getListData', {
+        this.$emit("getListData", {
           data, // 整个数据
           list: this.articles, // list数据
-          index: this.nowIndex, // 当前索引
+          index: this.nowIndex // 当前索引
         });
         this.page += 1;
 
@@ -160,13 +177,16 @@ export default {
       const getDataFail = () => $state.error();
 
       // 获取数据
-      await getBackendData({ url, params }, this.needAccessToken).then((res) => {
-        if (res.status === 200 && res.data.code === 0) getDataSuccess(res.data);
-        else getDataFail();
-      }).catch((err) => {
-        console.log(err);
-        getDataFail();
-      });
+      await getBackendData({ url, params }, this.needAccessToken)
+        .then(res => {
+          // if (res.status === 200 && res.data.code === 0) getDataSuccess(res.data);
+          if (res.status === 200) getDataSuccess(res.data);
+          else getDataFail();
+        })
+        .catch(err => {
+          console.log(err);
+          getDataFail();
+        });
     },
     // 刷新
     async refresh() {
@@ -176,17 +196,8 @@ export default {
       this.page = 1; // 重置分页索引
       await this.infiniteHandler(stateChanger, true);
       this.refreshing = false;
-    },
-  },
-  data() {
-    return {
-      refreshing: false, // 刷新
-      page: 1, // 分页
-      articles: [],
-      activeIndexCopy: this.activeIndex,
-      infiniteId: +new Date(),
-    };
-  },
+    }
+  }
 };
 </script>
 
