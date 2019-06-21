@@ -38,7 +38,7 @@ export default {
 
 <style lang="less" scoped>
 .slide-item {
-  height: 117px;
+  height: 130px;
   width: 260px;
   flex: 1 0 260px;
   margin: 0 0 0 20px;
