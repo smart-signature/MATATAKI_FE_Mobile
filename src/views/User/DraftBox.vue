@@ -9,6 +9,7 @@
       :params="params"
       :api-url="apiUrl"
       :need-access-token="true"
+      :is-obj="{ type: 'Object', key: 'data' }"
       @getListData="getListData"
     >
       <DraftBoxList
