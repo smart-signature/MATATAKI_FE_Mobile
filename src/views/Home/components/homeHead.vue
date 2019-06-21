@@ -1,7 +1,7 @@
 <template>
   <div class="home-fixed home-head mw">
-    <div v-if="false" class="home-head-avatar">
-      <img src="https://avatars2.githubusercontent.com/u/24250627?s=460&v=4" alt="" />
+    <div v-if="isLogined" class="home-head-avatar" @click="$emit('login')">
+      <img v-if="avatar" v-lazy="avatar" :src="avatar" alt="avatar" />
     </div>
     <a v-else href="javascript:void(0);" class="home-head-notlogin" @click="$emit('login')">登陆</a>
 
@@ -27,15 +27,35 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "HomeHead",
   props: ["nav", "nowIndex"],
-  computed: {
-    ...mapGetters(["isLogined"])
+  data() {
+    return {
+      avatar: ""
+    };
   },
-  methods: {}
+  computed: {
+    ...mapGetters(["currentUserInfo", "isLogined"])
+  },
+  watch: {
+    isLogined(newState) {
+      if (newState) this.refreshUser();
+    }
+  },
+  created() {
+    const { isLogined, refreshUser } = this;
+    if (isLogined) refreshUser();
+  },
+  methods: {
+    ...mapActions(["getCurrentUser"]),
+    async refreshUser() {
+      const { avatar } = await this.getCurrentUser();
+      if (avatar) this.avatar = this.$backendAPI.getAvatarImage(avatar);
+    }
+  }
 };
 </script>
 
