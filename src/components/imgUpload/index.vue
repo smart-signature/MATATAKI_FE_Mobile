@@ -68,7 +68,7 @@ export default {
     },
     // 比列
     aspectRatio: {
-      type: String,
+      type: Number,
       default: 1 / 1
     }
   },
