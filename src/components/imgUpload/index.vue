@@ -1,76 +1,76 @@
 <template>
-    <div>
-        <!-- 上传图片 -->
-        <file-upload
-            ref="upload"
-            v-model="files"
-            @input-file="inputFile"
-            @input-filter="inputFilter"
-            extensions="gif,jpg,jpeg,png,webp"
-            accept="image/png,image/gif,image/jpeg,image/webp"
-            name="avatar"
-            :post-action="postAction"
-            >
-            <slot name="uploadButton">
-                <Button>上传按钮</Button>
-            </slot>
-        </file-upload>
+  <div>
+    <!-- 上传图片 -->
+    <FileUpload
+      ref="upload"
+      v-model="files"
+      extensions="gif,jpg,jpeg,png,webp"
+      accept="image/png,image/gif,image/jpeg,image/webp"
+      name="avatar"
+      :post-action="postAction"
+      @input-file="inputFile"
+      @input-filter="inputFilter"
+    >
+      <slot name="uploadButton">
+        <Button>上传按钮</Button>
+      </slot>
+    </FileUpload>
 
-        <!-- 编辑图片 modal -->
-        <Modal
-            width="400"
-            v-model="modal"
-            class-name="img-upload-modal">
-            <div slot="header" class="modal-header">
-                <p class="modal-header-title">编辑图像</p>
-                <p class="modal-header-subtitle">调整图像寸和位置</p>
-            </div>
-            <div class="modal-content">
-                <!-- 目前都只用了单文件上传, 所以裁剪取得files[0] 如果需要支持多图,请扩展组件 -->
-                <img v-if="files.length && modal" ref="editImage" :src="files[0].url" />
-            </div>
-            <Button
-                slot="footer"
-                class="save-button"
-                type="primary"
-                size="large"
-                :loading="modalLoading"
-                @click.prevent="uploadButton"
-            >
-                {{buttonText}}
-            </Button>
-        </Modal>
-    </div>
-
+    <!-- 编辑图片 modal -->
+    <Modal v-model="modal" width="400" class-name="img-upload-modal">
+      <div slot="header" class="modal-header">
+        <p class="modal-header-title">编辑图像</p>
+        <p class="modal-header-subtitle">调整图像寸和位置</p>
+      </div>
+      <div class="modal-content">
+        <!-- 目前都只用了单文件上传, 所以裁剪取得files[0] 如果需要支持多图,请扩展组件 -->
+        <img v-if="files.length && modal" ref="editImage" :src="files[0].url" />
+      </div>
+      <Button
+        slot="footer"
+        class="save-button"
+        type="primary"
+        size="large"
+        :loading="modalLoading"
+        @click.prevent="uploadButton"
+      >
+        {{ buttonText }}
+      </Button>
+    </Modal>
+  </div>
 </template>
 
 <script>
-import VueUploadComponent from 'vue-upload-component';
-import Cropper from 'cropperjs';
-import './cropper.css';
-import { ifpsUpload } from '@/api/ipfs';
-import Compressor from 'compressorjs';
+import VueUploadComponent from "vue-upload-component";
+import Cropper from "cropperjs";
+import { ifpsUpload } from "@/api/ipfs";
+import Compressor from "compressorjs";
 
 export default {
-  name: 'imgUpload',
+  name: "ImgUpload",
   components: { FileUpload: VueUploadComponent },
   props: {
     // 按钮文字
     buttonText: {
       type: String,
-      default: '保存',
+      default: "保存"
     },
     // 显示上传图片大小 单位 M
     imgSize: {
       type: Number,
-      default: 5,
+      default: 5
     },
     // 是否上传完成
     imgUploadDone: {
       type: Number,
       default: 0,
-      required: true,
+      required: true
     },
+    // 比列
+    aspectRatio: {
+      type: String,
+      default: 1 / 1
+    }
   },
   data() {
     return {
@@ -78,7 +78,7 @@ export default {
       modal: false, // modal 框显示和隐藏
       modalLoading: false, // modal button loading
       postAction: ifpsUpload, // 上传地址
-      quality: 0.8, // 压缩品质
+      quality: 0.8 // 压缩品质
     };
   },
   watch: {
@@ -91,8 +91,8 @@ export default {
             return;
           }
           const cropper = new Cropper(this.$refs.editImage, {
-            aspectRatio: 1 / 1,
-            viewMode: 1,
+            aspectRatio: this.aspectRatio,
+            viewMode: 1
           });
           this.cropper = cropper;
         });
@@ -105,7 +105,7 @@ export default {
     imgUploadDone() {
       this.modal = false;
       this.modalLoading = false;
-    },
+    }
   },
   methods: {
     /**
@@ -122,17 +122,17 @@ export default {
         if (!/\.(gif|jpg|jpeg|png|webp)$/i.test(newFile.name)) {
           this.$toast.fail({
             duration: 1000,
-            message: '请选择图片',
+            message: "请选择图片"
           });
           return prevent();
         }
       }
       // 限定最大字节
-      const maxSize = (size) => {
+      const maxSize = size => {
         if (newFile.file.size >= 0 && newFile.file.size > 1024 * 1024 * size) {
           this.$toast.fail({
             duration: 1000,
-            message: '图片过大',
+            message: "图片过大"
           });
           prevent();
           return false;
@@ -152,19 +152,19 @@ export default {
             console.log(err);
             this.$toast.fail({
               duration: 1000,
-              message: '自动压缩图片失败',
+              message: "自动压缩图片失败"
             });
-          },
+          }
         });
       };
       // 图片预览
       const modalImgView = () => {
         if (newFile && (!oldFile || newFile.file !== oldFile.file)) {
-        // eslint-disable-next-line no-param-reassign
-          newFile.url = '';
+          // eslint-disable-next-line no-param-reassign
+          newFile.url = "";
           const URL = window.URL || window.webkitURL;
           if (URL && URL.createObjectURL) {
-          // eslint-disable-next-line no-param-reassign
+            // eslint-disable-next-line no-param-reassign
             newFile.url = URL.createObjectURL(newFile.file);
             //   console.log(this.files);
             this.modal = true; // 显示 modal
@@ -184,7 +184,12 @@ export default {
     async uploadImg() {
       // 上传图像 from https://github.com/lian-yue/vue-upload-component/blob/master/docs/views/examples/Avatar.vue
       const oldFile = this.files[0];
-      const binStr = atob(this.cropper.getCroppedCanvas().toDataURL(oldFile.type).split(',')[1]);
+      const binStr = atob(
+        this.cropper
+          .getCroppedCanvas()
+          .toDataURL(oldFile.type)
+          .split(",")[1]
+      );
       const arr = new Uint8Array(binStr.length);
       for (let i = 0; i < binStr.length; i += 1) {
         arr[i] = binStr.charCodeAt(i);
@@ -194,7 +199,7 @@ export default {
         file,
         type: file.type,
         size: file.size,
-        active: true,
+        active: true
       });
     },
     /**
@@ -204,23 +209,19 @@ export default {
      * @return undefined
      */
     inputFile(newFile, oldFile) {
-      if (newFile
-           && oldFile
-           && !newFile.active
-           && oldFile.active
-      ) {
+      if (newFile && oldFile && !newFile.active && oldFile.active) {
         if (newFile.response.code === 200) {
-          this.$emit('doneImageUpload', newFile.response);
+          this.$emit("doneImageUpload", newFile.response);
         } else {
           this.modalLoading = false;
           this.$toast.fail({
             duration: 1000,
-            message: '上传图片失败',
+            message: "上传图片失败"
           });
         }
       }
-    },
-  },
+    }
+  }
 };
 </script>
 

@@ -67,6 +67,7 @@
         <img-upload
           v-show="!cover"
           :img-upload-done="imgUploadDone"
+          :aspect-ratio="2 / 1"
           class="cover-upload"
           @doneImageUpload="doneImageUpload"
         >
@@ -125,7 +126,7 @@
 import { mapGetters, mapActions } from "vuex";
 import { sendPost } from "@/api/ipfs";
 import { mavonEditor } from "mavon-editor";
-import { strTrim } from "@/common/reg.js";
+import { strTrim } from "@/common/reg";
 import {
   defaultImagesUploader,
   backendAPI,
