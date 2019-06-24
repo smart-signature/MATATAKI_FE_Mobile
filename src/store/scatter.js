@@ -5,7 +5,7 @@
 const state = {
   // account 是個物件, .name 才是帳號名
   account: null,
-  API: null,
+  api: null,
   balances: {
     eos: '... EOS',
   },
@@ -29,9 +29,7 @@ const mutations = {
   setAccount(state, account = null) {
     state.account = account;
   },
-  setAPI(state, API = null) {
-    state.API = API;
-  },
+  setAPI(state, api = null) { state.api = api; },
   setBalance(state, { symbol, balance }) {
     state.balances[symbol] = balance;
   },
@@ -39,16 +37,16 @@ const mutations = {
 
 const actions = {
   async getAPI({ commit, state }) {
-    if (!state.API) {
-      const { default: API } = await import(/* webpackChunkName: "EOS-scatter" */ '@/api/scatter');
+    if (!state.api) {
+      const { default: API } = await import(/* webpackChunkName: "EOS" */ '@/api/scatter');
       commit('setAPI', API);
     }
-    return state.API;
+    return state.api;
   },
   async connect({ commit, dispatch }) {
     const api = await dispatch('getAPI');
     console.log('Connecting to Scatter wallet or Scatter desktop...');
-    const connected = await api.connectScatterAsync();
+    const connected = await api.connect();
     console.log('🛸Scatter🛸 connect result: ', connected);
     // 不論有沒有連上都應該設定狀態，要是連上後登陸前把錢包關了(或是錢包當了)
     // 就會造成狀態不合
@@ -56,9 +54,9 @@ const actions = {
     // 參考 https://es6.ruanyifeng.com/#docs/async
     commit('setIsConnected', connected);
     if (connected) {
-      const { currentEOSAccount } = await import(/* webpackChunkName: "EOS-scatter" */ '@/api/scatter');
-      if (currentEOSAccount()) {
-        commit('setAccount', currentEOSAccount());
+      const account = api.account();
+      if (account) {
+        commit('setAccount', account);
         dispatch('setBalances');
         // Scatter 10.0 need to suggestNetwork, if not, scatter is not working on login
         await api.suggestNetworkAsync().then(added => (
@@ -72,7 +70,7 @@ const actions = {
   // tokenName 传进来判断是提现什么币
   async getSignature({ dispatch, state }, { mode, rawSignData, tokenName }) {
     const api = await dispatch('getAPI');
-    const { eos } = await import(/* webpackChunkName: "EOS-scatter" */ '@/api/scatter');
+    const { eos } = await import(/* webpackChunkName: "EOS" */ '@/api/scatter');
     const { account } = state;
     const result = await eos().getAccount(account.name);
     // 获取当前权限
@@ -109,9 +107,9 @@ const actions = {
     console.log('got signature: ', signature);
     return ({ publicKey, signature, username: account.name });
   },
-  async recordShare(context, share) {
-    const { recordShare } = await import(/* webpackChunkName: "contract-EOS" */ '@/api/contractEOS');
-    return recordShare(share);
+  async recordShare({ state: { account } }, share) {
+    const { recordShare } = await import(/* webpackChunkName: "EOS" */ '@/api/contractEOS');
+    return recordShare({ ...share, account });
   },
   async setBalances({ commit, dispatch, state }) {
     const api = await dispatch('getAPI');
@@ -151,7 +149,7 @@ const actions = {
   async logout({ commit, dispatch }) {
     const api = await dispatch('getAPI');
     try {
-      await api.logoutScatterAsync();
+      await api.logout();
     } catch (err) {
       console.error('Failed to logout Scatter', err);
     }
