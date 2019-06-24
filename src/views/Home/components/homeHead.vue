@@ -80,6 +80,7 @@ export default {
     height: 25px;
     border-radius: 50%;
     overflow: hidden;
+    background-color: #eee;
     img {
       width: 100%;
       height: 100%;
