@@ -684,21 +684,24 @@ export default {
         else if (idProvider === "ONT" && !isOntAddressVerify)
           sponsor = { id: null, username: null };
 
-        await this.makeShare({ amount, signId, sponsor });
+        if ( this.article.channel_id === 1 ) await this.makeShare({ amount, signId, sponsor });
+        // if ( this.article.channel_id === 2 ) await this.makeOrder({ amount, signId, sponsor });
 
-        try {
-          // 發 comment 到後端
-          console.log("Send comment...");
-          const response = await sendComment({ comment, signId });
-          console.log(response);
-          if (response.status !== 200) throw new Error(error);
-        } catch (error) {
-          console.error(error);
-          console.log("Resend comment...");
-          const response = await sendComment({ comment, signId });
-          console.log(response);
-          if (response.status !== 200) throw new Error(error);
-        }
+          try {
+            // 發 comment 到後端
+            console.log("Send comment...");
+            const response = await sendComment({ comment, signId });
+            console.log(response);
+            if (response.status !== 200) throw new Error(error);
+          } catch (error) {
+            console.error(error);
+            console.log("Resend comment...");
+            const response = await sendComment({ comment, signId });
+            console.log(response);
+            if (response.status !== 200) throw new Error(error);
+          }
+
+
         this.isSupported = RewardStatus.REWARDED; // 按钮状态
         this.$toast.success({ duration: 1000, message: "赞赏成功！" });
         this.isRequest = true; // 自动请求
