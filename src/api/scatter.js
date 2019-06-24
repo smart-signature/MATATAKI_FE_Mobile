@@ -13,7 +13,6 @@ const currentNetwork = config.network.eos.mainnet[0];
 
 // @trick: use function to lazy eval Scatter eos, in order to avoid no ID problem.
 export const eos = () => ScatterJS.scatter.eos(currentNetwork, Eos, { expireInSeconds: 60 });
-export const currentEOSAccount = () => ScatterJS.scatter.identity && API.getAccount();
 
 const network = ScatterJS.Network.fromJson({
   blockchain:'eos',
@@ -27,19 +26,16 @@ const API = {
   async getBalancesByContract({ tokenContract = 'eosio.token', accountName, symbol }) {
     return eos().getCurrencyBalance(tokenContract, accountName, symbol);
   },
-  install(Vue) {
-    Object.defineProperties(Vue.prototype, {
-      $API: {
-        get() {
-          return API;
-        },
-      },
-    });
-  },
-  connectScatterAsync() { return ScatterJS.connect(config.dappName, { network }); },
+  account() { return ScatterJS.account('eos'); },
+  connect() { return ScatterJS.connect(config.dappName, { network }); },
   loginScatterAsync() { return ScatterJS.getIdentity({ accounts: [currentNetwork] }); },
-  logoutScatterAsync() { return ScatterJS.forgetIdentity(); },
+  logout() { return ScatterJS.forgetIdentity(); },
   suggestNetworkAsync() { return ScatterJS.suggestNetwork(currentNetwork); },
+  getArbitrarySignature(publicKey, data, memo) { 
+    return ScatterJS.getArbitrarySignature(publicKey, data, memo);
+  },
+  async getPublicKey() { return ScatterJS.getPublicKey('eos'); },
+  /*
   transferEOSAsync({
     to,
     memo = '',
@@ -70,12 +66,7 @@ const API = {
         authorization: [`${currentEOSAccount().name}@${currentEOSAccount().authority}`],
       },
     );
-  },
-  getAccount() { return ScatterJS.identity.accounts.find(x => x.blockchain === 'eos'); },
-  getArbitrarySignature(publicKey, data, memo) { 
-    return ScatterJS.getArbitrarySignature(publicKey, data, memo);
-  },
-  async getPublicKey() { return ScatterJS.getPublicKey('eos'); },
+  }, */
 };
 
 export default API;

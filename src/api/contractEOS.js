@@ -1,21 +1,21 @@
-import { eos, currentEOSAccount as currentAccount } from './scatter';
+import { eos } from './scatter';
 
 // https://github.com/EOSIO/eosjs/tree/v16.0.9
 
 export const CONTRACT_ACCOUNT = process.env.VUE_APP_SIGNATURE_CONTRACT;
 
-const transferEOS = ({ amount = 0, memo = '' }) => {
-  if (!currentAccount()) throw (new Error('NOT-LOGINED'));
+const transferEOS = ({ account = null, amount = 0, memo = '' }) => {
+  if (!account) throw new Error('no account');
   return eos().transaction({
     actions: [{
       account: 'eosio.token',
       name: 'transfer',
       authorization: [{
-        actor: currentAccount().name,
-        permission: currentAccount().authority,
+        actor: account.name,
+        permission: account.authority,
       }],
       data: {
-        from: currentAccount().name,
+        from: account.name,
         to: CONTRACT_ACCOUNT,
         quantity: `${(amount).toFixed(4).toString()} EOS`,
         memo,
@@ -24,26 +24,27 @@ const transferEOS = ({ amount = 0, memo = '' }) => {
   });
 };
 
-export const recordShare = ({ amount = null, signId = null, sponsor = null }) => {
+export const recordShare = ({ account = null, amount = null, signId = null, sponsor = null }) => {
   if (!amount) { throw new Error('amount cant be falsy'); }
   if (!signId) { throw new Error('signId cant be falsy'); }
   return transferEOS({
+    account,
     amount,
     memo: sponsor ? `support ${signId} ${sponsor}` : `support ${signId}`,
   });
 };
 
-export const withdraw = () => {
-  if (!currentAccount()) { throw new Error('请先登录'); }
+export const withdraw = ({ account = null }) => {
+  if (!account) throw new Error('no account');
   return eos().transaction({
     actions: [{
       account: CONTRACT_ACCOUNT,
       name: 'claim',
       authorization: [{
-        actor: currentAccount().name,
-        permission: currentAccount().authority,
+        actor: account.name,
+        permission: account.authority,
       }],
-      data: { from: currentAccount().name },
+      data: { from: account.name },
     }],
   });
 };
@@ -126,27 +127,5 @@ async function getGoods() {
     limit: 10000,
   });
   return rows;
-}
-
-async function getMaxShareId() {
-  const rows = await getSharesInfo();
-  const len = rows.length;
-
-  return len - 1;
-}
-
-async function getMaxSignId() {
-  const rows = await getSignsInfo();
-  const len = rows.length;
-  let maxId = 0;
-
-  for (let i = 0; i < len; i++) {
-    for (obj in rows[i]) {
-      if (obj.id > maxId) {
-        maxId = obj.id;
-      }
-    }
-  }
-  return maxId;
 }
 */
