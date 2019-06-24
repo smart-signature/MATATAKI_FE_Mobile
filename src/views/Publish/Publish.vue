@@ -444,6 +444,9 @@ export default {
     },
     // 发布||修改按钮
     async sendThePost() {
+      // 没有登陆 点击发布按钮都提示登陆  编辑获取内容的时候会被前面的func拦截并返回home page
+      if (!this.isLogined) return (this.showSignInModal = true);
+
       // 标题或内容为空时
       if (!strTrim(this.title) || !strTrim(this.markdownData))
         return this.$toast("标题或正文不能为空");
@@ -467,11 +470,6 @@ export default {
       console.log("sendThePost mode :", editorMode, saveType);
       if (editorMode === "create" && saveType === "public") {
         // 发布文章
-        if (!this.isLogined) {
-          this.$toast({ duration: 1000, message: "本功能需登录" });
-          this.showSignInModal = true;
-          return;
-        }
         const { hash } = await this.sendPost({ title, author, content });
         console.log("sendPost result :", hash);
         this.publishArticle({
