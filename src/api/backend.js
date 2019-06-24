@@ -82,6 +82,20 @@ const API = {
 
     return this.sendArticle("/edit", article, signature);
   },
+  async reportOrder(order) {
+    const data = {
+      ...order,
+      platform: "need",
+      referrer: order.sponsor.id
+    };
+    const { idProvider } = data;
+    if (idProvider === "EOS") {
+      data.amount *= 10000;
+    }
+    delete data.idProvider;
+    delete data.sponsor;
+    return accessBackend({ method: "POST", url: "/order/create", data });
+  },
   async reportShare(share) {
     const data = {
       ...share,
@@ -328,7 +342,8 @@ const API = {
         channel
       }
     });
-  }
+  },
+
 };
 
 export default API;
