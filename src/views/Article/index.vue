@@ -2,67 +2,89 @@
 <template>
   <div class="article" @click.stop="opr = false">
     <BaseHeader :pageinfo="{ title: '文章详情' }">
-      <div slot="right" class="more" @click.stop="opr = !opr" v-if="isMe(article.uid)">
-        <img  src="@/assets/more.svg" alt="more">
+      <div v-if="isMe(article.uid)" slot="right" class="more" @click.stop="opr = !opr">
+        <img src="@/assets/more.svg" alt="more" />
         <transition name="fade" mode="out-in">
-          <div class="dropdown" v-show="opr">
+          <div v-show="opr" class="dropdown">
             <div
               class="dropdown-item"
-              @click="$router.push({name: 'Publish', params: { id: article.id }, query: { from: 'edit', hash: article.hash }})">编辑</div>
+              @click="
+                $router.push({
+                  name: 'Publish',
+                  params: { id: article.id },
+                  query: { from: 'edit', hash: article.hash }
+                })
+              "
+            >
+              编辑
+            </div>
             <div class="dropdown-item" @click="transferModal = true">转让</div>
             <div class="dropdown-item" @click="delArticleButton">删除</div>
           </div>
         </transition>
       </div>
-      <div class="information" slot="info" @click="infoModa = true">
-        <img src="@/assets/newimg/gonglue_innovationbar.svg" alt="information">
+      <div slot="info" class="information" @click="infoModa = true">
+        <img src="@/assets/newimg/gonglue_innovationbar.svg" alt="information" />
         <span>攻略</span>
       </div>
     </BaseHeader>
 
     <ContentLoader v-if="articleLoading" class="content-loader" :height="300">
-   		<circle cx="36" cy="24" r="12" /> 
-      <rect x="54" y="14" rx="0" ry="0" width="64" height="10" /> 
-      <rect x="54" y="26" rx="0" ry="0" width="30" height="8" /> 
+      <circle cx="36" cy="24" r="12" />
+      <rect x="54" y="14" rx="0" ry="0" width="64" height="10" />
+      <rect x="54" y="26" rx="0" ry="0" width="30" height="8" />
       <rect x="27" y="46" rx="0" ry="0" width="334" height="240" />
     </ContentLoader>
     <template v-else>
-      <img :src="cover" alt="" class="top-image" v-lazy="cover">
+      <img v-lazy="cover" :src="cover" alt="" class="top-image" />
       <header class="ta_header">
-        <h1>{{article.title}}</h1>
+        <h1>{{ article.title }}</h1>
         <div class="userinfo-container">
           <div class="avatar-info">
-            <div class="avatar" @click="() => $router.push({ name: 'User', params: { id: article.uid }})">
-              <img v-if="articleAvatar" :src="articleAvatar" class="avatar-size" alt="avatar">
+            <div
+              class="avatar"
+              @click="() => $router.push({ name: 'User', params: { id: article.uid } })"
+            >
+              <img v-if="articleAvatar" :src="articleAvatar" class="avatar-size" alt="avatar" />
             </div>
             <div class="avatar-right">
-              <p class="author" @click="() => $router.push({ name: 'User', params: { id: article.uid }})">
-                {{article.nickname || article.author}}
+              <p
+                class="author"
+                @click="() => $router.push({ name: 'User', params: { id: article.uid } })"
+              >
+                {{ article.nickname || article.author }}
               </p>
               <p class="other">
                 发布于
-                {{articleCreateTimeComputed}}
-                <img src="@/assets/img/icon_read.svg" class="avatar-read" alt="avatar">
-                {{article.read || 0}}阅读
+                {{ articleCreateTimeComputed }}
+                <img src="@/assets/img/icon_read.svg" class="avatar-read" alt="avatar" />
+                {{ article.read || 0 }}阅读
               </p>
             </div>
           </div>
-          <div class="follow-btn">
-            <span>+</span> 关注</div>
+          <div class="follow-btn"><span>+</span> 关注</div>
         </div>
       </header>
-      <mavon-editor v-show="false" style="display: none;"/>
+      <mavon-editor v-show="false" style="display: none;" />
       <div class="markdown-body" v-html="compiledMarkdown"></div>
 
       <div class="ipfs-hash">
         <img
+          src="@/assets/img/icon_copy.svg"
+          class="copy-hash"
+          alt="hash"
           @click="copyText(getCopyIpfsHash)"
-          src="@/assets/img/icon_copy.svg" class="copy-hash" alt="hash">
-        <span>IPFS Hash: {{article.hash || 'Loading...'}}</span>
+        />
+        <span>IPFS Hash: {{ article.hash || "Loading..." }}</span>
       </div>
 
       <div class="decoration">
-        <a data-pocket-label="pocket" data-pocket-count="horizontal" class="pocket-btn" data-lang="en"></a>
+        <a
+          data-pocket-label="pocket"
+          data-pocket-count="horizontal"
+          class="pocket-btn"
+          data-lang="en"
+        ></a>
         <span class="is-original">
           本文发布于智能签名<br />
           <template v-if="isOriginal">
@@ -71,17 +93,23 @@
         </span>
       </div>
       <!-- don't tag hide -->
-      <div class="tag-review" v-if="article.tags !== undefined && article.tags.length !== 0">
-        <tag-card v-for="(item, index) in article.tags" :key="index" :tagCard="item" :tagMode="false" />
+      <div v-if="article.tags !== undefined && article.tags.length !== 0" class="tag-review">
+        <tag-card
+          v-for="(item, index) in article.tags"
+          :key="index"
+          :tag-card="item"
+          :tag-mode="false"
+        />
       </div>
     </template>
     <router-link :to="{ name: 'BuyHistory' }">
-      <div class="buy-alert" v-if="article.product">已购买成功，请前往“购买记录”页面查看！</div>
+      <div v-if="article.product" class="buy-alert">已购买成功，请前往“购买记录”页面查看！</div>
     </router-link>
 
     <div class="comments-list">
       <h1 class="comment-title">
-        {{article.channel_id === 2 ? '购买队列' : '赞赏队列'}} {{article.ups || 0}}</h1>
+        {{ article.channel_id === 2 ? "购买队列" : "赞赏队列" }} {{ article.ups || 0 }}
+      </h1>
       <!--<div class="commentslist-title">
         <span>赞赏队列 {{article.ups || 0}}</span>
       </div>-->
@@ -95,55 +123,97 @@
             @click="copyText('《' + item.title + '》&#45;&#45;key:'+ item.digital_copy)">
         </div>
       </div>-->
-      <CommentsList class="comments" :signId="signId" :isRequest="isRequest" @stopAutoRequest="(status) => isRequest = status" />
+      <CommentsList
+        class="comments"
+        :sign-id="signId"
+        :is-request="isRequest"
+        @stopAutoRequest="status => (isRequest = status)"
+      />
     </div>
 
     <footer class="footer">
       <div class="footer-block footer-info">
         <div class="amount">
-            <Dropdown trigger="click" @on-click="toggleAmount">
-              <div>
-                <div
-                  :class="totalSupportedAmount.showName === 'eos' ? 'eos' : 'ont'"
-                  class="amount-img"></div>
-                <span class="footer-number" :class="{'text-yellow': article.channel_id === 2}">{{totalSupportedAmount.show}}</span>&nbsp;
-                <Icon type="ios-arrow-up" />
-              </div>
-              <DropdownMenu slot="list">
-                <DropdownItem name="eos" class="amount-icon">
-                  <img src="@/assets/img/icon_eos_article.svg" alt="eos">
-                  {{totalSupportedAmount.eos}}
-                </DropdownItem>
-                <DropdownItem name="ont" class="amount-icon">
-                  <img src="@/assets/img/icon_ont_article.svg" alt="ont">
-                  {{totalSupportedAmount.ont}}
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-            <div class="amount-text">
-              {{article.channel_id === 2 ? '总收益' : '赞赏总额'}}
+          <Dropdown trigger="click" @on-click="toggleAmount">
+            <div>
+              <div
+                :class="totalSupportedAmount.showName === 'eos' ? 'eos' : 'ont'"
+                class="amount-img"
+              ></div>
+              <span class="footer-number" :class="{ 'text-yellow': article.channel_id === 2 }">{{
+                totalSupportedAmount.show
+              }}</span
+              >&nbsp;
+              <Icon type="ios-arrow-up" />
             </div>
+            <DropdownMenu slot="list">
+              <DropdownItem name="eos" class="amount-icon">
+                <img src="@/assets/img/icon_eos_article.svg" alt="eos" />
+                {{ totalSupportedAmount.eos }}
+              </DropdownItem>
+              <DropdownItem name="ont" class="amount-icon">
+                <img src="@/assets/img/icon_ont_article.svg" alt="ont" />
+                {{ totalSupportedAmount.ont }}
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+          <div class="amount-text">
+            {{ article.channel_id === 2 ? "总收益" : "赞赏总额" }}
           </div>
-          <div class="fission" v-if="article.channel_id !== 2"><div>
-          <div class="amount-img fission"></div>
-          <span class="footer-number">{{getDisplayedFissionFactor}}</span>
+        </div>
+        <div v-if="article.channel_id !== 2" class="fission">
+          <div>
+            <div class="amount-img fission"></div>
+            <span class="footer-number">{{ getDisplayedFissionFactor }}</span>
           </div>
           <div class="amount-text">裂变系数</div>
         </div>
       </div>
-      <div class="footer-block footer-btn" v-if="article.channel_id === 2">
-        <button class="button-support bg-yellow border-yellow" v-if="isSupported===-1" @click="b4support">购买<img src="@/assets/newimg/goumai.svg"/></button>
-        <button class="button-support bg-yellow border-yellow" v-if="isSupported===0" disabled>购买中<img src="@/assets/newimg/goumai.svg"/></button>
-        <button class="button-support bg-yellow border-yellow" v-else-if="isSupported===1" @click="supportButton">购买<img src="@/assets/newimg/goumai.svg"/></button>
-        <button class="button-support bg-yellow border-yellow" v-else-if="isSupported===2" disabled>已购买<img src="@/assets/newimg/goumai.svg"/></button>
-        <button class="button-share border-yellow text-yellow" @click="widgetModal = true">分享<img src="@/assets/newimg/share2.svg" /></button>
+      <div v-if="article.channel_id === 2" class="footer-block footer-btn">
+        <button
+          v-if="isSupported === -1"
+          class="button-support bg-yellow border-yellow"
+          @click="b4support"
+        >
+          购买<img src="@/assets/newimg/goumai.svg" />
+        </button>
+        <button v-if="isSupported === 0" class="button-support bg-yellow border-yellow" disabled>
+          购买中<img src="@/assets/newimg/goumai.svg" />
+        </button>
+        <button
+          v-else-if="isSupported === 1"
+          class="button-support bg-yellow border-yellow"
+          @click="supportButton"
+        >
+          购买<img src="@/assets/newimg/goumai.svg" />
+        </button>
+        <button
+          v-else-if="isSupported === 2"
+          class="button-support bg-yellow border-yellow"
+          disabled
+        >
+          已购买<img src="@/assets/newimg/goumai.svg" />
+        </button>
+        <button class="button-share border-yellow text-yellow" @click="widgetModal = true">
+          分享<img src="@/assets/newimg/share2.svg" />
+        </button>
       </div>
-      <div class="footer-block footer-btn" v-else>
-        <button class="button-support" v-if="isSupported===-1" @click="b4support">赞赏<img src="@/assets/newimg/zanshang.svg"/></button>
-        <button class="button-support" v-if="isSupported===0" disabled>赞赏中<img src="@/assets/newimg/zanshang.svg"/></button>
-        <button class="button-support" v-else-if="isSupported===1" @click="supportButton">赞赏<img src="@/assets/newimg/zanshang.svg"/></button>
-        <button class="button-support" v-else-if="isSupported===2" disabled>已赞赏<img src="@/assets/newimg/zanshang.svg"/></button>
-        <button class="button-share" @click="widgetModal = true">分享<img src="@/assets/newimg/share.svg" /></button>
+      <div v-else class="footer-block footer-btn">
+        <button v-if="isSupported === -1" class="button-support" @click="b4support">
+          赞赏<img src="@/assets/newimg/zanshang.svg" />
+        </button>
+        <button v-if="isSupported === 0" class="button-support" disabled>
+          赞赏中<img src="@/assets/newimg/zanshang.svg" />
+        </button>
+        <button v-else-if="isSupported === 1" class="button-support" @click="supportButton">
+          赞赏<img src="@/assets/newimg/zanshang.svg" />
+        </button>
+        <button v-else-if="isSupported === 2" class="button-support" disabled>
+          已赞赏<img src="@/assets/newimg/zanshang.svg" />
+        </button>
+        <button class="button-share" @click="widgetModal = true">
+          分享<img src="@/assets/newimg/share.svg" />
+        </button>
       </div>
     </footer>
 
@@ -153,66 +223,110 @@
       show-cancel-button
       class="ffff"
       :before-close="support"
+      :close-on-click-overlay="true"
       @cancel="supportModal = false"
-      :closeOnClickOverlay='true'
     >
+      <van-field v-model="comment" type="textarea" placeholder="输入推荐语…" rows="4" autosize />
+      <van-field v-model="amount" :placeholder="displayPlaceholder" @input="handleChange(amount)" />
+    </van-dialog>
+
+    <van-popup v-model="buyProductModal" class="buy-product-modal">
+      <h1 class="title">购买商品</h1>
+      <div class="info-container">
+        <img
+          src="https://apitest.smartsignature.io/image/QmWDUvT3vBt5rqnfr4bU8TQnt1h2RNQJjqqc6nnCwwonNb"
+          alt="cover"
+          class="cover"
+        />
+        <div class="info-inner">
+          <div class="product-price">
+            <span class="ont-price">
+              <img src="@/assets/newimg/ont2.svg" alt="ont" />
+              <span>300</span>
+            </span>
+            <span class="eos-price">
+              <img src="@/assets/newimg/eos2.svg" alt="eos" />
+              <span>80.23</span>
+            </span>
+          </div>
+          <div class="product-amount">
+            <span>数量</span>
+            <van-stepper v-model="value" />
+          </div>
+        </div>
+      </div>
       <van-field
         v-model="comment"
         type="textarea"
         placeholder="输入推荐语…"
         rows="4"
         autosize
+        class="comment-container"
       />
-      <van-field v-model="amount" @input="handleChange(amount)" :placeholder="displayPlaceholder" />
-    </van-dialog>
+      <div class="buy-container">
+        <span class="storage">库存还有剩1000份</span>
+        <div class="buy-btn">购买</div>
+      </div>
+    </van-popup>
 
     <!-- 文章 Info -->
-    <ArticleInfo :infoModa="infoModa" @changeInfo="(status) => infoModa = status" />
-    <BaseModalForSignIn :showModal="showModal" @changeInfo="changeInfo" />
-    <Widget @changeWidgetModal="(status)=> widgetModal = status" :widgetModal="widgetModal" :id="article.id" :getClipboard="getClipboard" :invite="currentUserInfo.id" />
-    <article-transfer @changeTransferModal="(status)=> transferModal = status" :transferModal="transferModal" :articleId="article.id" :from="'article'" />
+    <ArticleInfo :info-moda="infoModa" @changeInfo="status => (infoModa = status)" />
+    <BaseModalForSignIn :show-modal="showModal" @changeInfo="changeInfo" />
+    <Widget
+      :id="article.id"
+      :widget-modal="widgetModal"
+      :get-clipboard="getClipboard"
+      :invite="currentUserInfo.id"
+      @changeWidgetModal="status => (widgetModal = status)"
+    />
+    <article-transfer
+      :transfer-modal="transferModal"
+      :article-id="article.id"
+      :from="'article'"
+      @changeTransferModal="status => (transferModal = status)"
+    />
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
-import { mavonEditor } from 'mavon-editor';
+import { mapActions, mapGetters } from "vuex";
+import { mavonEditor } from "mavon-editor";
 import {
   getArticleDatafromIPFS,
   getArticleInfo,
-  addReadAmount, sendComment,
+  addReadAmount,
+  sendComment,
   delArticle,
   backendAPI,
   getAvatarImage
-} from '@/api';
-import 'mavon-editor/dist/css/index.css';
-import moment from 'moment';
-import { ContentLoader } from 'vue-content-loader';
-import { xssFilter } from '@/common/xss';
-import { sleep, isNDaysAgo } from '@/common/methods';
-import { ontAddressVerify } from '@/common/reg';
-import { precision } from '@/common/precisionConversion';
+} from "@/api";
+import "mavon-editor/dist/css/index.css";
+import moment from "moment";
+import { ContentLoader } from "vue-content-loader";
+import { xssFilter } from "@/common/xss";
+import { sleep, isNDaysAgo } from "@/common/methods";
+import { ontAddressVerify } from "@/common/reg";
+import { precision } from "@/common/precisionConversion";
 
-import CommentsList from './CommentsList.vue';
-import ArticleInfo from './ArticleInfo.vue';
-import Widget from './Widget';
-import articleTransfer from '@/components/articleTransfer';
+import CommentsList from "./CommentsList.vue";
+import ArticleInfo from "./ArticleInfo.vue";
+import Widget from "./Widget";
+import articleTransfer from "@/components/articleTransfer";
 import tagCard from "@/components/tagCard/index";
-
 
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt();
 
-const RewardStatus = { // 0=加载中,1=未打赏 2=已打赏, -1未登录
+const RewardStatus = {
+  // 0=加载中,1=未打赏 2=已打赏, -1未登录
   NOT_LOGGINED: -1,
   LOADING: 0,
   NOT_REWARD_YET: 1,
-  REWARDED: 2,
+  REWARDED: 2
 };
 
 export default {
-  name: 'Article',
-  props: ['hash'],
+  name: "Article",
   components: {
     CommentsList,
     ArticleInfo,
@@ -222,27 +336,29 @@ export default {
     tagCard,
     articleTransfer
   },
+  props: ["hash"],
   data() {
     return {
+      buyProductModal: false,
       post: {
-        author: '',
-        title: '',
-        content: '',
+        author: "",
+        title: "",
+        content: ""
       },
       article: {
-        author: '',
-        createTime: '',
+        author: "",
+        createTime: "",
         fission_factor: 0,
-        id: null,
+        id: null
       },
-      articleAvatar: '',
-      amount: '',
-      comment: '',
+      articleAvatar: "",
+      amount: "",
+      comment: "",
       totalSupportedAmount: {
         show: 0, // 用于默认数据显示
-        showName: 'eos', // 用于默认数据显示
+        showName: "eos", // 用于默认数据显示
         eos: 0,
-        ont: 0,
+        ont: 0
       },
       showModal: false,
       supportModal: false,
@@ -252,11 +368,11 @@ export default {
       articleLoading: true, // 文章加载状态
       isOriginal: false,
       widgetModal: false, // 分享 widget dialog
-      transferModal: false, // 转让
+      transferModal: false // 转让
     };
   },
   computed: {
-    ...mapGetters(['currentUserInfo', 'isLogined', 'isMe']),
+    ...mapGetters(["currentUserInfo", "isLogined", "isMe"]),
     cover() {
       if (this.article.cover) return getAvatarImage(this.article.cover);
       return null;
@@ -264,19 +380,23 @@ export default {
     displayPlaceholder() {
       return `请输入 ${this.currentUserInfo.idProvider} 赞赏金额`;
     },
-    compiledMarkdown() { return markdownIt.render(xssFilter(this.post.content)); },
+    compiledMarkdown() {
+      return markdownIt.render(xssFilter(this.post.content));
+    },
     getClipboard() {
       const { article, currentUserInfo } = this;
       const { protocol, host } = window.location;
       // console.debug(this.article);
       const articleUrl = `${protocol}//${host}/article/${article.id}`;
-      const shareLink = this.isLogined
-        ? `${articleUrl}?invite=${currentUserInfo.id}`
-        : articleUrl;
+      const shareLink = this.isLogined ? `${articleUrl}?invite=${currentUserInfo.id}` : articleUrl;
       return `《${article.title}》by ${article.username} \n${shareLink}\n赞赏好文，分享有收益 ！`;
     },
-    getCopyIpfsHash() { return `${this.article.hash}`; },
-    getDisplayedFissionFactor() { return this.article.fission_factor / 1000; },
+    getCopyIpfsHash() {
+      return `${this.article.hash}`;
+    },
+    getDisplayedFissionFactor() {
+      return this.article.fission_factor / 1000;
+    },
     getUrl() {
       const { article } = this;
       const { protocol, host } = window.location;
@@ -291,19 +411,39 @@ export default {
     isSupported() {
       const { article, isLogined } = this;
       let isSupported = false;
-      if (isLogined) isSupported = article.support ? RewardStatus.REWARDED : RewardStatus.NOT_REWARD_YET;
+      if (isLogined)
+        isSupported = article.support ? RewardStatus.REWARDED : RewardStatus.NOT_REWARD_YET;
       else isSupported = RewardStatus.NOT_LOGGINED;
       return isSupported;
     },
-    signId() { return this.article.id; },
+    signId() {
+      return this.article.id;
+    },
     articleCreateTimeComputed() {
       const { create_time: createTime } = this.article;
       const time = moment(createTime);
-      return isNDaysAgo(2, time) ? time.format('MMMDo HH:mm') : time.fromNow();
+      return isNDaysAgo(2, time) ? time.format("MMMDo HH:mm") : time.fromNow();
+    }
+  },
+  watch: {
+    article() {
+      this.$emit("updateHead");
     },
+    post() {
+      this.$emit("updateHead");
+    },
+    isLogined(newState) {
+      if (newState) this.getArticleInfo(this.hash, false);
+    },
+    isRequest(newVal) {
+      // 监听是否请求默认为false被改变为true下面不执行，请求完毕又被改变为false执行下列方法
+      if (!newVal) {
+        this.getArticleInfo(this.hash);
+      }
+    }
   },
   created() {
-    document.title = '正在加载文章 - Smart Signature';
+    document.title = "正在加载文章 - Smart Signature";
     this.getArticleInfo(this.hash); // 得到文章信息
   },
   head: {
@@ -311,8 +451,8 @@ export default {
       const { post } = this;
       return {
         inner: `${post.title} by ${post.author}`,
-        separator: '-',
-        complement: 'Smart Signature',
+        separator: "-",
+        complement: "Smart Signature"
       };
     },
     // Meta tags // 做ssr 再使用
@@ -338,87 +478,77 @@ export default {
     script() {
       return [
         {
-          type: 'text/javascript',
-          id: 'pocket-btn-js', // id 不知道作用 生成的 script 有id就带着好了
-          src: 'https://widgets.getpocket.com/v1/j/btn.js?v=1',
+          type: "text/javascript",
+          id: "pocket-btn-js", // id 不知道作用 生成的 script 有id就带着好了
+          src: "https://widgets.getpocket.com/v1/j/btn.js?v=1"
         },
         {
-          type: 'text/javascript',
-          src: '//cdn.embedly.com/widgets/platform.js',
-        },
+          type: "text/javascript",
+          src: "//cdn.embedly.com/widgets/platform.js"
+        }
       ];
-    },
-  },
-  watch: {
-    article() {
-      this.$emit('updateHead');
-    },
-    post() {
-      this.$emit('updateHead');
-    },
-    isLogined(newState) {
-      if (newState) this.getArticleInfo(this.hash, false);
-    },
-    isRequest(newVal) {
-      // 监听是否请求默认为false被改变为true下面不执行，请求完毕又被改变为false执行下列方法
-      if (!newVal) {
-        this.getArticleInfo(this.hash);
-      }
-    },
+    }
   },
   methods: {
-    ...mapActions(['makeShare']),
+    ...mapActions(["makeShare"]),
     changeInfo(status) {
       this.showModal = status;
     },
     // 复制hash
     copyText(getCopyIpfsHash) {
-      this.$copyText(getCopyIpfsHash).then(() => {
-        this.$toast.success({ duration: 1000, message: '复制成功' });
-      }, () => {
-        this.$toast.fail({ duration: 1000, message: '复制失败' });
-      });
+      this.$copyText(getCopyIpfsHash).then(
+        () => {
+          this.$toast.success({ duration: 1000, message: "复制成功" });
+        },
+        () => {
+          this.$toast.fail({ duration: 1000, message: "复制失败" });
+        }
+      );
     },
     // 得到文章信息 hash id, supportDialog 为 true 则只更新文章信息
     async getArticleInfo(hash, supportDialog = false) {
-      await getArticleInfo(hash).then((res) => {
-        if (res.status === 200 && res.data.code === 0) {
-          this.setArticle(res.data.data, supportDialog);
-          // 默认会执行获取文章方法，更新文章调用则不需要获取内容
-          if (!supportDialog) {
-            this.getArticleDatafromIPFS(res.data.data.hash);
-            this.setAvatar(res.data.data.uid);
+      await getArticleInfo(hash)
+        .then(res => {
+          if (res.status === 200 && res.data.code === 0) {
+            this.setArticle(res.data.data, supportDialog);
+            // 默认会执行获取文章方法，更新文章调用则不需要获取内容
+            if (!supportDialog) {
+              this.getArticleDatafromIPFS(res.data.data.hash);
+              this.setAvatar(res.data.data.uid);
+            }
+          } else {
+            this.$toast({ duration: 1000, message: res.data.message });
           }
-        } else {
-          this.$toast({ duration: 1000, message: res.data.message });
-        }
-      }).catch((err) => {
-        console.error(err);
-        this.$toast({ duration: 1000, message: '获取文章信息失败' });
-      });
+        })
+        .catch(err => {
+          console.error(err);
+          this.$toast({ duration: 1000, message: "获取文章信息失败" });
+        });
     },
     // 获取文章内容 from ipfs
     async getArticleDatafromIPFS(hash) {
-      await getArticleDatafromIPFS(hash).then(({ data }) => {
-        // console.log(data);
-        this.setPost(data.data);
-      }).catch((err) => {
-        console.error(err);
-        this.$Message.error('获取文章内容失败请重试');
-      });
+      await getArticleDatafromIPFS(hash)
+        .then(({ data }) => {
+          // console.log(data);
+          this.setPost(data.data);
+        })
+        .catch(err => {
+          console.error(err);
+          this.$Message.error("获取文章内容失败请重试");
+        });
     },
     // 设置文章
     async setArticle(article, supportDialog = false) {
       try {
         await addReadAmount({ articlehash: article.hash }); // 增加文章阅读量
       } catch (error) {
-        console.error('addReadAmount :', error);
+        console.error("addReadAmount :", error);
       }
       this.article = article;
       this.article.CreateTime = article.create_time;
-      this.totalSupportedAmount.show = article.value ? precision(article.value, 'eos') : 0; // 用于默认显示
-      this.totalSupportedAmount.eos = article.value ? precision(article.value, 'eos') : 0; // eos
-      this.totalSupportedAmount.ont = precision(article.ontvalue, 'ont'); // ont
+      this.totalSupportedAmount.show = article.value ? precision(article.value, "eos") : 0; // 用于默认显示
+      this.totalSupportedAmount.eos = article.value ? precision(article.value, "eos") : 0; // eos
+      this.totalSupportedAmount.ont = precision(article.ontvalue, "ont"); // ont
 
       this.articleLoading = false; // 文章加载状态隐藏
       this.isOriginal = Boolean(article.is_original);
@@ -435,11 +565,11 @@ export default {
     handleChange(amount) {
       let amountValue = amount;
       const { idProvider } = this.currentUserInfo;
-      if (idProvider === 'EOS') {
+      if (idProvider === "EOS") {
         // 小数点后三位 如果后面需要解除限制修改正则  {0,3}
-        amountValue = (amountValue.match(/^\d*(\.?\d{0,3})/g)[0]) || null;
-      } else if (idProvider === 'ONT') {
-        amountValue = (amountValue.match(/^\d*/g)[0]) || null;
+        amountValue = amountValue.match(/^\d*(\.?\d{0,3})/g)[0] || null;
+      } else if (idProvider === "ONT") {
+        amountValue = amountValue.match(/^\d*/g)[0] || null;
       }
       this.amount = amountValue;
     },
@@ -455,7 +585,8 @@ export default {
     },
     // 赞赏按钮
     supportButton() {
-      if (this.currentUserInfo.idProvider === 'GitHub') return this.$toast({ duration: 1000, message: 'Github账号暂不支持赞赏功能' });
+      if (this.currentUserInfo.idProvider === "GitHub")
+        return this.$toast({ duration: 1000, message: "Github账号暂不支持赞赏功能" });
       // 如果是商品 判断库存是否充足
       if (this.article.channel_id === 2) {
         const { currentUserInfo, findBlockchain, article } = this;
@@ -463,22 +594,22 @@ export default {
         const filterBlockchain = findBlockchain(article.prices, idProvider);
         const { stock_quantity: stockQuantity } = filterBlockchain[0];
         if (stockQuantity <= 0) {
-          return this.$toast({ duration: 1000, message: '库存不足' });
+          return this.$toast({ duration: 1000, message: "库存不足" });
         }
+        this.buyProductModal = true;
+      } else {
+        this.supportModal = true;
       }
-      // 如果是商品 判断库存是否充足 end
-      this.supportModal = true;
       return true;
     },
 
-
     async support(action, done) {
-      if (action !== 'confirm') return done();
+      if (action !== "confirm") return done();
       const { article, comment, signId } = this;
       const { idProvider } = this.currentUserInfo;
-      if (idProvider === 'GitHub') return;
+      if (idProvider === "GitHub") return;
       // 默认 ‘’ 转成了 NAN
-      const amount = this.amount === '' ? 0 : parseFloat(this.amount);
+      const amount = this.amount === "" ? 0 : parseFloat(this.amount);
       // 检查金额是否符合
       let checkPricesMatch = true;
 
@@ -491,14 +622,14 @@ export default {
         return true;
       };
       // 文章赞赏金额
-      const minimumAmount = (idProvider) => {
-        if (idProvider === 'EOS') return 0.01;
-        if (idProvider === 'ONT') return 1;
+      const minimumAmount = idProvider => {
+        if (idProvider === "EOS") return 0.01;
+        if (idProvider === "ONT") return 1;
       };
       checkPricesMatch = checkPrices(
         amount,
         minimumAmount(idProvider),
-        `请输入正确的金额 最小赞赏金额为 ${minimumAmount(idProvider)} ${idProvider}`,
+        `请输入正确的金额 最小赞赏金额为 ${minimumAmount(idProvider)} ${idProvider}`
       );
       if (!checkPricesMatch) return done(false);
 
@@ -508,8 +639,18 @@ export default {
         if (filterBlockchain.length !== 0) {
           const { symbol, price, decimals } = filterBlockchain[0];
           // exponentiation operator (**)
-          if (symbol === 'EOS') checkPricesMatch = checkPrices(amount, (price / (10 ** decimals)), '赞赏金额不能小于商品价格');
-          else if (symbol === 'ONT') checkPricesMatch = checkPrices(amount, (price / (10 ** decimals)), '赞赏金额不能小于商品价格');
+          if (symbol === "EOS")
+            checkPricesMatch = checkPrices(
+              amount,
+              price / 10 ** decimals,
+              "赞赏金额不能小于商品价格"
+            );
+          else if (symbol === "ONT")
+            checkPricesMatch = checkPrices(
+              amount,
+              price / 10 ** decimals,
+              "赞赏金额不能小于商品价格"
+            );
         }
       };
 
@@ -517,8 +658,7 @@ export default {
       if (article.channel_id === 2) checkCommodityPrices();
       if (!checkPricesMatch) return done(false);
 
-
-      const toSponsor = async (idOrName) => {
+      const toSponsor = async idOrName => {
         if (!idOrName) return { id: null, username: null };
         if (/^(0|[1-9][0-9]*)$/.test(idOrName)) {
           try {
@@ -526,39 +666,41 @@ export default {
             const { status, data } = await this.$backendAPI.getUser({ id });
             if (status === 200 && data.code === 0) return { id, username: data.data.username };
           } catch (error) {
-            console.error(error)
+            console.error(error);
           }
         }
         return { id: null, username: idOrName };
-      }
-      
+      };
+
       let sponsor = await toSponsor(this.getInvite);
       try {
         this.isSupported = RewardStatus.LOADING;
-        
+
         // 如果是ONT true 如果是 EOS或者其他 false
         const isOntAddressVerify = ontAddressVerify(sponsor.username);
         // 如果是EOS账户赞赏 但是邀请人是ONT用户 则认为没有邀请
-        if (idProvider === 'EOS' && isOntAddressVerify) sponsor = { id: null, username: null };
+        if (idProvider === "EOS" && isOntAddressVerify) sponsor = { id: null, username: null };
         // 如果是ONT账户赞赏 但是邀请人EOS账户 则认为没有邀请
-        else if (idProvider === 'ONT' && !isOntAddressVerify) sponsor = { id: null, username: null };
+        else if (idProvider === "ONT" && !isOntAddressVerify)
+          sponsor = { id: null, username: null };
 
         await this.makeShare({ amount, signId, sponsor });
 
-        try { // 發 comment 到後端
-          console.log('Send comment...');
+        try {
+          // 發 comment 到後端
+          console.log("Send comment...");
           const response = await sendComment({ comment, signId });
           console.log(response);
           if (response.status !== 200) throw new Error(error);
         } catch (error) {
           console.error(error);
-          console.log('Resend comment...');
+          console.log("Resend comment...");
           const response = await sendComment({ comment, signId });
           console.log(response);
           if (response.status !== 200) throw new Error(error);
         }
         this.isSupported = RewardStatus.REWARDED; // 按钮状态
-        this.$toast.success({ duration: 1000, message: '赞赏成功！' });
+        this.$toast.success({ duration: 1000, message: "赞赏成功！" });
         this.isRequest = true; // 自动请求
         this.supportModal = false; // 关闭dialog
         done();
@@ -567,7 +709,7 @@ export default {
         this.isSupported = RewardStatus.NOT_REWARD_YET;
         this.$toast({
           duration: 1000,
-          message: '赞赏失败，可能是由于网络故障或账户余额不足等原因。',
+          message: "赞赏失败，可能是由于网络故障或账户余额不足等原因。"
         });
         done(false);
       }
@@ -577,17 +719,17 @@ export default {
       const jumpTo = name => this.$router.push({ name });
       const delSuccess = async () => {
         this.$Modal.remove();
-        this.$toast({ duration: 2000, message: '删除成功,三秒后自动跳转到首页'});
+        this.$toast({ duration: 2000, message: "删除成功,三秒后自动跳转到首页" });
         await sleep(3000);
-        jumpTo('home');
+        jumpTo("home");
       };
-      const fail = (err) => {
+      const fail = err => {
         this.$Modal.remove();
-        this.$toast({ duration: 1000, message: '删除失败'});
-        console.log('error', err);
+        this.$toast({ duration: 1000, message: "删除失败" });
+        console.log("error", err);
       };
-      const delArticleFunc = async (id) => {
-        if (!id) return fail('没有id');
+      const delArticleFunc = async id => {
+        if (!id) return fail("没有id");
         try {
           const response = await delArticle({ id });
           if (response.status === 200 && response.data.code === 0) delSuccess();
@@ -597,35 +739,36 @@ export default {
         }
       };
       this.$Modal.confirm({
-        title: '提示',
-        content: '<p>该文章已上传至 IPFS 永久保存, 本次操作仅删除智能签名中的显示。</p>',
+        title: "提示",
+        content: "<p>该文章已上传至 IPFS 永久保存, 本次操作仅删除智能签名中的显示。</p>",
         loading: true,
         onOk: () => {
           delArticleFunc(this.article.id);
-        },
+        }
       });
     },
     // 获取用户 得到头像
     async setAvatar(id) {
       try {
         const res = await backendAPI.getUser({ id });
-      if (res.status === 200 && res.data.code === 0) {
-        if (res.data.data.avatar) this.articleAvatar = backendAPI.getAvatarImage(res.data.data.avatar);
-      } else console.log('获取用户信息错误')
+        if (res.status === 200 && res.data.code === 0) {
+          if (res.data.data.avatar)
+            this.articleAvatar = backendAPI.getAvatarImage(res.data.data.avatar);
+        } else console.log("获取用户信息错误");
       } catch (error) {
-        console.log(`获取用户信息错误${error}`)
+        console.log(`获取用户信息错误${error}`);
       }
     },
     // 切换赞赏总额显示
     toggleAmount(name) {
-      if (name === 'eos') {
+      if (name === "eos") {
         this.totalSupportedAmount.show = this.totalSupportedAmount.eos;
-      } else if (name === 'ont') {
+      } else if (name === "ont") {
         this.totalSupportedAmount.show = this.totalSupportedAmount.ont;
       }
       this.totalSupportedAmount.showName = name;
-    },
-  },
+    }
+  }
 };
 </script>
 

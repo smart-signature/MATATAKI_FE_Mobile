@@ -162,12 +162,12 @@ export default {
   },
   created() {
     this.refreshUser();
-    this.id = this.currentUserInfo.id;
   },
   methods: {
     async refreshUser() {
       const { isMe } = this;
       const id = this.currentUserInfo.id;
+      this.id = this.currentUserInfo.id;
       const setUser = ({
         avatar,
         email,
@@ -221,7 +221,7 @@ export default {
   max-width: 280px;
   background-color: #f1f1f1;
   color: #000000;
-  z-index: 1000!important;
+  z-index: 1000 !important;
   .login-btn {
     margin: 50px 30px;
     background-color: #000;
@@ -247,9 +247,11 @@ export default {
         width: 60px;
         height: 60px;
         background-color: #ffffff;
+        cursor: pointer;
       }
       .setting {
         width: 20px;
+        cursor: pointer;
       }
       .account-name {
         font-size: 20px;
@@ -300,6 +302,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    cursor: pointer;
     .cell-left {
       display: flex;
       align-items: center;
@@ -330,7 +333,7 @@ export default {
 }
 </style>
 <style>
-  .van-overlay {
-    z-index: 999!important;
-  }
+.van-overlay {
+  z-index: 999 !important;
+}
 </style>
