@@ -158,10 +158,10 @@ export default new Vuex.Store({
     },
     async makeOrder({ dispatch, getters, state: { userConfig: { idProvider } } }, order) {
       const order2 = { ...order, idProvider, ...getters.asset };
-      const { data: { data: oid } } = await backendAPI.reportOrder(order2);
+      const { data: { data: { orderId } } } = await backendAPI.reportOrder(order2);
       // console.debug(oid);
       return dispatch(`${getters.prefixOfType}/recordOrder`, {
-        ...order2, oId: oid, amount: order2.amount / 10000, sponsor: order2.sponsor.username
+        ...order2, oId: orderId, amount: order2.amount / 10000, sponsor: order2.sponsor.username
       });
     },
     async makeShare({ dispatch, getters, state: { userConfig: { idProvider } } }, share) {
