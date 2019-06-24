@@ -17,7 +17,7 @@ export const recordOrder = async ({
     { type: 'String', value: `oId:${oId}` },
     { type: 'String', value: symbol },
     { type: 'Integer', value: amount },
-    { type: 'String', value: `${num}` },
+    { type: 'String', value: amount.toString() },
   ];
   if (sponsor) args.push({ type: 'String', value: sponsor });
   const response = await API.invoke({
