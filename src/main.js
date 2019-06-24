@@ -4,6 +4,9 @@ import VueHead from "vue-head";
 import moment from "moment";
 // 记录路由并缓存页面，像原生APP导航一样。
 import Navigation from "vue-navigation";
+// 复制内容
+import VueClipboard from "vue-clipboard2";
+
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
@@ -11,9 +14,6 @@ import { backendAPI } from "@/api";
 
 import "./registerServiceWorker";
 // import "lib-flexible"; // 适配
-
-// 复制内容
-import VueClipboard from "vue-clipboard2";
 
 // Vue plugins
 import "./plugins/iview";
