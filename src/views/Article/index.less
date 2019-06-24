@@ -361,7 +361,7 @@
   
 }
 .footer-block {
-  flex: 1;
+  //flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -600,15 +600,19 @@
   background: #cccccc;
 }
 .follow-btn {
-  background: #333333;
+  cursor: pointer;
+  background: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #ffffff;
   font-size: 12px;
   min-width: 63px;
   text-align: center;
-  height: 25px;
+  height: 30px;
   line-height: 25px;
   border-radius: 6px;
-  span {
+  i {
     margin-right: 4px;
   }
 }
@@ -650,10 +654,10 @@
   justify-content: flex-start;
   padding: 10px 0 10px 10px;
 }
-/*.footer-btn {
+.footer-btn {
   justify-content: flex-end;
   padding: 10px 10px 10px 0;
-}*/
+}
 
 .buy-product-modal {
   padding: 20px;
@@ -721,6 +725,7 @@
   .comment-container {
     background: #F1F1F1;
     margin: 20px 0;
+    border-radius: 8px;
   }
   .buy-container {
     display: flex;
@@ -744,5 +749,62 @@
       font-weight: 700;
       cursor: pointer;
     }
+  }
+  .tip {
+    line-height: 20px;
+    font-size: 14px;
+    color: #000000;
+  }
+}
+.button-support +.button-support{
+  margin-left: 8px;
+}
+.invest-info {
+  margin: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .info-number {
+      font-weight: 700;
+      font-size: 30px;
+      color: #1C9CFE;
+      line-height: 30px;
+      &:after {
+        content: ' ';
+        font-size: 14px;
+        font-weight: 400;
+      }
+    }
+    .percent:after {
+      content: '%';
+      font-size: 14px;
+      font-weight: 400;
+    }
+    .info-subtitle {
+      font-size: 14px;
+      line-height: 20px;
+      color: #000;
+    }
+  }
+}
+.invest-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  .invest-btn {
+    border-radius: 6px;
+    text-align: center;
+    background: #000000;
+    width: 75px;
+    height: 30px;
+    line-height: 30px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
   }
 }

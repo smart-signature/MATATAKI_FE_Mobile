@@ -96,6 +96,20 @@ const API = {
     delete data.sponsor;
     return accessBackend({ method: "POST", url: "/support", data });
   },
+  async reportBuyProduct(share) {
+    const data = {
+      ...share,
+      platform: "need",
+      referrer: share.sponsor.id
+    };
+    const { idProvider } = data;
+    if (idProvider === "EOS") {
+      data.amount *= 10000;
+    }
+    delete data.idProvider;
+    delete data.sponsor;
+    return accessBackend({ method: "POST", url: "/order", data });
+  },
 
   /*
    * 根据用户名，公钥，客户端签名请求access_token
