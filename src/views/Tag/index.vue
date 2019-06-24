@@ -1,55 +1,57 @@
 <template>
   <div class="tag mw">
-    <BaseHeader :pageinfo="{ title: '' }" :white="true" :customizeHeaderBc="tagBanner" />
-    <div class="tag-banner" :style="{backgroundColor: tagBanner}">
+    <BaseHeader :pageinfo="{ title: '' }" :white="true" :customize-header-bc="tagBanner" />
+    <div class="tag-banner" :style="{ backgroundColor: tagBanner }">
       <div class="tag-banner-title">
         <img src="@/assets/img/icon_article_tag.svg" alt="tag" />
-        <span>{{tagTitle}}</span>
+        <span>{{ tagTitle }}</span>
       </div>
     </div>
     <p class="tag-title">最新</p>
     <BasePull
-    class="tag-article"
-    :loadingText="{
-      nomore: '',
-      noresults: '无草稿', }"
-    :params="params"
-    :isObj="{type: 'Object', key: 'data'}"
-    :apiUrl="apiUrl"
-    @getListData="getListData">
-      <ArticleCard :article="item" v-for="(item, index) in tagList" :key="index"/>
+      class="tag-article"
+      :loading-text="{
+        nomore: '',
+        noresults: '无草稿'
+      }"
+      :params="params"
+      :isObj="{ type: 'Object', key: 'data' }"
+      :api-url="apiUrl"
+      @getListData="getListData"
+    >
+      <ArticleCard v-for="(item, index) in tagList" :article="item" :key="index" />
     </BasePull>
   </div>
 </template>
 
 <script>
-import tagColor from '@/common/tagColor';
-import { ArticleCard } from '@/components/';
+import tagColor from "@/common/tagColor";
+import { ArticleCard } from "@/components/";
 
 export default {
-  name: 'Tag',
+  name: "Tag",
   components: { ArticleCard },
-  inject: ['reload', 'openReload'],
+  inject: ["reload", "openReload"],
   beforeRouteEnter: (to, from, next) => next(vm => vm.reload()),
   data() {
     return {
       tagTitle: this.$route.query.name,
-      tagBanner: '#000',
+      tagBanner: "#000",
       tagList: [],
       params: {
-        tagid: this.$route.query.id,
+        tagid: this.$route.query.id
       },
-      apiUrl: 'getPostByTagById',
+      apiUrl: "getPostByTagById"
     };
   },
   created() {
-    this.tagBanner = tagColor()[this.$route.query.id] || '#000';
+    this.tagBanner = tagColor()[this.$route.query.id] || "#000";
   },
   methods: {
     getListData(res) {
       this.tagList = res.list;
-    },
-  },
+    }
+  }
 };
 </script>
 
