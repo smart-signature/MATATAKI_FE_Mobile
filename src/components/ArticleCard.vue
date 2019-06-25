@@ -133,6 +133,7 @@ export default {
     right: 0;
     bottom: 0;
     left: 0;
+    border-radius: 6px;
     background-color: rgba(0, 0, 0, 0.05);
   }
 }

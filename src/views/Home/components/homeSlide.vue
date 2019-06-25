@@ -95,7 +95,7 @@ export default {
   padding-top: 50px;
   &-title {
     font-size: 20px;
-    font-weight: 600;
+    font-weight: bold;
     color: rgba(0, 0, 0, 1);
     text-align: left;
     margin: 0 0 0 20px;

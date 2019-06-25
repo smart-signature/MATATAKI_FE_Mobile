@@ -46,7 +46,7 @@ export default {
   overflow: hidden;
   position: relative;
   background: rgba(216, 216, 216, 1);
-  box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.15);
+  box-shadow: -4px 10px 14px 0 rgba(0, 0, 0, 0.15);
   cursor: pointer;
   &:nth-last-child(1) {
     margin: 0 20px;
