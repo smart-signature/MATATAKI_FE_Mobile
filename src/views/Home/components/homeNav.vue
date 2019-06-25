@@ -82,6 +82,9 @@ ul {
     margin: 0 12px;
     padding: 0;
     transition: all 0.18s ease-in-out;
+    &:nth-child(1) {
+      margin-left: 0;
+    }
     &.active {
       color: rgba(51, 51, 51, 1);
     }

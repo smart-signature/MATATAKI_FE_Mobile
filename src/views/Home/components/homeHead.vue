@@ -3,7 +3,7 @@
     <div v-if="isLogined" class="home-head-avatar" @click="$emit('login')">
       <img v-if="avatar" v-lazy="avatar" :src="avatar" alt="avatar" />
     </div>
-    <a v-else href="javascript:void(0);" class="home-head-notlogin" @click="$emit('login')">登陆</a>
+    <a v-else href="javascript:void(0);" class="home-head-notlogin" @click="$emit('login')">登录</a>
 
     <div class="home-head-nav">
       <a
