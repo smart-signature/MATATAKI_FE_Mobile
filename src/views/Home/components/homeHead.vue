@@ -128,6 +128,7 @@ export default {
   &-create {
     width: 20px;
     height: 20px;
+    cursor: pointer;
   }
 }
 </style>

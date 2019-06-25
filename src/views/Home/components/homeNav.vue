@@ -82,6 +82,7 @@ ul {
     margin: 0 12px;
     padding: 0;
     transition: all 0.18s ease-in-out;
+    cursor: pointer;
     &:nth-child(1) {
       margin-left: 0;
     }
