@@ -38,9 +38,13 @@ const actions = {
     const signature = await API.signMessage({ message: rawSignData.join(' ') });
     return ({ publicKey: signature.publicKey, signature: signature.data, username: account });
   },
-  async recordShare({ state }, share) {
+  async recordOrder({ state: { account } }, order) {
+    const { recordOrder } = await import(/* webpackChunkName: "contract-Ontology" */ '@/api/contractOntology');
+    return recordOrder({ owner: account, ...order });
+  },
+  async recordShare({ state: { account } }, share) {
     const { recordShare } = await import(/* webpackChunkName: "contract-Ontology" */ '@/api/contractOntology');
-    return recordShare({ ...share, owner: state.account });
+    return recordShare({ owner: account, ...share });
   },
   signOut({ commit }) {
     commit('setAccount');

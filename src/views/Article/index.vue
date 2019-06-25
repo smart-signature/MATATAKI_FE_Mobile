@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 <template>
   <div class="article" @click.stop="opr = false">
-    <BaseHeader :pageinfo="{ title: '文章详情' }">
+    <BaseHeader :pageinfo="{ title: article.channel_id === 2 ? '商品详情' : '文章详情' }">
       <div v-if="isMe(article.uid)" slot="right" class="more" @click.stop="opr = !opr">
         <img src="@/assets/more.svg" alt="more" />
         <transition name="fade" mode="out-in">
@@ -36,10 +36,10 @@
       <rect x="27" y="46" rx="0" ry="0" width="334" height="240" />
     </ContentLoader>
     <template v-else>
-      <img v-lazy="cover" :src="cover" alt="" class="top-image" />
+      <img v-if="cover" v-lazy="cover" :src="cover" alt="" class="top-image" />
       <header class="ta_header">
         <h1>{{ article.title }}</h1>
-        <div class="userinfo-container">
+        <div v-if="article.channel_id !== 2" class="userinfo-container">
           <div class="avatar-info">
             <div
               class="avatar"
@@ -62,7 +62,14 @@
               </p>
             </div>
           </div>
-          <div class="follow-btn"><span>+</span> 关注</div>
+          <template v-if="!isMe(article.uid)">
+            <template v-if="!followed">
+              <div class="follow-btn" @click="followUser"><van-icon name="plus" /> 关注</div>
+            </template>
+            <template v-else>
+              <span class="follow-btn" @click="unfollowUser">取消关注</span>
+            </template>
+          </template>
         </div>
       </header>
       <mavon-editor v-show="false" style="display: none;" />
@@ -108,7 +115,7 @@
 
     <div class="comments-list">
       <h1 class="comment-title">
-        {{ article.channel_id === 2 ? "购买队列" : "赞赏队列" }} {{ article.ups || 0 }}
+        {{ article.channel_id === 2 ? "支持队列" : "赞赏队列" }} {{ article.ups || 0 }}
       </h1>
       <!--<div class="commentslist-title">
         <span>赞赏队列 {{article.ups || 0}}</span>
@@ -175,6 +182,31 @@
           class="button-support bg-yellow border-yellow"
           @click="b4support"
         >
+          投资<img src="@/assets/newimg/touzi.svg" />
+        </button>
+        <button v-if="isSupported === 0" class="button-support bg-yellow border-yellow" disabled>
+          投资中
+        </button>
+        <button
+          v-else-if="isSupported === 1"
+          class="button-support bg-yellow border-yellow"
+          @click="investProductModal = true"
+        >
+          投资<img src="@/assets/newimg/touzi.svg" />
+        </button>
+        <button
+          v-else-if="isSupported === 2"
+          class="button-support bg-yellow border-yellow"
+          disabled
+        >
+          已投资
+        </button>
+
+        <button
+          v-if="isSupported === -1"
+          class="button-support bg-yellow border-yellow"
+          @click="b4support"
+        >
           购买<img src="@/assets/newimg/goumai.svg" />
         </button>
         <button v-if="isSupported === 0" class="button-support bg-yellow border-yellow" disabled>
@@ -183,16 +215,10 @@
         <button
           v-else-if="isSupported === 1"
           class="button-support bg-yellow border-yellow"
+          :disabled="product.stock === 0"
           @click="supportButton"
         >
           购买<img src="@/assets/newimg/goumai.svg" />
-        </button>
-        <button
-          v-else-if="isSupported === 2"
-          class="button-support bg-yellow border-yellow"
-          disabled
-        >
-          已购买<img src="@/assets/newimg/goumai.svg" />
         </button>
         <button class="button-share border-yellow text-yellow" @click="widgetModal = true">
           分享<img src="@/assets/newimg/share2.svg" />
@@ -200,16 +226,16 @@
       </div>
       <div v-else class="footer-block footer-btn">
         <button v-if="isSupported === -1" class="button-support" @click="b4support">
-          赞赏<img src="@/assets/newimg/zanshang.svg" />
+          赞赏<img src="@/assets/newimg/zanshang4.svg" />
         </button>
         <button v-if="isSupported === 0" class="button-support" disabled>
-          赞赏中<img src="@/assets/newimg/zanshang.svg" />
+          赞赏中
         </button>
         <button v-else-if="isSupported === 1" class="button-support" @click="supportButton">
-          赞赏<img src="@/assets/newimg/zanshang.svg" />
+          赞赏<img src="@/assets/newimg/zanshang4.svg" />
         </button>
         <button v-else-if="isSupported === 2" class="button-support" disabled>
-          已赞赏<img src="@/assets/newimg/zanshang.svg" />
+          已赞赏
         </button>
         <button class="button-share" @click="widgetModal = true">
           分享<img src="@/assets/newimg/share.svg" />
@@ -242,16 +268,16 @@
           <div class="product-price">
             <span class="ont-price">
               <img src="@/assets/newimg/ont2.svg" alt="ont" />
-              <span>300</span>
+              <span>{{ product.ontPrice }}</span>
             </span>
             <span class="eos-price">
               <img src="@/assets/newimg/eos2.svg" alt="eos" />
-              <span>80.23</span>
+              <span>{{ product.eosPrice }}</span>
             </span>
           </div>
           <div class="product-amount">
             <span>数量</span>
-            <van-stepper v-model="value" />
+            <van-stepper v-model="productNumber" disabled />
           </div>
         </div>
       </div>
@@ -264,8 +290,53 @@
         class="comment-container"
       />
       <div class="buy-container">
-        <span class="storage">库存还有剩1000份</span>
-        <div class="buy-btn">购买</div>
+        <span class="storage">库存还有剩{{ product.stock }}份</span>
+        <div class="buy-btn" @click="buyProduct">购买</div>
+      </div>
+    </van-popup>
+
+    <van-popup v-model="investProductModal" class="buy-product-modal">
+      <h1 class="title">投资商品</h1>
+      <div class="invest-info">
+        <div class="info-item">
+          <span class="info-number">{{ getDisplayedFissionFactor }}</span>
+          <span class="info-subtitle">裂变系数</span>
+        </div>
+        <div class="info-item">
+          <span class="info-number percent">{{ article.fission_rate }}</span>
+          <span class="info-subtitle">裂变返利</span>
+        </div>
+        <div class="info-item">
+          <span class="info-number percent">{{ article.referral_rate }}</span>
+          <span class="info-subtitle">推荐返利</span>
+        </div>
+      </div>
+      <van-field
+        v-model="amount"
+        :placeholder="displayPlaceholder"
+        class="comment-container"
+        @input="handleChange(amount)"
+      />
+      <van-field
+        v-model="comment"
+        type="textarea"
+        placeholder="请输入您的留言"
+        rows="4"
+        autosize
+        class="comment-container"
+      />
+      <div class="invest-container">
+        <div class="invest-btn" @click="investProduct">投资</div>
+      </div>
+    </van-popup>
+
+    <van-popup v-model="buySuccessModal" class="buy-product-modal">
+      <h1 class="title">购买成功！</h1>
+      <p class="tip">请去“购买记录”页面查看已购商品的cd key或者链接！</p>
+      <div class="invest-container">
+        <router-link :to="{ name: 'BuyHistory' }">
+          <div class="invest-btn">查看</div>
+        </router-link>
       </div>
     </van-popup>
 
@@ -339,6 +410,10 @@ export default {
   props: ["hash"],
   data() {
     return {
+      followed: false,
+      productNumber: 1,
+      buySuccessModal: false,
+      investProductModal: false,
       buyProductModal: false,
       post: {
         author: "",
@@ -359,6 +434,11 @@ export default {
         showName: "eos", // 用于默认数据显示
         eos: 0,
         ont: 0
+      },
+      product: {
+        eosPrice: 0,
+        ontPrice: 0,
+        stock: 0
       },
       showModal: false,
       supportModal: false,
@@ -490,7 +570,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["makeShare"]),
+    ...mapActions(["makeShare", "makeBuy"]),
     changeInfo(status) {
       this.showModal = status;
     },
@@ -545,6 +625,13 @@ export default {
         console.error("addReadAmount :", error);
       }
       this.article = article;
+      if (article.channel_id === 2) {
+        this.product = {
+          eosPrice: article.prices[0].price / 10 ** article.prices[0].decimals,
+          ontPrice: article.prices[1].price / 10 ** article.prices[1].decimals,
+          stock: article.prices[0].stock_quantity
+        };
+      }
       this.article.CreateTime = article.create_time;
       this.totalSupportedAmount.show = article.value ? precision(article.value, "eos") : 0; // 用于默认显示
       this.totalSupportedAmount.eos = article.value ? precision(article.value, "eos") : 0; // eos
@@ -602,7 +689,56 @@ export default {
       }
       return true;
     },
-
+    async buyProduct() {
+      const { comment, signId, product } = this;
+      const { idProvider } = this.currentUserInfo;
+      if (idProvider === "GitHub") return;
+      const num = this.productNumber;
+      const amount =
+        idProvider === "ONT"
+          ? num * product.ontPrice
+          : idProvider === "EOS"
+          ? num * product.eosPrice
+          : 0;
+      const toSponsor = async idOrName => {
+        if (!idOrName) return { id: null, username: null };
+        if (/^(0|[1-9][0-9]*)$/.test(idOrName)) {
+          try {
+            const id = idOrName;
+            const { status, data } = await this.$backendAPI.getUser({ id });
+            if (status === 200 && data.code === 0) return { id, username: data.data.username };
+          } catch (error) {
+            console.error(error);
+          }
+        }
+        return { id: null, username: idOrName };
+      };
+      this.isSupported = RewardStatus.LOADING;
+      let sponsor = await toSponsor(this.getInvite);
+      await this.makeBuy({ amount, num, signId, sponsor });
+      try {
+        // 發 comment 到後端
+        console.log("Send comment...");
+        const response = await sendComment({ comment, signId });
+        console.log(response);
+        if (response.status !== 200) throw new Error(error);
+      } catch (error) {
+        console.error(error);
+        console.log("Resend comment...");
+        const response = await sendComment({ comment, signId });
+        console.log(response);
+        if (response.status !== 200) throw new Error(error);
+      }
+      this.isSupported = RewardStatus.NOT_REWARD_YET;
+      this.isRequest = true;
+      this.buyProductModal = false;
+      this.buySuccessModal = true;
+    },
+    async investProduct() {
+      this.support("confirm", () => {
+        this.investProductModal = false;
+      });
+    },
     async support(action, done) {
       if (action !== "confirm") return done();
       const { article, comment, signId } = this;
@@ -684,7 +820,8 @@ export default {
         else if (idProvider === "ONT" && !isOntAddressVerify)
           sponsor = { id: null, username: null };
 
-        await this.makeShare({ amount, signId, sponsor });
+        if (this.article.channel_id === 1) await this.makeShare({ amount, signId, sponsor });
+        // if ( this.article.channel_id === 2 ) await this.makeOrder({ amount, signId, sponsor });
 
         try {
           // 發 comment 到後端
@@ -699,6 +836,7 @@ export default {
           console.log(response);
           if (response.status !== 200) throw new Error(error);
         }
+
         this.isSupported = RewardStatus.REWARDED; // 按钮状态
         this.$toast.success({ duration: 1000, message: "赞赏成功！" });
         this.isRequest = true; // 自动请求
@@ -752,6 +890,7 @@ export default {
       try {
         const res = await backendAPI.getUser({ id });
         if (res.status === 200 && res.data.code === 0) {
+          this.followed = res.data.data.is_follow;
           if (res.data.data.avatar)
             this.articleAvatar = backendAPI.getAvatarImage(res.data.data.avatar);
         } else console.log("获取用户信息错误");
@@ -767,6 +906,33 @@ export default {
         this.totalSupportedAmount.show = this.totalSupportedAmount.ont;
       }
       this.totalSupportedAmount.showName = name;
+    },
+    checkb4FoUnfo(message) {
+      if (!this.isLogined) {
+        this.$toast.fail({ duration: 1000, message });
+        return false;
+      }
+      return true;
+    },
+    async followUser() {
+      if (!this.checkb4FoUnfo("关注失败")) return;
+      try {
+        await this.$backendAPI.follow({ id: this.article.uid });
+        this.$toast.success({ duration: 1000, message: "关注成功" });
+        this.followed = true;
+      } catch (error) {
+        this.$toast.fail({ duration: 1000, message: "关注失败" });
+      }
+    },
+    async unfollowUser() {
+      if (!this.checkb4FoUnfo("取消关注失败")) return;
+      try {
+        await this.$backendAPI.unfollow({ id: this.article.uid });
+        this.$toast.success({ duration: 1000, message: "取消关注" });
+        this.followed = false;
+      } catch (error) {
+        this.$toast.fail({ duration: 1000, message: "取消关注失败" });
+      }
     }
   }
 };

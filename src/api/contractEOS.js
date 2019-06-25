@@ -24,6 +24,16 @@ const transferEOS = ({ account = null, amount = 0, memo = '' }) => {
   });
 };
 
+export const recordOrder = ({ account = null, amount = null, oId = null, sponsor = null }) => {
+  if (!amount) { throw new Error('amount cant be falsy'); }
+  if (!oId) { throw new Error('oId cant be falsy'); }
+  return transferEOS({
+    account,
+    amount,
+    memo: sponsor ? `buy ${oId} ${sponsor}` : `buy ${oId}`,
+  });
+};
+
 export const recordShare = ({ account = null, amount = null, signId = null, sponsor = null }) => {
   if (!amount) { throw new Error('amount cant be falsy'); }
   if (!signId) { throw new Error('signId cant be falsy'); }

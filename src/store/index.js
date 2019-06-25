@@ -53,6 +53,18 @@ export default new Vuex.Store({
       if (idProvider === 'GitHub') return 'github';
       return null;
     },
+    asset: ({ userConfig: { idProvider } }) => {
+      let contract = null;
+      let symbol = null;
+      if (idProvider === 'EOS') {
+        contract = 'eosio.token';
+        symbol = 'EOS';
+      } else if (idProvider === 'ONT') {
+        contract = 'AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV';
+        symbol = 'ONT';
+      }
+      return { contract, symbol };
+    },
   },
   actions: {
     async getAuth({ dispatch, getters: { currentUserInfo } }, name = null) {
@@ -144,6 +156,14 @@ export default new Vuex.Store({
       commit('setAccessToken', accessToken);
       localStorage.setItem('idProvider', state.userConfig.idProvider);
     },
+    async makeOrder({ dispatch, getters, state: { userConfig: { idProvider } } }, order) {
+      const order2 = { ...order, idProvider, ...getters.asset };
+      const { data: { data: { orderId } } } = await backendAPI.reportOrder(order2);
+      // console.debug(oid);
+      return dispatch(`${getters.prefixOfType}/recordOrder`, {
+        ...order2, oId: orderId, amount: order2.amount / 10000, sponsor: order2.sponsor.username
+      });
+    },
     async makeShare({ dispatch, getters, state: { userConfig: { idProvider } } }, share) {
       share.idProvider = idProvider;
       if (idProvider === 'EOS') {
@@ -157,6 +177,20 @@ export default new Vuex.Store({
         ...share, sponsor: share.sponsor.username
       });
       return backendAPI.reportShare(share);
+    },
+    async makeBuy({ dispatch, getters, state: { userConfig: { idProvider } } }, share) {
+      share.idProvider = idProvider;
+      if (idProvider === 'EOS') {
+        share.contract = 'eosio.token';
+        share.symbol = 'EOS';
+      } else if (idProvider === 'ONT') {
+        share.contract = 'AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV';
+        share.symbol = 'ONT';
+      }
+      await dispatch(`${getters.prefixOfType}/recordShare`, {
+        ...share, sponsor: share.sponsor.username
+      });
+      return backendAPI.reportBuyProduct(share);
     },
     async getCurrentUser({ commit, getters: { currentUserInfo } }) {
       const { data: { data } } = await backendAPI.getUser({ id: currentUserInfo.id });

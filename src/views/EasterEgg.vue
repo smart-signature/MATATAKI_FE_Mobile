@@ -4,12 +4,13 @@
         <p>当前模式：{{env}}</p>
         <p>版本号： {{ version }}</p>
         <p v-if="checkIsBuildOnCommit">基于 commit <a :href="commitUrl">{{ commitHash }} </a> 构建</p>
-        <Button @click="$router.push({ name: 'Login' })">Sign in with GitHub</Button>
+        <Button @click="buySomething()">buySomething</Button>
     </div>
 </template>
 
 <script>
 /* eslint-disable */
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   name: 'Easter-Egg',
@@ -24,6 +25,13 @@ export default {
     },
     commitUrl() {
       return `https://github.com/smart-signature/smart-signature-future/commit/${this.commitHash}`;
+    },
+  },
+  methods: {
+    ...mapActions(["makeOrder"]),
+    async buySomething() {
+      const num = 10;
+      await this.makeOrder({ num, amount: num * 20000, signId: 100455, sponsor: { id: null, username: null } });
     },
   },
 };

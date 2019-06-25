@@ -12,7 +12,8 @@ import {
   SwipeItem,
   Cell,
   Popup,
-  Stepper
+  Stepper,
+  Icon
 } from "vant";
 
 // 增加前缀 区分多个组件库 防止冲突
@@ -22,6 +23,7 @@ Vue.component("vanSwitch", Switch); // 加载中
 Vue.component("vanPopup", Popup); // 侧边栏
 Vue.component("vanCell", Cell); // 侧边栏
 Vue.component("vanStepper", Stepper); // 侧边栏
+Vue.component("vanIcon", Icon); // 侧边栏
 Vue.use(Toast); // 轻提示
 Vue.use(Dialog); // 对话框
 Vue.use(Field); // 输入框

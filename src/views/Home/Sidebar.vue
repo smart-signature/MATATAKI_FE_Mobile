@@ -197,12 +197,13 @@ export default {
         };
       };
 
-      const { getMyUserData, getUser } = this.$backendAPI;
-      const {
-        data: { data }
-      } = await (isMe(id) ? getMyUserData() : getUser({ id }));
-      // console.debug(data);
-      setUser(data);
+      const { getMyUserData } = this.$backendAPI;
+      if (isMe(id)) {
+        const {
+          data: { data }
+        } = await getMyUserData();
+        setUser(data);
+      }
     },
     setAvatarImage(hash) {
       if (hash) this.avatar = this.$backendAPI.getAvatarImage(hash);

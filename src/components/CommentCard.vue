@@ -8,7 +8,7 @@
         <router-link class="comment-author" :to="{ name: 'User', params: { id: comment.id }}">
           {{comment.nickname || comment.username }}
         </router-link>
-        赞赏了
+        {{action}}
         <span class="comment-quantity">{{amount}}</span>
         <p class="comment-timestamp">{{friendlyDate}}</p>
       </div>
@@ -37,8 +37,19 @@ export default {
       //              * 60000);// 返回的数据带了时区
       return isNDaysAgo(2, time) ? time.format('MMMDo HH:mm') : time.fromNow();
     },
+    action() {
+      if (this.comment.action === 1) {
+        return '赞赏了'
+      } else if(this.comment.action === 2) {
+        return '购买了'
+      }
+    },
     amount() {
-      return precision(this.comment.amount, this.comment.platform) + this.comment.platform.toUpperCase();
+      if (this.comment.action === 1) {
+        return precision(this.comment.amount, this.comment.platform) + this.comment.platform.toUpperCase();
+      } else if(this.comment.action === 2) {
+        return `${this.comment.num}份商品`
+      }
     },
     avatar() {
       if (this.comment.avatar) return getAvatarImage(this.comment.avatar);

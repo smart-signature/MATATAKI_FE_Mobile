@@ -107,9 +107,13 @@ const actions = {
     console.log('got signature: ', signature);
     return ({ publicKey, signature, username: account.name });
   },
+  async recordOrder({ state: { account } }, order) {
+    const { recordOrder } = await import(/* webpackChunkName: "EOS" */ '@/api/contractEOS');
+    return recordOrder({ account, ...order });
+  },
   async recordShare({ state: { account } }, share) {
     const { recordShare } = await import(/* webpackChunkName: "EOS" */ '@/api/contractEOS');
-    return recordShare({ ...share, account });
+    return recordShare({ account, ...share });
   },
   async setBalances({ commit, dispatch, state }) {
     const api = await dispatch('getAPI');
