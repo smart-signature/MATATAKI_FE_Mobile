@@ -213,7 +213,7 @@
           购买中<img src="@/assets/newimg/goumai.svg" />
         </button>
         <button
-          v-else
+          v-else-if="isSupported === 1"
           class="button-support bg-yellow border-yellow"
           :disabled="product.stock === 0"
           @click="supportButton"
@@ -627,8 +627,8 @@ export default {
       this.article = article;
       if (article.channel_id === 2) {
         this.product = {
-          eosPrice: article.prices[0].price / ( 10 ** article.prices[0].decimals ),
-          ontPrice: article.prices[1].price / ( 10 ** article.prices[1].decimals ),
+          eosPrice: article.prices[0].price / 10 ** article.prices[0].decimals,
+          ontPrice: article.prices[1].price / 10 ** article.prices[1].decimals,
           stock: article.prices[0].stock_quantity
         };
       }
@@ -713,6 +713,7 @@ export default {
         }
         return { id: null, username: idOrName };
       };
+      this.isSupported = RewardStatus.LOADING;
       let sponsor = await toSponsor(this.getInvite);
       await this.makeBuy({ amount, num, signId, sponsor });
       try {
@@ -728,6 +729,7 @@ export default {
         console.log(response);
         if (response.status !== 200) throw new Error(error);
       }
+      this.isSupported = RewardStatus.NOT_REWARD_YET;
       this.isRequest = true;
       this.buyProductModal = false;
       this.buySuccessModal = true;
@@ -818,23 +820,22 @@ export default {
         else if (idProvider === "ONT" && !isOntAddressVerify)
           sponsor = { id: null, username: null };
 
-        if ( this.article.channel_id === 1 ) await this.makeShare({ amount, signId, sponsor });
+        if (this.article.channel_id === 1) await this.makeShare({ amount, signId, sponsor });
         // if ( this.article.channel_id === 2 ) await this.makeOrder({ amount, signId, sponsor });
 
-          try {
-            // 發 comment 到後端
-            console.log("Send comment...");
-            const response = await sendComment({ comment, signId });
-            console.log(response);
-            if (response.status !== 200) throw new Error(error);
-          } catch (error) {
-            console.error(error);
-            console.log("Resend comment...");
-            const response = await sendComment({ comment, signId });
-            console.log(response);
-            if (response.status !== 200) throw new Error(error);
-          }
-
+        try {
+          // 發 comment 到後端
+          console.log("Send comment...");
+          const response = await sendComment({ comment, signId });
+          console.log(response);
+          if (response.status !== 200) throw new Error(error);
+        } catch (error) {
+          console.error(error);
+          console.log("Resend comment...");
+          const response = await sendComment({ comment, signId });
+          console.log(response);
+          if (response.status !== 200) throw new Error(error);
+        }
 
         this.isSupported = RewardStatus.REWARDED; // 按钮状态
         this.$toast.success({ duration: 1000, message: "赞赏成功！" });
