@@ -156,6 +156,21 @@ export default new Vuex.Store({
       commit('setAccessToken', accessToken);
       localStorage.setItem('idProvider', state.userConfig.idProvider);
     },
+    /*
+     * 購買，會自動代入目前登錄帳號，自動分流到不同合約填寫不同的合約參數格式
+     * 1. 提交 order 給後端獲得 orderId
+     * 2. 把其他參數打包分發給合約
+     * 
+     * @param order - { num, amount: num * 20000, signId: 100455, sponsor: { id: null, username: null } }
+
+      makeOrder 用法跟 makeShare 一樣，流程都打包好了，只要傳參
+      推薦人參數務必用這種格式 sponsor: { id: null, username: null }
+      id 和 username 有就塞沒有就 null
+      一個是後端要用一個是合約要用 so...
+      
+      ex:
+      makeOrder({ num, amount: num * 20000, signId: 100455, sponsor: { id: null, username: null } });
+    */
     async makeOrder({ dispatch, getters, state: { userConfig: { idProvider } } }, order) {
       const order2 = { ...order, idProvider, ...getters.asset };
       const { data: { data: { orderId } } } = await backendAPI.reportOrder(order2);
