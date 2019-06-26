@@ -110,12 +110,12 @@
       </div>
     </template>
     <router-link :to="{ name: 'BuyHistory' }">
-      <div v-if="article.product" class="buy-alert">已购买成功，请前往“购买记录”页面查看！</div>
+      <div v-if="article.sale > 0" class="buy-alert">已购买成功，请前往“购买记录”页面查看！</div>
     </router-link>
 
     <div class="comments-list">
       <h1 class="comment-title">
-        {{ article.channel_id === 2 ? "支持队列" : "赞赏队列" }} {{ article.ups || 0 }}
+        {{ article.channel_id === 2 ? "支持队列" : "赞赏队列" }} {{ article.ups + article.sale }}
       </h1>
       <!--<div class="commentslist-title">
         <span>赞赏队列 {{article.ups || 0}}</span>
@@ -134,6 +134,7 @@
         class="comments"
         :sign-id="signId"
         :is-request="isRequest"
+        :type="article.channel_id"
         @stopAutoRequest="status => (isRequest = status)"
       />
     </div>
@@ -209,11 +210,11 @@
         >
           购买<img src="@/assets/newimg/goumai.svg" />
         </button>
-        <button v-if="isSupported === 0" class="button-support bg-yellow border-yellow" disabled>
+        <button v-else-if="isSupported === 0" class="button-support bg-yellow border-yellow" disabled>
           购买中<img src="@/assets/newimg/goumai.svg" />
         </button>
         <button
-          v-else-if="isSupported === 1"
+          v-else
           class="button-support bg-yellow border-yellow"
           :disabled="product.stock === 0"
           @click="supportButton"
@@ -492,7 +493,7 @@ export default {
       const { article, isLogined } = this;
       let isSupported = false;
       if (isLogined)
-        isSupported = article.support ? RewardStatus.REWARDED : RewardStatus.NOT_REWARD_YET;
+        isSupported = article.is_support ? RewardStatus.REWARDED : RewardStatus.NOT_REWARD_YET;
       else isSupported = RewardStatus.NOT_LOGGINED;
       return isSupported;
     },
@@ -640,7 +641,7 @@ export default {
       this.articleLoading = false; // 文章加载状态隐藏
       this.isOriginal = Boolean(article.is_original);
       // 未登录下点击赞赏会自动登陆并且重新获取文章信息 如果没有打赏并且是点击赞赏 则显示赞赏框
-      if (!article.support && supportDialog) {
+      if (!article.is_support && supportDialog) {
         this.supportModal = true;
       }
     },
@@ -748,6 +749,7 @@ export default {
       const amount = this.amount === "" ? 0 : parseFloat(this.amount);
       // 检查金额是否符合
       let checkPricesMatch = true;
+      let action_text = this.article.channel_id === 2 ? "投资" : "赞赏";
 
       // 检查价格
       const checkPrices = (prices, range, message) => {
@@ -765,7 +767,7 @@ export default {
       checkPricesMatch = checkPrices(
         amount,
         minimumAmount(idProvider),
-        `请输入正确的金额 最小赞赏金额为 ${minimumAmount(idProvider)} ${idProvider}`
+        `请输入正确的金额 最小${action_text}金额为 ${minimumAmount(idProvider)} ${idProvider}`
       );
       if (!checkPricesMatch) return done(false);
 
@@ -779,13 +781,13 @@ export default {
             checkPricesMatch = checkPrices(
               amount,
               price / 10 ** decimals,
-              "赞赏金额不能小于商品价格"
+              `${action_text}金额不能小于商品价格`
             );
           else if (symbol === "ONT")
             checkPricesMatch = checkPrices(
               amount,
               price / 10 ** decimals,
-              "赞赏金额不能小于商品价格"
+              `${action_text}金额不能小于商品价格`
             );
         }
       };
@@ -820,7 +822,7 @@ export default {
         else if (idProvider === "ONT" && !isOntAddressVerify)
           sponsor = { id: null, username: null };
 
-        if (this.article.channel_id === 1) await this.makeShare({ amount, signId, sponsor });
+        await this.makeShare({ amount, signId, sponsor });
         // if ( this.article.channel_id === 2 ) await this.makeOrder({ amount, signId, sponsor });
 
         try {
@@ -836,9 +838,8 @@ export default {
           console.log(response);
           if (response.status !== 200) throw new Error(error);
         }
-
         this.isSupported = RewardStatus.REWARDED; // 按钮状态
-        this.$toast.success({ duration: 1000, message: "赞赏成功！" });
+        this.$toast.success({ duration: 1000, message: `${action_text}成功！` });
         this.isRequest = true; // 自动请求
         this.supportModal = false; // 关闭dialog
         done();
@@ -847,7 +848,7 @@ export default {
         this.isSupported = RewardStatus.NOT_REWARD_YET;
         this.$toast({
           duration: 1000,
-          message: "赞赏失败，可能是由于网络故障或账户余额不足等原因。"
+          message: `${action_text}失败，可能是由于网络故障或账户余额不足等原因。`
         });
         done(false);
       }

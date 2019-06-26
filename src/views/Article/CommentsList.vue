@@ -12,7 +12,7 @@
     :isObj="isObj"
     @getListData="getListData"
     >
-      <CommentCard :comment="item" v-for="(item, index) in articles" :key="index"/>
+      <CommentCard :comment="item" v-for="(item, index) in articles" :key="index" :type="type"/>
   </BasePull>
 </template>
 
@@ -21,7 +21,7 @@ import { CommentCard } from '@/components/';
 import { mapGetters } from 'vuex';
 
 export default {
-  props: ['signId', 'isRequest'],
+  props: ['signId', 'isRequest', 'type'],
   components: { CommentCard },
   watch: {
     signId(newVal) {

@@ -25,7 +25,7 @@ import { getAvatarImage } from '@/api';
 
 export default {
   name: 'CommentCard',
-  props: ['comment'],
+  props: ['comment', 'type'],
   computed: {
     displayMessage() {
       return this.comment.comment !== '' ? this.comment.comment : '用户没有留下评论';
@@ -38,10 +38,14 @@ export default {
       return isNDaysAgo(2, time) ? time.format('MMMDo HH:mm') : time.fromNow();
     },
     action() {
-      if (this.comment.action === 1) {
+      if (this.type === 2) {
+        if (this.comment.action === 1) {
+          return '投资了'
+        } else if(this.comment.action === 2) {
+          return '购买了'
+        }
+      } else {
         return '赞赏了'
-      } else if(this.comment.action === 2) {
-        return '购买了'
       }
     },
     amount() {
