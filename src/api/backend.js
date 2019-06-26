@@ -94,7 +94,7 @@ const API = {
     }
     delete data.idProvider;
     delete data.sponsor;
-    return accessBackend({ method: "POST", url: "/order/create", data });
+    return accessBackend({ method: "POST", url: "/order", data });
   },
   async reportShare(share) {
     const data = {
