@@ -178,20 +178,6 @@ export default new Vuex.Store({
       });
       return backendAPI.reportShare(share);
     },
-    async makeBuy({ dispatch, getters, state: { userConfig: { idProvider } } }, share) {
-      share.idProvider = idProvider;
-      if (idProvider === 'EOS') {
-        share.contract = 'eosio.token';
-        share.symbol = 'EOS';
-      } else if (idProvider === 'ONT') {
-        share.contract = 'AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV';
-        share.symbol = 'ONT';
-      }
-      await dispatch(`${getters.prefixOfType}/recordShare`, {
-        ...share, sponsor: share.sponsor.username
-      });
-      return backendAPI.reportBuyProduct(share);
-    },
     async getCurrentUser({ commit, getters: { currentUserInfo } }) {
       const { data: { data } } = await backendAPI.getUser({ id: currentUserInfo.id });
       console.info(data);

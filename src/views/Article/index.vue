@@ -570,7 +570,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["makeShare", "makeBuy"]),
+    ...mapActions(["makeShare", "makeOrder"]),
     changeInfo(status) {
       this.showModal = status;
     },
@@ -715,7 +715,7 @@ export default {
       };
       this.isSupported = RewardStatus.LOADING;
       let sponsor = await toSponsor(this.getInvite);
-      await this.makeBuy({ amount, num, signId, sponsor });
+      await this.makeOrder({ amount, num, signId, sponsor });
       try {
         // 發 comment 到後端
         console.log("Send comment...");

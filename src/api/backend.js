@@ -1,6 +1,7 @@
 import axios from "axios";
 import https from "https";
 import { Base64 } from "js-base64";
+import { toPrecision } from "../common/precisionConversion";
 
 // Doc : https://github.com/axios/axios
 
@@ -89,12 +90,10 @@ const API = {
       referrer: order.sponsor.id
     };
     const { idProvider } = data;
-    if (idProvider === "EOS") {
-      data.amount *= 10000;
-    }
+    data.amount = toPrecision(data.amount, idProvider);
     delete data.idProvider;
     delete data.sponsor;
-    return accessBackend({ method: "POST", url: "/order/create", data });
+    return accessBackend({ method: "POST", url: "/order", data });
   },
   async reportShare(share) {
     const data = {
@@ -103,26 +102,10 @@ const API = {
       referrer: share.sponsor.id
     };
     const { idProvider } = data;
-    if (idProvider === "EOS") {
-      data.amount *= 10000;
-    }
+    data.amount = toPrecision(data.amount, idProvider);
     delete data.idProvider;
     delete data.sponsor;
     return accessBackend({ method: "POST", url: "/support", data });
-  },
-  async reportBuyProduct(share) {
-    const data = {
-      ...share,
-      platform: "need",
-      referrer: share.sponsor.id
-    };
-    const { idProvider } = data;
-    if (idProvider === "EOS") {
-      data.amount *= 10000;
-    }
-    delete data.idProvider;
-    delete data.sponsor;
-    return accessBackend({ method: "POST", url: "/order", data });
   },
 
   /*

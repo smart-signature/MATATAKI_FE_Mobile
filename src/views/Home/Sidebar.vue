@@ -4,93 +4,103 @@
       <template v-if="isLogined">
         <div class="account">
           <div class="avatar-container">
-            <img
-              :src="avatar"
-              alt="avatar"
-              class="avatar"
-              @click="$router.push({ name: 'UserEdit', params: { id } })"
-            />
-            <img
-              src="@/assets/newimg/setting.svg"
-              alt="setting"
-              class="setting"
-              @click="$router.push({ name: 'Help' })"
-            />
+            <router-link :to="{ name: 'UserEdit', params: { id } }">
+              <img :src="avatar" alt="avatar" class="avatar" />
+            </router-link>
+            <router-link :to="{ name: 'Help' }">
+              <img src="@/assets/newimg/setting.svg" alt="setting" class="setting" />
+            </router-link>
           </div>
           <p class="account-name">{{ name }}</p>
           <p class="wallet-info">{{ displayBalanceSymbol }}钱包余额：{{ displayBalance }}</p>
         </div>
         <div class="follow-info">
-          <div class="follow">
-            <p>{{ follows }}</p>
-            <p>关注</p>
-          </div>
-          <div class="fans">
-            <p>{{ fans }}</p>
-            <p>粉丝</p>
-          </div>
+          <router-link :to="{ name: 'FollowList', params: { id, listtype: '关注' } }">
+            <div class="follow">
+              <p>{{ follows }}</p>
+              <p>关注</p>
+            </div>
+          </router-link>
+          <router-link :to="{ name: 'FollowList', params: { id, listtype: '粉丝' } }">
+            <div class="fans">
+              <p>{{ fans }}</p>
+              <p>粉丝</p>
+            </div>
+          </router-link>
         </div>
         <div class="cell-container">
-          <div class="cell" @click="$router.push({ name: 'Asset', params: { id } })">
-            <div class="cell-left">
-              <img src="@/assets/newimg/shouye-zhanghu.svg" alt="home" class="left-img" />
-              <span class="left-text">我的账户</span>
+          <router-link :to="{ name: 'Asset', params: { id } }">
+            <div class="cell">
+              <div class="cell-left">
+                <img src="@/assets/newimg/shouye-zhanghu.svg" alt="home" class="left-img" />
+                <span class="left-text">我的账户</span>
+              </div>
+              <div class="cell-right">
+                <span>已绑定{{ stats.accounts }}个账户</span>
+              </div>
             </div>
-            <div class="cell-right">
-              <span>已绑定{{ stats.accounts }}个账户</span>
-            </div>
-          </div>
+          </router-link>
         </div>
         <div class="cell-container">
-          <div class="cell" @click="$router.push({ name: 'Original', params: { id } })">
-            <div class="cell-left">
-              <img src="@/assets/newimg/yuanchuang.svg" alt="article" class="left-img" />
-              <span class="left-text">原创文章</span>
+          <router-link :to="{ name: 'Original', params: { id } }">
+            <div class="cell">
+              <div class="cell-left">
+                <img src="@/assets/newimg/yuanchuang.svg" alt="article" class="left-img" />
+                <span class="left-text">原创文章</span>
+              </div>
+              <div class="cell-right">
+                <span>{{ stats.articles }}篇</span>
+              </div>
             </div>
-            <div class="cell-right">
-              <span>{{ stats.articles }}篇</span>
+          </router-link>
+          <router-link :to="{ name: 'Reward', params: { id } }">
+            <div class="cell">
+              <div class="cell-left">
+                <img src="@/assets/newimg/zanshang.svg" alt="article" class="left-img" />
+                <span class="left-text">赞赏文章</span>
+              </div>
+              <div class="cell-right">
+                <span>{{ stats.supports }}篇</span>
+              </div>
             </div>
-          </div>
-          <div class="cell" @click="$router.push({ name: 'Reward', params: { id } })">
-            <div class="cell-left">
-              <img src="@/assets/newimg/zanshang.svg" alt="article" class="left-img" />
-              <span class="left-text">赞赏文章</span>
+          </router-link>
+          <router-link :to="{ name: 'DraftBox', params: { id } }">
+            <div class="cell">
+              <div class="cell-left">
+                <img src="@/assets/newimg/caogaoxiang.svg" alt="article" class="left-img" />
+                <span class="left-text">草稿箱</span>
+              </div>
+              <div class="cell-right">
+                <span>{{ stats.drafts }}篇</span>
+              </div>
             </div>
-            <div class="cell-right">
-              <span>{{ stats.supports }}篇</span>
-            </div>
-          </div>
-          <div class="cell" @click="$router.push({ name: 'DraftBox', params: { id } })">
-            <div class="cell-left">
-              <img src="@/assets/newimg/caogaoxiang.svg" alt="article" class="left-img" />
-              <span class="left-text">草稿箱</span>
-            </div>
-            <div class="cell-right">
-              <span>{{ stats.drafts }}篇</span>
-            </div>
-          </div>
+          </router-link>
         </div>
         <div class="cell-container">
-          <div class="cell" @click="$router.push({ name: 'BuyHistory' })">
-            <div class="cell-left">
-              <img src="@/assets/newimg/goumaijilu.svg" alt="article" class="left-img" />
-              <span class="left-text">购买记录</span>
+          <router-link :to="{ name: 'BuyHistory' }">
+            <div class="cell">
+              <div class="cell-left">
+                <img src="@/assets/newimg/goumaijilu.svg" alt="article" class="left-img" />
+                <span class="left-text">购买记录</span>
+              </div>
+              <div class="cell-right"><span></span></div>
             </div>
-            <div class="cell-right"><span></span></div>
-          </div>
+          </router-link>
         </div>
       </template>
       <template v-else>
         <div class="login-btn" href="javascript:;" @click="showModal = true">立即登录</div>
       </template>
       <div class="cell-container">
-        <div class="cell" @click="$router.push({ name: 'About' })">
-          <div class="cell-left">
-            <img src="@/assets/newimg/gonglue.svg" alt="article" class="left-img" />
-            <span class="left-text">投资攻略</span>
+        <router-link :to="{ name: 'About' }">
+          <div class="cell">
+            <div class="cell-left">
+              <img src="@/assets/newimg/gonglue.svg" alt="article" class="left-img" />
+              <span class="left-text">投资攻略</span>
+            </div>
+            <div class="cell-right"><span></span></div>
           </div>
-          <div class="cell-right"><span></span></div>
-        </div>
+        </router-link>
         <a href="https://t.me/smartsignature_io" target="_blank">
           <div class="cell">
             <div class="cell-left">
