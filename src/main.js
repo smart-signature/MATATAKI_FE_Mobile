@@ -11,6 +11,7 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import { backendAPI } from "@/api";
+import errorHandling from "@/common/errorHandling";
 
 import "./registerServiceWorker";
 // import "lib-flexible"; // 适配
@@ -24,6 +25,7 @@ import "./plugins/baseComponents";
 import "@/assets/css/index.less";
 
 Vue.prototype.$backendAPI = backendAPI;
+Vue.prototype.$errorHandling = errorHandling;
 
 Vue.use(VueClipboard);
 

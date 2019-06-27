@@ -200,13 +200,14 @@ export default {
       return true;
     },
     async followUser() {
-      if (!this.checkb4FoUnfo()) return;
+      // if (!this.checkb4FoUnfo()) return;
       try {
         await this.$backendAPI.follow({ id: this.id });
         this.$toast.success({ duration: 1000, message: "关注成功" });
         this.followed = true;
       } catch (error) {
         this.$toast.fail({ duration: 1000, message: "关注失败" });
+        this.showSignInModal = this.$errorHandling.isNoToken(error);
       }
       this.refreshUser();
     },
