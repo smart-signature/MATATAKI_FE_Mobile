@@ -333,7 +333,7 @@
 
     <van-popup v-model="buySuccessModal" class="buy-product-modal">
       <h1 class="title">购买成功！</h1>
-      <p class="tip">请去“购买记录”页面查看已购商品的cd key或者链接！</p>
+      <p class="tip">请去“购买记录”页面查看已购商品！</p>
       <div class="invest-container">
         <router-link :to="{ name: 'BuyHistory' }">
           <div class="invest-btn">查看</div>
