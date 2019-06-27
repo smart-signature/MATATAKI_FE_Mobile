@@ -201,7 +201,7 @@ const API = {
       homeAmountRankingEOS: "posts/amountRanking",
       homeAmountRankingONT: "posts/amountRanking",
       // article comments
-      commentsList: "support/comments",
+      commentsList: "comments",
       // followlist
       followsList: "follows",
       fansList: "fans",
@@ -215,7 +215,7 @@ const API = {
       // tag by id
       getPostByTagById: "posts/getPostByTag",
       // buy
-      buyHistory: "support/products"
+      buyHistory: "order/products"
     };
 
     return !needAccessToken
