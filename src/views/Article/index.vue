@@ -219,7 +219,7 @@
           :disabled="product.stock === 0"
           @click="supportButton"
         >
-          购买<img src="@/assets/newimg/goumai.svg" />
+          {{ product.stock === 0 ? '售罄' : '购买' }}<img src="@/assets/newimg/goumai.svg" />
         </button>
         <button class="button-share border-yellow text-yellow" @click="widgetModal = true">
           分享<img src="@/assets/newimg/share2.svg" />
@@ -691,6 +691,11 @@ export default {
       return true;
     },
     async buyProduct() {
+      const loading = this.$toast.loading({
+        mask: true,
+        duration: 0,
+        message: '购买中...'
+      });
       const { comment, signId, product } = this;
       const { idProvider } = this.currentUserInfo;
       if (idProvider === "GitHub") return;
@@ -730,6 +735,7 @@ export default {
         console.log(response);
         if (response.status !== 200) throw new Error(error);
       }*/
+      loading.clear();
       this.isSupported = RewardStatus.NOT_REWARD_YET;
       this.isRequest = true;
       this.buyProductModal = false;
@@ -741,6 +747,12 @@ export default {
       });
     },
     async support(action, done) {
+      let action_text = this.article.channel_id === 2 ? "投资" : "赞赏";
+      const loading = this.$toast.loading({
+        mask: true,
+        duration: 0,
+        message: `${action_text}中...`
+      });
       if (action !== "confirm") return done();
       const { article, comment, signId } = this;
       const { idProvider } = this.currentUserInfo;
@@ -749,7 +761,6 @@ export default {
       const amount = this.amount === "" ? 0 : parseFloat(this.amount);
       // 检查金额是否符合
       let checkPricesMatch = true;
-      let action_text = this.article.channel_id === 2 ? "投资" : "赞赏";
 
       // 检查价格
       const checkPrices = (prices, range, message) => {
@@ -842,8 +853,10 @@ export default {
         this.$toast.success({ duration: 1000, message: `${action_text}成功！` });
         this.isRequest = true; // 自动请求
         this.supportModal = false; // 关闭dialog
+        loading.clear();
         done();
       } catch (error) {
+        loading.clear();
         console.error(error);
         this.isSupported = RewardStatus.NOT_REWARD_YET;
         this.$toast({
