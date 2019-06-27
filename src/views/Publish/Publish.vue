@@ -536,25 +536,33 @@ export default {
       // 不要在页面组件写具体实现，谢谢合作 - Frank
       // 想要更换默认的 uploader， 请在 src/api/imagesUploader.js 修改 currentImagesUploader
       // 不要在页面组件写具体实现，谢谢合作 - Frank
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      const image = new Image();
-      image.onload = () => {
-        canvas.width = image.width;
-        canvas.height = image.height;
-        ctx.drawImage(image, 0, 0);
-        canvas.toBlob(
-          blob => {
-            defaultImagesUploader(blob).then(({ data }) => {
-              const { url } = data.data;
-              this.$refs.md.$img2Url(pos, url);
-            });
-          },
-          "image/jpeg",
-          0.3
-        );
-      };
-      image.src = imgfile.miniurl;
+      if (imgfile.type === "image/gif") {
+        defaultImagesUploader(imgfile).then(({ data }) => {
+          const { url } = data.data;
+          this.$refs.md.$img2Url(pos, url);
+        });
+      } else {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        const image = new Image();
+        console.log("imgfile", imgfile);
+        image.onload = () => {
+          canvas.width = image.width;
+          canvas.height = image.height;
+          ctx.drawImage(image, 0, 0);
+          canvas.toBlob(
+            blob => {
+              defaultImagesUploader(blob).then(({ data }) => {
+                const { url } = data.data;
+                this.$refs.md.$img2Url(pos, url);
+              });
+            },
+            imgfile.type,
+            0.3
+          );
+        };
+        image.src = imgfile.miniurl;
+      }
     },
     setToolBar(val) {
       if (val > 750) this.toolbars = Object.assign(toolbars.pc, toolbars.public);
