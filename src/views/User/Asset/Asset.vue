@@ -23,7 +23,7 @@
           </p>
         </div>
         <div class="topcard-list-line">
-          <p class="topcard-list-title">赞赏历史收益</p>
+          <p class="topcard-list-title">投资历史收益</p>
           <p class="topcard-list-pricing"
              :style='assetsRewards.totalShareIncome > 0 ? { color: "#D95E5E" }
                      : (assetsRewards.totalShareIncome < 0 ? { color: "#519552" } : {color: "#a7aab7"})'>
@@ -31,7 +31,7 @@
           </p>
         </div>
         <div class="topcard-list-line">
-          <p class="topcard-list-title">赞赏历史支出</p>
+          <p class="topcard-list-title">投资历史支出</p>
           <p class="topcard-list-pricing"
             :style='assetsRewards.totalShareExpenses > 0 ? { color: "#D95E5E" }
                     : (assetsRewards.totalShareExpenses < 0 ? { color: "#519552" } : {color: "#a7aab7"})'>

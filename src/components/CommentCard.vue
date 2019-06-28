@@ -44,7 +44,7 @@ export default {
           return '购买了'
         }
       } else {
-        return '赞赏了'
+        return '投资了'
       }
     },
     amount() {

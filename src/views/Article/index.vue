@@ -119,11 +119,11 @@
 
     <div class="comments-list">
       <h1 class="comment-title">
-        {{ article.channel_id === 2 ? "支持队列" : "赞赏队列" }}
+        {{ article.channel_id === 2 ? "支持队列" : "投资队列" }}
         {{ article.ups + article.sale || 0 }}
       </h1>
       <!--<div class="commentslist-title">
-        <span>赞赏队列 {{article.ups || 0}}</span>
+        <span>投资队列 {{article.ups || 0}}</span>
       </div>-->
       <!--<div class="product" v-if="article.product">
         <div class="product-list" v-for="(item, index) in article.product" :key="index">
@@ -171,7 +171,7 @@
             </DropdownMenu>
           </Dropdown>
           <div class="amount-text">
-            {{ article.channel_id === 2 ? "总收益" : "赞赏总额" }}
+            {{ article.channel_id === 2 ? "总收益" : "投资总额" }}
           </div>
         </div>
         <div v-if="article.channel_id !== 2" class="fission">
@@ -236,16 +236,16 @@
       </div>
       <div v-else class="footer-block footer-btn">
         <button v-if="isSupported === -1" class="button-support" @click="b4support">
-          赞赏<img src="@/assets/newimg/zanshang4.svg" />
+          投资<img src="@/assets/newimg/zanshang4.svg" />
         </button>
         <button v-if="isSupported === 0" class="button-support" disabled>
-          赞赏中
+          投资中
         </button>
         <button v-else-if="isSupported === 1" class="button-support" @click="supportButton">
-          赞赏<img src="@/assets/newimg/zanshang4.svg" />
+          投资<img src="@/assets/newimg/zanshang4.svg" />
         </button>
         <button v-else-if="isSupported === 2" class="button-support" disabled>
-          已赞赏
+          已投资
         </button>
         <button class="button-share" @click="widgetModal = true">
           分享<img src="@/assets/newimg/share.svg" />
@@ -255,7 +255,7 @@
 
     <van-dialog
       v-model="supportModal"
-      title="赞赏"
+      title="投资"
       show-cancel-button
       class="ffff"
       :before-close="support"
@@ -463,7 +463,7 @@ export default {
       return null;
     },
     displayPlaceholder() {
-      return `请输入 ${this.currentUserInfo.idProvider} 赞赏金额`;
+      return `请输入 ${this.currentUserInfo.idProvider} 投资金额`;
     },
     compiledMarkdown() {
       return markdownIt.render(xssFilter(this.post.content));
@@ -474,7 +474,7 @@ export default {
       // console.debug(this.article);
       const articleUrl = `${protocol}//${host}/article/${article.id}`;
       const shareLink = this.isLogined ? `${articleUrl}?invite=${currentUserInfo.id}` : articleUrl;
-      return `《${article.title}》by ${article.username} \n${shareLink}\n赞赏好文，分享有收益 ！`;
+      return `《${article.title}》by ${article.username} \n${shareLink}\n投资好文，分享有收益 ！`;
     },
     getCopyIpfsHash() {
       return `${this.article.hash}`;
@@ -646,7 +646,7 @@ export default {
 
       this.articleLoading = false; // 文章加载状态隐藏
       this.isOriginal = Boolean(article.is_original);
-      // 未登录下点击赞赏会自动登陆并且重新获取文章信息 如果没有打赏并且是点击赞赏 则显示赞赏框
+      // 未登录下点击投资会自动登陆并且重新获取文章信息 如果没有打赏并且是点击投资 则显示投资框
       if (!article.is_support && supportDialog) {
         this.supportModal = true;
       }
@@ -677,10 +677,10 @@ export default {
       const findBlockchain = (arr, symbol) => arr.filter(i => i.symbol === symbol);
       return findBlockchain(articlePrices, idProvider);
     },
-    // 赞赏按钮
+    // 投资按钮
     supportButton() {
       if (this.currentUserInfo.idProvider === "GitHub")
-        return this.$toast({ duration: 1000, message: "Github账号暂不支持赞赏功能" });
+        return this.$toast({ duration: 1000, message: "Github账号暂不支持投资功能" });
       // 如果是商品 判断库存是否充足
       if (this.article.channel_id === 2) {
         const { currentUserInfo, findBlockchain, article } = this;
@@ -754,7 +754,7 @@ export default {
     },
     async support(action, done) {
       if (action !== "confirm") return done();
-      let action_text = this.article.channel_id === 2 ? "投资" : "赞赏";
+      let action_text = this.article.channel_id === 2 ? "投资" : "投资";
       const loading = this.$toast.loading({
         mask: true,
         duration: 0,
@@ -776,7 +776,7 @@ export default {
         }
         return true;
       };
-      // 文章赞赏金额
+      // 文章投资金额
       const minimumAmount = idProvider => {
         if (idProvider === "EOS") return 0.01;
         if (idProvider === "ONT") return 1;
@@ -833,9 +833,9 @@ export default {
 
         // 如果是ONT true 如果是 EOS或者其他 false
         const isOntAddressVerify = ontAddressVerify(sponsor.username);
-        // 如果是EOS账户赞赏 但是邀请人是ONT用户 则认为没有邀请
+        // 如果是EOS账户投资 但是邀请人是ONT用户 则认为没有邀请
         if (idProvider === "EOS" && isOntAddressVerify) sponsor = { id: null, username: null };
-        // 如果是ONT账户赞赏 但是邀请人EOS账户 则认为没有邀请
+        // 如果是ONT账户投资 但是邀请人EOS账户 则认为没有邀请
         else if (idProvider === "ONT" && !isOntAddressVerify)
           sponsor = { id: null, username: null };
 
@@ -918,7 +918,7 @@ export default {
         console.log(`获取用户信息错误${error}`);
       }
     },
-    // 切换赞赏总额显示
+    // 切换投资总额显示
     toggleAmount(name) {
       if (name === "eos") {
         this.totalSupportedAmount.show = this.totalSupportedAmount.eos;
@@ -949,7 +949,7 @@ export default {
 
 <style src="./index.less" scoped lang="less"></style>
 <style>
-/* 覆盖赞赏框宽度 */
+/* 覆盖投资框宽度 */
 .article .van-dialog {
   max-width: 350px;
 }

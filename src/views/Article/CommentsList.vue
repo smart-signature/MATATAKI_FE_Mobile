@@ -2,7 +2,7 @@
   <BasePull
     :loadingText="{
       nomore: '',
-      noresults: '暂无赞赏评论',
+      noresults: '暂无评论',
     }"
     :params="params"
     :apiUrl="apiUrl"

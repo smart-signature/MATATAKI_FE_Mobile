@@ -48,7 +48,7 @@
           </span>
         </div>
         <div class="user-block-list" @click="jumpTo({ name: 'Reward', params: { id } })">
-          <span class="user-block-list-title">赞赏文章</span>
+          <span class="user-block-list-title">投资文章</span>
           <span class="user-block-list-des">
             {{ stats.supports }}篇
             <img class="arrow" src="@/assets/img/icon_arrow.svg" alt="查看" />

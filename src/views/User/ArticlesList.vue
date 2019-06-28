@@ -72,7 +72,7 @@ export default {
           articles: []
         },
         {
-          label: "他赞赏的",
+          label: "他投资的",
           params: { user: id },
           apiUrl: "userArticlesSupportedList",
           articles: []

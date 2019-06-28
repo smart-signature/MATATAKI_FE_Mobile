@@ -23,7 +23,7 @@
       </div>
       <div class="titles">
         <h1 class="title">-SmartSignature-</h1>
-        <h2 class="subtitle">赞赏好文，分享有收益！</h2>
+        <h2 class="subtitle">投资好文，分享有收益！</h2>
         <Button class="title-button" @click="$router.push({ name: 'About' })">规则介绍</Button>
         <a href="https://t.me/smartsignature_io" target="_blank">
           <Button class="title-button">加入电报</Button>

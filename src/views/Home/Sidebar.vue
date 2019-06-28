@@ -59,7 +59,7 @@
             <div class="cell">
               <div class="cell-left">
                 <img src="@/assets/newimg/zanshang.svg" alt="article" class="left-img" />
-                <span class="left-text">赞赏文章</span>
+                <span class="left-text">投资文章</span>
               </div>
               <div class="cell-right">
                 <span>{{ stats.supports }}篇</span>

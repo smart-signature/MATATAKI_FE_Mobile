@@ -27,7 +27,7 @@ export default {
   created() {
     const { isMe, id } = this;
     this.user = isMe(id) ? '我的用户页' : `${id} 的用户页`;
-    this.pageTitle = isMe(id) ? '我赞赏的文章' : `${id} 赞赏的文章`;
+    this.pageTitle = isMe(id) ? '我投资的文章' : `${id} 投资的文章`;
     document.title = `${this.user} - SmartSignature`;
   },
   methods: {

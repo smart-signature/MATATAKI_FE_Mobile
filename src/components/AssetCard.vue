@@ -70,9 +70,9 @@ export default {
       };
       const switchType = {
         withdraw: switchStatus[status],
-        'share income': '赞赏收入',
+        'share income': '投资收入',
         'sign income': '写作收入',
-        'support expenses': '赞赏支出',
+        'support expenses': '投资支出',
       };
       return switchType[type];
     },
