@@ -771,6 +771,7 @@ export default {
       // 检查价格
       const checkPrices = (prices, range, message) => {
         if (prices < range) {
+          loading.clear();
           this.$toast({ duration: 1000, message });
           return false;
         }
@@ -810,7 +811,7 @@ export default {
       };
 
       // 文章是商品判断价格
-      if (article.channel_id === 2) checkCommodityPrices();
+      // if (article.channel_id === 2) checkCommodityPrices();
       if (!checkPricesMatch) return done(false);
 
       const toSponsor = async idOrName => {
