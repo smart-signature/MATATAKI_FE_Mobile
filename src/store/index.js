@@ -111,11 +111,16 @@ export default new Vuex.Store({
       
       // recover
       if (accessToken) {
+        console.log('signIn recover mode');
         commit('setAccessToken', accessToken);
         if (idProvider === 'GitHub') return true;
       }
 
-      const errorFailed = new Error(`Unable to get ${idProvider}'s id`);
+      const failed = () => {
+        commit('setAccessToken');
+        localStorage.clear();
+        throw new Error(`Unable to get ${idProvider}'s id`);
+      }
       const { prefixOfType } = getters;
       // Scatter
       if (idProvider === 'EOS') {
@@ -131,7 +136,7 @@ export default new Vuex.Store({
           accessToken = await dispatch('getAuth', getters[`${prefixOfType}/currentUsername`]);
         } catch (error) {
           console.error(error);
-          throw errorFailed;
+          failed();
         }
       }
       // Ontology
@@ -146,7 +151,7 @@ export default new Vuex.Store({
           accessToken = await dispatch('getAuth', state.ontology.account);
         } catch (error) {
           console.error(error);
-          throw errorFailed;
+          failed();
         }
       }
       // GitHub
@@ -155,9 +160,11 @@ export default new Vuex.Store({
           accessToken = await dispatch(`${prefixOfType}/signIn`, { code });
         } catch (error) {
           console.error('GitHub: signIn Failed.', error);
-          throw errorFailed;
+          failed();
         }
       }
+      
+      // 成功後的處理
       commit('setAccessToken', accessToken);
       localStorage.setItem('idProvider', state.userConfig.idProvider);
     },
