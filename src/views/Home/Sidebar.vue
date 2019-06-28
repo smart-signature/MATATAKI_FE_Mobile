@@ -111,6 +111,17 @@
           </div>
         </a>
       </div>
+      <div class="cell-container">
+        <a href="https://smartsignature.io/article/616">
+          <div class="cell">
+            <div class="cell-left">
+              <img src="@/assets/img/icon_sidebar_sb.svg" alt="article" class="left-img" />
+              <span class="left-text">智能公告牌</span>
+            </div>
+            <div class="cell-right"><span></span></div>
+          </div>
+        </a>
+      </div>
     </div>
     <BaseModalForSignIn :show-modal="showModal" @changeInfo="changeInfo" />
   </van-popup>
