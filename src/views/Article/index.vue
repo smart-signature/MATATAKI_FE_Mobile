@@ -64,10 +64,14 @@
           </div>
           <template v-if="!isMe(article.uid)">
             <template v-if="!followed">
-              <div class="follow-btn" @click="followOrUnfollowUser({ id: article.uid, type: 1 })"><van-icon name="plus" /> 关注</div>
+              <div class="follow-btn" @click="followOrUnfollowUser({ id: article.uid, type: 1 })">
+                <van-icon name="plus" /> 关注
+              </div>
             </template>
             <template v-else>
-              <span class="follow-btn" @click="followOrUnfollowUser({ id: article.uid, type: 0 })">取消关注</span>
+              <span class="follow-btn" @click="followOrUnfollowUser({ id: article.uid, type: 0 })"
+                >取消关注</span
+              >
             </template>
           </template>
         </div>
@@ -115,7 +119,8 @@
 
     <div class="comments-list">
       <h1 class="comment-title">
-        {{ article.channel_id === 2 ? "支持队列" : "赞赏队列" }} {{ article.ups + article.sale }}
+        {{ article.channel_id === 2 ? "支持队列" : "赞赏队列" }}
+        {{ article.ups + article.sale || 0 }}
       </h1>
       <!--<div class="commentslist-title">
         <span>赞赏队列 {{article.ups || 0}}</span>
@@ -210,7 +215,11 @@
         >
           购买<img src="@/assets/newimg/goumai.svg" />
         </button>
-        <button v-else-if="isSupported === 0" class="button-support bg-yellow border-yellow" disabled>
+        <button
+          v-else-if="isSupported === 0"
+          class="button-support bg-yellow border-yellow"
+          disabled
+        >
           购买中<img src="@/assets/newimg/goumai.svg" />
         </button>
         <button
@@ -219,7 +228,7 @@
           :disabled="product.stock === 0"
           @click="supportButton"
         >
-          {{ product.stock === 0 ? '售罄' : '购买' }}<img src="@/assets/newimg/goumai.svg" />
+          {{ product.stock === 0 ? "售罄" : "购买" }}<img src="@/assets/newimg/goumai.svg" />
         </button>
         <button class="button-share border-yellow text-yellow" @click="widgetModal = true">
           分享<img src="@/assets/newimg/share2.svg" />
@@ -579,7 +588,8 @@ export default {
     },
     // 得到文章信息 hash id, supportDialog 为 true 则只更新文章信息
     async getArticleInfo(hash, supportDialog = false) {
-      await this.$backendAPI.getArticleInfo(hash)
+      await this.$backendAPI
+        .getArticleInfo(hash)
         .then(res => {
           if (res.status === 200 && res.data.code === 0) {
             this.setArticle(res.data.data, supportDialog);
@@ -599,7 +609,8 @@ export default {
     },
     // 获取文章内容 from ipfs
     async getArticleDatafromIPFS(hash) {
-      await this.$backendAPI.getArticleDatafromIPFS(hash)
+      await this.$backendAPI
+        .getArticleDatafromIPFS(hash)
         .then(({ data }) => {
           // console.log(data);
           this.setPost(data.data);
@@ -685,7 +696,7 @@ export default {
       const loading = this.$toast.loading({
         mask: true,
         duration: 0,
-        message: '购买中...'
+        message: "购买中..."
       });
       const { comment, signId, product } = this;
       const { idProvider } = this.currentUserInfo;
@@ -917,9 +928,9 @@ export default {
         this.showSignInModal = true;
         return;
       }
-      const message = type === 1 ? '关注' : '取消关注' ;
+      const message = type === 1 ? "关注" : "取消关注";
       try {
-        if ( type === 1 ) await this.$backendAPI.follow({ id });
+        if (type === 1) await this.$backendAPI.follow({ id });
         else await this.$backendAPI.unfollow({ id });
         this.$toast.success({ duration: 1000, message: `${message}成功` });
         this.followed = type === 1;
@@ -927,7 +938,7 @@ export default {
         this.$toast.fail({ duration: 1000, message: `${message}失败` });
         this.showSignInModal = this.$errorHandling.isNoToken(error);
       }
-    },
+    }
   }
 };
 </script>

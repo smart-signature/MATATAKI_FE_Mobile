@@ -175,10 +175,13 @@ export default {
       // 获取数据失败执行
       const getDataFail = () => $state.error();
 
+      // if (res.status === 200 && res.data.code === 0) getDataSuccess(res.data);
+
       // 获取数据
-      await this.$backendAPI.getBackendData({ url, params }, this.needAccessToken)
+      await this.$backendAPI
+        .getBackendData({ url, params }, this.needAccessToken)
         .then(res => {
-          if (res.status === 200 && res.data.code === 0) getDataSuccess(res.data);
+          if (res.status === 200) getDataSuccess(res.data);
           else getDataFail();
         })
         .catch(err => {
