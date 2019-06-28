@@ -71,7 +71,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #dbdbdb;
+  border-bottom: 1px solid #f1f1f1;
   padding: 10px 20px;
   background-color: #fff;
   box-sizing: border-box;
