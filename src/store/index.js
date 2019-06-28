@@ -96,6 +96,11 @@ export default new Vuex.Store({
     async getSignatureOfAuth({ dispatch }, { name = null }) {
       return dispatch('getSignature', { mode: 'Auth', rawSignData: [name] });
     },
+    /*
+     * 只有刷新時才會從本地存储抓取 accessToken ，並立即 signIn ，
+     * signIn 時針對該 accessToken 驗證，不合規跟後端重要一份，並寫入store和本地存储，
+     * 並且之後送到後端的都是 store 那份，更改本地存储不影響送到後端的 accessToken
+    */
     async signIn({
       commit, dispatch, state, getters,
     }, { code = null, idProvider = null, accessToken = null }) {
