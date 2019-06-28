@@ -281,7 +281,6 @@ export default {
       }
     }
     .modal-wallet {
-      background: rgba(237, 237, 237, 0.75);
       border-radius: 16px;
       padding: 0;
       margin: 0;
