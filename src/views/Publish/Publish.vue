@@ -369,11 +369,16 @@ export default {
         if (this.currentUserInfo.idProvider !== "GitHub") {
           signature = await this.getSignatureOfArticle({ author, hash });
         }
-        const response = await this.$backendAPI.publishArticle({ article, signature });
-        if (response.data.code !== 0) throw new Error(response.data.message);
-        success(response.data.data);
-        console.log(response);
-        return "success";
+        try {
+          const response = await this.$backendAPI.publishArticle({ article, signature });
+          if (response.data.code !== 0) throw new Error(response.data.message);
+          success(response.data.data);
+          console.log(response);
+          return "success";
+        } catch (error) {
+          this.showSignInModal = this.$errorHandling.isNoToken(error);
+          throw error;
+        }
       } catch (error) {
         console.error(error);
         failed(error);

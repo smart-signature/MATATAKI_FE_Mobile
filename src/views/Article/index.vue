@@ -64,10 +64,10 @@
           </div>
           <template v-if="!isMe(article.uid)">
             <template v-if="!followed">
-              <div class="follow-btn" @click="followUser"><van-icon name="plus" /> 关注</div>
+              <div class="follow-btn" @click="followOrUnfollowUser({ id: article.uid, type: 1 })"><van-icon name="plus" /> 关注</div>
             </template>
             <template v-else>
-              <span class="follow-btn" @click="unfollowUser">取消关注</span>
+              <span class="follow-btn" @click="followOrUnfollowUser({ id: article.uid, type: 0 })">取消关注</span>
             </template>
           </template>
         </div>
@@ -912,33 +912,22 @@ export default {
       }
       this.totalSupportedAmount.showName = name;
     },
-    checkb4FoUnfo(message) {
+    async followOrUnfollowUser({ id, type }) {
       if (!this.isLogined) {
-        this.$toast.fail({ duration: 1000, message });
-        return false;
+        this.showSignInModal = true;
+        return;
       }
-      return true;
-    },
-    async followUser() {
-      if (!this.checkb4FoUnfo("关注失败")) return;
+      const message = type === 1 ? '关注' : '取消关注' ;
       try {
-        await this.$backendAPI.follow({ id: this.article.uid });
-        this.$toast.success({ duration: 1000, message: "关注成功" });
-        this.followed = true;
+        if ( type === 1 ) await this.$backendAPI.follow({ id });
+        else await this.$backendAPI.unfollow({ id });
+        this.$toast.success({ duration: 1000, message: `${message}成功` });
+        this.followed = type === 1;
       } catch (error) {
-        this.$toast.fail({ duration: 1000, message: "关注失败" });
+        this.$toast.fail({ duration: 1000, message: `${message}失败` });
+        this.showSignInModal = this.$errorHandling.isNoToken(error);
       }
     },
-    async unfollowUser() {
-      if (!this.checkb4FoUnfo("取消关注失败")) return;
-      try {
-        await this.$backendAPI.unfollow({ id: this.article.uid });
-        this.$toast.success({ duration: 1000, message: "取消关注" });
-        this.followed = false;
-      } catch (error) {
-        this.$toast.fail({ duration: 1000, message: "取消关注失败" });
-      }
-    }
   }
 };
 </script>

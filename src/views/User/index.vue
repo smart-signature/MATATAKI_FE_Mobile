@@ -76,10 +76,10 @@
       <BaseHeader :pageinfo="{ title: '' }" style="background-color: #478970" :white="true">
         <div v-if="!isMe(id)" slot="right">
           <template v-if="!followed">
-            <span class="darkBtn" @click="followUser">关注</span>
+            <span class="darkBtn" @click="followOrUnfollowUser({ id, type: 1 })">关注</span>
           </template>
           <template v-else>
-            <span class="darkBtn" @click="unfollowUser">取消关注</span>
+            <span class="darkBtn" @click="followOrUnfollowUser({ id, type: 0 })">取消关注</span>
           </template>
         </div>
       </BaseHeader>
@@ -191,33 +191,19 @@ export default {
       // console.debug(data);
       setUser(data);
     },
-    checkb4FoUnfo() {
+    async followOrUnfollowUser({ id, type }) {
       if (!this.isLogined) {
         this.showSignInModal = true;
-        return false;
+        return;
       }
-      return true;
-    },
-    async followUser() {
-      if (!this.checkb4FoUnfo()) return;
+      const message = type === 1 ? '关注' : '取消关注' ;
       try {
-        await this.$backendAPI.follow({ id: this.id });
-        this.$toast.success({ duration: 1000, message: "关注成功" });
-        this.followed = true;
+        if ( type === 1 ) await this.$backendAPI.follow({ id });
+        else await this.$backendAPI.unfollow({ id });
+        this.$toast.success({ duration: 1000, message: `${message}成功` });
+        this.followed = type === 1;
       } catch (error) {
-        this.$toast.fail({ duration: 1000, message: "关注失败" });
-        this.showSignInModal = this.$errorHandling.isNoToken(error);
-      }
-      this.refreshUser();
-    },
-    async unfollowUser() {
-      if (!this.checkb4FoUnfo()) return;
-      try {
-        await this.$backendAPI.unfollow({ id: this.id });
-        this.$toast.success({ duration: 1000, message: "取消关注" });
-        this.followed = false;
-      } catch (error) {
-        this.$toast.fail({ duration: 1000, message: "取消关注失败" });
+        this.$toast.fail({ duration: 1000, message: `${message}失败` });
         this.showSignInModal = this.$errorHandling.isNoToken(error);
       }
       this.refreshUser();
