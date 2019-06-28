@@ -351,7 +351,11 @@
     </van-popup>
 
     <!-- 文章 Info -->
-    <ArticleInfo :info-moda="infoModa" @changeInfo="status => (infoModa = status)" />
+    <ArticleInfo
+      :info-moda="infoModa"
+      :channel="article.channel_id"
+      @changeInfo="status => (infoModa = status)"
+    />
     <BaseModalForSignIn :show-modal="showModal" @changeInfo="changeInfo" />
     <Widget
       :id="article.id"
