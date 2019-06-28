@@ -39,7 +39,7 @@
       <img v-if="cover" v-lazy="cover" :src="cover" alt="" class="top-image" />
       <header class="ta_header">
         <h1>{{ article.title }}</h1>
-        <div v-if="article.channel_id !== 2" class="userinfo-container">
+        <div class="userinfo-container">
           <div class="avatar-info">
             <div
               class="avatar"
