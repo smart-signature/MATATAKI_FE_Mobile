@@ -23,7 +23,9 @@ export default {
       // 跳轉
       window.location = `https://github.com/login/oauth/authorize?client_id=${clientID}&redirect_uri=${redirectUri}&scope=${scope}`;
     } else {
-      this.signIn({ code, idProvider: 'GitHub' }).catch(() => {})
+      this.signIn({ code, idProvider: 'GitHub' })
+        .then(() => { this.$backendAPI.accessToken = this.currentUserInfo.accessToken; })
+        .catch(() => {})
         .then(() => { this.$router.push(from); });
     }
   },

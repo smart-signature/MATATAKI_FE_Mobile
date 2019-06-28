@@ -11,7 +11,7 @@
 
 <script>
 import Konami from "konami";
-import { mapActions, mapMutations } from "vuex";
+import { mapActions, mapGetters, mapMutations } from "vuex";
 import { version } from "../package.json";
 import { accessTokenAPI } from "@/api";
 import { sleep } from "@/common/methods";
@@ -26,6 +26,9 @@ export default {
     return {
       reload: this.reload
     };
+  },
+  computed: {
+    ...mapGetters(['currentUserInfo']),
   },
   methods: {
     ...mapActions(["signIn"]),
@@ -78,8 +81,12 @@ export default {
       accessToken: accessTokenAPI.get(),
       idProvider: localStorage.getItem("idProvider")
     };
-    if (data.idProvider && data.accessToken) signIn(data).catch(() => signIn(data));
-
+    if (data.idProvider && data.accessToken) {
+      signIn(data)
+      .then(() => { this.$backendAPI.accessToken = this.currentUserInfo.accessToken; })
+      .catch(() => signIn(data).then(() => { this.$backendAPI.accessToken = this.currentUserInfo.accessToken; }));
+    }
+    
     window.updateNotify = updateNotify;
   },
   mounted() {

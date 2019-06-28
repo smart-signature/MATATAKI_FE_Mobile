@@ -40,24 +40,24 @@ export const accessTokenAPI = {
   }
 };
 
-/* eslint no-param-reassign: ["error", { "props": false }] */
-const accessBackend = async config => {
-  const token = accessTokenAPI.get();
-  // https://blog.fundebug.com/2018/07/25/es6-const/
-  config.headers = { "x-access-token": token };
-  if (config.data && config.data.platform && config.data.platform === "need") {
-    config.data.platform = accessTokenAPI.disassemble(token).platform;
-  }
-  return axiosforApiServer(config);
-};
-
 const API = {
+  accessToken: null,
+  /* eslint no-param-reassign: ["error", { "props": false }] */
+  async accessBackend(config) {
+    const token = this.accessToken;
+    // https://blog.fundebug.com/2018/07/25/es6-const/
+    config.headers = { "x-access-token": token };
+    if (config.data && config.data.platform && config.data.platform === "need") {
+      config.data.platform = accessTokenAPI.disassemble(token).platform;
+    }
+    return axiosforApiServer(config);
+  },
   async sendArticle(
     url,
     { signId = null, author, hash, title, fissionFactor, cover, isOriginal, tags },
     signature = null
   ) {
-    return accessBackend({
+    return this.accessBackend({
       method: "POST",
       url,
       data: {
@@ -93,7 +93,7 @@ const API = {
     data.amount = toPrecision(data.amount, idProvider);
     delete data.idProvider;
     delete data.sponsor;
-    return accessBackend({ method: "POST", url: "/order", data });
+    return this.accessBackend({ method: "POST", url: "/order", data });
   },
   async reportShare(share) {
     const data = {
@@ -105,7 +105,7 @@ const API = {
     data.amount = toPrecision(data.amount, idProvider);
     delete data.idProvider;
     delete data.sponsor;
-    return accessBackend({ method: "POST", url: "/support", data });
+    return this.accessBackend({ method: "POST", url: "/support", data });
   },
 
   /*
@@ -133,32 +133,30 @@ const API = {
     const reg = /^[0-9]*$/;
     // post hash获取  ， p id 短链接
     const url = reg.test(hashOrId) ? "p" : "post";
-    return accessBackend({ url: `/${url}/${hashOrId}` });
+    return this.accessBackend({ url: `/${url}/${hashOrId}` });
   },
   async follow({ id }) {
-    return accessBackend({
+    return this.accessBackend({
       method: "POST",
       url: "/follow",
       data: { uid: id }
     });
   },
   async unfollow({ id }) {
-    return accessBackend({
+    return this.accessBackend({
       method: "POST",
       url: "/unfollow",
       data: { uid: id }
     });
   },
-  // async getFansList({ uid }) { return accessBackend({ url: '/fans', params: { uid } }); },
-  // async getFollowList({ uid }) { return accessBackend({ url: '/follows', params: { uid } }); },
   async getMyUserData() {
-    return accessBackend({ url: "/user/stats" });
+    return this.accessBackend({ url: "/user/stats" });
   },
   async getUser({ id }) {
-    return accessBackend({ url: `/user/${id}` });
+    return this.accessBackend({ url: `/user/${id}` });
   },
   async sendComment({ comment, signId }) {
-    return accessBackend({
+    return this.accessBackend({
       method: "POST",
       url: "/post/comment",
       // eslint-disable-next-line camelcase
@@ -167,21 +165,21 @@ const API = {
   },
   // be Used in Article Page
   async addReadAmount({ articlehash }) {
-    return accessBackend({
+    return this.accessBackend({
       method: "POST",
       url: `/post/show/${articlehash}`
     });
   },
   // 删除文章
   async delArticle({ id }) {
-    return accessBackend({
+    return this.accessBackend({
       method: "DELETE",
       url: `/post/${id}`
     });
   },
   // 设置头像
   async uploadAvatar(data = { avatar: null }) {
-    return accessBackend({
+    return this.accessBackend({
       method: "POST",
       url: "/user/setAvatar",
       data
@@ -220,10 +218,10 @@ const API = {
 
     return !needAccessToken
       ? axiosforApiServer.get(pullApiUrl[url], { params })
-      : accessBackend({ url: `/${pullApiUrl[url]}`, params });
+      : this.accessBackend({ url: `/${pullApiUrl[url]}`, params });
   },
   async createDraft({ title, content, cover, fissionFactor, isOriginal, tags }) {
-    return accessBackend({
+    return this.accessBackend({
       method: "POST",
       url: "/draft/save",
       data: {
@@ -237,7 +235,7 @@ const API = {
     });
   },
   async updateDraft({ id, title, content, cover, fissionFactor, isOriginal, tags }) {
-    return accessBackend({
+    return this.accessBackend({
       method: "POST",
       url: "/draft/save",
       data: {
@@ -252,13 +250,13 @@ const API = {
     });
   },
   async delDraft({ id }) {
-    return accessBackend({ method: "DELETE", url: `/draft/${id}` });
+    return this.accessBackend({ method: "DELETE", url: `/draft/${id}` });
   },
   async getDraft({ id }) {
-    return accessBackend({ url: `/draft/${id}` });
+    return this.accessBackend({ url: `/draft/${id}` });
   },
   async setProfile({ nickname, introduction, email, accept }) {
-    return accessBackend({
+    return this.accessBackend({
       method: "POST",
       url: "/user/setProfile",
       data: {
@@ -270,11 +268,11 @@ const API = {
     });
   },
   async getMyPost(id) {
-    return accessBackend({ url: `/mypost/${id}` });
+    return this.accessBackend({ url: `/mypost/${id}` });
   },
   // 获取账户资产列表 暂时没有EOS数据
   async getBalance() {
-    return accessBackend({ url: "/balance" });
+    return this.accessBackend({ url: "/balance" });
   },
   async withdraw(rawData) {
     const data = { ...rawData, platform: rawData.tokenName.toLowerCase() };
@@ -285,7 +283,7 @@ const API = {
     delete data.idProvider;
     delete data.tokenName;
     delete data.signature;
-    return accessBackend({ method: "POST", url: "/user/withdraw", data });
+    return this.accessBackend({ method: "POST", url: "/user/withdraw", data });
   },
   async loginGitHub(code) {
     return axiosforApiServer.post("/login/github", { code });
@@ -298,13 +296,13 @@ const API = {
   async transferOwner(from, articleId, uid) {
     console.log(from, articleId, uid);
     if (from === "article")
-      return accessBackend({
+      return this.accessBackend({
         method: "POST",
         url: "/post/transferOwner",
         data: { signid: articleId, uid }
       });
     if (from === "draft")
-      return accessBackend({
+      return this.accessBackend({
         method: "POST",
         url: "/draft/transferOwner",
         data: { draftid: articleId, uid }

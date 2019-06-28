@@ -171,15 +171,17 @@ export default new Vuex.Store({
       ex:
       makeOrder({ num, amount: num * 20000, signId: 100455, sponsor: { id: null, username: null } });
     */
-    async makeOrder({ dispatch, getters, state: { userConfig: { idProvider } } }, order) {
+    async makeOrder({ dispatch, getters, state: { userConfig: { idProvider, accessToken } } }, order) {
       const order2 = { ...order, idProvider, ...getters.asset };
-      const { data: { data: { orderId } } } = await backendAPI.reportOrder(order2);
+      const api = backendAPI;
+      api.accessToken = accessToken;
+      const { data: { data: { orderId } } } = await api.reportOrder(order2);
       // console.debug(oid);
       return dispatch(`${getters.prefixOfType}/recordOrder`, {
         ...order2, oId: orderId, sponsor: order2.sponsor.username
       });
     },
-    async makeShare({ dispatch, getters, state: { userConfig: { idProvider } } }, share) {
+    async makeShare({ dispatch, getters, state: { userConfig: { idProvider, accessToken } } }, share) {
       share.idProvider = idProvider;
       if (idProvider === 'EOS') {
         share.contract = 'eosio.token';
@@ -191,10 +193,14 @@ export default new Vuex.Store({
       await dispatch(`${getters.prefixOfType}/recordShare`, {
         ...share, sponsor: share.sponsor.username
       });
-      return backendAPI.reportShare(share);
+      const api = backendAPI;
+      api.accessToken = accessToken;
+      return api.reportShare(share);
     },
     async getCurrentUser({ commit, getters: { currentUserInfo } }) {
-      const { data: { data } } = await backendAPI.getUser({ id: currentUserInfo.id });
+      const api = backendAPI;
+      api.accessToken = currentUserInfo.accessToken;
+      const { data: { data } } = await api.getUser({ id: currentUserInfo.id });
       console.info(data);
       commit('setNickname', data.nickname);
       return data;
@@ -234,8 +240,9 @@ export default new Vuex.Store({
           },
         );
       }
-
-      return backendAPI.withdraw(data);
+      const api = backendAPI;
+      api.accessToken = getters.currentUserInfo.accessToken;
+      return api.withdraw(data);
     },
   },
   mutations: {

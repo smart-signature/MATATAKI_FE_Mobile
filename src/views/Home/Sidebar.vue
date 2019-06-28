@@ -207,11 +207,8 @@ export default {
         };
       };
 
-      const { getMyUserData } = this.$backendAPI;
       if (isMe(id)) {
-        const {
-          data: { data }
-        } = await getMyUserData();
+        const { data: { data } } = await this.$backendAPI.getMyUserData();
         setUser(data);
       }
     },

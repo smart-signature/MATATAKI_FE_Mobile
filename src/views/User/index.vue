@@ -185,10 +185,9 @@ export default {
         this.stats = { accounts, articles, supports, drafts };
       };
 
-      const { getMyUserData, getUser } = this.$backendAPI;
       const {
         data: { data }
-      } = await (isMe(id) ? getMyUserData() : getUser({ id }));
+      } = await (isMe(id) ? this.$backendAPI.getMyUserData() : this.$backendAPI.getUser({ id }));
       // console.debug(data);
       setUser(data);
     },
