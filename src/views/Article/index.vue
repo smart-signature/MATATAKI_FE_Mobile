@@ -120,7 +120,7 @@
     <div class="comments-list">
       <h1 class="comment-title">
         {{ article.channel_id === 2 ? "支持队列" : "投资队列" }}
-        {{ article.ups + article.sale || 0 }}
+        {{ article.ups || 0 }}
       </h1>
       <!--<div class="commentslist-title">
         <span>投资队列 {{article.ups || 0}}</span>
