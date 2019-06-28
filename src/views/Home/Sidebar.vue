@@ -92,15 +92,15 @@
         <div class="login-btn" href="javascript:;" @click="showModal = true">立即登录</div>
       </template>
       <div class="cell-container">
-        <router-link :to="{ name: 'About' }">
+        <a href="https://smartsignature.io/article/617">
           <div class="cell">
             <div class="cell-left">
               <img src="@/assets/newimg/gonglue.svg" alt="article" class="left-img" />
-              <span class="left-text">投资攻略</span>
+              <span class="left-text">规则介绍</span>
             </div>
             <div class="cell-right"><span></span></div>
           </div>
-        </router-link>
+        </a>
         <a href="https://t.me/smartsignature_io" target="_blank">
           <div class="cell">
             <div class="cell-left">
@@ -219,7 +219,9 @@ export default {
       };
 
       if (isMe(id)) {
-        const { data: { data } } = await this.$backendAPI.getMyUserData();
+        const {
+          data: { data }
+        } = await this.$backendAPI.getMyUserData();
         setUser(data);
       }
     },

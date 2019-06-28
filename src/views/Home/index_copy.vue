@@ -1,44 +1,48 @@
 <template>
-  <div class='home' @click='addShow=false'>
-    <div class='head'>
-      <link rel='icon' type='image/png' sizes='32x32' href='./img/Andoromeda logo@2x.png'>
-      <link rel='icon' type='image/png' sizes='16x16' href='./img/Andoromeda logo.png'>
-      <div class='add'>
-        <Button class='publish' @click.stop='addShow=!addShow'>
-          <Icon class='publish-icon' type="md-add" size='24'
+  <div class="home" @click="addShow = false">
+    <div class="head">
+      <link rel="icon" type="image/png" sizes="32x32" href="./img/Andoromeda logo@2x.png" />
+      <link rel="icon" type="image/png" sizes="16x16" href="./img/Andoromeda logo.png" />
+      <div class="add">
+        <Button class="publish" @click.stop="addShow = !addShow">
+          <Icon
+            class="publish-icon"
+            type="md-add"
+            size="24"
             style="margin-top: -8px;margin-left: -12px;;line-height: 16px;"
-           />
+          />
         </Button>
-        <div v-show='addShow' class='add-menu'>
-          <a href='javascript:void(0);'>搬运</a>
-          <a href='javascript:void(0);' @click="$router.push({name: 'Publish', params: {id: 'create'}})">创作</a>
+        <div v-show="addShow" class="add-menu">
+          <a href="javascript:void(0);">搬运</a>
+          <a
+            href="javascript:void(0);"
+            @click="$router.push({ name: 'Publish', params: { id: 'create' } })"
+            >创作</a
+          >
         </div>
       </div>
-      <div class='titles'>
-        <h1 class='title'>-SmartSignature-</h1>
-        <h2 class='subtitle'>赞赏好文，分享有收益！</h2>
-        <Button class="title-button" @click="$router.push({name: 'About'})">投资攻略</Button>
+      <div class="titles">
+        <h1 class="title">-SmartSignature-</h1>
+        <h2 class="subtitle">赞赏好文，分享有收益！</h2>
+        <Button class="title-button" @click="$router.push({ name: 'About' })">规则介绍</Button>
         <a href="https://t.me/smartsignature_io" target="_blank">
           <Button class="title-button">加入电报</Button>
         </a>
       </div>
-      <my-banner/>
+      <MyBanner />
       <div class="head-bc"></div>
     </div>
-    <ArticleRankings ref='ArticleRankings'/>
+    <ArticleRankings ref="ArticleRankings" />
   </div>
 </template>
 
 <script>
-import MyBanner from './MyBanner.vue';
-import ArticleRankings from './ArticlesRankings.vue';
+import MyBanner from "./MyBanner.vue";
+import ArticleRankings from "./ArticlesRankings.vue";
 
 export default {
-  name: 'Home',
+  name: "Home",
   components: { ArticleRankings, MyBanner },
-  created() {
-    document.title = '首页 - SmartSignature';
-  },
   data() {
     return {
       visible1: false,
@@ -64,11 +68,14 @@ export default {
       addShow: false, // 显示新增菜单
     };
   },
+  created() {
+    document.title = '首页 - SmartSignature';
+  },
   methods: {
     cancelCb(reason, event) {
       console.log(reason, event);
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -83,7 +90,7 @@ export default {
   align-items: center;
   vertical-align: middle;
   position: relative;
-  &-bc{
+  &-bc {
     position: absolute;
     top: 0;
     right: 0;
@@ -139,7 +146,7 @@ button.publish {
 }
 .add::after {
   display: block;
-  content: '';
+  content: "";
   width: 0;
   height: 0;
   clear: both;
@@ -153,7 +160,7 @@ button.publish {
 }
 .add .add-menu::after {
   display: block;
-  content: '';
+  content: "";
   width: 0;
   height: 0;
   position: absolute;
