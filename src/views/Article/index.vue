@@ -270,7 +270,7 @@
       <h1 class="title">购买商品</h1>
       <div class="info-container">
         <img
-          src="https://apitest.smartsignature.io/image/QmWDUvT3vBt5rqnfr4bU8TQnt1h2RNQJjqqc6nnCwwonNb"
+          :src="cover"
           alt="cover"
           class="cover"
         />
