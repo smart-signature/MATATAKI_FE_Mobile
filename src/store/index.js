@@ -96,6 +96,11 @@ export default new Vuex.Store({
     async getSignatureOfAuth({ dispatch }, { name = null }) {
       return dispatch('getSignature', { mode: 'Auth', rawSignData: [name] });
     },
+    /*
+     * 只有刷新時才會從本地存储抓取 accessToken ，並立即 signIn ，
+     * signIn 時針對該 accessToken 驗證，不合規跟後端重要一份，並寫入store和本地存储，
+     * 並且之後送到後端的都是 store 那份，更改本地存储不影響送到後端的 accessToken
+    */
     async signIn({
       commit, dispatch, state, getters,
     }, { code = null, idProvider = null, accessToken = null }) {
@@ -171,15 +176,17 @@ export default new Vuex.Store({
       ex:
       makeOrder({ num, amount: num * 20000, signId: 100455, sponsor: { id: null, username: null } });
     */
-    async makeOrder({ dispatch, getters, state: { userConfig: { idProvider } } }, order) {
+    async makeOrder({ dispatch, getters, state: { userConfig: { idProvider, accessToken } } }, order) {
       const order2 = { ...order, idProvider, ...getters.asset };
-      const { data: { data: { orderId } } } = await backendAPI.reportOrder(order2);
+      const api = backendAPI;
+      api.accessToken = accessToken;
+      const { data: { data: { orderId } } } = await api.reportOrder(order2);
       // console.debug(oid);
       return dispatch(`${getters.prefixOfType}/recordOrder`, {
         ...order2, oId: orderId, sponsor: order2.sponsor.username
       });
     },
-    async makeShare({ dispatch, getters, state: { userConfig: { idProvider } } }, share) {
+    async makeShare({ dispatch, getters, state: { userConfig: { idProvider, accessToken } } }, share) {
       share.idProvider = idProvider;
       if (idProvider === 'EOS') {
         share.contract = 'eosio.token';
@@ -191,10 +198,14 @@ export default new Vuex.Store({
       await dispatch(`${getters.prefixOfType}/recordShare`, {
         ...share, sponsor: share.sponsor.username
       });
-      return backendAPI.reportShare(share);
+      const api = backendAPI;
+      api.accessToken = accessToken;
+      return api.reportShare(share);
     },
     async getCurrentUser({ commit, getters: { currentUserInfo } }) {
-      const { data: { data } } = await backendAPI.getUser({ id: currentUserInfo.id });
+      const api = backendAPI;
+      api.accessToken = currentUserInfo.accessToken;
+      const { data: { data } } = await api.getUser({ id: currentUserInfo.id });
       console.info(data);
       commit('setNickname', data.nickname);
       return data;
@@ -234,8 +245,9 @@ export default new Vuex.Store({
           },
         );
       }
-
-      return backendAPI.withdraw(data);
+      const api = backendAPI;
+      api.accessToken = getters.currentUserInfo.accessToken;
+      return api.withdraw(data);
     },
   },
   mutations: {

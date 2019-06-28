@@ -14,7 +14,6 @@
 </template>
 
 <script>
-import { backendAPI } from "@/api";
 export default {
   props: ['list', 'ownerId'],
   computed: {
@@ -23,7 +22,7 @@ export default {
       return Number(list.uid) === Number(ownerId) ? list.fuid : list.uid
     },
     avatarList() {
-      return this.list.avatar ? backendAPI.getAvatarImage(this.list.avatar) : ''
+      return this.list.avatar ? this.$backendAPI.getAvatarImage(this.list.avatar) : '';
     }
   },
 };

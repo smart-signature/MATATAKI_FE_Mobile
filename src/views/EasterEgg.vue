@@ -4,7 +4,7 @@
         <p>当前模式：{{env}}</p>
         <p>版本号： {{ version }}</p>
         <p v-if="checkIsBuildOnCommit">基于 commit <a :href="commitUrl">{{ commitHash }} </a> 构建</p>
-        <Button @click="buySomething()">buySomething</Button>
+        <!-- <Button @click="buySomething()">buySomething</Button> -->
     </div>
 </template>
 
@@ -28,11 +28,12 @@ export default {
     },
   },
   methods: {
+    /*
     ...mapActions(["makeOrder"]),
     async buySomething() {
       const num = 10;
       await this.makeOrder({ num, amount: num * 20000, signId: 100455, sponsor: { id: null, username: null } });
-    },
+    }, */
   },
 };
 </script>

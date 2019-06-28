@@ -9,7 +9,6 @@
 </template>
 
 <script>
-import { backendAPI } from "@/api";
 
 export default {
   name: "HomeSlideItem",
@@ -25,7 +24,7 @@ export default {
   },
   computed: {
     cover() {
-      return this.slide.cover ? backendAPI.getAvatarImage(this.slide.cover) : "";
+      return this.slide.cover ? this.$backendAPI.getAvatarImage(this.slide.cover) : "";
     }
   },
   methods: {

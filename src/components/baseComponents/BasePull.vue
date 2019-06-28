@@ -24,7 +24,6 @@
 </template>
 
 <script>
-import { getBackendData } from "@/api";
 import InfiniteLoading from "vue-infinite-loading";
 
 export default {
@@ -177,7 +176,7 @@ export default {
       const getDataFail = () => $state.error();
 
       // 获取数据
-      await getBackendData({ url, params }, this.needAccessToken)
+      await this.$backendAPI.getBackendData({ url, params }, this.needAccessToken)
         .then(res => {
           if (res.status === 200 && res.data.code === 0) getDataSuccess(res.data);
           else getDataFail();

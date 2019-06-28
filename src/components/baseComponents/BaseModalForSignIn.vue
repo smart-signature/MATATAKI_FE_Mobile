@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from "vuex";
+import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
 import iconEOS from "@/assets/img/icon_logo_eos.svg";
 import iconTokenpocket from "@/assets/img/icon_tokenpocket.svg";
 import iconMathwallet from "@/assets/img/icon_mathwallet.svg";
@@ -75,7 +75,8 @@ export default {
     }
   },
   computed: {
-    ...mapState(["userConfig"])
+    ...mapState(["userConfig"]),
+    ...mapGetters(["currentUserInfo"]),
   },
   data() {
     return {
@@ -178,9 +179,11 @@ export default {
     async signInx(type) {
       try {
         await this.signIn({ idProvider: type });
+        this.$backendAPI.accessToken = this.currentUserInfo.accessToken;
       } catch (error) {
         try {
           await this.signIn({ idProvider: type });
+          this.$backendAPI.accessToken = this.currentUserInfo.accessToken;
         } catch (err) {
           console.log(err);
           this.$toast.fail({

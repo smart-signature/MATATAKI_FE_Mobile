@@ -80,8 +80,6 @@ import homeSlide from "./components/homeSlide.vue";
 import Sidebar from "./Sidebar.vue";
 import { ArticleCard } from "@/components/";
 
-import { backendAPI } from "@/api";
-
 export default {
   name: "Home",
   components: {
@@ -214,11 +212,9 @@ export default {
     },
     // 获取推荐文章或者商品
     async postsRecommend(channel) {
-      console.log(channel);
-      await backendAPI
+      await this.$backendAPI
         .postsRecommend(channel)
         .then(res => {
-          console.log(res);
           if (res.status === 200 && res.data.code === 0) {
             if (channel === 1) this.content[0].recommend.list = res.data.data;
             else if (channel === 2) this.content[1].recommend.list = res.data.data;

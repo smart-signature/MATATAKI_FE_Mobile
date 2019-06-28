@@ -46,7 +46,6 @@
 </template>
 
 <script>
-import { getBalance } from '@/api';
 import { precision } from '@/common/precisionConversion';
 import iconEOS from '@/assets/img/icon_EOS.svg';
 import iconONT from '@/assets/img/icon_ONT.svg';
@@ -118,7 +117,7 @@ export default {
     },
     // 获取账户资产列表 暂时没有EOS数据
     async getBalance() {
-      await getBalance().then((res) => {
+      await this.$backendAPI.getBalance().then((res) => {
         if (res.status === 200 && res.data.code === 0) {
           if (res.data.data.length === 0) return;
           // 筛选数据
