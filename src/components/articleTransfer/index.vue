@@ -54,7 +54,6 @@
 <script>
 import { sleep } from '@/common/methods';
 import { strTrim } from '@/common/reg';
-import { backendAPI } from '@/api';
 import debounce from 'lodash/debounce';
 
 export default {
@@ -81,8 +80,7 @@ export default {
   },
   computed: {
     userAvatar() {
-      let avatar = this.searchUsernameInfo.avatar
-      return backendAPI.getAvatarImage(avatar)
+      return this.$backendAPI.getAvatarImage(this.searchUsernameInfo.avatar);
     }
   },
   methods: {
@@ -96,7 +94,7 @@ export default {
       if (!this.buttonStatus) return
       let transferUsername = this.searchUsernameInfo.id
       try {
-        const res = await backendAPI.transferOwner(this.from, this.articleId, transferUsername)
+        const res = await this.$backendAPI.transferOwner(this.from, this.articleId, transferUsername)
         if (res.status === 200 && res.data.code === 0) {
           this.$toast({duration: 1000,position: 'bottom', message: '转让成功,自动返回首页'});
           this.change(false);
@@ -134,7 +132,7 @@ export default {
       }
      try {
         console.log(this.transferUsername)
-        const res = await backendAPI.searchUsername(this.transferUsername)
+        const res = await this.$backendAPI.searchUsername(this.transferUsername)
         console.log(res);
         if (res.status === 200 && res.data.code === 0) {
           this.setSearchUserInfo(res.data.data)

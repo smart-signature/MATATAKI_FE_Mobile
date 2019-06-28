@@ -124,21 +124,10 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
+import { defaultImagesUploader } from "@/api";
 import { sendPost } from "@/api/ipfs";
 import { mavonEditor } from "mavon-editor";
 import { strTrim } from "@/common/reg";
-import {
-  defaultImagesUploader,
-  backendAPI,
-  createDraft,
-  getArticleDatafromIPFS,
-  getArticleInfo,
-  getDraft,
-  updateDraft,
-  delDraft,
-  getMyPost,
-  getAvatarImage
-} from "@/api";
 
 import "mavon-editor/dist/css/index.css"; // editor css
 import VueSlider from "vue-slider-component";
@@ -200,13 +189,11 @@ export default {
     if (id === "create" && !from) {
       // 发布文章 from 为 undefined
       // console.log('发布文章');
-    } else if (from === "edit") {
-      // 编辑文章
-      this.editorMode = "edit";
+    } else if (from === "edit") { // 编辑文章
+      this.editorMode = from;
       this.setArticleDataById(hash, id);
-    } else if (from === "draft") {
-      // 草稿箱
-      this.editorMode = "draft";
+    } else if (from === "draft") { // 草稿箱
+      this.editorMode = from;
       this.saveType = "draft";
       this.getDraft(id);
     } else {
@@ -259,7 +246,7 @@ export default {
       return text;
     },
     coverEditor() {
-      return getAvatarImage(this.cover);
+      return this.$backendAPI.getAvatarImage(this.cover);
     },
     isShowTransfer() {
       return this.$route.query.from === "draft";
@@ -276,10 +263,10 @@ export default {
     },
     // 通过ID拿数据
     async setArticleDataById(hash, id) {
-      const articleData = await getArticleDatafromIPFS(hash);
+      const articleData = await this.$backendAPI.getArticleDatafromIPFS(hash);
       try {
         // 获取文章信息
-        const { data } = await getMyPost(id);
+        const { data } = await this.$backendAPI.getMyPost(id);
         if (data.code === 0) {
           this.fissionNum = data.data.fission_factor / 1000;
           this.signature = data.data.sign;
@@ -323,7 +310,7 @@ export default {
     }, */
     // 得到草稿箱内容 by id
     async getDraft(id) {
-      const { data } = await getDraft({ id });
+      const { data } = await this.$backendAPI.getDraft({ id });
       this.fissionNum = data.fission_factor ? data.fission_factor / 1000 : 2;
       this.cover = data.cover;
       this.title = data.title;
@@ -382,7 +369,7 @@ export default {
         if (this.currentUserInfo.idProvider !== "GitHub") {
           signature = await this.getSignatureOfArticle({ author, hash });
         }
-        const response = await backendAPI.publishArticle({ article, signature });
+        const response = await this.$backendAPI.publishArticle({ article, signature });
         if (response.data.code !== 0) throw new Error(response.data.message);
         success(response.data.data);
         console.log(response);
@@ -397,7 +384,7 @@ export default {
     async createDraft(article) {
       // 设置文章标签 🏷️
       article.tags = this.setArticleTag(this.tagCards);
-      const response = await createDraft(article);
+      const response = await this.$backendAPI.createDraft(article);
       if (response.data.msg !== "success") this.failed("失败请重试");
       this.$toast.success({ duration: 1000, message: "保存成功" });
       this.$router.go(-1);
@@ -411,7 +398,7 @@ export default {
       if (this.currentUserInfo.idProvider !== "GitHub") {
         signature = await this.getSignatureOfArticle({ author, hash });
       }
-      const response = await backendAPI.editArticle({ article, signature });
+      const response = await this.$backendAPI.editArticle({ article, signature });
       if (response.status === 200 && response.data.code === 0) this.success(response.data.data);
       else this.failed("失败请重试");
     },
@@ -422,7 +409,7 @@ export default {
         return;
       }
       try {
-        const response = await delDraft({ id });
+        const response = await this.$backendAPI.delDraft({ id });
         if (response.status !== 200) this.failed("自动删除草稿失败,请手动删除");
       } catch (error) {
         this.failed("自动删除草稿失败,请手动删除");
@@ -433,7 +420,7 @@ export default {
       // 设置文章标签 🏷️
       article.tags = this.setArticleTag(this.tagCards);
       try {
-        const response = await updateDraft(article);
+        const response = await this.$backendAPI.updateDraft(article);
         if (response.data.msg !== "success") this.failed("失败请重试");
         this.$toast({ duration: 1000, message: "草稿更新成功" });
         this.$navigation.cleanRoutes(); // 清除路由记录
@@ -613,7 +600,7 @@ export default {
     },
     // 获取标签
     async getTags() {
-      await backendAPI
+      await this.$backendAPI
         .getTags()
         .then(res => {
           if (res.status === 200 && res.data.code === 0) {

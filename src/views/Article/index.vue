@@ -363,15 +363,6 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import { mavonEditor } from "mavon-editor";
-import {
-  getArticleDatafromIPFS,
-  getArticleInfo,
-  addReadAmount,
-  sendComment,
-  delArticle,
-  backendAPI,
-  getAvatarImage
-} from "@/api";
 import "mavon-editor/dist/css/index.css";
 import moment from "moment";
 import { ContentLoader } from "vue-content-loader";
@@ -455,7 +446,7 @@ export default {
   computed: {
     ...mapGetters(["currentUserInfo", "isLogined", "isMe"]),
     cover() {
-      if (this.article.cover) return getAvatarImage(this.article.cover);
+      if (this.article.cover) return this.$backendAPI.getAvatarImage(this.article.cover);
       return null;
     },
     displayPlaceholder() {
@@ -588,7 +579,7 @@ export default {
     },
     // 得到文章信息 hash id, supportDialog 为 true 则只更新文章信息
     async getArticleInfo(hash, supportDialog = false) {
-      await getArticleInfo(hash)
+      await this.$backendAPI.getArticleInfo(hash)
         .then(res => {
           if (res.status === 200 && res.data.code === 0) {
             this.setArticle(res.data.data, supportDialog);
@@ -608,7 +599,7 @@ export default {
     },
     // 获取文章内容 from ipfs
     async getArticleDatafromIPFS(hash) {
-      await getArticleDatafromIPFS(hash)
+      await this.$backendAPI.getArticleDatafromIPFS(hash)
         .then(({ data }) => {
           // console.log(data);
           this.setPost(data.data);
@@ -621,7 +612,7 @@ export default {
     // 设置文章
     async setArticle(article, supportDialog = false) {
       try {
-        await addReadAmount({ articlehash: article.hash }); // 增加文章阅读量
+        await this.$backendAPI.addReadAmount({ articlehash: article.hash }); // 增加文章阅读量
       } catch (error) {
         console.error("addReadAmount :", error);
       }
@@ -883,7 +874,7 @@ export default {
       const delArticleFunc = async id => {
         if (!id) return fail("没有id");
         try {
-          const response = await delArticle({ id });
+          const response = await this.$backendAPI.delArticle({ id });
           if (response.status === 200 && response.data.code === 0) delSuccess();
           else fail(`删除文章错误${error}`);
         } catch (error) {
@@ -902,11 +893,11 @@ export default {
     // 获取用户 得到头像
     async setAvatar(id) {
       try {
-        const res = await backendAPI.getUser({ id });
+        const res = await this.$backendAPI.getUser({ id });
         if (res.status === 200 && res.data.code === 0) {
           this.followed = res.data.data.is_follow;
           if (res.data.data.avatar)
-            this.articleAvatar = backendAPI.getAvatarImage(res.data.data.avatar);
+            this.articleAvatar = this.$backendAPI.getAvatarImage(res.data.data.avatar);
         } else console.log("获取用户信息错误");
       } catch (error) {
         console.log(`获取用户信息错误${error}`);

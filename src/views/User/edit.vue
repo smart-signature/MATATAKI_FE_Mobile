@@ -35,10 +35,6 @@
 </template>
 
 <script>
-import {
-  getAvatarImage, setProfile,
-  uploadAvatar,
-} from '@/api';
 import imgUpload from '@/components/imgUpload/index.vue';
 import { mapActions } from "vuex";
 
@@ -116,7 +112,7 @@ export default {
       if (this.newEmail === this.email) delete requestData.email;
       console.log(requestData);
       // 设置用户信息
-      await setProfile(requestData).then((res) => {
+      await this.$backendAPI.setProfile(requestData).then((res) => {
         console.log(res);
         if (res.status === 200 && res.data.code === 0) {
           this.$toast.success({ duration: 1000, message: res.data.message });
@@ -152,13 +148,13 @@ export default {
       setUser(await this.getCurrentUser());
     },
     setAvatarImage(hash) {
-      if (hash) this.avatar = getAvatarImage(hash);
+      if (hash) this.avatar = this.$backendAPI.getAvatarImage(hash);
     },
     // 完成上传
     async doneImageUpload(res) {
       const avatar = res.hash;
       // 更新图像
-      await uploadAvatar({ avatar }).then((res) => {
+      await this.$backendAPI.uploadAvatar({ avatar }).then((res) => {
         console.log(res)
         if (res.status === 200 && res.data.code === 0) this.setAvatarImage(avatar);
         else this.$toast.fail({ duration: 1000, message: '上传失败' })

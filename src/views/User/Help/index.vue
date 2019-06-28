@@ -47,7 +47,6 @@
 
 <script>
 import { mapActions } from 'vuex';
-import { backendAPI } from '@/api';
 export default {
   naem: 'Help',
   data() {
@@ -85,7 +84,7 @@ export default {
     // 获取用户信息 - 转让状态
     async getMyUserData() {
      try {
-        const res = await backendAPI.getMyUserData()
+        const res = await this.$backendAPI.getMyUserData()
         if (res.status === 200 && res.data.code === 0) this.articleTransfer = !!res.data.data.accept
         else console.log('获取转让状态失败')
      } catch (error) { console.log(`获取转让状态失败${error}`) }
@@ -95,7 +94,7 @@ export default {
       try {
         this.articleTransfer = status
         let accept = status ? 1 : 0
-        const res = await backendAPI.setProfile({accept})
+        const res = await this.$backendAPI.setProfile({accept})
         if (res.status === 200 && res.data.code === 0) return this.$toast.success({ duration: 1000, message: '成功' });
         else {
           this.$toast.fail({ duration: 1000, message: '失败' });

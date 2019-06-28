@@ -21,7 +21,6 @@
 import moment from 'moment';
 import { isNDaysAgo } from '@/common/methods';
 import { precision } from '@/common/precisionConversion';
-import { getAvatarImage } from '@/api';
 
 export default {
   name: 'CommentCard',
@@ -56,7 +55,7 @@ export default {
       }
     },
     avatar() {
-      if (this.comment.avatar) return getAvatarImage(this.comment.avatar);
+      if (this.comment.avatar) return this.$backendAPI.getAvatarImage(this.comment.avatar);
     },
   },
 };
