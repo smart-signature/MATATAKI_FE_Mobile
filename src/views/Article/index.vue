@@ -114,7 +114,7 @@
       </div>
     </template>
     <router-link :to="{ name: 'BuyHistory' }">
-      <div v-if="article.sale > 0" class="buy-alert">已购买成功，请前往“购买记录”页面查看！</div>
+      <div v-if="article.is_buy" class="buy-alert">已购买成功，请前往“购买记录”页面查看！</div>
     </router-link>
 
     <div class="comments-list">

@@ -76,12 +76,14 @@ export default {
     console.info("Smart Signature version :", version);
 
     const { signIn, updateNotify } = this;
+    
     // 根据本地存储的状态来自动登陆。失败之后再重试一次
     console.log("sign in form localStorage");
     const data = {
       accessToken: accessTokenAPI.get(),
       idProvider: localStorage.getItem("idProvider")
     };
+    this.$backendAPI.accessToken = data.accessToken;
     if (data.idProvider && data.accessToken) {
       signIn(data)
       .then(() => { this.$backendAPI.accessToken = this.currentUserInfo.accessToken; })
