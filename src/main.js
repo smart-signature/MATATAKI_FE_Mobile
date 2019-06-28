@@ -38,6 +38,20 @@ Vue.config.productionTip = false;
 
 // Register moment's default language
 moment.locale("zh-CN");
+/*
+router.beforeResolve(async (to, from) => {
+  // 根据本地存储的状态来自动登陆。失败之后再重试一次
+  console.log("sign in form localStorage");
+  const data = {
+    accessToken: accessTokenAPI.get(),
+    idProvider: localStorage.getItem("idProvider")
+  };
+  if (data.idProvider && data.accessToken) {
+    await this.$store.dispatch('signIn', data)
+    .then(() => { this.$backendAPI.accessToken = this.currentUserInfo.accessToken; })
+    .catch(() => this.$store.dispatch('signIn', data).then(() => { this.$backendAPI.accessToken = this.currentUserInfo.accessToken; }));
+  }
+}); */
 
 new Vue({
   router,
