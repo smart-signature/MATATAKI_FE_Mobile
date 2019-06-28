@@ -40,19 +40,25 @@ export default {
     },
     assetAmount() {
       const switchType = {
+        'support_expenses': '',
+        'buy_expenses' : '',
+        'fission_income': '+',
+        'referral_income': '+',
+        'author_sale_income': '+',
+        'author_supported_income': '+',
         withdraw: '',
-        'share income': '+',
-        'sign income': '+',
-        'support expenses': '',
       };
       return switchType[this.asset.type] + precision(this.asset.amount, this.asset.symbol);
     },
     assetColor() {
       const switchType = {
-        withdraw: 'color: #333',
-        'share income': '#D95E5E',
-        'sign income': '#D95E5E',
-        'support expenses': '#519552',
+        'support_expenses': '#519552',
+        'buy_expenses' : '#519552',
+        'fission_income': '#D95E5E',
+        'referral_income': '#D95E5E',
+        'author_sale_income': '#D95E5E',
+        'author_supported_income': '#D95E5E',
+        withdraw: '#333',
       };
       return switchType[this.asset.type];
     },
@@ -70,9 +76,12 @@ export default {
       };
       const switchType = {
         withdraw: switchStatus[status],
-        'share income': '投资收入',
-        'sign income': '写作收入',
-        'support expenses': '投资支出',
+        'support_expenses': '投资支出',
+        'buy_expenses' : '购买支出',
+        'fission_income': '投资裂变收入',
+        'referral_income': '推荐收入',
+        'author_sale_income': '销售收入',
+        'author_supported_income': '被投资收入'
       };
       return switchType[type];
     },
