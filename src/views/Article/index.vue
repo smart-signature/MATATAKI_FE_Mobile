@@ -749,13 +749,13 @@ export default {
       });
     },
     async support(action, done) {
+      if (action !== "confirm") return done();
       let action_text = this.article.channel_id === 2 ? "投资" : "赞赏";
       const loading = this.$toast.loading({
         mask: true,
         duration: 0,
         message: `${action_text}中...`
       });
-      if (action !== "confirm") return done();
       const { article, comment, signId } = this;
       const { idProvider } = this.currentUserInfo;
       if (idProvider === "GitHub") return;

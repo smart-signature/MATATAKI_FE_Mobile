@@ -3,9 +3,11 @@
     <div class="container">
       <template v-if="isLogined">
         <div class="account">
-          <div class="avatar-container">
+          <div class="top-container">
             <router-link :to="{ name: 'UserEdit', params: { id } }">
-              <img :src="avatar" alt="avatar" class="avatar" />
+              <div class="avatar-container">
+                <img v-if="avatar" v-lazy="avatar" :src="avatar" alt="avatar" />
+              </div>
             </router-link>
             <router-link :to="{ name: 'Help' }">
               <img src="@/assets/newimg/setting.svg" alt="setting" class="setting" />
@@ -257,18 +259,24 @@ export default {
   .container {
     .account {
       padding: 20px;
-      .avatar-container {
+      .top-container {
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
         margin-bottom: 10px;
       }
-      .avatar {
-        border-radius: 50%;
+      .avatar-container {
         width: 60px;
         height: 60px;
-        background-color: #ffffff;
+        border-radius: 50%;
+        overflow: hidden;
+        background-color: #aaa;
         cursor: pointer;
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
       }
       .setting {
         width: 20px;
