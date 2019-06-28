@@ -3,9 +3,9 @@
     <template v-if="channel === 1">
       <div class="info-content">
         <p class="info-title">爱上智能签名需要几步？</p>
-        <p>1.点击“赞赏”按钮,支持好文,获取收益！</p>
+        <p>1.点击“投资”按钮,支持好文,获取收益！</p>
         <p>2.点击“分享”按钮,生成您的邀请链接。</p>
-        <p>3.转发链接,好友赞赏越多,收益越多。</p>
+        <p>3.转发链接,好友投资越多,收益越多。</p>
         <p>4.个人页面“提现“,实现自由之路！</p>
         <p class="des">(添加微信DappsDev加入智能签名早鸟群)</p>
         <img src="@/assets/img/code.png" alt="wechatCode:DappsDev" />
