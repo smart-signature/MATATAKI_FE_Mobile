@@ -3,13 +3,12 @@
     <img v-if="cover" :src="cover" alt="cover" />
     {{ cover }}
     <div class="slide-read">
-      {{ slideIndex === 0 ? "浏览量: " + slide.read : "总销量: " + slide.read }}
+      {{ slideIndex === 0 ? "浏览量: " + slide.read : "总销量: " + slide.sale }}
     </div>
   </div>
 </template>
 
 <script>
-
 export default {
   name: "HomeSlideItem",
   props: {

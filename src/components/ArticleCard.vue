@@ -23,7 +23,7 @@
       <div v-else class="card-text">
         <h2 v-clampy="2" class="title">{{ article.title }}</h2>
         <p class="date">
-          <span>销量: {{ article.read }}</span>
+          <span>销量: {{ article.sale }}</span>
           <span>
             <img class="eos" src="../assets/img/icon_article_ont_orange.svg" alt="ont" />{{
               articleOntValue
