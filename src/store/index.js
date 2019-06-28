@@ -176,17 +176,17 @@ export default new Vuex.Store({
       ex:
       makeOrder({ num, amount: num * 20000, signId: 100455, sponsor: { id: null, username: null } });
     */
-    async makeOrder({ dispatch, getters, state: { userConfig: { idProvider, accessToken } } }, order) {
+    async makeOrder({ dispatch, getters, state: { userConfig: { idProvider } } }, order) {
       const order2 = { ...order, idProvider, ...getters.asset };
       const api = backendAPI;
-      api.accessToken = accessToken;
+      api.accessToken = getters.currentUserInfo.accessToken;
       const { data: { data: { orderId } } } = await api.reportOrder(order2);
       // console.debug(oid);
       return dispatch(`${getters.prefixOfType}/recordOrder`, {
         ...order2, oId: orderId, sponsor: order2.sponsor.username
       });
     },
-    async makeShare({ dispatch, getters, state: { userConfig: { idProvider, accessToken } } }, share) {
+    async makeShare({ dispatch, getters, state: { userConfig: { idProvider } } }, share) {
       share.idProvider = idProvider;
       if (idProvider === 'EOS') {
         share.contract = 'eosio.token';
@@ -199,7 +199,7 @@ export default new Vuex.Store({
         ...share, sponsor: share.sponsor.username
       });
       const api = backendAPI;
-      api.accessToken = accessToken;
+      api.accessToken = getters.currentUserInfo.accessToken;
       return api.reportShare(share);
     },
     async getCurrentUser({ commit, getters: { currentUserInfo } }) {
