@@ -21,7 +21,7 @@ export default new Vuex.Store({
       idProvider: null,
     },
     userInfo: {
-      accessToken: null,
+      accessToken: null, // 僅為通過 signIn 的
       nickname: '',
     },
   },
@@ -47,12 +47,14 @@ export default new Vuex.Store({
     displayName: ({ userInfo }, { currentUserInfo }) => userInfo.nickname || currentUserInfo.name,
     isLogined: ({ userInfo: { accessToken } }) => accessToken !== null,
     isMe: (state, { currentUserInfo: { id } }) => target => id === Number(target),
+    // for store
     prefixOfType: ({ userConfig: { idProvider } }) => {
       if (idProvider === 'EOS') return 'scatter';
       if (idProvider === 'ONT') return 'ontology';
       if (idProvider === 'GitHub') return 'github';
       return null;
     },
+    // for store
     asset: ({ userConfig: { idProvider } }) => {
       let contract = null;
       let symbol = null;
@@ -67,21 +69,21 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    async getAuth({ dispatch, getters: { currentUserInfo } }, name = null) {
+    async getAuth({ dispatch }, { name = null, oldAccessToken = null }) {
+      let newAccessToken = oldAccessToken;
       if (!name) throw new Error('no name');
-      let { accessToken } = currentUserInfo;
-      const { exp, iss } = accessTokenAPI.disassemble(accessToken);
+      const { exp, iss } = accessTokenAPI.disassemble(newAccessToken);
       if (!iss || iss !== name || exp < new Date().getTime()) {
         try {
           console.log('Retake authtoken...');
           const { data } = await backendAPI.auth(await dispatch('getSignatureOfAuth', { name }));
-          accessToken = data;
+          newAccessToken = data;
         } catch (error) {
           console.warn('取得 access token 出錯', error);
           throw error;
         }
       }
-      return accessToken;
+      return newAccessToken;
     },
     // output: { publicKey, signature, username }
     async getSignature({ dispatch, getters }, data = { mode: null, rawSignData: null }) {
@@ -104,7 +106,7 @@ export default new Vuex.Store({
     async signIn({
       commit, dispatch, state, getters,
     }, { code = null, idProvider = null, accessToken = null }) {
-      console.debug('debug :', code, idProvider, accessToken);
+      console.debug('signIn:', 'code:', code, 'idProvider:', idProvider, 'accessToken:', accessToken);
 
       if (!idProvider) throw new Error('did not choice idProvider');
       commit('setUserConfig', { idProvider });
@@ -112,19 +114,17 @@ export default new Vuex.Store({
       // recover
       if (accessToken) {
         console.log('signIn recover mode');
-        commit('setAccessToken', accessToken);
-        if (idProvider === 'GitHub') return true;
+        if (idProvider === 'GitHub') {
+          commit('setAccessToken', accessToken);
+          return true;
+        }
       }
 
-      const failed = () => {
-        commit('setAccessToken');
-        localStorage.clear();
-        throw new Error(`Unable to get ${idProvider}'s id`);
-      }
-      const { prefixOfType } = getters;
-      // Scatter
-      if (idProvider === 'EOS') {
-        try {
+      try {
+        const { prefixOfType } = getters;
+        const oldAccessToken = accessToken; // null or from localStorage
+        // Scatter
+        if (idProvider === 'EOS') {
           if (!state.scatter.isConnected) {
             const result = await dispatch(`${prefixOfType}/connect`);
             if (!result) throw new Error('Scatter: connection failed');
@@ -133,40 +133,36 @@ export default new Vuex.Store({
             const result = await dispatch(`${prefixOfType}/login`);
             if (!result) throw new Error('Scatter: login failed');
           }
-          accessToken = await dispatch('getAuth', getters[`${prefixOfType}/currentUsername`]);
-        } catch (error) {
-          console.error(error);
-          failed();
+          accessToken = await dispatch('getAuth', {
+            name: getters[`${prefixOfType}/currentUsername`],
+            oldAccessToken,
+          });
         }
-      }
-      // Ontology
-      else if (idProvider === 'ONT') {
-        try {
+        // Ontology
+        else if (idProvider === 'ONT') {
           if (!state.ontology.account) await dispatch(`${prefixOfType}/getAccount`);
-          try {
-            await dispatch('ontology/getBalance');
-          } catch (error) {
-            console.warn('Ontology: Failed to get balance :', error);
-          }
-          accessToken = await dispatch('getAuth', state.ontology.account);
-        } catch (error) {
-          console.error(error);
-          failed();
+          await dispatch('ontology/getBalance').catch(
+            (error) => console.warn('Ontology: Failed to get balance :', error)
+          );
+          accessToken = await dispatch('getAuth', {
+            name: state.ontology.account,
+            oldAccessToken,
+          });
         }
-      }
-      // GitHub
-      else if (idProvider === 'GitHub') {
-        try {
+        // GitHub
+        else if (idProvider === 'GitHub') {
           accessToken = await dispatch(`${prefixOfType}/signIn`, { code });
-        } catch (error) {
-          console.error('GitHub: signIn Failed.', error);
-          failed();
         }
+      } catch (error) {
+        console.error(error);
+        dispatch('signOut');
+        throw new Error(`Unable to get ${idProvider}'s id`);
       }
       
       // 成功後的處理
       commit('setAccessToken', accessToken);
       localStorage.setItem('idProvider', state.userConfig.idProvider);
+      return state.userInfo.accessToken;
     },
     /*
      * 購買，會自動代入目前登錄帳號，自動分流到不同合約填寫不同的合約參數格式
@@ -262,7 +258,7 @@ export default new Vuex.Store({
       state.userInfo.accessToken = accessToken;
       if (accessToken) accessTokenAPI.set(accessToken);
       else accessTokenAPI.rm();
-      console.info('set access token :', accessToken);
+      // console.info('set access token :', accessToken);
     },
     setNickname(state, nickname = '') {
       state.userInfo.nickname = nickname;

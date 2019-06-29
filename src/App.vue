@@ -77,18 +77,22 @@ export default {
 
     const { signIn, updateNotify } = this;
     
+    let accessToken = null;
     // 根据本地存储的状态来自动登陆。失败之后再重试一次
-    console.log("sign in form localStorage");
     const data = {
       accessToken: accessTokenAPI.get(),
       idProvider: localStorage.getItem("idProvider")
     };
-    this.$backendAPI.accessToken = data.accessToken;
     if (data.idProvider && data.accessToken) {
-      signIn(data)
-      .then(() => { this.$backendAPI.accessToken = this.currentUserInfo.accessToken; })
-      .catch(() => signIn(data).then(() => { this.$backendAPI.accessToken = this.currentUserInfo.accessToken; }));
+      console.log("sign in form localStorage");
+      try {
+        accessToken = signIn(data);
+      } catch (error) {
+        accessToken = signIn(data);
+      }
     }
+    this.$backendAPI.accessToken = accessToken;
+    console.debug('$backendAPI.accessToken :', this.$backendAPI.accessToken);
     
     window.updateNotify = updateNotify;
   },
