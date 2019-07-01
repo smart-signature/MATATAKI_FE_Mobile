@@ -69,6 +69,10 @@ export default new Vuex.Store({
     },
   },
   actions: {
+    async accountCheck({ dispatch, getters: { currentUserInfo: { accessToken, idProvider } } }) {
+      console.log("account check start...");
+      return dispatch('signIn', { idProvider, accessToken });
+    },
     async getAuth({ dispatch }, { name = null, oldAccessToken = null }) {
       let newAccessToken = oldAccessToken;
       if (!name) throw new Error('no name');
@@ -180,6 +184,7 @@ export default new Vuex.Store({
       makeOrder({ num, amount: num * 20000, signId: 100455, sponsor: { id: null, username: null } });
     */
     async makeOrder({ dispatch, getters, state: { userConfig: { idProvider } } }, order) {
+      await dispatch('accountCheck');
       const order2 = { ...order, idProvider, ...getters.asset };
       const api = backendAPI;
       api.accessToken = getters.currentUserInfo.accessToken;
@@ -190,6 +195,7 @@ export default new Vuex.Store({
       });
     },
     async makeShare({ dispatch, getters, state: { userConfig: { idProvider } } }, share) {
+      await dispatch('accountCheck');
       share.idProvider = idProvider;
       if (idProvider === 'EOS') {
         share.contract = 'eosio.token';
@@ -222,6 +228,7 @@ export default new Vuex.Store({
     },
     // data: { amount, toaddress, memo }
     async withdraw({ dispatch, getters }, data) {
+      await dispatch('accountCheck');
       console.debug(data);
       // 根据传进来的mode判断提现什么币
       if (data.tokenName === 'EOS') {

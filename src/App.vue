@@ -101,7 +101,17 @@ export default {
     const easterEgg = new Konami(() => {
       this.triggerEasterEgg();
     });
-  }
+  },
+  watch: {
+    currentUserInfo: {
+      handler(newVal, oldVal) {
+        this.$backendAPI.accessToken = newVal.accessToken;
+        console.debug('watch $backendAPI.accessToken :', this.$backendAPI.accessToken);
+      },
+      immediate: true,
+      deep: true,
+    },
+  },
 };
 </script>
 
