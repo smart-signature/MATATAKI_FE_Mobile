@@ -51,7 +51,7 @@
       </a>
       <div class="help-list">
         <span class="help-list-title">当前版本</span>
-        <span class="help-list-sub">v2.2.0</span>
+        <span class="help-list-sub">v2.3.2</span>
       </div>
     </div>
     <div class="signout">
