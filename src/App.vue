@@ -105,10 +105,12 @@ export default {
   watch: {
     currentUserInfo: {
       handler(newVal, oldVal) {
+        // console.debug(this.$backendAPI.accessToken.toString().includes('Promise'));        
+        if (this.$backendAPI.accessToken
+            && this.$backendAPI.accessToken.toString().includes('Promise')) return;
         this.$backendAPI.accessToken = newVal.accessToken;
         console.debug('watch $backendAPI.accessToken :', this.$backendAPI.accessToken);
       },
-      immediate: true,
       deep: true,
     },
   },

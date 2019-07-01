@@ -4,7 +4,7 @@
         <p>当前模式：{{env}}</p>
         <p>版本号： {{ version }}</p>
         <p v-if="checkIsBuildOnCommit">基于 commit <a :href="commitUrl">{{ commitHash }} </a> 构建</p>
-        <!-- <Button @click="xxx()">xxx</Button> -->
+        <Button @click="xxx()">神秘按鈕</Button>
     </div>
 </template>
 
