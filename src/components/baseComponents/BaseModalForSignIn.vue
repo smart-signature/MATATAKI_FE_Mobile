@@ -60,6 +60,7 @@ import iconChallte from "@/assets/img/icon_challte.svg";
 import iconMeet from "@/assets/img/icon_meet.svg";
 import iconGithub from "@/assets/img/icon_logo_github.svg";
 import iconOnto from "@/assets/img/icon_logo_onto.svg";
+import iconImtoken from "@/assets/img/icon_logo_imtoken.svg";
 
 export default {
   name: "BaseModalForSignIn",
@@ -76,7 +77,7 @@ export default {
   },
   computed: {
     ...mapState(["userConfig"]),
-    ...mapGetters(["currentUserInfo"]),
+    ...mapGetters(["currentUserInfo"])
   },
   data() {
     return {
@@ -121,6 +122,11 @@ export default {
               url: iconMeet,
               href: "https://meet.one/",
               alt: "https://meet.one/"
+            },
+            {
+              url: iconImtoken,
+              href: "https://token.im/download",
+              alt: "https://token.im/download"
             }
           ],
           doc: {
@@ -228,7 +234,7 @@ export default {
       flex-direction: column;
       align-items: center;
       padding: 0 0 14px 0;
-      height: 194px;
+      height: 220px;
     }
 
     &-head {
@@ -290,7 +296,7 @@ export default {
       display: -ms-flexbox;
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       width: 120px;
       flex-wrap: wrap;
       a {
