@@ -20,23 +20,29 @@ const axiosforApiServer = axios.create({
 // accessToken with localStorage
 export const accessTokenAPI = {
   get() {
-    return window.localStorage.getItem("ACCESS_TOKEN");
+    const token = window.localStorage.getItem("ACCESS_TOKEN");
+    if (token === 'null' || token === 'undefined') {
+      this.rm();
+      return this.get();
+    }
+    return token;
   },
   set(token) {
-    window.localStorage.setItem("ACCESS_TOKEN", token);
+    if (!token) this.rm();
+    else window.localStorage.setItem("ACCESS_TOKEN", token);
   },
   rm() {
     window.localStorage.removeItem("ACCESS_TOKEN");
   },
+  /*
+   * 拆token，返回json对象
+   * {iss:用户名，exp：token的过期时间，用ticks的形式表示}
+   */
   disassemble(token) {
-    // 拆token，返回json对象
-    if (!token) {
-      return { id: null, iss: null, exp: 0 };
-    }
+    if (!token) return { iss: null, exp: 0, platform: null, id: null };
     let tokenPayload = token.substring(token.indexOf(".") + 1);
     tokenPayload = tokenPayload.substring(0, tokenPayload.indexOf("."));
     return JSON.parse(Base64.decode(tokenPayload));
-    // {iss:用户名，exp：token的过期时间，用ticks的形式表示}
   }
 };
 
