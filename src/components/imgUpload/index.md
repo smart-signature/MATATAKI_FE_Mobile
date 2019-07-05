@@ -32,6 +32,8 @@ components: { imgUpload },
 | imgSize | 显示上传图片大小 单位 M | Number | 2 | false |
 | imgUploadDone | 是否上传完成 | Number | 0 上传完成++/+= Date.now() 改变数值 | true |
 | compressorSetting | 压缩图片 | Object | status: true \| quality: 0.8 | false |
+| aspectRatio | 比列 | Number | 1 / 1 | false |
+
 
 接口地址
 

@@ -3,7 +3,7 @@
     <navigation v-if="isRouterAlive">
       <router-view />
     </navigation>
-    <BackTop :right="20" :bottom="40" :height="40">
+    <BackTop :right="20" :bottom="70" :height="40">
       <img class="backtop" src="@/assets/img/icon_back_top.svg" alt="backtop" />
     </BackTop>
   </div>
@@ -28,7 +28,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['currentUserInfo']),
+    ...mapGetters(["currentUserInfo"])
   },
   methods: {
     ...mapActions(["signIn"]),
@@ -71,24 +71,40 @@ export default {
       this.isRouterAlive = true;
     }
   },
+  watch: {
+    currentUserInfo: {
+      handler(newVal, oldVal) {
+        // console.debug(this.$backendAPI.accessToken.toString().includes('Promise'));        
+        if (this.$backendAPI.accessToken
+            && this.$backendAPI.accessToken.toString().includes('Promise')) return;
+        this.$backendAPI.accessToken = newVal.accessToken;
+        console.debug('watch $backendAPI.accessToken :', this.$backendAPI.accessToken);
+      },
+      deep: true,
+    },
+  },
   created() {
     // https://juejin.im/post/5bfa4bb951882558ae3c171e
     console.info("Smart Signature version :", version);
 
     const { signIn, updateNotify } = this;
     
+    let accessToken = null;
     // 根据本地存储的状态来自动登陆。失败之后再重试一次
-    console.log("sign in form localStorage");
     const data = {
       accessToken: accessTokenAPI.get(),
       idProvider: localStorage.getItem("idProvider")
     };
-    this.$backendAPI.accessToken = data.accessToken;
     if (data.idProvider && data.accessToken) {
-      signIn(data)
-      .then(() => { this.$backendAPI.accessToken = this.currentUserInfo.accessToken; })
-      .catch(() => signIn(data).then(() => { this.$backendAPI.accessToken = this.currentUserInfo.accessToken; }));
+      console.log("sign in form localStorage");
+      try {
+        accessToken = signIn(data);
+      } catch (error) {
+        accessToken = signIn(data);
+      }
     }
+    this.$backendAPI.accessToken = accessToken;
+    console.debug('$backendAPI.accessToken :', this.$backendAPI.accessToken);
     
     window.updateNotify = updateNotify;
   },
@@ -97,7 +113,7 @@ export default {
     const easterEgg = new Konami(() => {
       this.triggerEasterEgg();
     });
-  }
+  },
 };
 </script>
 

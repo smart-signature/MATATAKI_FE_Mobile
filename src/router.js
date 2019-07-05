@@ -136,7 +136,7 @@ export default new VueRouter({
       } // 你怎么能随便给别人看到自己的资产明细呢？不怕被人打吗？
     },
     {
-      path: "/user/buyHistory",
+      path: "/buyHistory",
       name: "BuyHistory",
       props: true,
       component: () => import(/* webpackChunkName: "BuyHistory" */ "./views/User/buyHistory")

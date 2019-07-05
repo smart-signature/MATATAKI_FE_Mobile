@@ -44,9 +44,15 @@ const API = {
   accessToken: null,
   /* eslint no-param-reassign: ["error", { "props": false }] */
   async accessBackend(config) {
-    const token = this.accessToken;
+    let token = null;
+    try {
+      token = await this.accessToken;
+    } catch (error) {
+      // console.debug(error);
+    }
+    console.debug('x-access-token :', token);
     // https://blog.fundebug.com/2018/07/25/es6-const/
-    config.headers = { "x-access-token": token };
+    if (token) config.headers = { "x-access-token": token };
     if (config.data && config.data.platform && config.data.platform === "need") {
       config.data.platform = accessTokenAPI.disassemble(token).platform;
     }

@@ -255,6 +255,7 @@ export default {
     font-weight: 400;
     letter-spacing: 1px;
     min-width: 100px;
+    cursor: pointer;
   }
   .container {
     .account {
