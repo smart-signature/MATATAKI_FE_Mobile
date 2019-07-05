@@ -1,59 +1,47 @@
 <template>
   <Modal v-model="showModaCopy" footer-hide class-name="modalCenter" @on-visible-change="change">
-    <section class="step" v-if="step === 1">
-      <h1 class="step-title">选择授权方式</h1>
-      <div class="btns">
-        <button class="btn-base bg-black" @click="walletLogin('EOS')">
-          <div class="eos-logo">
-            <img src="@/assets/newimg/eos_icon.svg" alt="EOS" />
+    <div class="info-content">
+      <p class="info-content-title">{{ modalText.text }}</p>
+
+      <div class="modal-login">
+        <div v-for="(item, index) in idProvider" :key="index" class="modal-body">
+          <div class="modal-body-content">
+            <div class="modal-body-head">支持钱包</div>
+            <div class="modal-wallet">
+              <a
+                v-for="(itemWallet, indexWallet) in item.wallet"
+                :key="indexWallet"
+                :href="itemWallet.href"
+                target="_blank"
+              >
+                <img :src="itemWallet.url" :alt="itemWallet.alt" />
+              </a>
+            </div>
+            <div class="modal-logo">
+              <div
+                class="modal-logo-button"
+                :class="'active' + index"
+                @click="walletLogin(item.type)"
+              >
+                <img :src="item.url" :alt="item.title" />
+                <span>{{ item.title }}</span>
+              </div>
+            </div>
           </div>
-          <span>EOS 登录</span>
-        </button>
-        <button class="btn-base bg-blue" @click="walletLogin('ONT')">
-          <img src="@/assets/img/icon_logo_ont.svg" alt="ONT" />
-          <span>ONT 登录</span>
-        </button>
-        <button class="btn-base bg-purple" @click="walletLogin('GitHub')">
-          <img src="@/assets/img/github.png" alt="github" />
-          <span>Github 登录</span>
-        </button>
-        <div class="guide">
-          <a href="https://smartsignature.io/article/515">EOS登录指南</a>
-          <a href="https://smartsignature.io/article/516">ONT登录指南</a>
+          <a class="modal-doc" target="_blank" :href="item.doc.href">{{ item.doc.title }}</a>
         </div>
       </div>
-    </section>
-    <section class="step" v-if="step === 2">
-      <h1 class="step-title">EOS钱包</h1>
-      <div class="wallet">
-        <a
-          v-for="(itemWallet, indexWallet) in wallet.eos"
-          :key="indexWallet"
-          :href="itemWallet.href"
-          target="_blank"
-        >
-          <img :src="itemWallet.url" :alt="itemWallet.alt" />
-        </a>
+      <Divider>或者</Divider>
+      <div
+        class="modal-logo-button"
+        :class="'active2'"
+        style="text-align: center;"
+        @click="walletLogin('GitHub')"
+      >
+        <img :src="iconGithub" :alt="'iconGithub'" />
       </div>
-      <h1 class="step-title">ONT钱包</h1>
-      <div class="wallet">
-        <a
-          v-for="(itemWallet, indexWallet) in wallet.ont"
-          :key="indexWallet"
-          :href="itemWallet.href"
-          target="_blank"
-        >
-          <img :src="itemWallet.url" :alt="itemWallet.alt" />
-        </a>
-      </div>
-    </section>
-    <div class="footer-arrow" @click="step === 1 ? step = 2: step = 1">
-      <div class="arrow" v-if="step === 2">
-        <van-icon name="arrow-left" />
-      </div>
-      <span>{{step === 1 ? '查看支持的钱包' : '返回登录'}}</span>
-      <div class="arrow" v-if="step === 1">
-        <van-icon name="arrow" />
+      <div v-if="modalLoading" class="modal-loading">
+        <van-loading type="spinner" color="#1989fa" />
       </div>
     </div>
   </Modal>
@@ -93,65 +81,6 @@ export default {
   },
   data() {
     return {
-      step: 1,
-      wallet: {
-        eos: [
-          {
-            url: iconTokenpocket,
-            href: "https://www.tokenpocket.pro/",
-            alt: "https://www.tokenpocket.pro/"
-          },
-          {
-            url: iconScatter,
-            href: "https://get-scatter.com/",
-            alt: "https://get-scatter.com/"
-          },
-          {
-            url: iconChallte,
-            href: "http://eblock.io/",
-            alt: "http://eblock.io/"
-          },
-          {
-            url: iconMathwallet,
-            href: "http://www.medishares.org/",
-            alt: "http://www.medishares.org/"
-          },
-          {
-            url: iconLeafwallet,
-            href: "https://www.leafwallet.io/",
-            alt: "https://www.leafwallet.io/"
-          },
-          {
-            url: iconMeet,
-            href: "https://meet.one/",
-            alt: "https://meet.one/"
-          },
-          {
-            url: iconImtoken,
-            href: "https://token.im/download",
-            alt: "https://token.im/download"
-          }
-        ],
-        ont: [
-          {
-            url: iconOnto,
-            href: "https://onto.app/",
-            alt: "https://onto.app/"
-          },
-          {
-            url: iconCyano,
-            href:
-                "https://chrome.google.com/webstore/detail/cyano-wallet/dkdedlpgdmmkkfjabffeganieamfklkm",
-            alt:
-                "https://chrome.google.com/webstore/detail/cyano-wallet/dkdedlpgdmmkkfjabffeganieamfklkm"
-          },
-          {
-            url: iconMathwallet,
-            href: "http://www.medishares.org/",
-            alt: "http://www.medishares.org/"
-          }
-        ]
-      },
       showModaCopy: this.showModal,
       modalLoading: false,
       modalText: {
@@ -275,115 +204,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.footer-arrow {
-  cursor: pointer;
-  width: 100%;
-  background: #F1F1F1;
-  padding: 14px 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-bottom-left-radius: 0.375rem;
-  border-bottom-right-radius: 0.375rem;
-  font-size: 14px;
-  font-weight: 700;
-  color: #B2B2B2;
-  .arrow {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: #B2B2B2;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 5px;
-    i {
-      font-size: 8px;
-    }
-  }
-}
-.step {
-  text-align: center;
-  padding: 20px 0;
-  width: 300px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  .wallet {
-    max-width: 250px;
-    margin-bottom: 20px;
-    a {
-      margin: 0 10px 10px 0;
-      img {
-        width: 48px;
-        border-radius: 50%;
-        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-      }
-
-    }
-  }
-  .guide {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 195px;
-  }
-  .step-title {
-    font-size: 20px;
-    line-height: 28px;
-    font-weight: 700;
-    margin-bottom: 20px;
-  }
-  .btns {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-  .btn-base {
-    border-radius: 6px;
-    border: none;
-    background: transparent;
-    color: #ffffff;
-    width: 195px;
-    height: 40px;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    .eos-logo {
-      width: 18px;
-      height: 18px;
-      background: #ffffff;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      img {
-        width: 10px;
-      }
-    }
-    img {
-      width: 18px;
-    }
-    span {
-      font-size: 14px;
-      font-weight: 700;
-      margin-left: 10px;
-    }
-  }
-  .bg-black {
-    background: #333333;
-  }
-  .bg-blue {
-    background: #4D9AFD;
-  }
-  .bg-purple {
-    background: #882592;
-  }
-}
 .info-content {
   margin: 0 30px;
   transition: all 0.3s;
@@ -521,9 +341,4 @@ export default {
     }
   }
 }
-</style>
-<style>
-  .modalCenter .ivu-modal-body {
-    padding: 0;
-  }
 </style>
