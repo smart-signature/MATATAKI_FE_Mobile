@@ -1,8 +1,11 @@
 <template>
   <div class="card">
     <div class="card-info">
-      <h2 class="card-pricing" :style='{ color: `${assetColor}` }'>{{assetAmount}}</h2>
       <span class="card-type">{{assetType}}</span>
+      <h2 class="card-pricing" :style='{ color: `${assetColor}` }'>{{assetAmount}}</h2>
+    </div>
+    <div class="card-info">
+      <span class="card-date">{{friendlyDate}}</span>
     </div>
     <div class="card-info">
       <span class="card-title" v-if="!isWithdraw">{{asset.title}}</span>
@@ -16,7 +19,6 @@
           <img src="@/assets/img/icon_copy.svg" class="copy-hash" alt="hash" @click="copyInfo(asset.trx)" />
         </span>
       </span>
-      <span class="card-date">{{friendlyDate}}</span>
     </div>
   </div>
 </template>
@@ -52,12 +54,12 @@ export default {
     },
     assetColor() {
       const switchType = {
-        'support_expenses': '#519552',
-        'buy_expenses' : '#519552',
-        'fission_income': '#D95E5E',
-        'referral_income': '#D95E5E',
-        'author_sale_income': '#D95E5E',
-        'author_supported_income': '#D95E5E',
+        'support_expenses': '#44D7B6',
+        'buy_expenses' : '#44D7B6',
+        'fission_income': '#FB6877',
+        'referral_income': '#FB6877',
+        'author_sale_income': '#FB6877',
+        'author_supported_income': '#FB6877',
         withdraw: '#333',
       };
       return switchType[this.asset.type];
@@ -111,15 +113,15 @@ export default {
 <style scoped lang="less">
 
 .card {
-    margin: 0 20px;
+    margin: 10px 0;
     box-sizing: border-box;
     background-color: #fff;
-    padding: 10px 20px;
+    padding: 16px 20px;
     display: flex;
     flex-direction: column;
     position: relative;
     text-align: left;
-    &::after {
+    /*&::after {
       content: '';
       display: block;
       position: absolute;
@@ -128,7 +130,7 @@ export default {
       right: 20px;
       height: 1px;
       background-color: rgba(241,241,241,1);
-    }
+    }*/
     &:nth-of-type(1){
       border-radius: 3px 3px 0 0;
     }
@@ -139,23 +141,27 @@ export default {
       }
     }
     &-pricing {
-      font-size: 24px;
-      font-weight: bold;
+      font-size: 18px;
+      font-weight: 700;
     }
     &-type {
       font-size:14px;
       font-weight:400;
-      color:rgba(0,0,0,.7);
+      color:rgba(0,0,0,1);
     }
     &-info {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      margin-bottom: 10px;
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
     &-title {
       font-size:14px;
-      font-weight:bold;
-      color:rgba(0,0,0,.7);
+      font-weight:400;
+      color:rgba(0,0,0,1);
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
@@ -167,11 +173,11 @@ export default {
       }
     }
     &-date {
-      font-size:14px;
-      font-weight:400;
-      color:rgba(0,0,0,.44);
+      font-size: 12px;
+      font-weight: 400;
+      color: #B2B2B2;
       flex: 0 0 100px;
-      text-align: right;
+      text-align: left;
     }
 }
 

@@ -1,13 +1,14 @@
-@bindTitle: #4E4E4E;
-@unbindTitle: #8C8C8C;
+@bindTitle: #000000;
+@unbindTitle: #B2B2B2;
 .asset {
     text-align: left;
     padding-top: 45px;
-    background-color: #F7F7F7;
+    background-color: #F1F1F1;
     min-height: 100%;
 }
 .asset-list {
-    margin: 16px 20px;
+    //margin: 16px 20px;
+    margin-top: 10px;
     border-radius: 4px;
     overflow: hidden;
     box-shadow:0px 5px 5px 0px rgba(235,235,235,0.5);
@@ -23,7 +24,7 @@
     cursor: pointer;
     background-color: #fff;
     position: relative;
-    &:nth-child(n+2)::after {
+    /*&:nth-child(n+2)::after {
         content: '';
         display: block;
         position: absolute;
@@ -32,23 +33,23 @@
         right: 20px;
         top: 0;
         background-color: #f1f1f1;
-    }
+    }*/
     &-left {
         display: flex;
         align-items: center;
     }
     &-icon {
-        width: 23px;
-        margin-right: 12px;
+        width: 30px;
+        margin-right: 10px;
     }
     &-type {
-        font-size: 18px;
-        font-weight: bolder;
+        font-size: 16px;
+        font-weight: 700;
         margin-right: 2px;
         color: @bindTitle;
-        &.unbind {
-            color: @unbindTitle;
-        }
+        //&.unbind {
+        //    color: @unbindTitle;
+        //}
     }
     &-right {
         display: flex;
@@ -59,7 +60,7 @@
             line-height: 1;
             text-align: right;
             &.withdraw {
-                font-size: 12px;
+                font-size: 14px;
                 color: @bindTitle;
                 span {
                     font-size: 18px;
@@ -67,13 +68,13 @@
                 }
             }
             &.total {
-                font-size: 12px;
+                font-size: 14px;
                 color: @unbindTitle;
             }
         }
         &-unbind {
             margin: 0;
-            font-size: 12px;
+            font-size: 14px;
             line-height: 1;
             color: @unbindTitle;
         }

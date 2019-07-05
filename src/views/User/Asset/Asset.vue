@@ -9,39 +9,38 @@
           <p class="topcard-playerincome">{{playerincome}}</p>
         </div>
         <!-- 控制提现样式 如果修改记得修改class样式 -->
-        <div class="withdraw" @click="withdrawButton">全部提现
+        <div class="withdraw" @click="withdrawButton">提现
         </div>
       </div>
 
       <div class="topcard-list">
         <div class="topcard-list-line">
-          <p class="topcard-list-title">创作历史收益</p>
           <p class="topcard-list-pricing"
-            :style='assetsRewards.totalSignIncome > 0 ? { color: "#D95E5E" }
-                    : (assetsRewards.totalSignIncome < 0 ? { color: "#519552" } : {color: "#a7aab7"})'>
+            :style='assetsRewards.totalSignIncome > 0 ? { color: "#FB6877" }
+                    : (assetsRewards.totalSignIncome < 0 ? { color: "#44D7B6" } : {color: "#000000"})'>
             {{assetsRewards.totalSignIncome}}
           </p>
+          <p class="topcard-list-title">创作收益</p>
         </div>
         <div class="topcard-list-line">
-          <p class="topcard-list-title">投资历史收益</p>
           <p class="topcard-list-pricing"
-             :style='assetsRewards.totalShareIncome > 0 ? { color: "#D95E5E" }
-                     : (assetsRewards.totalShareIncome < 0 ? { color: "#519552" } : {color: "#a7aab7"})'>
+             :style='assetsRewards.totalShareIncome > 0 ? { color: "#FB6877" }
+                     : (assetsRewards.totalShareIncome < 0 ? { color: "#44D7B6" } : {color: "#000000"})'>
             {{assetsRewards.totalShareIncome}}
           </p>
+          <p class="topcard-list-title">投资收益</p>
         </div>
         <div class="topcard-list-line">
-          <p class="topcard-list-title">投资历史支出</p>
           <p class="topcard-list-pricing"
-            :style='assetsRewards.totalShareExpenses > 0 ? { color: "#D95E5E" }
-                    : (assetsRewards.totalShareExpenses < 0 ? { color: "#519552" } : {color: "#a7aab7"})'>
+            :style='assetsRewards.totalShareExpenses > 0 ? { color: "#FB6877" }
+                    : (assetsRewards.totalShareExpenses < 0 ? { color: "#44D7B6" } : {color: "#000000"})'>
             {{assetsRewards.totalShareExpenses}}
           </p>
+          <p class="topcard-list-title">投资支出</p>
         </div>
       </div>
     </div>
 
-    <div class="detailtext">明细</div>
     <AssetList :id="id" :type="type" @getOtherAsset="getOtherAsset"/>
   </div>
 </template>

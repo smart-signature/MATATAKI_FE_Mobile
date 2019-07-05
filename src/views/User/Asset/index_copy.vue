@@ -15,7 +15,7 @@
                        </div>
                    </template>
                     <template v-else>
-                        <p class="list-right-unbind">即将上线，敬请期待</p>
+                        <p class="list-right-unbind">即将上线,敬请期待</p>
                     </template>
                     <img class="arrow" src="@/assets/img/icon_arrow.svg" alt="">
                </div>
