@@ -9,7 +9,8 @@
     "build-prod": "vue-cli-service build --mode production && cd widget && npm i && npm run build-prod && cd ..",
     "build-for-netlify": "npm run build-dev && npm run fix-netlify-cs-routing",
     "fix-netlify-cs-routing": "echo '/*    /index.html   200' >> ./dist/_redirects",
-    "test": "cross-env VUE_CLI_MODE=test mochapack --recursive --r tests/setup.js --webpack-config ./node_modules/@vue/cli-service/webpack.config.js  tests/unit/**/*.spec.js"
+    "test": "cross-env VUE_CLI_MODE=test mochapack --recursive --r tests/setup.js --webpack-config ./node_modules/@vue/cli-service/webpack.config.js  tests/unit/**/*.spec.js",
+    "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml"
   },
   "dependencies": {
     "@clampy-js/vue-clampy": "^1.0.6",
@@ -74,6 +75,8 @@
     "ontology-ts-sdk": "^1.0.15",
     "postcss-pxtorem": "^4.0.1",
     "prettier": "^1.18.2",
+    "svg-sprite-loader": "^4.1.6",
+    "svgo": "^1.2.2",
     "unmock-node": "0.0.55",
     "vue-cli-plugin-iview": "^1.0.6",
     "vue-template-compiler": "^2.6.6",

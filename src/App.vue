@@ -74,21 +74,24 @@ export default {
   watch: {
     currentUserInfo: {
       handler(newVal, oldVal) {
-        // console.debug(this.$backendAPI.accessToken.toString().includes('Promise'));        
-        if (this.$backendAPI.accessToken
-            && this.$backendAPI.accessToken.toString().includes('Promise')) return;
+        // console.debug(this.$backendAPI.accessToken.toString().includes('Promise'));
+        if (
+          this.$backendAPI.accessToken &&
+          this.$backendAPI.accessToken.toString().includes("Promise")
+        )
+          return;
         this.$backendAPI.accessToken = newVal.accessToken;
-        console.debug('watch $backendAPI.accessToken :', this.$backendAPI.accessToken);
+        console.debug("watch $backendAPI.accessToken :", this.$backendAPI.accessToken);
       },
-      deep: true,
-    },
+      deep: true
+    }
   },
   created() {
     // https://juejin.im/post/5bfa4bb951882558ae3c171e
     console.info("Smart Signature version :", version);
 
     const { signIn, updateNotify } = this;
-    
+
     let accessToken = null;
     // 根据本地存储的状态来自动登陆。失败之后再重试一次
     const data = {
@@ -104,8 +107,8 @@ export default {
       }
     }
     this.$backendAPI.accessToken = accessToken;
-    console.debug('$backendAPI.accessToken :', this.$backendAPI.accessToken);
-    
+    console.debug("$backendAPI.accessToken :", this.$backendAPI.accessToken);
+
     window.updateNotify = updateNotify;
   },
   mounted() {
@@ -113,7 +116,7 @@ export default {
     const easterEgg = new Konami(() => {
       this.triggerEasterEgg();
     });
-  },
+  }
 };
 </script>
 

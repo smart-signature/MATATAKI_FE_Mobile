@@ -24,6 +24,8 @@ import "./plugins/baseComponents";
 // global css
 import "@/assets/css/index.less";
 
+import "./icons";
+
 Vue.prototype.$backendAPI = backendAPI;
 Vue.prototype.$errorHandling = errorHandling;
 
