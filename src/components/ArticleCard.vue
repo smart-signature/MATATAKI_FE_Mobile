@@ -26,9 +26,11 @@
             {{ article.sale }}销量<span>&nbsp;&nbsp;{{ articleOntValue }}EOS/份</span>
           </p>
         </template>
-        <p v-else class="read-ups">
-          {{ friendlyDate }}
-        </p>
+        <template v-else>
+          <p class="read-ups">
+            {{ friendlyDate }}
+          </p>
+        </template>
       </div>
     </div>
   </router-link>
@@ -171,6 +173,7 @@ export default {
   font-weight: bold;
   color: rgba(0, 0, 0, 1);
   line-height: 18px;
+  white-space: normal;
 }
 
 .img-outer {
@@ -201,7 +204,6 @@ export default {
 .card-text {
   flex: 1;
   overflow: hidden;
-  height: 100%;
   display: flex;
   flex-direction: column;
   height: 60px;
