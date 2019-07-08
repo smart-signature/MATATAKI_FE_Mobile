@@ -208,7 +208,13 @@ Button.detail, Button.detail:focus, Button.detail:hover {
 }
 
 
-
+.max-width-overflow{
+  max-width: 80%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  margin: 0 auto;
+}
 
 .otherUser {
   background-color:#1C9CFE;
@@ -231,20 +237,24 @@ Button.detail, Button.detail:focus, Button.detail:hover {
     }
   }
   .name {
+    .max-width-overflow();
     font-size:20px;
     font-weight:bold;
     color:rgba(0,0,0,1);
-    margin: 10px 0 0;
+    margin-top: 10px;
     padding: 0;
     line-height: 1;
+    text-align: center;
   }
   .introduction {
+    .max-width-overflow();
     font-size:12px;
     font-weight:400;
     color:rgba(0,0,0,1);
     line-height: 1.5;
-    margin: 5px 0 0;
+    margin-top:5px;
     padding: 0;
+    text-align: center;
   }
   .userstatus {
     display: flex;
