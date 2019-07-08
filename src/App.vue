@@ -119,7 +119,7 @@ export default {
 
 <style scoped>
 #app {
-  text-align: center;
+  /*text-align: center;*/
   margin: auto;
   height: 100%;
 }

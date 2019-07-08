@@ -246,6 +246,7 @@ export default {
   color: #000000;
   z-index: 1000 !important;
   .login-btn {
+    text-align: center;
     margin: 50px 30px;
     background-color: #000;
     color: #fff;
