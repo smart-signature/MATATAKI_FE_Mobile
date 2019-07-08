@@ -131,7 +131,13 @@
           </transition>
         </template>
       </div>
-      <ArticlesList :id="id" ref="ArticlesList" class="user-list" :listtype="'others'" />
+      <ArticlesList
+        :id="id"
+        ref="ArticlesList"
+        :is-other-user="true"
+        class="user-list"
+        :listtype="'others'"
+      />
     </template>
 
     <BaseModalForSignIn

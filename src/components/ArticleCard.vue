@@ -1,6 +1,7 @@
 <template>
   <router-link tag="div" class="card" :to="{ name: 'Article', params: { hash } }">
-    <div class="info">
+    <!-- 他人主页隐藏info -->
+    <div v-if="!isOtherUser" class="info">
       <div class="avatar">
         <div class="avatar-img">
           <img v-if="avatar" v-lazy="avatar" :src="avatar" alt="avatar" />
@@ -16,11 +17,17 @@
       </div>
       <div class="card-text">
         <h2 v-clampy="2" class="title">{{ article.title }}</h2>
-        <p v-if="nowIndex === 0" class="read-ups">
-          {{ article.read }}浏览&nbsp;&nbsp;{{ article.ups }}投资
-        </p>
+        <!-- 他人主页显示时间 -->
+        <template v-if="!isOtherUser">
+          <p v-if="nowIndex === 0" class="read-ups">
+            {{ article.read }}浏览&nbsp;&nbsp;{{ article.ups }}投资
+          </p>
+          <p v-else class="read-ups">
+            {{ article.sale }}销量<span>&nbsp;&nbsp;{{ articleOntValue }}EOS/份</span>
+          </p>
+        </template>
         <p v-else class="read-ups">
-          {{ article.sale }}销量<span>&nbsp;&nbsp;{{ articleOntValue }}EOS/份</span>
+          {{ friendlyDate }}
         </p>
       </div>
     </div>
@@ -52,6 +59,11 @@ export default {
     nowIndex: {
       type: Number,
       default: () => 0
+    },
+    // isOtherUser 是其他用户信息视角吗
+    isOtherUser: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -98,6 +110,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin: 0 0 10px;
   .avatar {
     display: flex;
     align-items: center;
@@ -140,7 +153,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 10px 0 0 0;
 }
 .read-ups {
   font-size: 12px;

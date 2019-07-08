@@ -29,6 +29,7 @@
         :class="listtype !== 'others' && 'card-margin'"
         :article="item"
         :now-index="activeIndex"
+        :is-other-user="isOtherUser"
       />
     </BasePull>
   </div>
@@ -48,6 +49,10 @@ export default {
     id: {
       type: String,
       default: ""
+    },
+    isOtherUser: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
