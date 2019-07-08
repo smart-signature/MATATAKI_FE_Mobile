@@ -25,7 +25,7 @@
           <van-switch
             v-model="articleTransfer"
             size="22px"
-            active-color="#56A56B"
+            active-color="#1C9CFE"
             inactive-color="#F0F0F0"
             @change="changeTransfer"
           />
@@ -49,13 +49,14 @@
         <span class="help-list-title">加入电报</span>
         <img class="arrow" src="@/assets/img/icon_arrow.svg" alt="view" />
       </a>
-      <div class="help-list">
+      <!--<div class="help-list">
         <span class="help-list-title">当前版本</span>
         <span class="help-list-sub">v2.3.2</span>
-      </div>
+      </div>-->
     </div>
     <div class="signout">
-      <a class="signout-button" href="javascript:;" @click="btnsignOut">退出登录</a>
+      <p class="version">-version3.0.0-</p>
+      <a class="signout-button" href="javascript:;" @click="btnsignOut">登出</a>
     </div>
   </div>
 </template>

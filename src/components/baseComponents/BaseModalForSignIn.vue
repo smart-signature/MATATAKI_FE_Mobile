@@ -1,5 +1,5 @@
 <template>
-  <Modal v-model="showModaCopy" footer-hide class-name="modalCenter" @on-visible-change="change">
+  <Modal v-model="showModaCopy" footer-hide class-name="modalCenter signupModal" @on-visible-change="change">
     <section class="step" v-if="step === 1">
       <h1 class="step-title">选择授权方式</h1>
       <div class="btns">
@@ -311,6 +311,7 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  margin: auto;
   .wallet {
     max-width: 250px;
     margin-bottom: 20px;
@@ -523,7 +524,7 @@ export default {
 }
 </style>
 <style>
-  .modalCenter .ivu-modal-body {
+  .signupModal .ivu-modal-body {
     padding: 0;
   }
 </style>

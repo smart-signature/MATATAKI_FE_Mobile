@@ -2,12 +2,12 @@
   <div class="header" :style="customizeHeaderBc && 'background:' + customizeHeaderBc" :class="[isCenter && 'mw', isToggleBc && 'bc']">
     <div class="header-left" slot="left">
       <template v-if="white">
-        <img src="@/assets/img/icon_back_white.svg" alt="home" @click="goBack" class="back-icon">
-        <img src="@/assets/img/icon_home_white.svg" alt="home" @click="goHome" class="home-icon">
+        <img src="@/assets/newimg/back_white.svg" alt="back" @click="goBack" class="back-icon">
+        <img src="@/assets/newimg/zhuye_white.svg" alt="home" @click="goHome" class="home-icon">
       </template>
       <template v-else>
-        <img src="@/assets/img/icon_back.svg" alt="home" @click="goBack" class="back-icon">
-        <img src="@/assets/img/icon_home.svg" alt="home" @click="goHome" class="home-icon">
+        <img src="@/assets/newimg/back.svg" alt="back" @click="goBack" class="back-icon">
+        <img src="@/assets/newimg/zhuye.svg" alt="home" @click="goHome" class="home-icon">
       </template>
     </div>
     <p slot="title" class="title"> {{pageinfo.title}} </p>
@@ -138,7 +138,7 @@ export default {
 .header-left {
   position: absolute;
   left: 20px;
-    display: flex;
+  display: flex;
   align-items: center;
 }
 .title {
@@ -147,22 +147,23 @@ export default {
   font-family:PingFangSC-Regular;
   font-weight:400;
   letter-spacing:1px;
-  color: #676767;
+  color: #000000;
 }
 .header-right{
   position: absolute;
   right: 20px;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 .back-icon {
-  width: 16px;
+  width: 9px;
   cursor: pointer;
 }
 
 .home-icon {
-  width: 22px;
-  margin-left: 6px;
+  width: 19px;
+  margin-left: 16px;
   cursor: pointer;
 }
 
