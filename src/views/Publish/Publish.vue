@@ -48,7 +48,11 @@
         @imgAdd="$imgAdd"
       />
       <div v-if="editorMode !== 'edit'" class="fission">
-        <p>裂变系数</p>
+        <p>裂变系数
+          <Poptip popper-class="my-poptip" content="决定每名投资者的收益上限 = 投资金额 * 裂变系数 裂变系数越大投资者的收益预期越高" width="250" word-wrap placement="top-start">
+            <span class="question">?</span>
+          </Poptip>
+        </p>
         <div v-if="editorMode !== 'edit'" class="fission-num-slider">
           <VueSlider
             v-model="fissionNum"
@@ -62,25 +66,28 @@
           {{ fissionNum }}
         </div>
       </div>
-      <div class="cover">
-        <p>图文封面</p>
-        <img-upload
-          v-show="!cover"
-          :img-upload-done="imgUploadDone"
-          :aspect-ratio="2 / 1"
-          class="cover-upload"
-          @doneImageUpload="doneImageUpload"
-        >
-          <img slot="uploadButton" class="cover-add" src="@/assets/img/icon_add.svg" alt="add" />
-        </img-upload>
-        <div v-show="cover" class="cover-right">
-          <img class="cover-right-img" :src="coverEditor" alt="cover" />
-          <img
+      <div class="cover-container">
+        <div v-show="cover">
+          <img class="cover-img" :src="coverEditor" alt="cover" />
+          <!--<img
             class="cover-right-remove"
             src="@/assets/img/icon_remove.svg"
             alt="remove"
             @click.prevent="removeCover"
-          />
+          />-->
+        </div>
+        <div class="cover">
+          <p>图文封面 <span class="cover-tip">请上传长宽2:1尺寸的静态图片</span></p>
+          <img-upload
+            v-if="!cover"
+            :img-upload-done="imgUploadDone"
+            :aspect-ratio="2 / 1"
+            class="cover-upload"
+            @doneImageUpload="doneImageUpload"
+          >
+            <img slot="uploadButton" class="cover-add" src="@/assets/newimg/add.svg" alt="add" />
+          </img-upload>
+          <img v-else class="cover-btn" src="@/assets/newimg/del.svg" alt="remove" @click.prevent="removeCover"/>
         </div>
       </div>
     </div>
@@ -95,16 +102,39 @@
         />
       </div>
     </div>
-    <div v-if="isShowEditorMode" class="radio">
-      <RadioGroup v-model="saveType" vertical class="save-type">
-        <Radio size="large" label="public">公开发布</Radio>
-        <Radio size="large" label="draft">保存到草稿箱</Radio>
-      </RadioGroup>
-    </div>
+    <van-radio-group v-model="saveType" v-if="isShowEditorMode" >
+      <van-cell-group>
+        <van-cell title="公开发布" clickable @click="saveType = 'public'">
+          <van-radio name="public">
+            <div slot="icon" slot-scope="props" class="my-radio">
+              <div v-if="props.checked" class="radio-active"></div>
+            </div>
+          </van-radio>
+        </van-cell>
+        <van-cell title="保存到草稿箱" clickable @click="saveType = 'draft'">
+          <van-radio name="draft" >
+            <div slot="icon" slot-scope="props" class="my-radio">
+              <div v-if="props.checked" class="radio-active"></div>
+            </div>
+          </van-radio>
+        </van-cell>
+      </van-cell-group>
+    </van-radio-group>
+    <van-cell clickable title="确认为原创" @click="isOriginal = !isOriginal">
+      <van-checkbox v-model="isOriginal">
+        <div slot="icon" slot-scope="props">
+          <div class="my-checkbox" v-if="!props.checked">
+          </div>
+          <div v-else class="my-checkbox-active">
+            <img src="../../assets/newimg/select.svg" alt="select">
+          </div>
+        </div>
+      </van-checkbox>
+    </van-cell>
 
-    <div class="is-original">
+    <!--<div class="is-original">
       <Checkbox v-model="isOriginal" size="large">&nbsp;确认为原创</Checkbox>
-    </div>
+    </div>-->
     <modal-prompt
       :show-modal="showModal"
       :modal-text="modalText"

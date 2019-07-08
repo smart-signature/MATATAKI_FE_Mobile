@@ -173,49 +173,53 @@ export default {
 
 <style lang="less" scoped>
 .edit-user {
-  background-color: #F7F7F7;
+  background-color: #F1F1F1;
   min-height: 100%;
   padding-top: 45px;
 }
 .edit-card {
-  background:rgba(255,255,255,1);
-  box-shadow:0px 2px 5px 0px rgba(235,235,235,0.5);
-  border-radius:4px;
-  margin: 10px 20px 0;
-&-list {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: relative;
-  padding: 18px 20px;
-  &:nth-child(n+2)::before{
-    content: '';
-    display: block;
-    position: absolute;
-    left: 20px;
-    right: 20px;
-    top: 0;
-    height: 1px;
-    background-color: #f1f1f1;
+  //background:rgba(255,255,255,1);
+  &-list {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    padding: 18px 20px;
+    margin-bottom: 10px;
+    background: #ffffff;
+   /* &:nth-child(n+2)::before{
+      content: '';
+      display: block;
+      position: absolute;
+      left: 20px;
+      right: 20px;
+      top: 0;
+      height: 1px;
+      background-color: #f1f1f1;
+    }*/
+    span {
+      font-size:14px;
+      font-weight:400;
+      color:rgba(0,0,0,1);
+    }
+    input {
+      flex: 1;
+      text-align: right;
+      border: none;
+      background: transparent;
+      outline: none;
+      overflow: hidden;
+      padding-left: 10px;
+      font-size:14px;
+      font-weight:400;
+      color:rgba(0,0,0,.7);
+      &::placeholder {
+        font-size:14px;
+        font-weight:500;
+        color:#B2B2B2;
+      }
+    }
   }
-  span {
-    font-size:14px;
-    font-weight:400;
-    color:rgba(0,0,0,.44);
-  }
-  input {
-    flex: 1;
-    text-align: right;
-    border: none;
-    background: transparent;
-    outline: none;
-    overflow: hidden;
-    padding-left: 10px;
-    font-size:14px;
-    font-weight:400;
-    color:rgba(0,0,0,.7);
-  }
-}
 }
 
 .imgcard {
@@ -246,10 +250,10 @@ export default {
 .done-button {
   font-size:14px;
   font-weight:400;
-  color:rgba(0,0,0,.7);
+  color:rgba(0,0,0,1);
   cursor: pointer;
   &.no-modify {
-    color:rgba(0,0,0,.5);
+    color:rgba(0,0,0,1);
   }
 }
 </style>

@@ -87,7 +87,17 @@
     font-size: 14px;
     border-bottom: 1px solid #eaeaea;
     p {
-      font-weight: bold;
+      color: #323233;
+      .question {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background-color: #DBDBDB;
+        color: #ffffff;
+        display: inline-block;
+        line-height: 18px;
+        text-align: center;
+      }
     }
     .fission-num-slider{
       max-width: 130px;
@@ -99,46 +109,41 @@
       font-size: 16px;
     }
   }
-
+  .cover-container {
+    padding: 8px 20px;
+    background-color: #fff;
+    border-bottom: 1px solid #eee;
+    .cover-img {
+      width: 60%;
+      max-width: 500px;
+    }
+  }
   .cover {
     display: flex;
     align-items: center;
-    background-color: #fff;
-    padding: 8px 20px;
+    justify-content: space-between;
     font-size: 14px;
-    border-bottom: 1px solid #eee;
      p {
-      font-weight: bold;
+       color: #323233;
+       font-size: 14px;
+       line-height: 20px;
+       .cover-tip {
+         font-size: 12px;
+         line-height: 20px;
+         color: #B2B2B2;
+         margin-left: 10px;
+       }
     }
     .cover-upload{
-      margin-left: 10px;
       .cover-add {
-        width: 30px;
-        margin-top: 12px;
-      }
-    }
-    
-    &-right {
-      display: flex;
-      align-items: center;
-      margin-left: 10px;
-      &-img {
-        width: 60px;
-        border: 1px solid #e4e4e4;
-        box-sizing: border-box;
-      }
-      &-remove {
-        width: 20px;
-        cursor: pointer;
-        margin-left: 10px;
+        margin-top: 10px;
       }
     }
   }
   .tag {
     p {
       font-size: 14px;
-      font-weight: bold;
-      color: rgb(81, 90, 110);
+      color: #323233;
       text-align: left;
       padding: 14px 0 0 20px;
     }
@@ -193,3 +198,36 @@
     right: 0; 
     z-index: 99;
   }
+.my-checkbox {
+  height: 20px;
+  width: 20px;
+  border: 1px solid #1C9CFE;
+  border-radius: 4px;
+  &-active {
+    background-color: #1C9CFE;
+    height: 20px;
+    width: 20px;
+    padding: 2px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+.my-radio {
+  height: 20px;
+  width: 20px;
+  border: 1px solid #1C9CFE;
+  border-radius: 50%;
+  box-sizing: border-box;
+  position: relative;
+  .radio-active {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    height: 14px;
+    width: 14px;
+    border-radius: 50%;
+    background-color: #1C9CFE;
+  }
+}

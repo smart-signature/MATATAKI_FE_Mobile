@@ -7,7 +7,7 @@ import {
   Dropdown, DropdownMenu, DropdownItem,
   Checkbox, Input,
   Tabs, TabPane,
-  Scroll,
+  Scroll, Poptip
 } from 'iview';
 
 import 'iview/dist/styles/iview.css';
@@ -32,3 +32,4 @@ Vue.component('Input', Input);
 Vue.component('Tabs', Tabs);
 Vue.component('TabPane', TabPane);
 Vue.component('Scroll', Scroll);
+Vue.component('Poptip', Poptip);

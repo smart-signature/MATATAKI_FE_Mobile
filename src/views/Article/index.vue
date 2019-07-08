@@ -196,7 +196,7 @@
         <button
           v-else-if="isSupported === 1"
           class="button-support bg-yellow border-yellow"
-          @click="investProductModal = true"
+          @click="invest"
         >
           投资<img src="@/assets/newimg/touzi.svg" />
         </button>
@@ -226,7 +226,7 @@
           v-else
           class="button-support bg-yellow border-yellow"
           :disabled="product.stock === 0"
-          @click="supportButton"
+          @click="buyButton"
         >
           {{ product.stock === 0 ? "售罄" : "购买" }}<img src="@/assets/newimg/goumai.svg" />
         </button>
@@ -241,7 +241,7 @@
         <button v-if="isSupported === 0" class="button-support" disabled>
           投资中
         </button>
-        <button v-else-if="isSupported === 1" class="button-support" @click="supportButton">
+        <button v-else-if="isSupported === 1" class="button-support" @click="invest">
           投资<img src="@/assets/newimg/zanshang4.svg" />
         </button>
         <button v-else-if="isSupported === 2" class="button-support" disabled>
@@ -306,7 +306,7 @@
     </van-popup>
 
     <van-popup v-model="investProductModal" class="buy-product-modal">
-      <h1 class="title">投资商品</h1>
+      <h1 class="title">{{investTitle}}</h1>
       <div class="invest-info">
         <div class="info-item">
           <span class="info-number">{{ getDisplayedFissionFactor }}</span>
@@ -415,6 +415,7 @@ export default {
   props: ["hash"],
   data() {
     return {
+      investTitle: '投资文章',
       followed: false,
       productNumber: 1,
       buySuccessModal: false,
@@ -677,8 +678,19 @@ export default {
       const findBlockchain = (arr, symbol) => arr.filter(i => i.symbol === symbol);
       return findBlockchain(articlePrices, idProvider);
     },
+    // 购买按钮
+    buyButton() {
+      const { currentUserInfo, findBlockchain, article } = this;
+      const { idProvider } = currentUserInfo;
+      const filterBlockchain = findBlockchain(article.prices, idProvider);
+      const { stock_quantity: stockQuantity } = filterBlockchain[0];
+      if (stockQuantity <= 0) {
+        return this.$toast({ duration: 1000, message: "库存不足" });
+      }
+      this.buyProductModal = true;
+    },
     // 投资按钮
-    supportButton() {
+    async invest() {
       if (this.currentUserInfo.idProvider === "GitHub")
         return this.$toast({ duration: 1000, message: "Github账号暂不支持投资功能" });
       // 如果是商品 判断库存是否充足
@@ -690,11 +702,11 @@ export default {
         if (stockQuantity <= 0) {
           return this.$toast({ duration: 1000, message: "库存不足" });
         }
-        this.buyProductModal = true;
+        this.investTitle = '投资商品';
       } else {
-        this.supportModal = true;
+        this.investTitle = '投资文章';
       }
-      return true;
+      this.investProductModal = true;
     },
     async buyProduct() {
       const loading = this.$toast.loading({

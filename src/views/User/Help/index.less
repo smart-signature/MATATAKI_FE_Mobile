@@ -1,5 +1,5 @@
 .help {
-  background-color: #F7F7F7;
+  background-color: #F1F1F1;
   min-height: 100%;
   padding-top: 45px;
   display: flex;
@@ -8,19 +8,17 @@
 
 .help-block {
   background:rgba(255,255,255,1);
-  box-shadow:0px 5px 5px 0px rgba(235,235,235,0.5);
-  border-radius:4px;
-  margin: 8px 20px;
+  margin-bottom: 10px;
   &:nth-child(2){
-    margin-top: 22px;
+    //margin-top: 22px;
   }
   .help-list {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
+    padding: 14px 20px;
     position: relative;
-    &:nth-child(n+2)::before{
+    /*&:nth-child(n+2)::before{
       content: '';
       display: block;
       position: absolute;
@@ -29,12 +27,12 @@
       left: 20px;
       right: 20px;
       background-color: #f1f1f1;
-    }
+    }*/
 
     &-title {
       font-size:14px;
       font-weight:400;
-      color:rgba(0,0,0,.7);
+      color:rgba(0,0,0,1);
     }
     &-sub {
       font-size:14px;
@@ -59,15 +57,19 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  text-align: center;
+  .version {
+    color: #B2B2B2;
+    font-size: 12px;
+  }
   &-button {
-    background:rgba(255,255,255,1);
-    box-shadow:0px 5px 5px 0px rgba(235,235,235,0.5);
-    border-radius:4px;
-    margin: 0 20px 20px;
-    padding: 18px 0;
-    font-size:14px;
-    font-weight:400;
-    color:rgba(0,0,0,.7);
+    background: #B2B2B2;
+    border-radius: 6px;
+    margin: 20px;
+    padding: 10px 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffffff;
     cursor: pointer;
   }
 }
