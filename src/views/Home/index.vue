@@ -116,26 +116,6 @@ export default {
               },
               apiUrl: "homeSupportsRanking",
               articles: []
-            },
-            {
-              label: "EOS",
-              title: "最多EOS",
-              params: {
-                channel: 1,
-                symbol: "eos"
-              },
-              apiUrl: "homeAmountRankingEOS",
-              articles: []
-            },
-            {
-              label: "ONT",
-              title: "最多ONT",
-              params: {
-                channel: 1,
-                symbol: "ont"
-              },
-              apiUrl: "homeAmountRankingONT",
-              articles: []
             }
           ],
           autoRequestTime: 0,

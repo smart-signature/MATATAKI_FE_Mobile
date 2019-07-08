@@ -1,7 +1,11 @@
 <template>
   <div class="original mw">
-    <BaseHeader :pageinfo="{ title: pageTitle }"/>
-    <ArticlesList :listtype="'original'" :id='id' ref='ArticlesList'/>
+    <BaseHeader :pageinfo="{ title: pageTitle }" />
+    <ArticlesList
+      :id="id"
+      ref="ArticlesList"
+      :listtype="'original'"
+    />
   </div>
 </template>
 
@@ -11,40 +15,36 @@ import ArticlesList from './ArticlesList.vue';
 
 export default {
   name: 'Original',
-  props: ['id'],
   components: { ArticlesList },
+  props: ['id'],
   data() {
     return {
       editing: false,
-      userTitle: '',
+      userTitle: ''
     };
   },
   computed: {
-    ...mapGetters(['isMe']),
+    ...mapGetters(['isMe'])
   },
   watch: {
     isMe() {
       this.toggleTitle();
-    },
-  },
-  methods: {
-    toggleTitle() {
-      const { isMe, id } = this;
-      this.pageTitle = isMe(id) ? '我的原创文章' : '他的原创文章';
-    },
+    }
   },
   created() {
     this.toggleTitle();
   },
+  methods: {
+    toggleTitle() {
+      const { isMe, id } = this;
+      this.pageTitle = isMe(id) ? '我的原创' : '他的原创';
+    }
+  }
 };
 </script>
-<style>
-a {
-  color: #000;
-  text-decoration: none; /* no underline */
-}
-.original{
-  background-color: #F7F7F7;
+<style scoped>
+.original {
+  background-color: #f7f7f7;
   padding-bottom: 20px;
   padding-top: 45px;
   min-height: 100%;

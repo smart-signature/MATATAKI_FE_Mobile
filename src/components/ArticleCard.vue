@@ -1,37 +1,26 @@
 <template>
-  <router-link :to="{ name: 'Article', params: { hash } }">
-    <div class="card">
+  <router-link tag="div" class="card" :to="{ name: 'Article', params: { hash } }">
+    <div class="info">
+      <div class="avatar">
+        <div class="avatar-img">
+          <img v-if="avatar" v-lazy="avatar" :src="avatar" alt="avatar" />
+        </div>
+        <span>{{ article.nickname || article.author }}</span>
+      </div>
+      <span>{{ friendlyDate }}</span>
+    </div>
+    <div class="container">
       <div class="img-outer">
         <img v-lazy="cover" :src="cover" alt="cover" class="img-inner" />
         <div class="full"></div>
       </div>
-      <div v-if="nowIndex === 0" class="card-text">
+      <div class="card-text">
         <h2 v-clampy="2" class="title">{{ article.title }}</h2>
-        <p class="date">
-          <span>{{ friendlyDate }}</span>
-          <span>
-            <img class="read" src="../assets/img/icon_article_read.svg" alt="read" />{{
-              article.read
-            }}
-            <img class="eos" src="../assets/img/icon_article_ont.svg" alt="ont" />{{
-              articleOntValue
-            }}
-            <img class="ont" src="../assets/img/icon_eos_article.svg" alt="eos" />{{ articleValue }}
-          </span>
+        <p v-if="nowIndex === 0" class="read-ups">
+          {{ article.read }}浏览&nbsp;&nbsp;{{ article.ups }}投资
         </p>
-      </div>
-      <div v-else class="card-text">
-        <h2 v-clampy="2" class="title">{{ article.title }}</h2>
-        <p class="date">
-          <span>销量: {{ article.sale }}</span>
-          <span>
-            <img class="eos" src="../assets/img/icon_article_ont_orange.svg" alt="ont" />{{
-              articleOntValue
-            }}
-            <img class="ont orange" src="../assets/img/icon_article_eos_orange.svg" alt="eos" />{{
-              articleValue
-            }}
-          </span>
+        <p v-else class="read-ups">
+          {{ article.sale }}销量<span>&nbsp;&nbsp;{{ articleOntValue }}EOS/份</span>
         </p>
       </div>
     </div>
@@ -76,12 +65,13 @@ export default {
     hash() {
       return this.article.id; // 原来是 hash 现在用id进入
     },
+    avatar() {
+      if (this.article.avatar) return this.$backendAPI.getAvatarImage(this.article.avatar);
+      return "";
+    },
     cover() {
       if (this.article.cover) return this.$backendAPI.getAvatarImage(this.article.cover);
       return coverDefault;
-    },
-    articleValue() {
-      return precision(this.article.eosvalue, "eos");
     },
     articleOntValue() {
       return precision(this.article.ontvalue, "ont");
@@ -98,15 +88,75 @@ export default {
   box-sizing: border-box;
   background-color: #fff;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   justify-content: space-between;
   transition: all 0.2s;
 }
+.info {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  .avatar {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    &-img {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      overflow: hidden;
+      background-color: #eee;
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+    span {
+      flex: 1;
+      font-size: 12px;
+      font-weight: bold;
+      color: #000000;
+      margin: 0 0 0 5px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      text-align: left;
+    }
+  }
+  span {
+    text-align: right;
+    width: 90px;
+    font-size: 12px;
+    font-weight: 400;
+    color: rgba(178, 178, 178, 1);
+  }
+}
 
-.card .title {
+.container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 10px 0 0 0;
+}
+.read-ups {
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(178, 178, 178, 1);
+  text-align: right;
+  span {
+    font-size: 12px;
+    font-weight: bold;
+    color: rgba(247, 181, 0, 1);
+  }
+}
+
+.title {
   font-size: 14px;
-  font-weight: 500;
+  font-weight: bold;
   color: rgba(0, 0, 0, 1);
   line-height: 18px;
 }
@@ -115,7 +165,7 @@ export default {
   flex: 0 0 120px;
   width: 120px;
   height: 60px;
-  background: #fff;
+  background: #eee;
   border-radius: 6px;
   overflow: hidden;
   position: relative;
@@ -132,7 +182,6 @@ export default {
     right: 0;
     bottom: 0;
     left: 0;
-    border-radius: 6px;
     background-color: rgba(0, 0, 0, 0.05);
   }
 }
@@ -147,47 +196,12 @@ export default {
   justify-content: space-between;
 }
 
-.card .date {
-  display: flex;
-  align-items: center;
-  font-size: 12px;
-  font-weight: 400;
-  color: rgba(178, 178, 178, 1);
-  justify-content: space-between;
-  span {
-    display: flex;
-    align-items: center;
-  }
-  img {
-    margin: 0 4px 0 8px;
-    &:nth-child(1) {
-      margin-left: 0;
-    }
-    &.read {
-      width: 20px;
-      height: 14px;
-    }
-    &.ont {
-      width: 12px;
-      height: 18px;
-      opacity: 0.6;
-      &.orange {
-        opacity: 1;
-      }
-    }
-    &.eos {
-      width: 15px;
-      height: 14px;
-    }
-  }
-}
-
 // 因为不开放适配 所以媒体查询放大
 @media screen and (min-width: 750px) {
   .card {
     padding: 15px 20px;
     &:hover {
-      transform: translate(0, -4px);
+      transform: translate(0, -2px);
       box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.1);
       .img-outer .img-inner {
         transform: scale(1.04);
@@ -209,11 +223,8 @@ export default {
     }
   }
 
-  .card .date {
+  .card .read-ups {
     font-size: 15px;
-    img {
-      margin: 0 4px 0 16px;
-    }
   }
 }
 </style>

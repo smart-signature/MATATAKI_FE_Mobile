@@ -1,19 +1,54 @@
 <template>
-  <div class="header" :style="customizeHeaderBc && 'background:' + customizeHeaderBc" :class="[isCenter && 'mw', isToggleBc && 'bc']">
-    <div class="header-left" slot="left">
+  <div
+    class="header"
+    :style="customizeHeaderBc && 'background:' + customizeHeaderBc"
+    :class="[isCenter && 'mw', isToggleBc && 'bc']"
+  >
+    <div
+      slot="left"
+      class="header-left"
+    >
       <template v-if="white">
-        <img src="@/assets/img/icon_back_white.svg" alt="home" @click="goBack" class="back-icon">
-        <img src="@/assets/img/icon_home_white.svg" alt="home" @click="goHome" class="home-icon">
+        <img
+          src="@/assets/img/icon_back_white.svg"
+          alt="home"
+          class="back-icon"
+          @click="goBack"
+        >
+        <img
+          src="@/assets/img/icon_home_white.svg"
+          alt="home"
+          class="home-icon"
+          @click="goHome"
+        >
       </template>
       <template v-else>
-        <img src="@/assets/img/icon_back.svg" alt="home" @click="goBack" class="back-icon">
-        <img src="@/assets/img/icon_home.svg" alt="home" @click="goHome" class="home-icon">
+        <img
+          src="@/assets/img/icon_back.svg"
+          alt="home"
+          class="back-icon"
+          @click="goBack"
+        >
+        <img
+          src="@/assets/img/icon_home.svg"
+          alt="home"
+          class="home-icon"
+          @click="goHome"
+        >
       </template>
     </div>
-    <p slot="title" class="title"> {{pageinfo.title}} </p>
-    <div class="header-right" slot="right">
-      <slot name='info'></slot>
-      <slot name="right"></slot>
+    <p
+      slot="title"
+      class="title"
+    >
+      {{ pageinfo.title }}
+    </p>
+    <div
+      slot="right"
+      class="header-right"
+    >
+      <slot name="info" />
+      <slot name="right" />
     </div>
   </div>
 </template>
@@ -145,9 +180,9 @@ export default {
   text-align: center;
   font-size:16px;
   font-family:PingFangSC-Regular;
-  font-weight:400;
+  font-weight:bold;
   letter-spacing:1px;
-  color: #676767;
+  color: #000;
 }
 .header-right{
   position: absolute;

@@ -1,42 +1,65 @@
 <template>
   <div>
-    <div v-if="tabsData.length >= 2">
-      <Tabs :value="activeIndex">
-        <TabPane v-for="(item, index) in tabsData" :key="index" :label="item.label">
-          <BasePull
-            :params="item.params"
-            :api-url="item.apiUrl"
-            :active-index="activeIndex"
-            :now-index="index"
-            :loading-text="loadingText"
-            :is-obj="{ type: 'Object', key: 'data' }"
-            @getListData="getListDataTab"
-          >
-            <ArticleCard v-for="(item, index) in item.articles" :key="index" :article="item" />
-          </BasePull>
-        </TabPane>
-      </Tabs>
+    <div>
+      <div class="tabs">
+        <div
+          v-for="(item, index) in tabsData"
+          :key="index"
+          class="tabs-item"
+          :class="activeIndex === index && 'active'"
+          @click="toggleTabs(index)"
+        >
+          {{ item.label }}
+        </div>
+      </div>
+      <div v-for="(item, index) in tabsData" v-show="activeIndex === index" :key="index">
+        <BasePull
+          :params="item.params"
+          :api-url="item.apiUrl"
+          :active-index="activeIndex"
+          :now-index="index"
+          :loading-text="item.loadingText"
+          :is-obj="{ type: 'Object', key: 'data' }"
+          @getListData="getListDataTab"
+        >
+          <ArticleCard
+            v-for="(item, index) in item.articles"
+            :key="index"
+            :class="listtype !== 'others' && 'card-margin'"
+            :article="item"
+            :now-index="activeIndex"
+          />
+        </BasePull>
+      </div>
     </div>
-    <div v-else>
-      <BasePull
-        :params="params"
-        :api-url="apiUrl"
-        :loading-text="loadingText"
-        :is-obj="{ type: 'Object', key: 'data' }"
-        @getListData="getListData"
-      >
-        <ArticleCard v-for="(item, index) in articles" :key="index" :article="item" />
-      </BasePull>
-    </div>
+    <!-- <Tabs :value="activeIndex">
+      <TabPane v-for="(item, index) in tabsData" :key="index" :label="item.label">
+        <BasePull
+          :params="item.params"
+          :api-url="item.apiUrl"
+          :active-index="activeIndex"
+          :now-index="index"
+          :loading-text="loadingText"
+          :is-obj="{ type: 'Object', key: 'data' }"
+          @getListData="getListDataTab"
+        >
+          <ArticleCard
+            v-for="(item, index) in item.articles"
+            :key="index"
+            class="card-margin"
+            :article="item"
+          />
+        </BasePull>
+      </TabPane>
+    </Tabs> -->
   </div>
 </template>
 
 <script>
-import { ArticleCard } from "@/components/";
+import { ArticleCard } from '@/components/';
 
-export const TimeLine = "最新发布";
 export default {
-  name: "ArticlesList",
+  name: 'ArticlesList',
   components: { ArticleCard },
   props: {
     listtype: {
@@ -44,51 +67,93 @@ export default {
       required: true
     },
     id: {
-      type: String
+      type: String,
+      default: ''
     }
   },
   data() {
     return {
       tabsData: [],
-      params: {},
-      apiUrl: "",
-      articles: [],
-      activeIndex: 0,
-      loadingText: {
-        nomore: "",
-        noresults: "无文章"
-      }
+      activeIndex: 0
     };
   },
   computed: {},
   created() {
     const { id, listtype } = this;
-    if (listtype === "others") {
+    if (listtype === 'others') {
       this.tabsData = [
         {
-          label: "文章列表",
+          label: '原创',
           params: { author: id },
-          apiUrl: "homeTimeRanking",
-          articles: []
+          apiUrl: 'homeTimeRanking',
+          articles: [],
+          loadingText: {
+            nomore: '',
+            noresults: '暂无文章'
+          }
         },
         {
-          label: "他投资的",
+          label: '投资',
           params: { user: id },
-          apiUrl: "userArticlesSupportedList",
-          articles: []
+          apiUrl: 'userArticlesSupportedList',
+          articles: [],
+          loadingText: {
+            nomore: '',
+            noresults: '暂无投资'
+          }
         }
       ];
-    } else if (listtype === "original") {
-      this.apiUrl = "homeTimeRanking";
-      this.params = { author: id };
-    } else if (listtype === "reward") {
-      this.apiUrl = "userArticlesSupportedList";
-      this.params = { user: id };
+    } else if (listtype === 'original') {
+      this.tabsData = [
+        {
+          label: '文章',
+          params: { author: id, channel: 1 },
+          apiUrl: 'homeTimeRanking',
+          articles: [],
+          loadingText: {
+            nomore: '',
+            noresults: '暂无文章'
+          }
+        },
+        {
+          label: '商品',
+          params: { author: id, channel: 2 },
+          apiUrl: 'homeTimeRanking',
+          articles: [],
+          loadingText: {
+            nomore: '',
+            noresults: '暂无商品'
+          }
+        }
+      ];
+    } else if (listtype === 'reward') {
+      this.tabsData = [
+        {
+          label: '文章',
+          params: { user: id, channel: 1 },
+          apiUrl: 'userArticlesSupportedList',
+          articles: [],
+          loadingText: {
+            nomore: '',
+            noresults: '暂无文章'
+          }
+        },
+        {
+          label: '商品',
+          params: { user: id, channel: 2 },
+          apiUrl: 'userArticlesSupportedList',
+          articles: [],
+          loadingText: {
+            nomore: '',
+            noresults: '暂无商品'
+          }
+        }
+      ];
     }
   },
   methods: {
-    getListData({ list }) {
-      this.articles = list;
+    toggleTabs(i) {
+      this.activeIndex = i;
     },
     getListDataTab({ index, list }) {
       this.tabsData[index].articles = list;
@@ -103,8 +168,29 @@ export default {
 };
 </script>
 
-<style lang="less">
-a {
-  color: black;
+<style lang="less" scoped>
+.card-margin {
+  margin: 0 0 10px 0;
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  margin: 10px 0;
+
+  &-item {
+    font-size: 20px;
+    font-weight: 400;
+    color: rgba(178, 178, 178, 1);
+    cursor: pointer;
+    transform: all 0.3s;
+    &.active {
+      color: rgba(51, 51, 51, 1);
+    }
+    &:nth-last-child(1) {
+      margin-left: 25px;
+    }
+  }
 }
 </style>

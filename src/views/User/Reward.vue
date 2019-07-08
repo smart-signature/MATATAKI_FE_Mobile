@@ -1,47 +1,45 @@
 <template>
-  <div class="original mw">
-    <BaseHeader :pageinfo="{ left: 'back', title: pageTitle, rightPage: 'home' }"/>
-    <ArticlesList :listtype="'reward'" :id='id' ref='ArticlesList'/>
+  <div class="reward mw">
+    <BaseHeader :pageinfo="{ left: 'back', title: pageTitle, rightPage: 'home' }" />
+    <ArticlesList :id="id" ref="ArticlesList" :listtype="'reward'" />
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import ArticlesList from './ArticlesList.vue';
+import { mapGetters } from "vuex";
+import ArticlesList from "./ArticlesList.vue";
 
 export default {
-  name: 'Original',
-  props: ['id'],
+  name: "Original",
   components: { ArticlesList },
+  props: ["id"],
   data() {
     return {
       playerincome: null,
       editing: false,
-      user: '',
-      pageTitle: '',
+      user: "",
+      pageTitle: ""
     };
   },
   computed: {
-    ...mapGetters(['isMe']),
+    ...mapGetters(["isMe"])
   },
   created() {
     const { isMe, id } = this;
-    this.user = isMe(id) ? '我的用户页' : `${id} 的用户页`;
-    this.pageTitle = isMe(id) ? '我投资的文章' : `${id} 投资的文章`;
+    this.user = isMe(id) ? "我的用户页" : `${id} 的用户页`;
+    this.pageTitle = isMe(id) ? "我投资的文章" : `${id} 投资的文章`;
     document.title = `${this.user} - SmartSignature`;
   },
   methods: {
-    goBack() { this.$router.go(-1); },
-  },
+    goBack() {
+      this.$router.go(-1);
+    }
+  }
 };
 </script>
 <style scoped>
-a {
-  color: #000;
-  text-decoration: none; /* no underline */
-}
-.original{
-  background-color: #F7F7F7;
+.reward {
+  background-color: #f7f7f7;
   padding-bottom: 20px;
   padding-top: 45px;
   min-height: 100%;
