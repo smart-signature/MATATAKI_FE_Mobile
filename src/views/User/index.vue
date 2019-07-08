@@ -2,6 +2,8 @@
 <template>
   <div class="user mw" style="white-space:nowrap;">
     <template v-if="isMe(id)">
+      <!-- 自己 -->
+      <!-- 有侧边栏 代替了 -->
       <BaseHeader :pageinfo="{ title: '个人中心' }">
         <div slot="right" class="help-button" @click="jumpTo({ name: 'Help' })">
           <img src="@/assets/img/icon_user_settings.svg" alt="settings" />
@@ -73,38 +75,63 @@
       </div>
     </template>
     <template v-else>
-      <BaseHeader :pageinfo="{ title: '' }" style="background-color: #478970" :white="true">
+      <!-- 他人 -->
+      <BaseHeader
+        :pageinfo="{ title: name }"
+        :customize-header-bc="'#1C9CFE'"
+        :scroll-toggle-bc="'#fff'"
+        :is-scroll-emit="true"
+        :scroll-show-title="true"
+        :scroll-show-right="true"
+        @scrollToggleStatus="status => (scrollStatus = status)"
+      >
         <div v-if="!isMe(id)" slot="right">
           <template v-if="!followed">
-            <span class="darkBtn" @click="followOrUnfollowUser({ id, type: 1 })">关注</span>
+            <span class="darkBtn" @click="followOrUnfollowUser({ id, type: 1 })">
+              <svg-icon icon-class="add" />
+              关注</span
+            >
           </template>
           <template v-else>
             <span class="darkBtn" @click="followOrUnfollowUser({ id, type: 0 })">取消关注</span>
           </template>
         </div>
       </BaseHeader>
+
       <div class="otherUser">
         <div class="user-avatar">
           <img v-if="avatar" v-lazy="avatar" class="userpic" :src="avatar" />
         </div>
+        <p class="name">{{ name }}</p>
+        <p class="introduction">简介：{{ introduction || "暂无" }}</p>
+        <p class="userstatus">
+          <router-link :to="{ name: 'FollowList', params: { listtype: '关注' } }">
+            <span class="statusNumber">{{ follows }}</span>
+            <span class="statusKey">关注</span>
+          </router-link>
+          <router-link :to="{ name: 'FollowList', params: { listtype: '粉丝' } }">
+            <span class="statusNumber">{{ fans }}</span>
+            <span class="statusKey">粉丝</span>
+          </router-link>
+        </p>
+
+        <template v-if="!scrollStatus">
+          <transition name="fade">
+            <span
+              v-if="!followed"
+              class="follow-button"
+              @click="followOrUnfollowUser({ id, type: 1 })"
+            >
+              <svg-icon icon-class="add" />
+              关注</span
+            >
+            <span v-else class="follow-button" @click="followOrUnfollowUser({ id, type: 0 })">
+              取消关注</span
+            >
+          </transition>
+        </template>
       </div>
-      <div class="otherUsertextsOutter">
-        <div class="otherUsertexts">
-          <p class="name">{{ name }}</p>
-          <p class="userstatus">
-            <router-link :to="{ name: 'FollowList', params: { listtype: '关注' } }">
-              <span class="statusNumber">{{ follows }}</span>
-              <span class="statusKey">关注</span>
-            </router-link>
-            <router-link :to="{ name: 'FollowList', params: { listtype: '粉丝' } }">
-              <span class="statusNumber">{{ fans }}</span>
-              <span class="statusKey">粉丝</span>
-            </router-link>
-          </p>
-          <p>简介：{{ introduction || "暂无" }}</p>
-        </div>
-      </div>
-      <ArticlesList :id="id" ref="ArticlesList" :listtype="'others'" />
+      <ArticlesList :id="id" ref="ArticlesList" class="user-list" :listtype="'others'" />
     </template>
 
     <BaseModalForSignIn
@@ -138,7 +165,8 @@ export default {
         supports: 0,
         drafts: 0
       },
-      showSignInModal: false
+      showSignInModal: false,
+      scrollStatus: false // 根据滚动状态判断是否显示按钮
     };
   },
   computed: {
@@ -151,9 +179,6 @@ export default {
   },
   created() {
     this.refreshUser();
-    const { isMe, id } = this;
-    const user = isMe(id) ? "我" : id;
-    document.title = `${user}的个人主页 - SmartSignature`;
   },
   methods: {
     jumpTo(params) {
@@ -196,9 +221,9 @@ export default {
         this.showSignInModal = true;
         return;
       }
-      const message = type === 1 ? '关注' : '取消关注' ;
+      const message = type === 1 ? "关注" : "取消关注";
       try {
-        if ( type === 1 ) await this.$backendAPI.follow({ id });
+        if (type === 1) await this.$backendAPI.follow({ id });
         else await this.$backendAPI.unfollow({ id });
         this.$toast.success({ duration: 1000, message: `${message}成功` });
         this.followed = type === 1;

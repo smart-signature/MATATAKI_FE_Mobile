@@ -1,50 +1,24 @@
 <template>
-  <div
-    class="header"
-    :style="customizeHeaderBc && 'background:' + customizeHeaderBc"
-    :class="[isCenter && 'mw', isToggleBc && 'bc']"
-  >
-    <div
-      slot="left"
-      class="header-left"
-    >
-      <template v-if="white">
-        <img
-          src="@/assets/img/icon_back_white.svg"
-          alt="home"
-          class="back-icon"
-          @click="goBack"
-        >
-        <img
-          src="@/assets/img/icon_home_white.svg"
-          alt="home"
-          class="home-icon"
-          @click="goHome"
-        >
-      </template>
-      <template v-else>
-        <img
-          src="@/assets/img/icon_back.svg"
-          alt="home"
-          class="back-icon"
-          @click="goBack"
-        >
-        <img
-          src="@/assets/img/icon_home.svg"
-          alt="home"
-          class="home-icon"
-          @click="goHome"
-        >
-      </template>
+  <div class="header" :style="headBc" :class="[isCenter && 'mw', scrollToggleStatus && 'bc']">
+    <div slot="left" class="header-left">
+      <svg-icon
+        icon-class="back1"
+        :style="{ color: iconColor }"
+        class="back-icon"
+        @click="goBack"
+      />
+      <svg-icon icon-class="home" :style="{ color: iconColor }" class="home-icon" @click="goHome" />
     </div>
     <p
       slot="title"
+      :class="[scrollShowTitle && 'scroll', scrollShowTitle && scrollToggleStatus && 'scroll-show']"
       class="title"
     >
       {{ pageinfo.title }}
     </p>
     <div
       slot="right"
+      :class="[scrollShowTitle && 'scroll', scrollShowTitle && scrollToggleStatus && 'scroll-show']"
       class="header-right"
     >
       <slot name="info" />
@@ -54,45 +28,84 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'; // mapGetters 未使用
-import throttle from 'lodash/throttle';
+import { mapGetters } from "vuex"; // mapGetters 未使用
+import throttle from "lodash/throttle";
 
 export default {
-  name: 'BaseHeader',
+  name: "BaseHeader",
   props: {
     // 页面信息
     pageinfo: {
       type: Object,
+      default: () => {}
     },
     // 是否居中显示 是否添加 class mw
     isCenter: {
       type: Boolean,
-      default: true,
+      default: true
     },
     // 自定义返回方法
     customizeBackFunc: {
       type: Boolean,
-      default: false,
+      default: false
     },
     // 自定义Home方法
     customizeHomeFunc: {
       type: Boolean,
-      default: false,
+      default: false
     },
     white: {
       type: Boolean,
-      default: false,
+      default: false
+    },
+    // 自定义图标颜色
+    iconColor: {
+      type: String,
+      default: "#000"
     },
     // 自定义头部背景
     customizeHeaderBc: {
       type: String,
-      default: '',
+      default: "transparent"
     },
+    // 滚动切换的背景颜色
+    scrollToggleBc: {
+      type: String,
+      default: "#fff"
+    },
+    // 滚动显示标题
+    scrollShowTitle: {
+      type: Boolean,
+      default: false
+    },
+    // 滚动现实右侧slot
+    scrollShowRight: {
+      type: Boolean,
+      default: false
+    },
+    // 是否滚动后发送事件
+    isScrollEmit: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
-      isToggleBc: false,
+      scrollToggleStatus: false
     };
+  },
+  computed: {
+    headBc() {
+      if (this.scrollToggleStatus) {
+        return {
+          background: this.scrollToggleBc //  默认当前背景色
+        };
+      } else {
+        return {
+          background: this.customizeHeaderBc //  默认当前背景色
+        };
+      }
+    }
   },
   created() {
     this.addHandleScroll();
@@ -109,11 +122,11 @@ export default {
     // console.log('Does this page need to log in?:', this.pageinfo.needLogin);
   },
   methods: {
-    ...mapGetters(['isLogined']),
+    ...mapGetters(["isLogined"]),
     // 返回
     goBack() {
       if (this.customizeBackFunc) {
-        this.$emit('headerBackFunc');
+        this.$emit("headerBackFunc");
       } else {
         this.$router.go(-1);
       }
@@ -121,36 +134,50 @@ export default {
     // 回到首页
     goHome() {
       if (this.customizeHomeFunc) {
-        this.$emit('headerHomeFunc');
+        this.$emit("headerHomeFunc");
       } else {
-        this.$router.push({ name: 'home' });
+        this.$router.push({ name: "home" });
       }
     },
     addHandleScroll() {
-      window.addEventListener('scroll', throttle(this.handleScroll, 150));
+      window.addEventListener("scroll", throttle(this.handleScroll, 150));
     },
     handleScroll() {
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
       // console.log(scrollTop);
       if (scrollTop > 10) {
-        this.isToggleBc = true;
+        this.scrollToggleStatus = true;
       } else {
-        this.isToggleBc = false;
+        this.scrollToggleStatus = false;
       }
+      console.log(this.isScrollEmit, this.scrollToggleStatus);
+      this.isScrollEmit && this.$emit("scrollToggleStatus", this.scrollToggleStatus);
     },
     removeHandleScroll() {
-      window.removeEventListener('scroll', this.handleScroll);
-    },
+      window.removeEventListener("scroll", this.handleScroll);
+    }
   },
   watch: {
     isLogined(newState) {
-      if (newState) this.$Message.success('登录成功');
-    },
-  },
+      if (newState) this.$Message.success("登录成功");
+    }
+  }
 };
 </script>
 
 <style lang="less" scoped>
+.scrollShow() {
+  &.scroll {
+    visibility: hidden;
+    transition: all 0.28s;
+    opacity: 0;
+  }
+  &.scroll-show {
+    visibility: initial;
+    opacity: 1;
+  }
+}
 .header {
   min-height: 45px;
   background-color: transparent;
@@ -164,41 +191,48 @@ export default {
   left: 0;
   right: 0;
   z-index: 999;
-  transition: all .6s;
+  transition: all 0.6s;
   &.bc {
-    background-color: #fff;
-    box-shadow: 0 0 4px 0 rgba(0, 0, 0, .1);
+    // background-color: #fff;
+    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.1);
   }
 }
 .header-left {
   position: absolute;
   left: 20px;
-    display: flex;
+  display: flex;
   align-items: center;
 }
 .title {
   text-align: center;
-  font-size:16px;
-  font-family:PingFangSC-Regular;
-  font-weight:bold;
-  letter-spacing:1px;
+  font-size: 16px;
+  font-family: PingFangSC-Regular;
+  font-weight: bold;
+  letter-spacing: 1px;
   color: #000;
+  .scrollShow();
 }
-.header-right{
+.header-right {
   position: absolute;
   right: 20px;
   display: flex;
   align-items: center;
+  .scrollShow();
 }
 .back-icon {
-  width: 16px;
+  transform: scale(1.4);
   cursor: pointer;
+  &.white {
+    color: #fff;
+  }
 }
 
 .home-icon {
-  width: 22px;
-  margin-left: 6px;
+  margin-left: 14px;
+  transform: scale(1.9);
   cursor: pointer;
+  &.white {
+    color: #fff;
+  }
 }
-
 </style>

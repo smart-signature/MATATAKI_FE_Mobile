@@ -207,58 +207,98 @@ Button.detail, Button.detail:focus, Button.detail:hover {
   background: #cccccc;
 }
 
+
+
+
 .otherUser {
-  background-color: rgb(71, 137, 112);
+  background-color:#1C9CFE;
+  padding: 20px 0 30px;
+  position: relative;
   .user-avatar {
-    width: 55px;
-    height: 55px;
-    flex: 0 0 55px;
+    width: 60px;
+    height: 60px;
+    flex: 0 0 60px;
     border-radius: 50%;
     overflow: hidden;
     position: relative;
     transform: translate(-50%, 0);
     margin-left: 50%;
-    border: 2px solid #fff;
+    background-color: #eee;
     img {
       width: 100%;
       height: 100%;
       object-fit: contain;
     }
   }
-}
-.otherUsertextsOutter {
-  background: linear-gradient(rgb(71, 137, 112) 50%, #F0F0F0 0);
-  padding: 20px;
-  .otherUsertexts {
-    box-shadow: 0px 2px 5px 3px rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-    padding: 10px 20px;
-    color: #000000;
-    background: #ffffff;
-    p {
-      margin-bottom: 5px;
-    }
-    p:last-child {
-      margin-bottom: 0;
-    }
-    .name {
-      font-size: 18px;
-      font-weight: 700;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .statusKey {
-      color: #868686;
-    }
-    .userstatus {
-      a:first-child {
-        margin-right: 20px;
+  .name {
+    font-size:20px;
+    font-weight:bold;
+    color:rgba(0,0,0,1);
+    margin: 10px 0 0;
+    padding: 0;
+    line-height: 1;
+  }
+  .introduction {
+    font-size:12px;
+    font-weight:400;
+    color:rgba(0,0,0,1);
+    line-height: 1.5;
+    margin: 5px 0 0;
+    padding: 0;
+  }
+  .userstatus {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      color: #fff;
+      text-decoration: none;
+      margin: 0 20px;
+      padding: 0;
+      .statusNumber {
+        font-size:20px;
+        font-weight:bolder;
+        color:rgba(255,255,255,1);
+        line-height:28px;
+      }
+      .statusKey {
+        font-size:12px;
+        font-weight:400;
+        color:rgba(255,255,255,1);
+        line-height:17px;
       }
     }
-    .statusNumber {
-      color: #000000;
-      font-weight: 700;
-      margin-right: 5px;
-    }
   }
+}
+
+.follow-button {
+  width: 70px;
+  text-align: center;
+  color: #fff;
+  font-size: 12px;
+  background: #000;
+  display: block;
+  border-radius: 4px;
+  padding: 6px 0;
+  font-weight: bold;
+  position: absolute;
+  right: 20px;
+  bottom: 30px;
+}
+
+.user-list {
+  background-color: #fff;
+  padding: 10px 0 0 0;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }

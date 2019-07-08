@@ -1,65 +1,44 @@
 <template>
   <div>
-    <div>
-      <div class="tabs">
-        <div
-          v-for="(item, index) in tabsData"
-          :key="index"
-          class="tabs-item"
-          :class="activeIndex === index && 'active'"
-          @click="toggleTabs(index)"
-        >
-          {{ item.label }}
-        </div>
-      </div>
-      <div v-for="(item, index) in tabsData" v-show="activeIndex === index" :key="index">
-        <BasePull
-          :params="item.params"
-          :api-url="item.apiUrl"
-          :active-index="activeIndex"
-          :now-index="index"
-          :loading-text="item.loadingText"
-          :is-obj="{ type: 'Object', key: 'data' }"
-          @getListData="getListDataTab"
-        >
-          <ArticleCard
-            v-for="(item, index) in item.articles"
-            :key="index"
-            :class="listtype !== 'others' && 'card-margin'"
-            :article="item"
-            :now-index="activeIndex"
-          />
-        </BasePull>
+    <div class="tabs">
+      <div
+        v-for="(item, index) in tabsData"
+        :key="index"
+        class="tabs-item"
+        :class="activeIndex === index && 'active'"
+        @click="toggleTabs(index)"
+      >
+        {{ item.label }}
       </div>
     </div>
-    <!-- <Tabs :value="activeIndex">
-      <TabPane v-for="(item, index) in tabsData" :key="index" :label="item.label">
-        <BasePull
-          :params="item.params"
-          :api-url="item.apiUrl"
-          :active-index="activeIndex"
-          :now-index="index"
-          :loading-text="loadingText"
-          :is-obj="{ type: 'Object', key: 'data' }"
-          @getListData="getListDataTab"
-        >
-          <ArticleCard
-            v-for="(item, index) in item.articles"
-            :key="index"
-            class="card-margin"
-            :article="item"
-          />
-        </BasePull>
-      </TabPane>
-    </Tabs> -->
+    <BasePull
+      v-for="(item, index) in tabsData"
+      v-show="activeIndex === index"
+      :key="index"
+      :params="item.params"
+      :api-url="item.apiUrl"
+      :active-index="activeIndex"
+      :now-index="index"
+      :loading-text="item.loadingText"
+      :is-obj="{ type: 'Object', key: 'data' }"
+      @getListData="getListDataTab"
+    >
+      <ArticleCard
+        v-for="(item, index) in item.articles"
+        :key="index"
+        :class="listtype !== 'others' && 'card-margin'"
+        :article="item"
+        :now-index="activeIndex"
+      />
+    </BasePull>
   </div>
 </template>
 
 <script>
-import { ArticleCard } from '@/components/';
+import { ArticleCard } from "@/components/";
 
 export default {
-  name: 'ArticlesList',
+  name: "ArticlesList",
   components: { ArticleCard },
   props: {
     listtype: {
@@ -68,7 +47,7 @@ export default {
     },
     id: {
       type: String,
-      default: ''
+      default: ""
     }
   },
   data() {
@@ -80,72 +59,72 @@ export default {
   computed: {},
   created() {
     const { id, listtype } = this;
-    if (listtype === 'others') {
+    if (listtype === "others") {
       this.tabsData = [
         {
-          label: '原创',
+          label: "原创",
           params: { author: id },
-          apiUrl: 'homeTimeRanking',
+          apiUrl: "homeTimeRanking",
           articles: [],
           loadingText: {
-            nomore: '',
-            noresults: '暂无文章'
+            nomore: "",
+            noresults: "暂无文章"
           }
         },
         {
-          label: '投资',
+          label: "投资",
           params: { user: id },
-          apiUrl: 'userArticlesSupportedList',
+          apiUrl: "userArticlesSupportedList",
           articles: [],
           loadingText: {
-            nomore: '',
-            noresults: '暂无投资'
+            nomore: "",
+            noresults: "暂无投资"
           }
         }
       ];
-    } else if (listtype === 'original') {
+    } else if (listtype === "original") {
       this.tabsData = [
         {
-          label: '文章',
+          label: "文章",
           params: { author: id, channel: 1 },
-          apiUrl: 'homeTimeRanking',
+          apiUrl: "homeTimeRanking",
           articles: [],
           loadingText: {
-            nomore: '',
-            noresults: '暂无文章'
+            nomore: "",
+            noresults: "暂无文章"
           }
         },
         {
-          label: '商品',
+          label: "商品",
           params: { author: id, channel: 2 },
-          apiUrl: 'homeTimeRanking',
+          apiUrl: "homeTimeRanking",
           articles: [],
           loadingText: {
-            nomore: '',
-            noresults: '暂无商品'
+            nomore: "",
+            noresults: "暂无商品"
           }
         }
       ];
-    } else if (listtype === 'reward') {
+    } else if (listtype === "reward") {
       this.tabsData = [
         {
-          label: '文章',
+          label: "文章",
           params: { user: id, channel: 1 },
-          apiUrl: 'userArticlesSupportedList',
+          apiUrl: "userArticlesSupportedList",
           articles: [],
           loadingText: {
-            nomore: '',
-            noresults: '暂无文章'
+            nomore: "",
+            noresults: "暂无文章"
           }
         },
         {
-          label: '商品',
+          label: "商品",
           params: { user: id, channel: 2 },
-          apiUrl: 'userArticlesSupportedList',
+          apiUrl: "userArticlesSupportedList",
           articles: [],
           loadingText: {
-            nomore: '',
-            noresults: '暂无商品'
+            nomore: "",
+            noresults: "暂无商品"
           }
         }
       ];
