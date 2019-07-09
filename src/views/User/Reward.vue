@@ -1,6 +1,6 @@
 <template>
   <div class="reward mw">
-    <BaseHeader :pageinfo="{ left: 'back', title: pageTitle, rightPage: 'home' }" />
+    <BaseHeader :pageinfo="{ title: pageTitle }" :has-bottom-border-line="true" />
     <ArticlesList :id="id" ref="ArticlesList" :listtype="'reward'" />
   </div>
 </template>

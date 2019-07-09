@@ -1,30 +1,26 @@
 <template>
   <div class="original mw">
-    <BaseHeader :pageinfo="{ title: pageTitle }" />
-    <ArticlesList
-      :id="id"
-      ref="ArticlesList"
-      :listtype="'original'"
-    />
+    <BaseHeader :pageinfo="{ title: pageTitle }" :has-bottom-border-line="true" />
+    <ArticlesList :id="id" ref="ArticlesList" :listtype="'original'" />
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import ArticlesList from './ArticlesList.vue';
+import { mapGetters } from "vuex";
+import ArticlesList from "./ArticlesList.vue";
 
 export default {
-  name: 'Original',
+  name: "Original",
   components: { ArticlesList },
-  props: ['id'],
+  props: ["id"],
   data() {
     return {
       editing: false,
-      userTitle: ''
+      userTitle: ""
     };
   },
   computed: {
-    ...mapGetters(['isMe'])
+    ...mapGetters(["isMe"])
   },
   watch: {
     isMe() {
@@ -37,7 +33,7 @@ export default {
   methods: {
     toggleTitle() {
       const { isMe, id } = this;
-      this.pageTitle = isMe(id) ? '我的原创' : '他的原创';
+      this.pageTitle = isMe(id) ? "我的原创" : "他的原创";
     }
   }
 };
