@@ -1,47 +1,52 @@
 <template>
   <div class="mw buy">
-    <BaseHeader :pageinfo="{ title: '购买记录'}"  />
+    <BaseHeader :pageinfo="{ title: '购买记录' }" />
     <BasePull
       :params="params"
-      :apiUrl="apiUrl"
-      :loadingText="{
+      :api-url="apiUrl"
+      :loading-text="{
         nomore: '',
-        noresults: '暂无购买记录', }"
-      :isObj="{type: 'Object', key: 'data'}"
+        noresults: '暂无购买记录'
+      }"
+      :is-obj="{ type: 'Object', key: 'data' }"
+      :need-access-token="true"
       @getListData="getListData"
-      :needAccessToken="true"
-      >
-        <buyCard :buy="item" v-for="(item, index) in buyList" :key="index"/>
+    >
+      <buyCard v-for="(item, index) in buyList" :key="index" :buy="item" />
     </BasePull>
   </div>
 </template>
 
 <script>
-import buyCard from './buyCard.vue';
+import buyCard from "./buyCard.vue";
 
 export default {
-  name: 'BuyHistory',
+  name: "BuyHistory",
   inject: ["reload"],
   beforeRouteEnter: (to, from, next) => next(vm => vm.reload()),
   components: {
-    buyCard,
+    buyCard
   },
   data() {
     return {
       buyList: [],
-      params: '',
-      apiUrl: 'buyHistory',
+      params: "",
+      apiUrl: "buyHistory"
     };
   },
-  created() {
-  },
+  created() {},
   methods: {
     getListData(res) {
       this.buyList = res.list;
-    },
-  },
+    }
+  }
 };
 </script>
 
-
-<style lang="less" scoped src="./index.less"></style>
+<style lang="less" scoped>
+.buy {
+  background-color: #f7f7f7;
+  min-height: 100%;
+  padding-top: 45px;
+}
+</style>
