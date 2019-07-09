@@ -1,5 +1,9 @@
 <template>
-  <div class="header" :style="headBc" :class="[isCenter && 'mw', scrollToggleStatus && 'bc']">
+  <div
+    class="header"
+    :style="headBc"
+    :class="[isCenter && 'mw', scrollToggleStatus && 'bc', hasBottomBorderLine && 'border-bottom']"
+  >
     <div slot="left" class="header-left">
       <svg-icon
         icon-class="back1"
@@ -87,6 +91,11 @@ export default {
     isScrollEmit: {
       type: Boolean,
       default: false
+    },
+    // 有下边框线
+    hasBottomBorderLine: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -151,7 +160,7 @@ export default {
       } else {
         this.scrollToggleStatus = false;
       }
-      console.log(this.isScrollEmit, this.scrollToggleStatus);
+      // console.log(this.isScrollEmit, this.scrollToggleStatus);
       this.isScrollEmit && this.$emit("scrollToggleStatus", this.scrollToggleStatus);
     },
     removeHandleScroll() {
@@ -195,6 +204,9 @@ export default {
   &.bc {
     // background-color: #fff;
     box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.1);
+  }
+  &.border-bottom {
+    border-bottom: 1px solid #dbdbdb;
   }
 }
 .header-left {

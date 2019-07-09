@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- tabs.less -->
     <div class="tabs">
       <div
         v-for="(item, index) in tabsData"
@@ -155,26 +156,5 @@ export default {
 <style lang="less" scoped>
 .card-margin {
   margin: 0 0 10px 0;
-}
-
-.tabs {
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-  margin: 10px 0;
-
-  &-item {
-    font-size: 20px;
-    font-weight: 400;
-    color: rgba(178, 178, 178, 1);
-    cursor: pointer;
-    transform: all 0.3s;
-    &.active {
-      color: rgba(51, 51, 51, 1);
-    }
-    &:nth-last-child(1) {
-      margin-left: 25px;
-    }
-  }
 }
 </style>
