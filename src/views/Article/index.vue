@@ -362,6 +362,13 @@
       :widget-modal="widgetModal"
       :get-clipboard="getClipboard"
       :invite="currentUserInfo.id"
+      :shareInfo="{
+        title: article.title,
+        avatar: articleAvatar,
+        name: article.nickname || article.author,
+        time: articleCreateTimeComputed,
+        content: compiledMarkdown
+      }"
       @changeWidgetModal="status => (widgetModal = status)"
     />
     <article-transfer

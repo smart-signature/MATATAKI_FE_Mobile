@@ -3,7 +3,7 @@
     class="widget"
     width="375"
     class-name="widget-flex"
-    :class="widgetModalStatus === 0 ? 'gray' : 'white'"
+    :class="widgetModalStatus === 0 ? 'gray' : widgetModalStatus === 4 ? 'transparent' : 'white'"
     v-model="widgetModalCopy"
     footer-hide
     @on-visible-change="change"
@@ -14,6 +14,12 @@
             <img src="@/assets/img/widget/widget.svg" alt="widget" />
           </div>
           <p>创建widget</p>
+        </div>
+        <div class="widget-button" @click="widgetModalStatus = 4">
+          <div class="widget-button-img">
+            <img src="@/assets/img/widget/share.svg" alt="widget" />
+          </div>
+          <p>生成长图</p>
         </div>
         <div class="widget-button" @click="copyCode(getClipboard)">
           <div class="widget-button-img">
@@ -73,6 +79,9 @@
           <a class="create" href="javascript:;" @click="copyCode(widgetContentIframe)">复制代码</a>
         </div>
       </div>
+      <div v-if="widgetModalStatus === 4">
+        <QRCodeDialog :shareInfo="shareInfo" @change="change"></QRCodeDialog>
+      </div>
   </Modal>
 </template>
 
@@ -81,10 +90,14 @@ import { sleep } from '@/common/methods';
 import { strTrim } from '@/common/reg';
 import { urlAddress } from '@/api/backend';
 // const urlAddress = 'http://localhost:8080'; // 开发用
+import QRCodeDialog from './QRCodeDialog'
 
 export default {
   name: 'Widget',
-  props: ['widgetModal', 'id', 'getClipboard', 'invite'],
+  props: ['widgetModal', 'id', 'getClipboard', 'invite', 'shareInfo'],
+  components: {
+    QRCodeDialog
+  },
   data() {
     return {
       widgetModalCopy: this.widgetModal,
@@ -174,6 +187,10 @@ export default {
   }
   &.white .ivu-modal-content{
     background-color: #fff;
+  }
+  &.transparent .ivu-modal-content{
+    background-color: transparent;
+    box-shadow: none;
   }
 }
 .widget-flex {

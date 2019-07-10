@@ -1,12 +1,12 @@
 <template>
-  <van-popup v-model="sidebarShow" position="left" class="sidebar">
+  <van-popup v-model="sidebarShow" position="left" class="sidebar" z-index="1000">
     <div class="container">
       <template v-if="isLogined">
         <div class="account">
           <div class="top-container">
             <router-link :to="{ name: 'UserEdit', params: { id } }">
               <div class="avatar-container">
-                <img v-if="avatar" v-lazy="avatar" :src="avatar" alt="avatar" />
+                <img :src="avatar" alt="avatar" />
               </div>
             </router-link>
             <router-link :to="{ name: 'Help' }">
@@ -131,6 +131,7 @@
 
 <script>
 import { mapGetters } from "vuex";
+import defaultAvatar from "@/assets/avatar-default.svg";
 
 export default {
   name: "Sidebar",
@@ -228,7 +229,10 @@ export default {
       }
     },
     setAvatarImage(hash) {
-      if (hash) this.avatar = this.$backendAPI.getAvatarImage(hash);
+      if (hash)
+        this.avatar = this.$backendAPI.getAvatarImage(hash);
+      else
+        this.avatar = defaultAvatar;
     },
     changeInfo(status) {
       this.showModal = status;
@@ -244,7 +248,6 @@ export default {
   max-width: 280px;
   background-color: #f1f1f1;
   color: #000000;
-  z-index: 1000 !important;
   .login-btn {
     text-align: center;
     margin: 50px 30px;
@@ -361,10 +364,5 @@ export default {
       color: #1c9cfe;
     }
   }
-}
-</style>
-<style>
-.van-overlay {
-  z-index: 999 !important;
 }
 </style>
