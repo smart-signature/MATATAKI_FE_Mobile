@@ -1,7 +1,7 @@
 <template>
   <div class="outer">
-    <div class="white-bg">
-      <div ref="capture" class="container">
+    <div ref="container" class="white-bg">
+      <div v-if="!canvas" ref="capture" class="container">
         <section class="header">
           <img src="@/assets/newimg/SmartSignature.svg" alt="SmartSignature" />
           <h1>投资好文，分享有收益</h1>
@@ -26,7 +26,7 @@
         </section>
       </div>
     </div>
-    <button class="save-btn" @click="save">保存</button>
+    <a class="save-btn" download="smartsignature.png" :href="downloadLink" @click="close">保存</a>
   </div>
 </template>
 
@@ -47,17 +47,29 @@ export default {
   },
   data() {
     return {
-      defaultAvatar
+      defaultAvatar,
+      canvas: null
     };
+  },
+  computed: {
+    downloadLink() {
+      if (this.canvas) return this.canvas.toDataURL();
+      return "";
+    }
   },
   watch: {},
   mounted() {
     this.genQRCode();
   },
   methods: {
+    close() {
+      this.$emit("change", false);
+      this.$toast.success({ duration: 1500, message: `图片生成成功` });
+    },
     save() {
       const loading = this.$toast.loading({
         mask: true,
+        zIndex: 1200,
         duration: 0,
         message: `图片生成中...`
       });
@@ -71,15 +83,30 @@ export default {
         document.body.appendChild(link);
         link.click();
         loading.clear();
-        this.$emit("change", false);
-        this.$toast.success({ duration: 1500, message: `图片生成成功` });
+      });
+    },
+    toCanvas() {
+      const loading = this.$toast.loading({
+        mask: true,
+        duration: 0,
+        forbidClick: true,
+        zIndex: 1200,
+        message: `图片生成中...`
+      });
+      html2canvas(this.$refs.capture, {
+        useCORS: true
+      }).then(canvas => {
+        this.canvas = canvas;
+        this.$refs.container.append(canvas);
+        loading.clear();
       });
     },
     genQRCode() {
       console.log(this.$parent);
-      QRCode.toCanvas(this.$refs.qr, window.location.href, { width: 55 }, function(error) {
+      QRCode.toCanvas(this.$refs.qr, window.location.href, { width: 55 }, error => {
         if (error) console.error(error);
         console.log("success!");
+        this.toCanvas();
       });
     }
   }

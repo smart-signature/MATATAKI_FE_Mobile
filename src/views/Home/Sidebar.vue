@@ -1,5 +1,5 @@
 <template>
-  <van-popup v-model="sidebarShow" position="left" class="sidebar">
+  <van-popup v-model="sidebarShow" position="left" class="sidebar" z-index="1000">
     <div class="container">
       <template v-if="isLogined">
         <div class="account">
@@ -248,7 +248,6 @@ export default {
   max-width: 280px;
   background-color: #f1f1f1;
   color: #000000;
-  z-index: 1000 !important;
   .login-btn {
     text-align: center;
     margin: 50px 30px;
@@ -365,10 +364,5 @@ export default {
       color: #1c9cfe;
     }
   }
-}
-</style>
-<style>
-.van-overlay {
-  z-index: 999 !important;
 }
 </style>
