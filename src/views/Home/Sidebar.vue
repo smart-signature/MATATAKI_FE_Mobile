@@ -6,7 +6,7 @@
           <div class="top-container">
             <router-link :to="{ name: 'UserEdit', params: { id } }">
               <div class="avatar-container">
-                <img v-if="avatar" v-lazy="avatar" :src="avatar" alt="avatar" />
+                <img :src="avatar" alt="avatar" />
               </div>
             </router-link>
             <router-link :to="{ name: 'Help' }">
@@ -131,6 +131,7 @@
 
 <script>
 import { mapGetters } from "vuex";
+import defaultAvatar from "@/assets/avatar-default.svg";
 
 export default {
   name: "Sidebar",
@@ -228,7 +229,10 @@ export default {
       }
     },
     setAvatarImage(hash) {
-      if (hash) this.avatar = this.$backendAPI.getAvatarImage(hash);
+      if (hash)
+        this.avatar = this.$backendAPI.getAvatarImage(hash);
+      else
+        this.avatar = defaultAvatar;
     },
     changeInfo(status) {
       this.showModal = status;
