@@ -15,11 +15,11 @@
         noresults: '无草稿'
       }"
       :params="params"
-      :isObj="{ type: 'Object', key: 'data' }"
+      :is-obj="{ type: 'Object', key: 'data' }"
       :api-url="apiUrl"
       @getListData="getListData"
     >
-      <ArticleCard v-for="(item, index) in tagList" :article="item" :key="index" />
+      <ArticleCard v-for="(item, index) in tagList" :key="index" :article="item" />
     </BasePull>
   </div>
 </template>
@@ -31,8 +31,8 @@ import { ArticleCard } from "@/components/";
 export default {
   name: "Tag",
   components: { ArticleCard },
-  inject: ["reload", "openReload"],
-  beforeRouteEnter: (to, from, next) => next(vm => vm.reload()),
+  // inject: ["reload", "openReload"], // 刷新页面的解决方案
+  // beforeRouteEnter: (to, from, next) => next(vm => vm.reload()),
   data() {
     return {
       tagTitle: this.$route.query.name,

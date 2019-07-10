@@ -1,31 +1,36 @@
 <template>
-  <!-- 复制了一份 来区别是否支持刷新 目前没有想到别的好办法 -->
-  <van-pull-refresh v-if="isRefresh" v-model="refreshing" @refresh="refresh">
-    <van-list
-      v-model="loading"
-      :finished="finished"
-      :error.sync="error"
-      finished-text="没有更多了"
-      @load="onLoad"
-    >
+  <div>
+    <!-- 复制了一份 来区别是否支持刷新 目前没有想到别的好办法 -->
+    <!-- 负责刷新 -->
+    <van-pull-refresh v-if="isRefresh" v-model="refreshing" @refresh="refresh">
       <slot></slot>
-    </van-list>
-  </van-pull-refresh>
-  <van-list
-    v-else
-    v-model="loading"
-    :finished="finished"
-    :error.sync="error"
-    finished-text="没有更多了"
-    @load="onLoad"
-  >
-    <slot></slot>
-  </van-list>
+    </van-pull-refresh>
+    <slot v-else></slot>
+    <!-- 负责滚动 -->
+    <InfiniteLoading
+      ref="infiniteLoading"
+      :identifier="infiniteId"
+      spinner="circles"
+      @infinite="infiniteHandler"
+    >
+      <div slot="no-results" class="pull-message">>{{ loadingTextComputed }}</div>
+      <div slot="no-more"></div>
+      <div slot="error" slot-scope="{ trigger }">
+        <p class="error-message">您的网络似乎不太给力,请稍后重试</p>
+        <a class="error-refresh" href="javascript:;" @click="trigger">重新加载</a>
+      </div>
+    </InfiniteLoading>
+  </div>
 </template>
 
 <script>
+import InfiniteLoading from "vue-infinite-loading";
+
 export default {
   name: "BasePull",
+  components: {
+    InfiniteLoading
+  },
   props: {
     // 加载完的文字提示
     loadingText: {
@@ -43,6 +48,11 @@ export default {
     apiUrl: {
       type: String,
       required: true
+    },
+    // 当前聚焦索引
+    activeIndex: {
+      type: Number,
+      default: 0
     },
     // 当前索引
     nowIndex: {
@@ -84,9 +94,8 @@ export default {
       refreshing: false, // 刷新
       page: 1, // 分页
       articles: [],
-      loading: false,
-      finished: false,
-      error: false
+      activeIndexCopy: this.activeIndex,
+      infiniteId: new Date()
     };
   },
   computed: {
@@ -96,6 +105,13 @@ export default {
     }
   },
   watch: {
+    // 改变tab
+    activeIndex(newVal) {
+      this.activeIndexCopy = newVal;
+      this.page = 1;
+      this.articles = [];
+      this.infiniteId += 1;
+    },
     // 父级请求完参数 刷新滚动分页
     params() {
       this.refresh();
@@ -105,14 +121,17 @@ export default {
       this.refresh();
     }
   },
-  created() {},
+  created() {
+    this.infiniteId = new Date();
+  },
   methods: {
     // 滚动分页
-    async onLoad(isEmptyArray = false) {
-      console.log("开始分页");
+    async infiniteHandler($state, isEmptyArray = false) {
       // 如果传了参数但是为null 阻止请求 场景发生在文章获取分享列表处
       // eslint-disable-next-line no-restricted-syntax
       for (const [key, value] of Object.entries(this.params)) if (!value) return;
+
+      // if (this.nowIndex !== this.activeIndexCopy) return;
 
       const params = this.params || {};
       params.page = this.page;
@@ -155,13 +174,14 @@ export default {
           index: this.nowIndex // 当前索引
         });
         this.page += 1;
-        this.loading = false;
 
-        if (resDataList.length >= 0 && resDataList.length < 20) this.finished = true;
+        if (resDataList.length >= 0 && resDataList.length < 20) $state.complete();
+        else $state.loaded();
       };
 
       // 获取数据失败执行
-      const getDataFail = () => (this.error = true);
+      const getDataFail = () => $state.error();
+
       // 获取数据
       await this.$backendAPI
         .getBackendData({ url, params }, this.needAccessToken)
@@ -176,12 +196,11 @@ export default {
     },
     // 刷新
     async refresh() {
+      const { stateChanger } = this.$refs.infiniteLoading;
+      // stateChanger.reset();
       this.refreshing = true;
       this.page = 1; // 重置分页索引
-      this.loading = false;
-      this.finished = false;
-      this.error = false;
-      await this.onLoad(true);
+      await this.infiniteHandler(stateChanger, true);
       this.refreshing = false;
     }
   }

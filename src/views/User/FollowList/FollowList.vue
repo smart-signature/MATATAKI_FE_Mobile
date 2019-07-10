@@ -23,6 +23,7 @@
       :params="item.params"
       :api-url="item.apiUrl"
       :active-index="activeIndex"
+      :auto-request-time="item.autoRequestTime"
       :need-access-token="true"
       :now-index="index"
       :is-obj="{ type: 'newObject', key: 'data', keys: 'list' }"
@@ -65,7 +66,8 @@ export default {
           loadingText: {
             nomore: "",
             noresults: "没有关注"
-          }
+          },
+          autoRequestTime: 0
         },
         {
           label: "粉丝",
@@ -75,7 +77,8 @@ export default {
           loadingText: {
             nomore: "",
             noresults: "没有粉丝"
-          }
+          },
+          autoRequestTime: 0
         }
       ],
       activeIndex: 0,
@@ -90,21 +93,20 @@ export default {
     if (this.activeIndexName === "关注") this.activeIndex = 0;
     else if (this.activeIndexName === "粉丝") this.activeIndex = 1;
     else this.activeIndex = 0;
-
-    setTimeout(() => {
-      console.log(this.tabsData[0].articles);
-      console.log(this.tabsData[0].articles[0].is_follow);
-    }, 3000);
   },
   methods: {
     toggleTabs(i) {
       this.activeIndex = i;
+
+      // 判断是否自动刷新请求数据
+      if (this.tabsData[i].autoRequestTime === 0 && this.tabsData[i].articles.length === 0)
+        this.tabsData[i].autoRequestTime = Date.now();
     },
     getListData(res) {
       this.tabsData[res.index].articles = res.list;
     },
     async followOrUnfollowUser({ id, type, index, indexList }) {
-      console.log(id, type, index, indexList);
+      // console.log(id, type, index, indexList);
       if (!this.isLogined) {
         this.showSignInModal = true;
         return;
@@ -128,7 +130,6 @@ export default {
         this.$toast.fail({ duration: 1000, message: `${message}失败` });
         this.showSignInModal = this.$errorHandling.isNoToken(error);
       }
-      this.refreshUser();
     }
   }
 };

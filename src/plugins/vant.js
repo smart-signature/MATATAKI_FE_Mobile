@@ -18,7 +18,8 @@ import {
   RadioGroup,
   Radio,
   Checkbox,
-  CheckboxGroup
+  CheckboxGroup,
+  List
 } from "vant";
 
 // 增加前缀 区分多个组件库 防止冲突
@@ -39,3 +40,4 @@ Vue.use(Dialog); // 对话框
 Vue.use(Field); // 输入框
 Vue.use(Lazyload); //
 Vue.use(Swipe).use(SwipeItem); // 轮播图
+Vue.use(List); //

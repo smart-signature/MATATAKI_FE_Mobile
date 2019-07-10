@@ -22,8 +22,6 @@ import buyCard from "./buyCard.vue";
 
 export default {
   name: "BuyHistory",
-  inject: ["reload"],
-  beforeRouteEnter: (to, from, next) => next(vm => vm.reload()),
   components: {
     buyCard
   },

@@ -19,9 +19,10 @@
       <home-nav
         :nav-menu="item.navMenu"
         :active-index="item.activeIndex"
-        @toggleNavMenu="index => (item.activeIndex = index)"
+        @toggleNavMenu="toggleNavMenu"
       />
 
+      <!-- 推荐内容 -->
       <homeSlide
         v-show="isShowSlide"
         :recommend="item.recommend"
@@ -29,8 +30,10 @@
         :now-index="nowIndex"
       />
 
+      <!-- 标题 -->
       <div class="now-title" :class="!isShowSlide && 'nav-hide'">{{ contentTitle }}</div>
 
+      <!-- 列表 -->
       <BasePull
         v-for="(itemList, indexList) in item.navMenu"
         v-show="item.activeIndex === indexList"
@@ -40,10 +43,11 @@
         :active-index="item.activeIndex"
         :now-index="indexList"
         :is-obj="{ type: 'Object', key: 'data' }"
-        :auto-request-time="item.autoRequestTime"
+        :auto-request-time="itemList.autoRequestTime"
         @getListData="getListData"
       >
         <template v-if="itemList.articles.length === 0">
+          <!-- 骨架占位 -->
           <ContentLoader
             v-for="itemLoader in [0, 1]"
             :key="itemLoader"
@@ -106,7 +110,8 @@ export default {
                 channel: 1
               },
               apiUrl: "homeTimeRanking",
-              articles: []
+              articles: [],
+              autoRequestTime: 0
             },
             {
               label: "最热",
@@ -115,10 +120,10 @@ export default {
                 channel: 1
               },
               apiUrl: "homeSupportsRanking",
-              articles: []
+              articles: [],
+              autoRequestTime: 0
             }
           ],
-          autoRequestTime: 0,
           activeIndex: 0,
           recommend: {
             title: "推荐文章",
@@ -134,7 +139,8 @@ export default {
                 channel: 2
               },
               apiUrl: "homeTimeRanking",
-              articles: []
+              articles: [],
+              autoRequestTime: 0
             },
             {
               label: "最热",
@@ -143,10 +149,10 @@ export default {
                 channel: 2
               },
               apiUrl: "homeSupportsRanking",
-              articles: []
+              articles: [],
+              autoRequestTime: 0
             }
           ],
-          autoRequestTime: 0,
           activeIndex: 0,
           recommend: {
             title: "推荐商品",
@@ -180,11 +186,31 @@ export default {
   },
   mounted() {},
   methods: {
-    toggleNav(index) {
-      this.nowIndex = index;
-      if (this.content[this.nowIndex].autoRequestTime === 0 && this.nowIndex === 1)
-        this.content[this.nowIndex].autoRequestTime += Date.now();
+    increaseTime(type, i) {
+      // 如果自动刷新的时间为0 并且 内容长度为0 刷新一次组件
+      if (type === "headNav") {
+        // head 的导航切换
+        const index = this.content[this.nowIndex].activeIndex; // 当前的聚焦索引
+        const navMenuData = this.content[this.nowIndex].navMenu[index]; // 当前聚焦索引的数据
+        if (navMenuData.autoRequestTime === 0 && navMenuData.articles.length === 0)
+          this.content[this.nowIndex].navMenu[index].autoRequestTime += Date.now();
+      } else if (type === "nemuNav") {
+        // 内容的导航
+        const navMenuData = this.content[this.nowIndex].navMenu[i]; // 当前聚焦索引的数据
+        if (navMenuData.autoRequestTime === 0 && navMenuData.articles.length === 0)
+          this.content[this.nowIndex].navMenu[i].autoRequestTime += Date.now();
+      }
     },
+    toggleNav(i) {
+      this.nowIndex = i;
+      this.increaseTime("headNav", i);
+    },
+    toggleNavMenu(i) {
+      let nowIndex = this.nowIndex;
+      this.content[nowIndex].activeIndex = i;
+      this.increaseTime("nemuNav", i);
+    },
+
     // 获取文章列表数据
     getListData(res) {
       console.log(this.nowIndex, res.index);

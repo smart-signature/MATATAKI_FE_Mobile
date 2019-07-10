@@ -20,8 +20,10 @@
       :api-url="item.apiUrl"
       :active-index="activeIndex"
       :now-index="index"
+      :auto-request-time="item.autoRequestTime"
       :loading-text="item.loadingText"
       :is-obj="{ type: 'Object', key: 'data' }"
+      :show-no-more-icon="listtype !== 'others'"
       @getListData="getListDataTab"
     >
       <ArticleCard
@@ -75,7 +77,8 @@ export default {
           loadingText: {
             nomore: "",
             noresults: "暂无文章"
-          }
+          },
+          autoRequestTime: 0
         },
         {
           label: "投资",
@@ -85,7 +88,8 @@ export default {
           loadingText: {
             nomore: "",
             noresults: "暂无投资"
-          }
+          },
+          autoRequestTime: 0
         }
       ];
     } else if (listtype === "original") {
@@ -98,7 +102,8 @@ export default {
           loadingText: {
             nomore: "",
             noresults: "暂无文章"
-          }
+          },
+          autoRequestTime: 0
         },
         {
           label: "商品",
@@ -108,7 +113,8 @@ export default {
           loadingText: {
             nomore: "",
             noresults: "暂无商品"
-          }
+          },
+          autoRequestTime: 0
         }
       ];
     } else if (listtype === "reward") {
@@ -121,7 +127,8 @@ export default {
           loadingText: {
             nomore: "",
             noresults: "暂无文章"
-          }
+          },
+          autoRequestTime: 0
         },
         {
           label: "商品",
@@ -131,7 +138,8 @@ export default {
           loadingText: {
             nomore: "",
             noresults: "暂无商品"
-          }
+          },
+          autoRequestTime: 0
         }
       ];
     }
@@ -139,6 +147,10 @@ export default {
   methods: {
     toggleTabs(i) {
       this.activeIndex = i;
+
+      // 判断是否自动刷新请求数据
+      if (this.tabsData[i].autoRequestTime === 0 && this.tabsData[i].articles.length === 0)
+        this.tabsData[i].autoRequestTime = Date.now();
     },
     getListDataTab({ index, list }) {
       this.tabsData[index].articles = list;
