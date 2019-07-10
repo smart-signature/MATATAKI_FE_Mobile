@@ -5,10 +5,19 @@
       v-model="loading"
       :finished="finished"
       :error.sync="error"
-      finished-text="没有更多了"
+      error-text="请求失败，点击重新加载"
+      :immediate-check="immediateCheck"
       @load="onLoad"
     >
       <slot></slot>
+      <div class="no-more">
+        <img
+          v-if="showNoMoreIcon && articles.length === 0"
+          src="@/assets/img/icon_no_more.svg"
+          alt="no_more"
+        />
+        <p v-if="finished && articles.length === 0">{{ loadingText }}</p>
+      </div>
     </van-list>
   </van-pull-refresh>
   <van-list
@@ -16,10 +25,19 @@
     v-model="loading"
     :finished="finished"
     :error.sync="error"
-    finished-text="没有更多了"
+    error-text="请求失败，点击重新加载"
+    :immediate-check="immediateCheck"
     @load="onLoad"
   >
     <slot></slot>
+    <div class="no-more">
+      <img
+        v-if="showNoMoreIcon && articles.length === 0"
+        src="@/assets/img/icon_no_more.svg"
+        alt="no_more"
+      />
+      <p v-if="finished && articles.length === 0">{{ loadingText }}</p>
+    </div>
   </van-list>
 </template>
 
@@ -29,15 +47,13 @@ export default {
   props: {
     // 加载完的文字提示
     loadingText: {
-      type: Object,
-      default: () => ({
-        nomore: "🎉 哇，你真勤奋，所有文章已经加载完了～ 🎉", // 没有更多
-        noresults: "无文章" // 没有数据
-      })
+      type: String,
+      default: ""
     },
     // 传进来的params
     params: {
-      type: Object
+      type: Object,
+      default: () => {}
     },
     // api 地址
     apiUrl: {
@@ -77,6 +93,11 @@ export default {
     showNoMoreIcon: {
       type: Boolean,
       default: false
+    },
+    // 是否在初始化时立即执行滚动位置检查
+    immediateCheck: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -86,22 +107,19 @@ export default {
       articles: [],
       loading: false,
       finished: false,
-      error: false
+      error: false,
+      oldPage: 0 // 上一页
     };
-  },
-  computed: {
-    loadingTextComputed() {
-      if (this.articles.length <= 0) return this.loadingText.noresults;
-      return this.loadingText.nomore;
-    }
   },
   watch: {
     // 父级请求完参数 刷新滚动分页
     params() {
+      console.log("params", this.params);
       this.refresh();
     },
     // 自动请求 通过time++
     autoRequestTime() {
+      console.log("autoRequestTime");
       this.refresh();
     }
   },
@@ -111,15 +129,22 @@ export default {
     async onLoad(isEmptyArray = false) {
       console.log("开始分页");
       // 如果传了参数但是为null 阻止请求 场景发生在文章获取分享列表处
-      // eslint-disable-next-line no-restricted-syntax
       for (const [key, value] of Object.entries(this.params)) if (!value) return;
-
       const params = this.params || {};
       params.page = this.page;
       const url = this.apiUrl;
 
+      // hack 手段
+      // 1. params改变会加载一次, 关闭了自动加载但是还是自动加载了一次(当内容比较少的时候) 如果内容多是正常的
+      // 2. 通过对比两次请求页数是否相同来return
+      if (this.page === this.oldPage) return;
+      this.oldPage = this.page;
+      // hack end
+
+      console.log("开始分页params", this.params);
+
       // 获取数据成功执行
-      const getDataSuccess = data => {
+      const getDataSuccess = (data, isEmptyArray) => {
         if (isEmptyArray) this.articles.length = 0; // 清空数组
         const isObjType = this.isObj.type; // 传进来的类型
         let resDataList = []; // 请求回来的list 通过长度判断是否请求完毕
@@ -154,6 +179,7 @@ export default {
           list: this.articles, // list数据
           index: this.nowIndex // 当前索引
         });
+
         this.page += 1;
         this.loading = false;
 
@@ -163,16 +189,15 @@ export default {
       // 获取数据失败执行
       const getDataFail = () => (this.error = true);
       // 获取数据
-      await this.$backendAPI
-        .getBackendData({ url, params }, this.needAccessToken)
-        .then(res => {
-          if (res.status === 200 && res.data.code === 0) getDataSuccess(res.data);
-          else getDataFail();
-        })
-        .catch(err => {
-          console.log(err);
-          getDataFail();
-        });
+      try {
+        console.log("开始分页111");
+        const res = await this.$backendAPI.getBackendData({ url, params }, this.needAccessToken);
+        if (res.status === 200 && res.data.code === 0) getDataSuccess(res.data, isEmptyArray);
+        else getDataFail();
+      } catch (error) {
+        console.log(error);
+        getDataFail();
+      }
     },
     // 刷新
     async refresh() {
@@ -181,6 +206,7 @@ export default {
       this.loading = false;
       this.finished = false;
       this.error = false;
+      this.oldPage = 0;
       await this.onLoad(true);
       this.refreshing = false;
     }
@@ -188,7 +214,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="less">
 .error-message {
   font-size: 14px;
   color: #6f6f6f;
@@ -210,5 +236,17 @@ export default {
   color: #999;
   font-size: 14px;
   text-align: center;
+}
+.no-more {
+  text-align: center;
+  margin-top: 40px;
+  p {
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(178, 178, 178, 1);
+    line-height: 28px;
+    padding: 0;
+    margin: 20px 0 0;
+  }
 }
 </style>
