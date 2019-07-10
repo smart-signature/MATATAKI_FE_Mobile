@@ -4,10 +4,7 @@
     <BasePull
       :params="params"
       :api-url="apiUrl"
-      :loading-text="{
-        nomore: '',
-        noresults: '暂无购买记录'
-      }"
+      :loading-text="'暂无购买记录'"
       :is-obj="{ type: 'Object', key: 'data' }"
       :need-access-token="true"
       @getListData="getListData"

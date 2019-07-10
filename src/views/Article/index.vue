@@ -269,11 +269,7 @@
     <van-popup v-model="buyProductModal" class="buy-product-modal">
       <h1 class="title">购买商品</h1>
       <div class="info-container">
-        <img
-          :src="cover"
-          alt="cover"
-          class="cover"
-        />
+        <img :src="cover" alt="cover" class="cover" />
         <div class="info-inner">
           <div class="product-price">
             <span class="ont-price">
@@ -306,7 +302,7 @@
     </van-popup>
 
     <van-popup v-model="investProductModal" class="buy-product-modal">
-      <h1 class="title">{{investTitle}}</h1>
+      <h1 class="title">{{ investTitle }}</h1>
       <div class="invest-info">
         <div class="info-item">
           <span class="info-number">{{ getDisplayedFissionFactor }}</span>
@@ -362,7 +358,7 @@
       :widget-modal="widgetModal"
       :get-clipboard="getClipboard"
       :invite="currentUserInfo.id"
-      :shareInfo="{
+      :share-info="{
         title: article.title,
         avatar: articleAvatar,
         name: article.nickname || article.author,
@@ -422,7 +418,7 @@ export default {
   props: ["hash"],
   data() {
     return {
-      investTitle: '投资文章',
+      investTitle: "投资文章",
       followed: false,
       productNumber: 1,
       buySuccessModal: false,
@@ -709,9 +705,9 @@ export default {
         if (stockQuantity <= 0) {
           return this.$toast({ duration: 1000, message: "库存不足" });
         }
-        this.investTitle = '投资商品';
+        this.investTitle = "投资商品";
       } else {
-        this.investTitle = '投资文章';
+        this.investTitle = "投资文章";
       }
       this.investProductModal = true;
     },

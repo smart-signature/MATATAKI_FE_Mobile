@@ -74,10 +74,7 @@ export default {
           params: { author: id },
           apiUrl: "homeTimeRanking",
           articles: [],
-          loadingText: {
-            nomore: "",
-            noresults: "暂无文章"
-          },
+          loadingText: "暂无原创",
           autoRequestTime: 0
         },
         {
@@ -85,10 +82,7 @@ export default {
           params: { user: id },
           apiUrl: "userArticlesSupportedList",
           articles: [],
-          loadingText: {
-            nomore: "",
-            noresults: "暂无投资"
-          },
+          loadingText: "暂无投资",
           autoRequestTime: 0
         }
       ];
@@ -99,10 +93,7 @@ export default {
           params: { author: id, channel: 1 },
           apiUrl: "homeTimeRanking",
           articles: [],
-          loadingText: {
-            nomore: "",
-            noresults: "暂无文章"
-          },
+          loadingText: "暂无文章",
           autoRequestTime: 0
         },
         {
@@ -110,10 +101,7 @@ export default {
           params: { author: id, channel: 2 },
           apiUrl: "homeTimeRanking",
           articles: [],
-          loadingText: {
-            nomore: "",
-            noresults: "暂无商品"
-          },
+          loadingText: "暂无商品",
           autoRequestTime: 0
         }
       ];
@@ -124,10 +112,7 @@ export default {
           params: { user: id, channel: 1 },
           apiUrl: "userArticlesSupportedList",
           articles: [],
-          loadingText: {
-            nomore: "",
-            noresults: "暂无文章"
-          },
+          loadingText: "暂无文章",
           autoRequestTime: 0
         },
         {
@@ -135,10 +120,7 @@ export default {
           params: { user: id, channel: 2 },
           apiUrl: "userArticlesSupportedList",
           articles: [],
-          loadingText: {
-            nomore: "",
-            noresults: "暂无商品"
-          },
+          loadingText: "暂无商品",
           autoRequestTime: 0
         }
       ];

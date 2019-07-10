@@ -1,43 +1,42 @@
 <template>
   <BasePull
-    :loadingText="{
-        nomore: '',
-        noresults: '无明细', }"
+    :loading-text="'暂无明细'"
     :params="params"
-    :apiUrl="apiUrl"
-    :needAccessToken="needAccessToken"
-    :isObj="isObj"
-    @getListData="getListData">
-      <AssetCard :asset="item" v-for="(item, index) in asset" :key="index" />
+    :api-url="apiUrl"
+    :need-access-token="needAccessToken"
+    :is-obj="isObj"
+    @getListData="getListData"
+  >
+    <AssetCard v-for="(item, index) in asset" :key="index" :asset="item" />
   </BasePull>
 </template>
 
 <script>
-import { AssetCard } from '@/components/';
+import { AssetCard } from "@/components/";
 
 export default {
-  name: 'AssetList',
-  props: ['type'],
+  name: "AssetList",
   components: { AssetCard },
-  created() { },
+  props: ["type"],
   data() {
     return {
       params: {
-        symbol: this.type,
+        symbol: this.type
       },
-      apiUrl: 'assetList',
+      apiUrl: "assetList",
       asset: [],
-      isObj: { type: 'newObject', key: 'data', keys: 'logs' },
-      needAccessToken: true,
+      isObj: { type: "newObject", key: "data", keys: "logs" },
+      needAccessToken: true
     };
   },
-  computed: { },
+  computed: {},
+  created() { },
   methods: {
     getListData(res) {
       const historyFilter = res.list.filter(i => i.amount !== 0); // 过滤金额为0
       this.asset = historyFilter;
-      this.$emit('getOtherAsset', res);
-    },
-  },
+      this.$emit("getOtherAsset", res);
+    }
+  }
 };
 </script>

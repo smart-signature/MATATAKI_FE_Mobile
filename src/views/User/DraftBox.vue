@@ -2,10 +2,7 @@
   <div class="draftbox mw">
     <BaseHeader :pageinfo="{ left: 'back', title: '草稿箱', rightPage: 'home' }" />
     <BasePull
-      :loading-text="{
-        nomore: '',
-        noresults: '无草稿'
-      }"
+      :loading-text="'无草稿'"
       :params="params"
       :api-url="apiUrl"
       :need-access-token="true"

@@ -10,10 +10,7 @@
     <p class="tag-title">最新</p>
     <BasePull
       class="tag-article"
-      :loading-text="{
-        nomore: '',
-        noresults: '无草稿'
-      }"
+      :loading-text="'无草稿'"
       :params="params"
       :is-obj="{ type: 'Object', key: 'data' }"
       :api-url="apiUrl"

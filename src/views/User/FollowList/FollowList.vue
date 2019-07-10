@@ -63,10 +63,7 @@ export default {
           params: { uid: this.id },
           apiUrl: "followsList",
           articles: [],
-          loadingText: {
-            nomore: "",
-            noresults: "没有关注"
-          },
+          loadingText: "没有关注",
           autoRequestTime: 0
         },
         {
@@ -74,10 +71,7 @@ export default {
           params: { uid: this.id },
           apiUrl: "fansList",
           articles: [],
-          loadingText: {
-            nomore: "",
-            noresults: "没有粉丝"
-          },
+          loadingText: "没有粉丝",
           autoRequestTime: 0
         }
       ],

@@ -1,76 +1,79 @@
 <template>
   <BasePull
-    :loadingText="{
-      nomore: '',
-      noresults: '暂无评论',
-    }"
+    :loading-text="'暂无评论'"
     :params="params"
-    :apiUrl="apiUrl"
-    :isRefresh="false"
-    :autoRequestTime="autoRequestTime"
-    :needAccessToken="true"
-    :isObj="isObj"
+    :api-url="apiUrl"
+    :is-refresh="false"
+    :auto-request-time="autoRequestTime"
+    :need-access-token="true"
+    :is-obj="isObj"
+    :immediate-check="false"
     @getListData="getListData"
-    >
-      <CommentCard :comment="item" v-for="(item, index) in articles" :key="index" :type="type"/>
+  >
+    <CommentCard v-for="(item, index) in articles" :key="index" :comment="item" :type="type" />
   </BasePull>
 </template>
 
 <script>
-import { CommentCard } from '@/components/';
-import { mapGetters } from 'vuex';
+import { CommentCard } from "@/components/";
+import { mapGetters } from "vuex";
 
 export default {
-  props: ['signId', 'isRequest', 'type'],
   components: { CommentCard },
+  props: ["signId", "isRequest", "type"],
   watch: {
     signId(newVal) {
       this.params = {
-        signid: newVal,
+        signid: newVal
       };
     },
     isRequest(newVal) {
+      console.log(newVal);
       if (newVal) {
         this.timer = setInterval(() => {
           if (this.autoRequestTime >= 2) {
             clearInterval(this.timer);
-            this.$emit('stopAutoRequest', false);
+            this.$emit("stopAutoRequest", false);
           }
           this.autoRequestTime += 1;
         }, 2000);
       } else {
         clearInterval(this.timer);
       }
-    },
+    }
   },
-  created() {
-  },
+  created() {},
   computed: {
-    ...mapGetters(['currentUserInfo']),
+    ...mapGetters(["currentUserInfo"])
   },
   data() {
     return {
       params: {
-        signid: this.signId,
+        signid: this.signId
       },
-      apiUrl: 'commentsList',
+      apiUrl: "commentsList",
       articles: [],
       autoRequestTime: 0,
       timer: null,
       isObj: {
-        type: 'newObject',
-        key: 'data',
-        kes: null,
-      },
+        type: "newObject",
+        key: "data",
+        kes: null
+      }
     };
   },
   methods: {
     getListData(res) {
-      if (this.isRequest && res.data.data.length !== 0 && res.data.data[0].author === this.currentUserInfo.name) {
-        this.$emit('stopAutoRequest', false);
+      console.log(res);
+      if (
+        this.isRequest &&
+        res.data.data.length !== 0 &&
+        res.data.data[0].author === this.currentUserInfo.name
+      ) {
+        this.$emit("stopAutoRequest", false);
       }
       this.articles = res.list;
-    },
-  },
+    }
+  }
 };
 </script>
