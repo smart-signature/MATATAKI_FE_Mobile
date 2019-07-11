@@ -11,6 +11,7 @@
     >
       <DraftBoxList
         v-for="(item, index) in draftBoxList"
+        class="card-margin"
         :key="index"
         :draftbox="item"
         :index="index"
@@ -80,5 +81,8 @@ export default {
   padding-bottom: 20px;
   padding-top: 45px;
   min-height: 100%;
+}
+.card-margin {
+  margin-bottom: 10px;
 }
 </style>
