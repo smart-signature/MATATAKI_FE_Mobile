@@ -87,13 +87,13 @@
       >
         <div v-if="!isMe(id)" slot="right">
           <template v-if="!followed">
-            <span class="darkBtn" @click="followOrUnfollowUser({ id, type: 1 })">
+            <span class="follow-button dark" @click="followOrUnfollowUser({ id, type: 1 })">
               <svg-icon icon-class="add" />
               关注</span
             >
           </template>
           <template v-else>
-            <span class="darkBtn" @click="followOrUnfollowUser({ id, type: 0 })">取消关注</span>
+            <span class="follow-button" @click="followOrUnfollowUser({ id, type: 0 })">已关注</span>
           </template>
         </div>
       </BaseHeader>
@@ -119,14 +119,14 @@
           <transition name="fade">
             <span
               v-if="!followed"
-              class="follow-button"
+              class="follow-button other dark"
               @click="followOrUnfollowUser({ id, type: 1 })"
             >
               <svg-icon icon-class="add" />
               关注</span
             >
-            <span v-else class="follow-button" @click="followOrUnfollowUser({ id, type: 0 })">
-              取消关注</span
+            <span v-else class="follow-button other" @click="followOrUnfollowUser({ id, type: 0 })">
+              已关注</span
             >
           </transition>
         </template>

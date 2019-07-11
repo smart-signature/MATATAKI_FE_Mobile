@@ -19,7 +19,7 @@
       v-else
       class="follow-button"
       @click.stop="$emit('followOrUnfollowUser', { id, type: 0, index, indexList })"
-      >取消关注</span
+      >已关注</span
     >
   </div>
 </template>

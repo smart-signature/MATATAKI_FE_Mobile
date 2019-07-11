@@ -134,79 +134,6 @@
 }
 
 
-.editing-button {
-  background-color: #D8D8D8;
-  color: #fff;
-  border: 1px solid #D8D8D8;
-}
-
-.topcard{
-  background-color: #ffffff;
-  margin: 16px 20px;
-  padding: 10px;
-  background: rgba(255, 255, 255, 1);
-  box-shadow: 0px 2px 5px 3px rgba(233, 233, 233, 0.5);
-  border-radius: 3px;
-}
-.centercard{
-  background: rgba(255, 255, 255, 1);
-  background-color: #ffffff;
-  font-size:14px;
-  margin: 8px 20px;
-  box-shadow: 0px 2px 5px 3px rgba(233, 233, 233, 0.5);
-  border-radius: 8px;
-}
-.bottomcard{
-  background-color: #ffffff;
-  margin-left: 20px;
-  margin-right: 20px;
-  background: rgba(255, 255, 255, 1);
-  box-shadow: 0px 2px 5px 3px rgba(233, 233, 233, 0.5);
-  border-radius: 8px;
-}
-.bottombutton{
-  height: 55px;
-  font-size: 14px;
-}
-.centervalue{
-  font-size: 22px;
-  font-weight: bolder;
-}
-.centertext{
-  font-size: 14px;
-  font-weight: bold;
-  opacity: 0.4;
-}
-Button.detail, Button.detail:focus, Button.detail:hover {
-  background-color: rgba(0, 0, 0, 1);
-  border-radius: 2px;
-  color: rgba(255,255,255,1);
-  /* float: right; */
-  font-size: 12px;
-  margin-top: 12px;
-  width: 80px;
-  height: 25px;
-  letter-spacing: 2px;
-  max-width: 94px;
-  max-height: 35px;
-  text-align: center;
-  padding-left: 12px;
-  /* margin-right: 0px; */
-}
-.darkBtn {
-  padding: 4px 10px;
-  text-align: center;
-  min-width: 60px;
-  color: #ffffff;
-  display: block;
-  background: #202020;
-  border-radius: 40px;
-  cursor: pointer;
-}
-.greyBtn {
-  background: #cccccc;
-}
-
 
 .max-width-overflow{
   max-width: 80%;
@@ -287,18 +214,29 @@ Button.detail, Button.detail:focus, Button.detail:hover {
 }
 
 .follow-button {
-  width: 70px;
-  text-align: center;
-  color: #fff;
-  font-size: 12px;
-  background: #000;
   display: block;
-  border-radius: 4px;
-  padding: 6px 0;
+  border-radius: 6px;
+  color: #000;
+  border: 1px solid #000;
+  flex: 0 0 63px;
+  width: 63px;
+  padding: 4px 0;
+  text-align: center;
+  font-size: 12px;
   font-weight: bold;
-  position: absolute;
-  right: 20px;
-  bottom: 30px;
+  color: rgba(0, 0, 0, 1);
+  line-height: 17px;
+  box-sizing: border-box;
+  cursor: pointer;
+  &.other {
+    position: absolute;
+    right: 20px;
+    bottom: 30px;
+  }
+  &.dark {
+    background: #000;
+    color: #fff;
+  }
 }
 
 .user-list {
