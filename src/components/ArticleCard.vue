@@ -4,7 +4,7 @@
     <div v-if="!isOtherUser" class="info">
       <div class="avatar">
         <div class="avatar-img">
-          <img v-if="avatar" v-lazy="avatar" :src="avatar" alt="avatar" />
+          <img :src="avatar" alt="avatar" :onerror="defaultAvatar"/>
         </div>
         <span>{{ article.nickname || article.author }}</span>
       </div>
@@ -69,7 +69,9 @@ export default {
     }
   },
   data() {
-    return {};
+    return {
+      defaultAvatar: `this.src="${ require('@/assets/avatar-default.svg') }"`,
+    };
   },
   computed: {
     friendlyDate() {

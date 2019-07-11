@@ -2,7 +2,7 @@
   <div class="comment">
     <div class="comment-info">
       <div class="comment-avatar" @click="$router.push({ name: 'User', params: { id: comment.id }})">
-        <img v-if="avatar" :src="avatar" alt="avatar" v-lazy="avatar">
+        <img :src="avatar" alt="avatar" :onerror="defaultAvatar">
       </div>
       <div class="comment-head">
         <router-link class="comment-author" :to="{ name: 'User', params: { id: comment.id }}">
@@ -25,6 +25,11 @@ import { precision } from '@/common/precisionConversion';
 export default {
   name: 'CommentCard',
   props: ['comment', 'type'],
+  data() {
+    return {
+      defaultAvatar: `this.src="${ require('@/assets/avatar-default.svg') }"`,
+    }
+  },
   computed: {
     displayMessage() {
       return this.comment.comment !== '' ? this.comment.comment : '用户没有留下评论';
@@ -73,6 +78,7 @@ export default {
 }
 .comment-head {
   font-size:14px;
+  font-family:PingFangSC-Regular;
   font-weight:400;
   color: #B2B2B2;
   line-height:20px;
@@ -95,6 +101,7 @@ export default {
 .comment-author {
   color: #000000;
   font-size:14px;
+  font-family:PingFangSC-Regular;
   font-weight: 700;
   color:rgba(0,0,0,1);
   line-height:20px;
@@ -102,6 +109,7 @@ export default {
   word-break: break-word;
 }
 .comment-quantity {
+  font-family:PingFangSC-Medium;
   font-weight: 700;
   color: #1C9CFE;
   line-height:20px;
@@ -109,6 +117,7 @@ export default {
 }
 .comment-timestamp {
   font-size:10px;
+  font-family:PingFangSC-Regular;
   font-weight:400;
   color: #B2B2B2;
   line-height:17px;
@@ -118,6 +127,7 @@ export default {
   color:rgba(0,0,0,1);
   /* height: 60px; */
   font-size: 14px;
+  font-family: PingFangSC-Regular;
   font-weight: 400;
   line-height: 20px;
   letter-spacing: 1px;

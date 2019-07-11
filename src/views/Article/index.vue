@@ -47,7 +47,7 @@
               class="avatar"
               @click="() => $router.push({ name: 'User', params: { id: article.uid } })"
             >
-              <img v-if="articleAvatar" :src="articleAvatar" class="avatar-size" alt="avatar" />
+              <img :src="articleAvatar" class="avatar-size" alt="avatar" :onerror="defaultAvatar"/>
             </div>
             <div class="avatar-right">
               <p
@@ -420,6 +420,7 @@ export default {
   props: ["hash"],
   data() {
     return {
+      defaultAvatar: `this.src="${ require('@/assets/avatar-default.svg') }"`,
       investTitle: "投资文章",
       followed: false,
       productNumber: 1,

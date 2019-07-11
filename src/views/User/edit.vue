@@ -15,7 +15,7 @@
           @doneImageUpload="doneImageUpload"
         >
           <div slot="uploadButton" class="user-avatar">
-            <img slot="description" v-lazy="avatar" :src="avatar" alt="" :onerror="defaultAvatar"/>
+            <img slot="description" :src="avatar" alt="" :onerror="defaultAvatar"/>
           </div>
         </img-upload>
       </div>

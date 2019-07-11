@@ -10,7 +10,7 @@
           <h1>{{ shareInfo.title }}</h1>
           <div class="desc">
             <div class="user">
-              <img class="avatar" :src="shareInfo.avatar || defaultAvatar" alt="" />
+              <img class="avatar" :src="shareInfo.avatar" alt=""  :onerror="defaultAvatar"/>
               <span class="name">{{ shareInfo.name }}</span>
             </div>
             <span class="time">{{ shareInfo.time }}</span>
@@ -42,7 +42,6 @@
 <script>
 import QRCode from "qrcode";
 import html2canvas from "html2canvas";
-import defaultAvatar from "@/assets/avatar-default.svg";
 
 export default {
   name: "QRCodeDialog",
@@ -56,7 +55,7 @@ export default {
   },
   data() {
     return {
-      defaultAvatar,
+      defaultAvatar: `this.src="${ require('@/assets/avatar-default.svg') }"`,
       canvas: null
     };
   },
@@ -130,6 +129,8 @@ export default {
 <style lang="less" scoped>
 .markdown-body {
   font-size: 14px;
+  font-family: -apple-system, SF UI Text, Arial, PingFang SC, Hiragino Sans GB, Microsoft YaHei,
+    WenQuanYi Micro Hei, sans-serif;
   color: #000000;
 }
 .white-bg {

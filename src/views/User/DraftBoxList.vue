@@ -14,7 +14,7 @@
     <div class="info">
       <div class="avatar">
         <div class="avatar-img">
-          <img v-if="avatar" v-lazy="avatar" :src="avatar" alt="avatar" />
+          <img :src="avatar" alt="avatar" :onerror="defaultAvatar" />
         </div>
         <span>{{ draftbox.nickname || draftbox.author }}</span>
       </div>
@@ -66,6 +66,11 @@ export default {
   name: "DraftBoxList",
   directives: {
     clampy
+  },
+  data() {
+    return {
+      defaultAvatar: `this.src="${ require('@/assets/avatar-default.svg') }"`,
+    }
   },
   props: ["draftbox", "index"],
   computed: {

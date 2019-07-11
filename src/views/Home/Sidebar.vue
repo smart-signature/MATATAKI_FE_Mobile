@@ -6,7 +6,7 @@
           <div class="top-container">
             <router-link :to="{ name: 'UserEdit', params: { id } }">
               <div class="avatar-container">
-                <img :src="avatar" alt="avatar" />
+                <img :src="avatar" alt="avatar" :onerror="defaultAvatar"/>
               </div>
             </router-link>
             <router-link :to="{ name: 'Help' }">
@@ -143,6 +143,7 @@ export default {
   },
   data() {
     return {
+      defaultAvatar: `this.src="${ require('@/assets/avatar-default.svg') }"`,
       showModal: false,
       sidebarShow: false,
       balance: 1,

@@ -63,6 +63,7 @@ export default {
     font-size:14px;
     line-height:1.5;
     text-align: center;
+    font-family:PingFangSC-Medium;
     font-weight:500;
     color:#484848;
     line-height: 1.5;
@@ -80,6 +81,7 @@ export default {
     text-align: center;
     line-height: 46px;
     font-size:14px;
+    font-family:PingFangSC-Medium;
     font-weight:500;
     letter-spacing:1px;
     border-radius: 3px;

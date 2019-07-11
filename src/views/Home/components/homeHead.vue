@@ -1,7 +1,7 @@
 <template>
   <div class="home-fixed home-head mw">
     <div v-if="isLogined" class="home-head-avatar" @click="$emit('login')">
-      <img v-if="avatar" v-lazy="avatar" :src="avatar" alt="avatar" />
+      <img :src="avatar" alt="avatar" :onerror="defaultAvatar"/>
     </div>
     <a v-else href="javascript:void(0);" class="home-head-notlogin" @click="$emit('login')">登录</a>
 
@@ -34,7 +34,8 @@ export default {
   props: ["nav", "nowIndex"],
   data() {
     return {
-      avatar: ""
+      avatar: "",
+      defaultAvatar: `this.src="${ require('@/assets/avatar-default.svg') }"`,
     };
   },
   computed: {
