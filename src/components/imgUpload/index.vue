@@ -17,7 +17,13 @@
     </FileUpload>
 
     <!-- 编辑图片 modal -->
-    <Modal v-model="modal" width="400" class-name="img-upload-modal">
+    <Modal
+      v-model="modal"
+      width="400"
+      class-name="img-upload-modal"
+      closable
+      :mask-closable="false"
+    >
       <div slot="header" class="modal-header">
         <p class="modal-header-title">编辑图像</p>
         <p class="modal-header-subtitle">调整图像寸和位置</p>
