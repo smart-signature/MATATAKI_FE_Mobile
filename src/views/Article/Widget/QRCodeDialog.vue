@@ -18,7 +18,7 @@
           <div class="content markdown-body" v-html="shareInfo.content"></div>
         </section>
         <div class="hide-article-box">
-          <span>—— 长按海报访问更多精彩内容 ——</span>
+          <span>—— 扫描二维码 免费读全文 ——</span>
         </div>
         <section class="footer">
           <img src="@/assets/newimg/logo-word.svg" alt="SmartSignature" />
@@ -129,6 +129,8 @@ export default {
 <style lang="less" scoped>
 .markdown-body {
   font-size: 14px;
+  font-family: -apple-system, SF UI Text, Arial, PingFang SC, Hiragino Sans GB, Microsoft YaHei,
+    WenQuanYi Micro Hei, sans-serif;
   color: #000000;
 }
 .white-bg {

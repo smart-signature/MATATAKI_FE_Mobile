@@ -110,6 +110,7 @@ export default {
   .name {
     font-size: 14px;
     font-weight: bold;
+    font-family: PingFangSC-Regular;
     color: rgba(0, 0, 0, 1);
     letter-spacing: 1px;
     text-overflow: ellipsis;
@@ -120,6 +121,7 @@ export default {
 
   .my-balance {
     font-size: 14px;
+    font-family: PingFang SC, STHeitiSC-Light, Helvetica-Light, arial, sans-serif;
     font-weight: 600;
     color: rgba(0, 0, 0, 1);
     line-height: 22px;
@@ -134,6 +136,7 @@ export default {
   padding: 8px 20px;
   border-radius: 3px;
   font-size: 14px;
+  font-family: PingFangSC-Regular;
   font-weight: 400;
   letter-spacing: 1px;
   min-width: 100px;
@@ -141,6 +144,7 @@ export default {
 
 .login-notification {
   font-size: 14px;
+  font-family: PingFang SC, STHeitiSC-Light, Helvetica-Light, arial, sans-serif;
   font-weight: 600;
   color: rgba(0, 0, 0, 1);
   text-align: left;
