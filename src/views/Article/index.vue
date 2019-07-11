@@ -57,7 +57,7 @@
               <p class="other">
                 发布于
                 {{ articleCreateTimeComputed }}
-                <svg-icon icon-class="view" class="avatar-read" @click="goHome" />
+                <svg-icon icon-class="view" class="avatar-read" />
                 {{ article.read || 0 }}阅读
               </p>
             </div>
