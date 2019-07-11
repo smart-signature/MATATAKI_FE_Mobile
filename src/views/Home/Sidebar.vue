@@ -48,7 +48,7 @@
             <div class="cell">
               <div class="cell-left">
                 <img src="@/assets/newimg/yuanchuang.svg" alt="article" class="left-img" />
-                <span class="left-text">原创文章</span>
+                <span class="left-text">我的原创</span>
               </div>
               <div class="cell-right">
                 <span>{{ stats.articles }}篇</span>
@@ -59,7 +59,7 @@
             <div class="cell">
               <div class="cell-left">
                 <img src="@/assets/newimg/zanshang.svg" alt="article" class="left-img" />
-                <span class="left-text">投资文章</span>
+                <span class="left-text">我的投资</span>
               </div>
               <div class="cell-right">
                 <span>{{ stats.supports }}篇</span>
@@ -70,7 +70,7 @@
             <div class="cell">
               <div class="cell-left">
                 <img src="@/assets/newimg/caogaoxiang.svg" alt="article" class="left-img" />
-                <span class="left-text">草稿箱</span>
+                <span class="left-text">我的草稿</span>
               </div>
               <div class="cell-right">
                 <span>{{ stats.drafts }}篇</span>

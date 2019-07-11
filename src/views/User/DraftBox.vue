@@ -1,6 +1,6 @@
 <template>
   <div class="draftbox mw">
-    <BaseHeader :pageinfo="{ left: 'back', title: '草稿箱', rightPage: 'home' }" />
+    <BaseHeader :pageinfo="{ left: 'back', title: '我的草稿', rightPage: 'home' }" />
     <BasePull
       :loading-text="'无草稿'"
       :params="params"
