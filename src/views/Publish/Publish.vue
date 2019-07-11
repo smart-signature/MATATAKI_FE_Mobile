@@ -84,6 +84,7 @@
             :img-upload-done="imgUploadDone"
             :aspect-ratio="2 / 1"
             class="cover-upload"
+            :update-type="'artileCover'"
             @doneImageUpload="doneImageUpload"
           >
             <img slot="uploadButton" class="cover-add" src="@/assets/newimg/add.svg" alt="add" />
@@ -155,11 +156,15 @@
       :from="$route.query.from"
       @changeTransferModal="status => (transferModal = status)"
     />
-    <Prompt v-model="prompt" :content="{
-      title: '是否保存为草稿？',
-      confirmText: '保存草稿',
-      cancelText: '不保存'
-    }" @confirm="createDraft(saveInfo)"/>
+    <Prompt
+      v-model="prompt"
+      :content="{
+        title: '是否保存为草稿？',
+        confirmText: '保存草稿',
+        cancelText: '不保存'
+      }"
+      @confirm="createDraft(saveInfo)"
+    />
   </div>
 </template>
 
@@ -267,7 +272,6 @@ export default {
   mounted() {
     this.resize();
     this.setToolBar(this.screenWidth);
-    document.querySelector('.ivu-back-top').style.display="none";
   },
   computed: {
     ...mapGetters(["currentUserInfo", "isLogined"]),
@@ -317,7 +321,8 @@ export default {
   },
   methods: {
     ...mapActions(["getSignatureOfArticle"]),
-    unload($event) { // 刷新页面 关闭页面有提示
+    unload($event) {
+      // 刷新页面 关闭页面有提示
       // https://jsfiddle.net/jbf4vL7h/29/
       var confirmationMessage = "\o/";
       $event.returnValue = confirmationMessage; // Gecko, Trident, Chrome 34+
@@ -325,7 +330,7 @@ export default {
     },
     changed() {
       // 如果允许关闭 或者 内容都为空
-      return this.allowLeave || (!strTrim(this.title) && !strTrim(this.markdownData))
+      return this.allowLeave || (!strTrim(this.title) && !strTrim(this.markdownData));
     },
     popstateFunc() {
       // Your logic
@@ -626,7 +631,6 @@ export default {
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
         const image = new Image();
-        console.log("imgfile", imgfile);
         image.onload = () => {
           canvas.width = image.width;
           canvas.height = image.height;
@@ -661,8 +665,9 @@ export default {
     },
     // 上传完成
     doneImageUpload(res) {
+      // console.log(res);
       this.imgUploadDone += Date.now();
-      this.cover = res.hash;
+      this.cover = res.data.data.cover;
     },
     // 删除cover
     removeCover() {
