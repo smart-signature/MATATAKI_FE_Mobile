@@ -160,7 +160,7 @@ export default {
   font-size: 12px;
   font-weight: 400;
   color: rgba(178, 178, 178, 1);
-  text-align: right;
+  text-align: left;
   span {
     font-size: 12px;
     font-weight: bold;
