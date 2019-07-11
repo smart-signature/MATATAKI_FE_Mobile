@@ -16,7 +16,9 @@
           src="@/assets/img/icon_no_more.svg"
           alt="no_more"
         />
-        <p v-if="finished && articles.length === 0">{{ loadingText }}</p>
+        <p v-if="finished && articles.length === 0" :class="showNoMoreIcon && 'big'">
+          {{ loadingText }}
+        </p>
       </div>
     </van-list>
   </van-pull-refresh>
@@ -36,7 +38,9 @@
         src="@/assets/img/icon_no_more.svg"
         alt="no_more"
       />
-      <p v-if="finished && articles.length === 0">{{ loadingText }}</p>
+      <p v-if="finished && articles.length === 0" :class="showNoMoreIcon && 'big'">
+        {{ loadingText }}
+      </p>
     </div>
   </van-list>
 </template>
@@ -244,6 +248,9 @@ export default {
     line-height: 28px;
     padding: 0;
     margin: 20px 0 0;
+    &.big {
+      font-size: 20px;
+    }
   }
 }
 </style>
