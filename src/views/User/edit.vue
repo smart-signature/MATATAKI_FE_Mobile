@@ -15,7 +15,7 @@
           @doneImageUpload="doneImageUpload"
         >
           <div slot="uploadButton" class="user-avatar">
-            <img v-if="avatar" slot="description" v-lazy="avatar" :src="avatar" alt="" />
+            <img slot="description" v-lazy="avatar" :src="avatar" alt="" :onerror="defaultAvatar"/>
           </div>
         </img-upload>
       </div>
@@ -40,7 +40,6 @@
 
 <script>
 import imgUpload from '@/components/imgUpload/index.vue';
-import defaultAvatar from "@/assets/avatar-default.svg";
 import { mapActions } from "vuex";
 
 export default {
@@ -49,6 +48,7 @@ export default {
   props: ["id"],
   data() {
     return {
+      defaultAvatar: `this.src="${ require('@/assets/avatar-default.svg') }"`,
       playerincome: 0,
       editing: false,
       nickname: "", // 昵称
@@ -172,10 +172,7 @@ export default {
       setUser(await this.getCurrentUser());
     },
     setAvatarImage(hash) {
-      if (hash)
-        this.avatar = this.$backendAPI.getAvatarImage(hash);
-      else
-        this.avatar = defaultAvatar;
+      if (hash) this.avatar = this.$backendAPI.getAvatarImage(hash);
     },
     // 完成上传
     async doneImageUpload(res) {
