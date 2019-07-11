@@ -1,7 +1,9 @@
 /* eslint-disable no-shadow */
 <template>
   <div class="article" @click.stop="opr = false">
-    <BaseHeader :pageinfo="{ title: article.channel_id === 2 ? '商品详情' : '文章详情' }">
+    <BaseHeader
+      :pageinfo="{ title: article.channel_id === 2 ? '商品详情' : '文章详情' }" 
+      :showLogo="'true'">
       <div v-if="isMe(article.uid)" slot="right" class="more" @click.stop="opr = !opr">
         <img src="@/assets/more.svg" alt="more" />
         <transition name="fade" mode="out-in">

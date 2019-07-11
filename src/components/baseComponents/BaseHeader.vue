@@ -14,12 +14,14 @@
       <svg-icon icon-class="home" :style="{ color: iconColor }" class="home-icon" @click="goHome" />
     </div>
     <p
+      v-if="!showLogo"
       slot="title"
       :class="[scrollShowTitle && 'scroll', scrollShowTitle && scrollToggleStatus && 'scroll-show']"
       class="title"
     >
       {{ pageinfo.title }}
     </p>
+    <img v-else class="logo" src="@/assets/img/logo.png" alt="logo" />
     <div
       slot="right"
       :class="[scrollShowTitle && 'scroll', scrollShowTitle && scrollToggleStatus && 'scroll-show']"
@@ -94,6 +96,11 @@ export default {
     },
     // 有下边框线
     hasBottomBorderLine: {
+      type: Boolean,
+      default: false
+    },
+    // 显示logo
+    showLogo: {
       type: Boolean,
       default: false
     }
@@ -223,6 +230,9 @@ export default {
   letter-spacing: 1px;
   color: #000;
   .scrollShow();
+}
+.logo {
+  width: 165px;
 }
 .header-right {
   position: absolute;
