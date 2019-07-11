@@ -3,7 +3,7 @@
     <navigation v-if="isRouterAlive">
       <router-view />
     </navigation>
-    <BackTop :right="20" :bottom="70" :height="40">
+    <BackTop :right="20" :bottom="70" :height="40" v-if="!isPublishPage">
       <img class="backtop" src="@/assets/img/icon_back_top.svg" alt="backtop" />
     </BackTop>
   </div>
@@ -28,7 +28,11 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["currentUserInfo"])
+    ...mapGetters(["currentUserInfo"]),
+    isPublishPage() {
+      // 如果是发布页面隐藏小火箭
+      return this.$route.name === 'Publish'
+    }
   },
   methods: {
     ...mapActions(["signIn"]),
