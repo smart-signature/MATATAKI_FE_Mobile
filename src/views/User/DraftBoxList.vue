@@ -37,7 +37,7 @@ export default {
   props: ["draftbox", "index"],
   computed: {
     createTime() {
-      const time = moment(this.draftbox.create_time);
+      const time = moment(this.draftbox.update_time);
       return isNDaysAgo(2, time) ? time.format("MMMDo HH:mm") : time.fromNow();
     }
   },

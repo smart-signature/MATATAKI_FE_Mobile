@@ -1,6 +1,6 @@
 <template>
   <div class="outer">
-    <div ref="container" class="white-bg">
+    <div ref="container" :class="{'white-bg':!canvas}">
       <div v-if="!canvas" ref="capture" class="container">
         <section class="header">
           <img src="@/assets/newimg/smartsignature.svg" alt="SmartSignature" />
@@ -25,7 +25,7 @@
           <canvas ref="qr" class="qrcode" width="55" height="55"></canvas>
         </section>
       </div>
-      <img v-else :src="downloadLink" alt="" style="width: 100%" />
+      <img v-else :src="downloadLink" alt="" style="width: 100%;transform: scale(0.7)" />
     </div>
     <a
       :class="['save-btn', { disabled: isAPP }]"
@@ -203,7 +203,7 @@ export default {
   }
 }
 .content {
-  max-height: 180px;
+  max-height: 320px;
   overflow: hidden;
 }
 .desc {

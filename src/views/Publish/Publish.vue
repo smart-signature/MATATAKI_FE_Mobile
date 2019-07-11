@@ -76,17 +76,11 @@
       <div class="cover-container">
         <div v-show="cover">
           <img class="cover-img" :src="coverEditor" alt="cover" />
-          <!--<img
-            class="cover-right-remove"
-            src="@/assets/img/icon_remove.svg"
-            alt="remove"
-            @click.prevent="removeCover"
-          />-->
         </div>
         <div class="cover">
           <p>图文封面 <span class="cover-tip">请上传长宽2:1尺寸的静态图片</span></p>
           <img-upload
-            v-if="!cover"
+            v-show="!cover"
             :img-upload-done="imgUploadDone"
             :aspect-ratio="2 / 1"
             class="cover-upload"
@@ -95,7 +89,7 @@
             <img slot="uploadButton" class="cover-add" src="@/assets/newimg/add.svg" alt="add" />
           </img-upload>
           <img
-            v-else
+            v-show="cover"
             class="cover-btn"
             src="@/assets/newimg/del.svg"
             alt="remove"
@@ -161,6 +155,11 @@
       :from="$route.query.from"
       @changeTransferModal="status => (transferModal = status)"
     />
+    <Prompt v-model="prompt" :content="{
+      title: '是否保存为草稿？',
+      confirmText: '保存草稿',
+      cancelText: '不保存'
+    }" @confirm="createDraft(saveInfo)"/>
   </div>
 </template>
 
@@ -179,6 +178,7 @@ import debounce from "lodash/debounce";
 import { toolbars } from "./toolbars"; // 编辑器配置
 import imgUpload from "@/components/imgUpload/index.vue"; // 图片上传
 import modalPrompt from "./components/modalPrompt.vue"; // 弹出框提示
+import { Prompt } from "@/components/";
 
 import tagCard from "@/components/tagCard/index.vue";
 import articleTransfer from "@/components/articleTransfer/index.vue";
@@ -191,9 +191,11 @@ export default {
     imgUpload,
     modalPrompt,
     tagCard,
-    articleTransfer
+    articleTransfer,
+    Prompt
   },
   data: () => ({
+    prompt: false,
     title: "",
     author: "",
     markdownData: "",
@@ -223,7 +225,8 @@ export default {
     articleData: {}, // 文章数据
     transferButton: false, // 转让按钮
     transferModal: false, // 转让弹框
-    allowLeave: false // 允许离开
+    allowLeave: false, // 允许离开
+    saveInfo: {}
   }),
   created() {
     const { id } = this.$route.params;
@@ -264,6 +267,7 @@ export default {
   mounted() {
     this.resize();
     this.setToolBar(this.screenWidth);
+    document.querySelector('.ivu-back-top').style.display="none";
   },
   computed: {
     ...mapGetters(["currentUserInfo", "isLogined"]),
@@ -458,6 +462,9 @@ export default {
         throw error;
       }
     },
+    confirmSaveDraft() {
+      this.createDraft(this.saveInfo);
+    },
     // 创建草稿
     async createDraft(article) {
       // 设置文章标签 🏷️
@@ -521,6 +528,7 @@ export default {
 
       if (this.fissionFactor === "") this.fissionFactor = 2; // 用户不填写裂变系数则默认为2
 
+      this.allowLeave = true;
       const {
         currentUserInfo,
         title,
@@ -547,13 +555,21 @@ export default {
         });
       } else if (editorMode === "create" && saveType === "draft") {
         // 发布到草稿箱
-        this.createDraft({
+        this.prompt = true;
+        this.saveInfo = {
           title,
           content,
           fissionFactor,
           cover,
           isOriginal
-        });
+        };
+        /*this.createDraft({
+          title,
+          content,
+          fissionFactor,
+          cover,
+          isOriginal
+        });*/
       } else if (editorMode === "edit") {
         // 编辑文章
         const { hash } = await this.sendPost({ title, author, content });

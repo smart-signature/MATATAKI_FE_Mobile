@@ -17,23 +17,32 @@
         @delId="delId"
       />
     </BasePull>
+    <Prompt v-model="prompt" :content="{
+      title: '是否删除草稿？',
+      confirmText: '删除草稿',
+      cancelText: '不删除'
+    }" @confirm="confirmDel"/>
   </div>
 </template>
 
 <script>
 import DraftBoxList from "./DraftBoxList.vue";
+import { Prompt } from "@/components/";
 
 export default {
   name: "DeaftBox",
   components: {
-    DraftBoxList
+    DraftBoxList,
+    Prompt
   },
   data() {
     return {
+      prompt: false,
       params: {},
       apiUrl: "draftboxList",
       draftBoxList: [],
-      delModel: false
+      delModel: false,
+      currentData: {}
     };
   },
   mounted() {},
@@ -42,20 +51,14 @@ export default {
       console.log(res);
       this.draftBoxList = res.list;
     },
+    confirmDel() {
+      const { id, index } = this.currentData;
+      this.prompt = false;
+      this.asyncSuccessDel(id, index);
+    },
     delId(data) {
-      const { id, index } = data;
-      if (!id) {
-        console.log("没有id");
-        return;
-      }
-      this.$Modal.confirm({
-        title: "确定删除？",
-        content: "<p>确定删除草稿箱文章？</p>",
-        loading: true,
-        onOk: () => {
-          this.asyncSuccessDel(id, index);
-        }
-      });
+      this.currentData = data;
+      this.prompt = true;
     },
     // 删除草稿
     async asyncSuccessDel(id, index) {
