@@ -2,15 +2,20 @@
 html,body{
   height: 100%;
 }
-body {
-  background: #F0F0F0;
+.fontFamily {
   font-family: "PingFang SC", "Helvetica Neue", Helvetica, "Nimbus Sans L", Arial, 
   "Liberation Sans", "Hiragino Sans GB", "Source Han Sans CN Normal", 
   "Microsoft YaHei", "Wenquanyi Micro Hei", "WenQuanYi Zen Hei", 
   "ST Heiti", SimHei, "WenQuanYi Zen Hei Sharp", sans-serif;
-  // font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol;
 }
-
+body {
+  background: #F0F0F0;
+  .fontFamily()
+}
+// 覆盖github markdown css
+.markdown-body {
+  .fontFamily()!important
+}
 /* 加载更多提示 */
 .loading-stat {
   margin: 10px;
