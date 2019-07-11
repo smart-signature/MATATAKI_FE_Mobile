@@ -1,6 +1,14 @@
 <template>
   <div class="tag mw">
-    <BaseHeader :pageinfo="{ title: '' }" :white="true" :customize-header-bc="tagBanner" />
+    <BaseHeader
+      :pageinfo="{ title: tagTitle }"
+      :white="true"
+      :customize-header-bc="tagBanner"
+      :icon-color="iconColorStatusColor"
+      :is-scroll-emit="true"
+      :scroll-show-title="true"
+      @scrollToggleStatus="status => (iconColorStatus = status)"
+    />
     <div class="tag-banner" :style="{ backgroundColor: tagBanner }">
       <div class="tag-banner-title">
         <img src="@/assets/img/icon_article_tag.svg" alt="tag" />
@@ -38,8 +46,14 @@ export default {
       params: {
         tagid: this.$route.query.id
       },
-      apiUrl: "getPostByTagById"
+      apiUrl: "getPostByTagById",
+      iconColorStatus: false
     };
+  },
+  computed: {
+    iconColorStatusColor() {
+      return this.iconColorStatus ? "#000" : "#fff";
+    }
   },
   created() {
     this.tagBanner = tagColor()[this.$route.query.id] || "#000";
