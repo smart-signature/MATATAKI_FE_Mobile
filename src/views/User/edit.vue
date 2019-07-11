@@ -39,7 +39,8 @@
 </template>
 
 <script>
-import imgUpload from "@/components/imgUpload/index.vue";
+import imgUpload from '@/components/imgUpload/index.vue';
+import defaultAvatar from "@/assets/avatar-default.svg";
 import { mapActions } from "vuex";
 
 export default {
@@ -171,7 +172,10 @@ export default {
       setUser(await this.getCurrentUser());
     },
     setAvatarImage(hash) {
-      if (hash) this.avatar = this.$backendAPI.getAvatarImage(hash);
+      if (hash)
+        this.avatar = this.$backendAPI.getAvatarImage(hash);
+      else
+        this.avatar = defaultAvatar;
     },
     // 完成上传
     async doneImageUpload(res) {

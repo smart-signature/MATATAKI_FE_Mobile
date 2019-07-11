@@ -3,7 +3,7 @@
     <div ref="container" class="white-bg">
       <div v-if="!canvas" ref="capture" class="container">
         <section class="header">
-          <img src="@/assets/newimg/SmartSignature.svg" alt="SmartSignature" />
+          <img src="@/assets/newimg/smartsignature.svg" alt="SmartSignature" />
           <h1>投资好文，分享有收益</h1>
         </section>
         <section class="content-container">
@@ -25,8 +25,16 @@
           <canvas ref="qr" class="qrcode" width="55" height="55"></canvas>
         </section>
       </div>
+      <img v-else :src="downloadLink" alt="" style="width: 100%" />
     </div>
-    <a class="save-btn" download="smartsignature.png" :href="downloadLink" @click="close">保存</a>
+    <a
+      :class="['save-btn', { disabled: isAPP }]"
+      download="smartsignature.png"
+      :href="downloadLink"
+      :disabled="isAPP"
+      @click="close"
+      >{{ isAPP ? "长按图片保存" : "保存" }}
+    </a>
   </div>
 </template>
 
@@ -55,16 +63,21 @@ export default {
     downloadLink() {
       if (this.canvas) return this.canvas.toDataURL();
       return "";
+    },
+    isAPP() {
+      return /Edge|Firefox|Opera|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
     }
   },
   watch: {},
   mounted() {
     this.genQRCode();
+    console.log(this.isAPP);
   },
   methods: {
     close() {
       this.$emit("change", false);
-      this.$toast.success({ duration: 1500, message: `图片生成成功` });
     },
     save() {
       const loading = this.$toast.loading({
@@ -97,7 +110,7 @@ export default {
         useCORS: true
       }).then(canvas => {
         this.canvas = canvas;
-        this.$refs.container.append(canvas);
+        //this.$refs.container.append(canvas);
         loading.clear();
       });
     },
@@ -122,6 +135,8 @@ export default {
 }
 .white-bg {
   background: #ffffff;
+  width: 100%;
+  margin: auto;
 }
 .outer {
   background: transparent;
@@ -152,6 +167,10 @@ export default {
   justify-content: center;
   cursor: pointer;
   margin: 20px auto 0 auto;
+  user-select: none;
+  &.disabled {
+    background: #b2b2b2;
+  }
 }
 .container {
   width: 100%;
