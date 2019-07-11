@@ -29,6 +29,7 @@
     </div>
     <a
       :class="['save-btn', { disabled: isAPP }]"
+      :style="{ 'margin-top': canvas ? '-60px': 0 }"
       download="smartsignature.png"
       :href="downloadLink"
       :disabled="isAPP"
