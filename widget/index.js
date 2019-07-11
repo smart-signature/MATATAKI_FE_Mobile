@@ -6,7 +6,9 @@ import './index.less';
 // img
 import readImg from './img/read.svg';
 import upsImg from './img/ups.svg';
-import logoImg from './img/logo.png';
+import logoImg from './img/logo.svg';
+import logoSquareImg from './img/logo_square.svg';
+import logoRectangleImg from './img/logo_rectangle.svg';
 
 // 获取url信息
 const urlSearch = window.location.search.substr(1).split('&');
@@ -75,7 +77,7 @@ const setAppDom = ({
           <img class="logo" src="${logoImg}" alt="logo" />
           <h1 class="jumpPage">${title || '标题找不到啦~'}</h1>
           <div class="widget-content">
-            <img class="cover jumpPage" src="${img || logoImg}" alt="cover" />
+            <img class="cover jumpPage" src="${img || logoRectangleImg}" alt="cover" />
             <p class="widget-des">${content || '没有简介信息'}</p>
           </div>
           <p class="author">by: ${username || ''}</p>
