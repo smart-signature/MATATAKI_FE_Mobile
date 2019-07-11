@@ -48,8 +48,15 @@
         @imgAdd="$imgAdd"
       />
       <div v-if="editorMode !== 'edit'" class="fission">
-        <p>裂变系数
-          <Poptip popper-class="my-poptip" content="决定每名投资者的收益上限 = 投资金额 * 裂变系数 裂变系数越大投资者的收益预期越高" width="250" word-wrap placement="top-start">
+        <p>
+          裂变系数
+          <Poptip
+            popper-class="my-poptip"
+            content="决定每名投资者的收益上限 = 投资金额 * 裂变系数 裂变系数越大投资者的收益预期越高"
+            width="250"
+            word-wrap
+            placement="top-start"
+          >
             <span class="question">?</span>
           </Poptip>
         </p>
@@ -87,7 +94,13 @@
           >
             <img slot="uploadButton" class="cover-add" src="@/assets/newimg/add.svg" alt="add" />
           </img-upload>
-          <img v-else class="cover-btn" src="@/assets/newimg/del.svg" alt="remove" @click.prevent="removeCover"/>
+          <img
+            v-else
+            class="cover-btn"
+            src="@/assets/newimg/del.svg"
+            alt="remove"
+            @click.prevent="removeCover"
+          />
         </div>
       </div>
     </div>
@@ -102,7 +115,7 @@
         />
       </div>
     </div>
-    <van-radio-group v-model="saveType" v-if="isShowEditorMode" >
+    <van-radio-group v-if="isShowEditorMode" v-model="saveType">
       <van-cell-group>
         <van-cell title="公开发布" clickable @click="saveType = 'public'">
           <van-radio name="public">
@@ -112,7 +125,7 @@
           </van-radio>
         </van-cell>
         <van-cell title="保存到草稿箱" clickable @click="saveType = 'draft'">
-          <van-radio name="draft" >
+          <van-radio name="draft">
             <div slot="icon" slot-scope="props" class="my-radio">
               <div v-if="props.checked" class="radio-active"></div>
             </div>
@@ -123,10 +136,9 @@
     <van-cell clickable title="确认为原创" @click="isOriginal = !isOriginal">
       <van-checkbox v-model="isOriginal">
         <div slot="icon" slot-scope="props">
-          <div class="my-checkbox" v-if="!props.checked">
-          </div>
+          <div v-if="!props.checked" class="my-checkbox"></div>
           <div v-else class="my-checkbox-active">
-            <img src="../../assets/newimg/select.svg" alt="select">
+            <img src="../../assets/newimg/select.svg" alt="select" />
           </div>
         </div>
       </van-checkbox>
@@ -210,7 +222,8 @@ export default {
     tagCards: [], // 文章标签
     articleData: {}, // 文章数据
     transferButton: false, // 转让按钮
-    transferModal: false // 转让弹框
+    transferModal: false, // 转让弹框
+    allowLeave: false // 允许离开
   }),
   created() {
     const { id } = this.$route.params;
@@ -219,10 +232,12 @@ export default {
     if (id === "create" && !from) {
       // 发布文章 from 为 undefined
       // console.log('发布文章');
-    } else if (from === "edit") { // 编辑文章
+    } else if (from === "edit") {
+      // 编辑文章
       this.editorMode = from;
       this.setArticleDataById(hash, id);
-    } else if (from === "draft") { // 草稿箱
+    } else if (from === "draft") {
+      // 草稿箱
       this.editorMode = from;
       this.saveType = "draft";
       this.getDraft(id);
@@ -231,6 +246,20 @@ export default {
     }
 
     this.getTags();
+  },
+  beforeRouteLeave(to, from, next) {
+    if (this.changed()) next();
+    else {
+      this.showModal = true;
+      this.modalMode = "back";
+      next(false);
+    }
+  },
+  beforeMount() {
+    window.addEventListener("beforeunload", this.unload);
+  },
+  beforeDestroy() {
+    window.removeEventListener("beforeunload", this.unload);
   },
   mounted() {
     this.resize();
@@ -284,6 +313,20 @@ export default {
   },
   methods: {
     ...mapActions(["getSignatureOfArticle"]),
+    unload($event) { // 刷新页面 关闭页面有提示
+      // https://jsfiddle.net/jbf4vL7h/29/
+      var confirmationMessage = "\o/";
+      $event.returnValue = confirmationMessage; // Gecko, Trident, Chrome 34+
+      return confirmationMessage; // Gecko, WebKit, Chrome <34
+    },
+    changed() {
+      // 如果允许关闭 或者 内容都为空
+      return this.allowLeave || (!strTrim(this.title) && !strTrim(this.markdownData))
+    },
+    popstateFunc() {
+      // Your logic
+      alert("pushState");
+    },
     setTag(data) {
       console.log(data);
       this.articleData = data; // 设置文章数据
@@ -611,13 +654,20 @@ export default {
     },
     // head 返回
     headerBackFunc() {
-      this.showModal = true;
       this.modalMode = "back";
+      this.headLeavePageFunc();
     },
     // head 返回首页
     headerHomeFunc() {
-      this.showModal = true;
       this.modalMode = "home";
+      this.headLeavePageFunc();
+    },
+    // head 离开页面方法
+    headLeavePageFunc() {
+      if (!strTrim(this.title) && !strTrim(this.markdownData)) {
+        this.allowLeave = true;
+        this.leavePage();
+      } else this.showModal = true;
     },
     // 关闭modal
     changeInfo(status) {
@@ -629,6 +679,11 @@ export default {
     // modal 同意
     modalCancel() {
       this.showModal = false;
+      this.allowLeave = true;
+      this.leavePage();
+    },
+    // 离开页面
+    leavePage() {
       if (this.modalMode === "back") this.$router.go(-1);
       else if (this.modalMode === "home") this.$router.push({ name: "home" });
       else this.$router.go(-1);

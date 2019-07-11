@@ -213,7 +213,7 @@ export default {
 
     // 获取文章列表数据
     getListData(res) {
-      console.log(this.nowIndex, res.index);
+      // console.log(this.nowIndex, res.index);
       this.content[this.nowIndex].navMenu[res.index].articles = res.list;
     },
     // 获取推荐文章或者商品

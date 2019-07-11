@@ -127,7 +127,7 @@ export default {
   methods: {
     // 滚动分页
     async onLoad(isEmptyArray = false) {
-      console.log("开始分页");
+      // console.log("开始分页");
       // 如果传了参数但是为null 阻止请求 场景发生在文章获取分享列表处
       for (const [key, value] of Object.entries(this.params)) if (!value) return;
       const params = this.params || {};
@@ -140,8 +140,6 @@ export default {
       if (this.page === this.oldPage) return;
       this.oldPage = this.page;
       // hack end
-
-      console.log("开始分页params", this.params);
 
       // 获取数据成功执行
       const getDataSuccess = (data, isEmptyArray) => {
@@ -190,7 +188,6 @@ export default {
       const getDataFail = () => (this.error = true);
       // 获取数据
       try {
-        console.log("开始分页111");
         const res = await this.$backendAPI.getBackendData({ url, params }, this.needAccessToken);
         if (res.status === 200 && res.data.code === 0) getDataSuccess(res.data, isEmptyArray);
         else getDataFail();
