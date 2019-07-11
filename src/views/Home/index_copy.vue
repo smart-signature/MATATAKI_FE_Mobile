@@ -106,7 +106,6 @@ export default {
 h1.title {
   font-size: 32px;
   /* padding-top: 101px; */
-  font-family: BodoniSvtyTwoSCITCTT-Book;
   font-weight: normal;
   width: 100%;
   color: rgba(255, 255, 255, 1);
@@ -115,7 +114,6 @@ h1.title {
 }
 h2.subtitle {
   font-size: 16px;
-  font-family: PingFangSC-Light;
   font-weight: 300;
   color: rgba(255, 255, 255, 1);
   line-height: 18px;

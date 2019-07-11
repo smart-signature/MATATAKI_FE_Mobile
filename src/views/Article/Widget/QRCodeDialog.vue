@@ -129,8 +129,6 @@ export default {
 <style lang="less" scoped>
 .markdown-body {
   font-size: 14px;
-  font-family: -apple-system, SF UI Text, Arial, PingFang SC, Hiragino Sans GB, Microsoft YaHei,
-    WenQuanYi Micro Hei, sans-serif;
   color: #000000;
 }
 .white-bg {

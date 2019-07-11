@@ -67,7 +67,6 @@ export default {
   .info-title {
     text-align: center;
     font-size: 16px;
-    font-family: PingFangSC-Medium;
     font-weight: bold;
     color: #494949;
     padding: 0;
@@ -80,7 +79,6 @@ export default {
   }
   p {
     font-size: 14px;
-    font-family: PingFangSC-Regular;
     font-weight: 400;
     color: #000000;
     line-height: 1.5;
