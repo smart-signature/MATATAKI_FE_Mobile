@@ -8,6 +8,9 @@ import { toPrecision } from "../common/precisionConversion";
 export const urlAddress = process.env.VUE_APP_URL;
 // 获取图片直接使用接口地址
 export const apiServer = process.env.VUE_APP_API;
+
+const ssImgAddress = "http://ssimg.frontenduse.top";
+
 // 代理使用地址
 // export const apiServerAdders = process.env.NODE_ENV === 'development' ? '/' : process.env.VUE_APP_API;
 // https://github.com/axios/axios/issues/535
@@ -21,7 +24,7 @@ const axiosforApiServer = axios.create({
 export const accessTokenAPI = {
   get() {
     const token = window.localStorage.getItem("ACCESS_TOKEN");
-    if (token === 'null' || token === 'undefined') {
+    if (token === "null" || token === "undefined") {
       this.rm();
       return this.get();
     }
@@ -56,7 +59,7 @@ const API = {
     } catch (error) {
       // console.debug(error);
     }
-    console.debug('x-access-token :', token);
+    console.debug("x-access-token :", token);
     // https://blog.fundebug.com/2018/07/25/es6-const/
     if (token) config.headers = { "x-access-token": token };
     if (config.data && config.data.platform && config.data.platform === "need") {
@@ -199,7 +202,26 @@ const API = {
   },
   // 获取头像
   getAvatarImage(hash) {
-    return `${apiServer}/image/${hash}`;
+    return `${ssImgAddress}/${hash}`;
+  },
+  // 上传图片
+  async uploadImage(type, data) {
+    const url = {
+      avatar: "/user/uploadAvatar",
+      artileCover: "/post/uploadImage"
+    };
+    const key = {
+      avatar: "avatar",
+      artileCover: "avatar"
+    };
+    const formdata = new FormData();
+    formdata.append(key[type], data);
+    return this.accessBackend({
+      method: "POST",
+      url: url[type],
+      data: formdata,
+      config: { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+    });
   },
   // BasePull 分页组件
   async getBackendData({ url, params }, needAccessToken = false) {
@@ -335,8 +357,7 @@ const API = {
         channel
       }
     });
-  },
-
+  }
 };
 
 export default API;

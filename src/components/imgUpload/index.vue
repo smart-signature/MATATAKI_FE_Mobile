@@ -6,8 +6,6 @@
       v-model="files"
       extensions="gif,jpg,jpeg,png,webp"
       accept="image/png,image/gif,image/jpeg,image/webp"
-      name="avatar"
-      :post-action="postAction"
       @input-file="inputFile"
       @input-filter="inputFilter"
     >
@@ -76,6 +74,11 @@ export default {
     aspectRatio: {
       type: Number,
       default: 1 / 1
+    },
+    // 上传类型
+    updateType: {
+      type: String,
+      required: true
     }
   },
   data() {
@@ -214,8 +217,13 @@ export default {
      * @param  Object|undefined   oldFile   只读
      * @return undefined
      */
-    inputFile(newFile, oldFile) {
+    async inputFile(newFile, oldFile) {
       if (newFile && oldFile && !newFile.active && oldFile.active) {
+        console.log(this.files[0]);
+        const res = await this.$backendAPI.uploadImage(this.updateType, this.files[0].file);
+        console.log(res);
+        return;
+
         if (newFile.response.code === 200) {
           this.$emit("doneImageUpload", newFile.response);
         } else {
