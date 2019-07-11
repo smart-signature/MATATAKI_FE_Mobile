@@ -13,7 +13,7 @@
         <p v-clampy="2" class="title">
           {{ buy.title }}
         </p>
-        <p class="money">单价{{ buyPrice }}&nbsp;&nbsp;总价{{ buyAmount }}</p>
+        <p class="money">单价{{ buyPrice }}{{buy.symbol}}&nbsp;&nbsp;总价{{ buyAmount }}{{buy.symbol}}</p>
       </div>
     </div>
 
