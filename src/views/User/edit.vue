@@ -178,19 +178,6 @@ export default {
     // 完成上传
     async doneImageUpload(res) {
       this.refreshUser();
-      // const avatar = res.hash;
-      // 更新图像
-      // await this.$backendAPI
-      // .uploadAvatar({ avatar })
-      // .then(res => {
-      // console.log(res);
-      // if (res.status === 200 && res.data.code === 0) this.setAvatarImage(avatar);
-      // else this.$toast.fail({ duration: 1000, message: "上传失败" });
-      // })
-      // .catch(err => {
-      // console.error(err);
-      // this.$toast.fail({ duration: 1000, message: "上传失败" });
-      // });
       this.imgUploadDone += Date.now();
     }
   },
@@ -265,7 +252,7 @@ export default {
     img {
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: cover;
     }
     .camera {
       position: absolute;

@@ -210,17 +210,12 @@ const API = {
       avatar: "/user/uploadAvatar",
       artileCover: "/post/uploadImage"
     };
-    const key = {
-      avatar: "avatar",
-      artileCover: "avatar"
-    };
     const formdata = new FormData();
-    formdata.append(key[type], data);
+    formdata.append("image", data);
     return this.accessBackend({
       method: "POST",
       url: url[type],
-      data: formdata,
-      config: { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+      data: formdata
     });
   },
   // BasePull 分页组件

@@ -150,21 +150,25 @@ export default {
       };
       // 压缩方法
       const compressorFunc = async () => {
-        await new Compressor(newFile.file, {
-          quality: this.quality,
-          success(file) {
-            // eslint-disable-next-line no-param-reassign
-            newFile.file = file;
-            maxSize(this.imgSize);
-          },
-          error(err) {
-            console.log(err);
-            this.$toast.fail({
-              duration: 1000,
-              message: "自动压缩图片失败"
-            });
-          }
-        });
+        // 如果是 gif 跳过
+        // console.log(this.files[0].file);
+        if (this.files[0].file.type !== "image/gif") {
+          await new Compressor(newFile.file, {
+            quality: this.quality,
+            success(file) {
+              // eslint-disable-next-line no-param-reassign
+              newFile.file = file;
+              maxSize(this.imgSize);
+            },
+            error(err) {
+              console.log(err);
+              this.$toast.fail({
+                duration: 1000,
+                message: "自动压缩图片失败"
+              });
+            }
+          });
+        }
       };
       // 图片预览
       const modalImgView = () => {
@@ -186,30 +190,40 @@ export default {
       await modalImgView();
     },
     // 上传图片
-    uploadButton() {
+    async uploadButton() {
       this.modalLoading = true;
-      this.uploadImg();
-    },
-    async uploadImg() {
-      // 上传图像 from https://github.com/lian-yue/vue-upload-component/blob/master/docs/views/examples/Avatar.vue
-      const oldFile = this.files[0];
-      const binStr = atob(
-        this.cropper
-          .getCroppedCanvas()
-          .toDataURL(oldFile.type)
-          .split(",")[1]
-      );
-      const arr = new Uint8Array(binStr.length);
-      for (let i = 0; i < binStr.length; i += 1) {
-        arr[i] = binStr.charCodeAt(i);
+      let file = this.files[0].file;
+      // 如果是gif不作处理
+      if (this.files[0].file.type !== "image/gif") {
+        let oldFile = this.files[0];
+        let binStr = atob(
+          this.cropper
+            .getCroppedCanvas()
+            .toDataURL(oldFile.type)
+            .split(",")[1]
+        );
+        let arr = new Uint8Array(binStr.length);
+        for (let i = 0; i < binStr.length; i++) {
+          arr[i] = binStr.charCodeAt(i);
+        }
+        file = new File([arr], oldFile.name, { type: oldFile.type });
       }
-      const file = new File([arr], oldFile.name, { type: oldFile.type });
-      await this.$refs.upload.update(oldFile.id, {
-        file,
-        type: file.type,
-        size: file.size,
-        active: true
-      });
+      // console.log(this.files[0]);
+      const res = await this.$backendAPI.uploadImage(this.updateType, file);
+      if (res.status === 200 && res.data.code === 0) {
+        this.$emit("doneImageUpload", {
+          type: this.updateType,
+          data: res.data
+        });
+      } else {
+        this.modalLoading = false;
+        this.$toast.fail({
+          duration: 1000,
+          message: "上传图片失败"
+        });
+      }
+
+      console.log(file);
     },
     /**
      * Has changed // 上传完的操作写在这里
@@ -217,22 +231,10 @@ export default {
      * @param  Object|undefined   oldFile   只读
      * @return undefined
      */
-    async inputFile(newFile, oldFile) {
-      if (newFile && oldFile && !newFile.active && oldFile.active) {
-        console.log(this.files[0]);
-        const res = await this.$backendAPI.uploadImage(this.updateType, this.files[0].file);
-        console.log(res);
-        return;
-
-        if (newFile.response.code === 200) {
-          this.$emit("doneImageUpload", newFile.response);
-        } else {
-          this.modalLoading = false;
-          this.$toast.fail({
-            duration: 1000,
-            message: "上传图片失败"
-          });
-        }
+    async inputFile(newFile, oldFile, prevent) {
+      if (newFile && !oldFile) {
+      }
+      if (!newFile && oldFile) {
       }
     }
   }
