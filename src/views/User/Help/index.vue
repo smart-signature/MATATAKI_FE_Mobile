@@ -20,7 +20,7 @@
 
     <div class="help-block">
       <div class="help-list">
-        <span class="help-list-title">接受文章转让</span>
+        <span class="help-list-title">接受他人文章权限移交</span>
         <span class="help-list-sub">
           <van-switch
             v-model="articleTransfer"
@@ -55,7 +55,7 @@
       </div>-->
     </div>
     <div class="signout">
-      <p class="version">-version3.0.0-</p>
+      <p class="version">-version2.4.0-</p>
       <a class="signout-button" href="javascript:;" @click="btnsignOut">登出</a>
     </div>
   </div>

@@ -57,7 +57,7 @@
               <p class="other">
                 发布于
                 {{ articleCreateTimeComputed }}
-                <img src="@/assets/img/icon_read.svg" class="avatar-read" alt="avatar" />
+                <svg-icon icon-class="view" class="avatar-read" @click="goHome" />
                 {{ article.read || 0 }}阅读
               </p>
             </div>
@@ -236,13 +236,13 @@
       </div>
       <div v-else class="footer-block footer-btn">
         <button v-if="isSupported === -1" class="button-support" @click="b4support">
-          投资<img src="@/assets/newimg/zanshang4.svg" />
+          投资<img src="@/assets/newimg/touzi.svg" />
         </button>
         <button v-if="isSupported === 0" class="button-support" disabled>
           投资中
         </button>
         <button v-else-if="isSupported === 1" class="button-support" @click="invest">
-          投资<img src="@/assets/newimg/zanshang4.svg" />
+          投资<img src="@/assets/newimg/touzi.svg" />
         </button>
         <button v-else-if="isSupported === 2" class="button-support" disabled>
           已投资
