@@ -163,7 +163,7 @@ export default {
   text-align: left;
   span {
     font-size: 12px;
-    font-weight: bold;
+    font-weight: 500;
     color: rgba(247, 181, 0, 1);
   }
 }
