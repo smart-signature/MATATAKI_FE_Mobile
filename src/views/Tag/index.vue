@@ -30,40 +30,40 @@
 </template>
 
 <script>
-import tagColor from "@/common/tagColor";
-import { ArticleCard } from "@/components/";
+import tagColor from '@/common/tagColor'
+import { ArticleCard } from '@/components/'
 
 export default {
-  name: "Tag",
+  name: 'Tag',
   components: { ArticleCard },
   // inject: ["reload", "openReload"], // 刷新页面的解决方案
   // beforeRouteEnter: (to, from, next) => next(vm => vm.reload()),
   data() {
     return {
       tagTitle: this.$route.query.name,
-      tagBanner: "#000",
+      tagBanner: '#000',
       tagList: [],
       params: {
         tagid: this.$route.query.id
       },
-      apiUrl: "getPostByTagById",
+      apiUrl: 'getPostByTagById',
       iconColorStatus: false
-    };
+    }
   },
   computed: {
     iconColorStatusColor() {
-      return this.iconColorStatus ? "#000" : "#fff";
+      return this.iconColorStatus ? '#000' : '#fff'
     }
   },
   created() {
-    this.tagBanner = tagColor()[this.$route.query.id] || "#000";
+    this.tagBanner = tagColor()[this.$route.query.id] || '#000'
   },
   methods: {
     getListData(res) {
-      this.tagList = res.list;
+      this.tagList = res.list
     }
   }
-};
+}
 </script>
 
 <style src="./index.less" scoped lang="less"></style>

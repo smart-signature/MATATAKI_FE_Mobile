@@ -1,21 +1,21 @@
 module.exports = {
-  presets: ["@vue/app"],
+  presets: ['@vue/app'],
   plugins: [
     [
-      "import",
+      'import',
       {
-        libraryName: "iview",
-        libraryDirectory: "src/components"
+        libraryName: 'iview',
+        libraryDirectory: 'src/components'
       }
     ],
     [
-      "import",
+      'import',
       {
-        libraryName: "vant",
-        libraryDirectory: "es",
+        libraryName: 'vant',
+        libraryDirectory: 'es',
         style: true
       },
-      "vant"
+      'vant'
     ]
   ]
-};
+}

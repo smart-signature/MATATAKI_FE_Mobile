@@ -37,46 +37,46 @@
 </template>
 
 <script>
-import MyBanner from "./MyBanner.vue";
-import ArticleRankings from "./ArticlesRankings.vue";
+import MyBanner from './MyBanner.vue'
+import ArticleRankings from './ArticlesRankings.vue'
 
 export default {
-  name: "Home",
+  name: 'Home',
   components: { ArticleRankings, MyBanner },
   data() {
     return {
       visible1: false,
       actions1: [
         {
-          text: "English",
-          onClick: () => console.log("action 1")
+          text: 'English',
+          onClick: () => console.log('action 1')
         },
         {
-          text: "简体中文",
-          onClick: () => console.log("action 2")
+          text: '简体中文',
+          onClick: () => console.log('action 2')
         },
         {
-          text: "日本語",
-          onClick: () => console.log("action 3")
+          text: '日本語',
+          onClick: () => console.log('action 3')
         },
         {
-          theme: "error",
-          text: "取消",
-          onClick: () => console.log("action -1")
+          theme: 'error',
+          text: '取消',
+          onClick: () => console.log('action -1')
         }
       ],
       addShow: false // 显示新增菜单
-    };
+    }
   },
   created() {
-    document.title = "首页 - SmartSignature";
+    document.title = '首页 - SmartSignature'
   },
   methods: {
     cancelCb(reason, event) {
-      console.log(reason, event);
+      console.log(reason, event)
     }
   }
-};
+}
 </script>
 
 <style scoped lang="less">
@@ -144,7 +144,7 @@ button.publish {
 }
 .add::after {
   display: block;
-  content: "";
+  content: '';
   width: 0;
   height: 0;
   clear: both;
@@ -158,7 +158,7 @@ button.publish {
 }
 .add .add-menu::after {
   display: block;
-  content: "";
+  content: '';
   width: 0;
   height: 0;
   position: absolute;

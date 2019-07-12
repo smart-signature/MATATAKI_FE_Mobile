@@ -16,7 +16,7 @@
 
 <script>
 export default {
-  name: "ModalPrompt",
+  name: 'ModalPrompt',
   props: {
     showModal: {
       type: Boolean,
@@ -25,35 +25,35 @@ export default {
     modalText: {
       type: Object,
       default: () => ({
-        text: ["提示"],
-        button: ["确认", "取消"]
+        text: ['提示'],
+        button: ['确认', '取消']
       })
     }
   },
   data() {
     return {
       showModaCopy: this.showModal
-    };
+    }
   },
   watch: {
     showModal(newVal) {
-      this.showModaCopy = newVal;
+      this.showModaCopy = newVal
     }
   },
   methods: {
     change(status) {
-      this.showModaCopy = status;
-      this.$emit("changeInfo", status);
+      this.showModaCopy = status
+      this.$emit('changeInfo', status)
     },
     success() {
-      this.$emit("modalSuccess");
-      this.change(false);
+      this.$emit('modalSuccess')
+      this.change(false)
     },
     cancel() {
-      this.$emit("modalCancel");
+      this.$emit('modalCancel')
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>

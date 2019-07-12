@@ -9,7 +9,7 @@ export const toolbars = {
     imagelink: true, // 图片链接
     preview: true, // 预览
     help: true,
-    subfield: true,
+    subfield: true
   },
   pc: {
     quote: true, // 引用
@@ -18,8 +18,7 @@ export const toolbars = {
     link: true, // 链接
     code: true, // code
     table: true, // 表格
-    navigation: true,
+    navigation: true
   },
-  mobile: {
-  },
-};
+  mobile: {}
+}

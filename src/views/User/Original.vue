@@ -6,37 +6,37 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import ArticlesList from "./ArticlesList.vue";
+import { mapGetters } from 'vuex'
+import ArticlesList from './ArticlesList.vue'
 
 export default {
-  name: "Original",
+  name: 'Original',
   components: { ArticlesList },
-  props: ["id"],
+  props: ['id'],
   data() {
     return {
       editing: false,
-      userTitle: ""
-    };
+      userTitle: ''
+    }
   },
   computed: {
-    ...mapGetters(["isMe"])
+    ...mapGetters(['isMe'])
   },
   watch: {
     isMe() {
-      this.toggleTitle();
+      this.toggleTitle()
     }
   },
   created() {
-    this.toggleTitle();
+    this.toggleTitle()
   },
   methods: {
     toggleTitle() {
-      const { isMe, id } = this;
-      this.pageTitle = isMe(id) ? "我的原创" : "他的原创";
+      const { isMe, id } = this
+      this.pageTitle = isMe(id) ? '我的原创' : '他的原创'
     }
   }
-};
+}
 </script>
 <style scoped>
 .original {

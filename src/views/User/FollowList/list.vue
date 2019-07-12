@@ -26,18 +26,18 @@
 
 <script>
 export default {
-  props: ["list", "ownerId", "index", "indexList"],
+  props: ['list', 'ownerId', 'index', 'indexList'],
   computed: {
     id() {
-      const { list, ownerId } = this;
-      return Number(list.uid) === Number(ownerId) ? list.fuid : list.uid;
+      const { list, ownerId } = this
+      return Number(list.uid) === Number(ownerId) ? list.fuid : list.uid
     },
     avatarList() {
-      return this.list.avatar ? this.$backendAPI.getAvatarImage(this.list.avatar) : "";
+      return this.list.avatar ? this.$backendAPI.getAvatarImage(this.list.avatar) : ''
     }
   },
   methods: {}
-};
+}
 </script>
 
 <style scoped lang="less">

@@ -12,50 +12,50 @@
 </template>
 
 <script>
-import throttle from "lodash/throttle";
-import { setTimeout } from "timers";
+import throttle from 'lodash/throttle'
+import { setTimeout } from 'timers'
 
 export default {
-  name: "HomeNav",
-  props: ["navMenu", "activeIndex"],
+  name: 'HomeNav',
+  props: ['navMenu', 'activeIndex'],
   data() {
     return {
       navShow: true,
       oldScrollTop: 100
-    };
+    }
   },
   created() {},
   mounted() {
     setTimeout(() => {
-      this.addHandleScroll();
-    }, 150);
+      this.addHandleScroll()
+    }, 150)
   },
   destroyed() {
-    this.removeHandleScroll();
+    this.removeHandleScroll()
   },
   methods: {
     addHandleScroll() {
-      window.addEventListener("scroll", throttle(this.handleScroll, 300));
+      window.addEventListener('scroll', throttle(this.handleScroll, 300))
     },
     handleScroll() {
       const scrollTop =
-        window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+        window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
       if (scrollTop - this.oldScrollTop > 0) {
         // console.log('fix');
-        this.navShow = false;
+        this.navShow = false
       } else {
         // console.log('no');
-        this.navShow = true;
+        this.navShow = true
       }
-      this.oldScrollTop = scrollTop;
+      this.oldScrollTop = scrollTop
 
-      if (scrollTop <= 50) this.navShow = true;
+      if (scrollTop <= 50) this.navShow = true
     },
     removeHandleScroll() {
-      window.removeEventListener("scroll", this.handleScroll);
+      window.removeEventListener('scroll', this.handleScroll)
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>

@@ -24,10 +24,10 @@
 </template>
 
 <script>
-import InfiniteLoading from "vue-infinite-loading";
+import InfiniteLoading from 'vue-infinite-loading'
 
 export default {
-  name: "BasePull",
+  name: 'BasePull',
   components: {
     InfiniteLoading
   },
@@ -36,8 +36,8 @@ export default {
     loadingText: {
       type: Object,
       default: () => ({
-        nomore: "🎉 哇，你真勤奋，所有文章已经加载完了～ 🎉", // 没有更多
-        noresults: "无文章" // 没有数据
+        nomore: '🎉 哇，你真勤奋，所有文章已经加载完了～ 🎉', // 没有更多
+        noresults: '无文章' // 没有数据
       })
     },
     // 传进来的params
@@ -63,8 +63,8 @@ export default {
     isObj: {
       type: Object,
       default: () => ({
-        type: "Array",
-        key: "",
+        type: 'Array',
+        key: '',
         keys: null
       })
     },
@@ -96,115 +96,115 @@ export default {
       articles: [],
       activeIndexCopy: this.activeIndex,
       infiniteId: new Date()
-    };
+    }
   },
   computed: {
     loadingTextComputed() {
-      if (this.articles.length <= 0) return this.loadingText.noresults;
-      return this.loadingText.nomore;
+      if (this.articles.length <= 0) return this.loadingText.noresults
+      return this.loadingText.nomore
     }
   },
   watch: {
     // 改变tab
     activeIndex(newVal) {
-      this.activeIndexCopy = newVal;
-      this.page = 1;
-      this.articles = [];
-      this.infiniteId += 1;
+      this.activeIndexCopy = newVal
+      this.page = 1
+      this.articles = []
+      this.infiniteId += 1
     },
     // 父级请求完参数 刷新滚动分页
     params() {
-      this.refresh();
+      this.refresh()
     },
     // 自动请求 通过time++
     autoRequestTime() {
-      this.refresh();
+      this.refresh()
     }
   },
   created() {
-    this.infiniteId = new Date();
+    this.infiniteId = new Date()
   },
   methods: {
     // 滚动分页
     async infiniteHandler($state, isEmptyArray = false) {
       // 如果传了参数但是为null 阻止请求 场景发生在文章获取分享列表处
       // eslint-disable-next-line no-restricted-syntax
-      for (const [key, value] of Object.entries(this.params)) if (!value) return;
+      for (const [key, value] of Object.entries(this.params)) if (!value) return
 
       // if (this.nowIndex !== this.activeIndexCopy) return;
 
-      const params = this.params || {};
-      params.page = this.page;
-      const url = this.apiUrl;
+      const params = this.params || {}
+      params.page = this.page
+      const url = this.apiUrl
 
       // 获取数据成功执行
       const getDataSuccess = data => {
-        if (isEmptyArray) this.articles.length = 0; // 清空数组
-        const isObjType = this.isObj.type; // 传进来的类型
-        let resDataList = []; // 请求回来的list 通过长度判断是否请求完毕
+        if (isEmptyArray) this.articles.length = 0 // 清空数组
+        const isObjType = this.isObj.type // 传进来的类型
+        let resDataList = [] // 请求回来的list 通过长度判断是否请求完毕
 
-        if (isObjType === "Array") {
+        if (isObjType === 'Array') {
           // 如果返回的数据是 Array 返回整个 data
-          this.articles = [...this.articles, ...data];
-          resDataList = data;
-        } else if (isObjType === "Object") {
+          this.articles = [...this.articles, ...data]
+          resDataList = data
+        } else if (isObjType === 'Object') {
           // 如果返回的是 Object 根据传进来的字段获取相应的 list
-          const resData = data[this.isObj.key];
-          resDataList = resData;
-          this.articles = [...this.articles, ...resData];
-        } else if (isObjType === "newObject") {
+          const resData = data[this.isObj.key]
+          resDataList = resData
+          this.articles = [...this.articles, ...resData]
+        } else if (isObjType === 'newObject') {
           // 接口新格式 后面统一格式就能去掉一个判断
           // 如果返回的是 Object 根据传进来的字段获取相应的 list
-          let resData = [];
+          let resData = []
 
           // 根据传来的key 和 keys 判断读取的层数 (接口的数据层级有时候一样需要判断)
-          if (!this.isObj.keys) resData = data[this.isObj.key];
-          else resData = data[this.isObj.key][this.isObj.keys];
+          if (!this.isObj.keys) resData = data[this.isObj.key]
+          else resData = data[this.isObj.key][this.isObj.keys]
 
-          resDataList = resData;
+          resDataList = resData
 
           // 因为接口的数据格式没有统一 这个判断先加在这里 统一格式之后拿出去
-          if (data.code === 0) this.articles = [...this.articles, ...resData];
-          else throw new Error(data.message);
+          if (data.code === 0) this.articles = [...this.articles, ...resData]
+          else throw new Error(data.message)
         }
 
-        this.$emit("getListData", {
+        this.$emit('getListData', {
           data, // 整个数据
           list: this.articles, // list数据
           index: this.nowIndex // 当前索引
-        });
-        this.page += 1;
+        })
+        this.page += 1
 
-        if (resDataList.length >= 0 && resDataList.length < 20) $state.complete();
-        else $state.loaded();
-      };
+        if (resDataList.length >= 0 && resDataList.length < 20) $state.complete()
+        else $state.loaded()
+      }
 
       // 获取数据失败执行
-      const getDataFail = () => $state.error();
+      const getDataFail = () => $state.error()
 
       // 获取数据
       await this.$backendAPI
         .getBackendData({ url, params }, this.needAccessToken)
         .then(res => {
-          if (res.status === 200 && res.data.code === 0) getDataSuccess(res.data);
-          else getDataFail();
+          if (res.status === 200 && res.data.code === 0) getDataSuccess(res.data)
+          else getDataFail()
         })
         .catch(err => {
-          console.log(err);
-          getDataFail();
-        });
+          console.log(err)
+          getDataFail()
+        })
     },
     // 刷新
     async refresh() {
-      const { stateChanger } = this.$refs.infiniteLoading;
+      const { stateChanger } = this.$refs.infiniteLoading
       // stateChanger.reset();
-      this.refreshing = true;
-      this.page = 1; // 重置分页索引
-      await this.infiniteHandler(stateChanger, true);
-      this.refreshing = false;
+      this.refreshing = true
+      this.page = 1 // 重置分页索引
+      await this.infiniteHandler(stateChanger, true)
+      this.refreshing = false
     }
   }
-};
+}
 </script>
 
 <style scoped>

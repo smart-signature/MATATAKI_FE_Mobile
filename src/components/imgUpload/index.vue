@@ -45,19 +45,19 @@
 </template>
 
 <script>
-import VueUploadComponent from "vue-upload-component";
-import Cropper from "cropperjs";
-import { ifpsUpload } from "@/api/ipfs";
-import Compressor from "compressorjs";
+import VueUploadComponent from 'vue-upload-component'
+import Cropper from 'cropperjs'
+import { ifpsUpload } from '@/api/ipfs'
+import Compressor from 'compressorjs'
 
 export default {
-  name: "ImgUpload",
+  name: 'ImgUpload',
   components: { FileUpload: VueUploadComponent },
   props: {
     // 按钮文字
     buttonText: {
       type: String,
-      default: "保存"
+      default: '保存'
     },
     // 显示上传图片大小 单位 M
     imgSize: {
@@ -88,20 +88,20 @@ export default {
       modalLoading: false, // modal button loading
       postAction: ifpsUpload, // 上传地址
       quality: 0.8 // 压缩品质
-    };
+    }
   },
   computed: {
     computedStyleContent() {
-      if (this.updateType === "artileCover") {
+      if (this.updateType === 'artileCover') {
         return {
-          width: "240px",
-          height: "120px"
-        };
+          width: '240px',
+          height: '120px'
+        }
       } else {
         return {
-          width: "240px",
-          height: "240px"
-        };
+          width: '240px',
+          height: '240px'
+        }
       }
     }
   },
@@ -109,15 +109,15 @@ export default {
     // 显示modal
     modal(value) {
       if (value) {
-        this.modalLoading = false;
+        this.modalLoading = false
         this.$nextTick(() => {
           if (!this.$refs.editImage) {
-            return;
+            return
           }
           const cropper = new Cropper(this.$refs.editImage, {
             aspectRatio: this.aspectRatio,
             viewMode: 3,
-            dragMode: "move",
+            dragMode: 'move',
             autoCropArea: 1,
             restore: false,
             modal: false,
@@ -126,18 +126,18 @@ export default {
             cropBoxMovable: false,
             cropBoxResizable: false,
             toggleDragModeOnDblclick: false
-          });
-          this.cropper = cropper;
-        });
+          })
+          this.cropper = cropper
+        })
       } else if (this.cropper) {
-        this.cropper.destroy();
-        this.cropper = false;
+        this.cropper.destroy()
+        this.cropper = false
       }
     },
     // 上传完成
     imgUploadDone() {
-      this.modal = false;
-      this.modalLoading = false;
+      this.modal = false
+      this.modalLoading = false
     }
   },
   methods: {
@@ -155,9 +155,9 @@ export default {
         if (!/\.(gif|jpg|jpeg|png|webp)$/i.test(newFile.name)) {
           this.$toast.fail({
             duration: 1000,
-            message: "请选择图片"
-          });
-          return prevent();
+            message: '请选择图片'
+          })
+          return prevent()
         }
       }
       // 限定最大字节
@@ -165,89 +165,89 @@ export default {
         if (newFile.file.size >= 0 && newFile.file.size > 1024 * 1024 * size) {
           this.$toast.fail({
             duration: 1000,
-            message: "图片过大"
-          });
-          prevent();
-          return false;
+            message: '图片过大'
+          })
+          prevent()
+          return false
         }
-        return true;
-      };
+        return true
+      }
       // 压缩方法
       const compressorFunc = async () => {
         // 如果是 gif 跳过
         // console.log(this.files[0].file);
-        if (this.files[0].file.type !== "image/gif") {
+        if (this.files[0].file.type !== 'image/gif') {
           await new Compressor(newFile.file, {
             quality: this.quality,
             success(file) {
               // eslint-disable-next-line no-param-reassign
-              newFile.file = file;
-              maxSize(this.imgSize);
+              newFile.file = file
+              maxSize(this.imgSize)
             },
             error(err) {
-              console.log(err);
+              console.log(err)
               this.$toast.fail({
                 duration: 1000,
-                message: "自动压缩图片失败"
-              });
+                message: '自动压缩图片失败'
+              })
             }
-          });
+          })
         }
-      };
+      }
       // 图片预览
       const modalImgView = () => {
         if (newFile && (!oldFile || newFile.file !== oldFile.file)) {
           // eslint-disable-next-line no-param-reassign
-          newFile.url = "";
-          const URL = window.URL || window.webkitURL;
+          newFile.url = ''
+          const URL = window.URL || window.webkitURL
           if (URL && URL.createObjectURL) {
             // eslint-disable-next-line no-param-reassign
-            newFile.url = URL.createObjectURL(newFile.file);
+            newFile.url = URL.createObjectURL(newFile.file)
             //   console.log(this.files);
-            this.modal = true; // 显示 modal
+            this.modal = true // 显示 modal
           }
         }
-      };
-      const maxSizeResult = await maxSize(10);
-      if (!maxSizeResult) return true;
-      await compressorFunc();
-      await modalImgView();
+      }
+      const maxSizeResult = await maxSize(10)
+      if (!maxSizeResult) return true
+      await compressorFunc()
+      await modalImgView()
     },
     // 上传图片
     async uploadButton() {
-      this.modalLoading = true;
-      let file = this.files[0].file;
+      this.modalLoading = true
+      let file = this.files[0].file
       // 如果是gif不作处理
-      if (this.files[0].file.type !== "image/gif") {
-        let oldFile = this.files[0];
+      if (this.files[0].file.type !== 'image/gif') {
+        let oldFile = this.files[0]
         let binStr = atob(
           this.cropper
             .getCroppedCanvas()
             .toDataURL(oldFile.type)
-            .split(",")[1]
-        );
-        let arr = new Uint8Array(binStr.length);
+            .split(',')[1]
+        )
+        let arr = new Uint8Array(binStr.length)
         for (let i = 0; i < binStr.length; i++) {
-          arr[i] = binStr.charCodeAt(i);
+          arr[i] = binStr.charCodeAt(i)
         }
-        file = new File([arr], oldFile.name, { type: oldFile.type });
+        file = new File([arr], oldFile.name, { type: oldFile.type })
       }
       // console.log(this.files[0]);
-      const res = await this.$backendAPI.uploadImage(this.updateType, file);
+      const res = await this.$backendAPI.uploadImage(this.updateType, file)
       if (res.status === 200 && res.data.code === 0) {
-        this.$emit("doneImageUpload", {
+        this.$emit('doneImageUpload', {
           type: this.updateType,
           data: res.data
-        });
+        })
       } else {
-        this.modalLoading = false;
+        this.modalLoading = false
         this.$toast.fail({
           duration: 1000,
-          message: "上传图片失败"
-        });
+          message: '上传图片失败'
+        })
       }
 
-      console.log(file);
+      console.log(file)
     },
     /**
      * Has changed // 上传完的操作写在这里
@@ -255,6 +255,7 @@ export default {
      * @param  Object|undefined   oldFile   只读
      * @return undefined
      */
+    // eslint-disable-next-line no-unused-vars
     async inputFile(newFile, oldFile, prevent) {
       if (newFile && !oldFile) {
       }
@@ -262,7 +263,7 @@ export default {
       }
     }
   }
-};
+}
 </script>
 
 <style lang="less" src="./index.less">

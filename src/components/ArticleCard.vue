@@ -4,7 +4,7 @@
     <div v-if="!isOtherUser" class="info">
       <div class="avatar">
         <div class="avatar-img">
-          <img :src="avatar" alt="avatar" :onerror="defaultAvatar"/>
+          <img :src="avatar" alt="avatar" :onerror="defaultAvatar" />
         </div>
         <span>{{ article.nickname || article.author }}</span>
       </div>
@@ -37,19 +37,19 @@
 </template>
 
 <script>
-import moment from "moment";
-import { isNDaysAgo } from "@/common/methods";
-import { precision } from "@/common/precisionConversion";
+import moment from 'moment'
+import { isNDaysAgo } from '@/common/methods'
+import { precision } from '@/common/precisionConversion'
 
-import clampy from "@clampy-js/vue-clampy";
-import Vue from "vue";
+import clampy from '@clampy-js/vue-clampy'
+import Vue from 'vue'
 
-import coverDefault from "@/assets/img/cover_default.png";
+import coverDefault from '@/assets/img/cover_default.png'
 
-Vue.use(clampy);
+Vue.use(clampy)
 
 export default {
-  name: "ArticleCard",
+  name: 'ArticleCard',
   directives: {
     clampy
   },
@@ -70,31 +70,31 @@ export default {
   },
   data() {
     return {
-      defaultAvatar: `this.src="${ require('@/assets/avatar-default.svg') }"`,
-    };
+      defaultAvatar: `this.src="${require('@/assets/avatar-default.svg')}"`
+    }
   },
   computed: {
     friendlyDate() {
-      const time = moment(this.article.create_time);
-      return isNDaysAgo(2, time) ? time.format("MMMDo HH:mm") : time.fromNow();
+      const time = moment(this.article.create_time)
+      return isNDaysAgo(2, time) ? time.format('MMMDo HH:mm') : time.fromNow()
     },
     hash() {
-      return this.article.id; // 原来是 hash 现在用id进入
+      return this.article.id // 原来是 hash 现在用id进入
     },
     avatar() {
-      if (this.article.avatar) return this.$backendAPI.getAvatarImage(this.article.avatar);
-      return "";
+      if (this.article.avatar) return this.$backendAPI.getAvatarImage(this.article.avatar)
+      return ''
     },
     cover() {
-      if (this.article.cover) return this.$backendAPI.getAvatarImage(this.article.cover);
-      return coverDefault;
+      if (this.article.cover) return this.$backendAPI.getAvatarImage(this.article.cover)
+      return coverDefault
     },
     articleOntValue() {
-      return precision(this.article.ontvalue, "ont");
+      return precision(this.article.ontvalue, 'ont')
     }
   },
   mounted() {}
-};
+}
 </script>
 
 <style scoped lang="less">

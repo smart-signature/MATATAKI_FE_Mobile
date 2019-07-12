@@ -1,11 +1,13 @@
 <template>
-    <div class="easter-egg">
-        <h1 class="title">🎉 恭喜你发现了隐藏的彩蛋！</h1>
-        <p>当前模式：{{env}}</p>
-        <p>版本号： {{ version }}</p>
-        <p v-if="checkIsBuildOnCommit">基于 commit <a :href="commitUrl">{{ commitHash }} </a> 构建</p>
-        <Button @click="xxx()">神秘按鈕</Button>
-    </div>
+  <div class="easter-egg">
+    <h1 class="title">🎉 恭喜你发现了隐藏的彩蛋！</h1>
+    <p>当前模式：{{ env }}</p>
+    <p>版本号： {{ version }}</p>
+    <p v-if="checkIsBuildOnCommit">
+      基于 commit <a :href="commitUrl">{{ commitHash }} </a> 构建
+    </p>
+    <Button @click="xxx()">神秘按鈕</Button>
+  </div>
 </template>
 
 <script>

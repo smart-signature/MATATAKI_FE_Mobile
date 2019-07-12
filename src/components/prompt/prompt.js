@@ -1,11 +1,11 @@
-import Vue from 'vue';
-import VanDialog from './index';
+import Vue from 'vue'
+import VanDialog from './index'
 
-let instance;
+let instance
 
 function initInstance() {
   if (instance) {
-    instance.$destroy();
+    instance.$destroy()
   }
 
   instance = new (Vue.extend(VanDialog))({
@@ -14,23 +14,22 @@ function initInstance() {
     propsData: {
       lazyRender: false
     }
-  });
+  })
 
   instance.$on('input', value => {
-    instance.value = value;
-  });
+    instance.value = value
+  })
 }
 
 function Dialog(options) {
-
   return new Promise((resolve, reject) => {
-    initInstance();
+    initInstance()
 
     Object.assign(instance, Dialog.currentOptions, options, {
       resolve,
       reject
-    });
-  });
+    })
+  })
 }
 
 Dialog.defaultOptions = {
@@ -51,37 +50,38 @@ Dialog.defaultOptions = {
   showCancelButton: false,
   closeOnClickOverlay: false,
   callback: action => {
-    instance[action === 'confirm' ? 'resolve' : 'reject'](action);
+    instance[action === 'confirm' ? 'resolve' : 'reject'](action)
   }
-};
+}
 
-Dialog.alert = Dialog;
+Dialog.alert = Dialog
 
-Dialog.confirm = options => Dialog({
-  showCancelButton: true,
-  ...options
-});
+Dialog.confirm = options =>
+  Dialog({
+    showCancelButton: true,
+    ...options
+  })
 
 Dialog.close = () => {
   if (instance) {
-    instance.value = false;
+    instance.value = false
   }
-};
+}
 
 Dialog.setDefaultOptions = options => {
-  Object.assign(Dialog.currentOptions, options);
-};
+  Object.assign(Dialog.currentOptions, options)
+}
 
 Dialog.resetDefaultOptions = () => {
-  Dialog.currentOptions = { ...Dialog.defaultOptions };
-};
+  Dialog.currentOptions = { ...Dialog.defaultOptions }
+}
 
-Dialog.resetDefaultOptions();
+Dialog.resetDefaultOptions()
 
 Dialog.install = () => {
-  Vue.use(VanDialog);
-};
+  Vue.use(VanDialog)
+}
 
-Vue.prototype.$dialog = Dialog;
+Vue.prototype.$dialog = Dialog
 
-export default Dialog;
+export default Dialog

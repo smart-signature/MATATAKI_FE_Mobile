@@ -1,52 +1,52 @@
 <template>
   <van-popup v-model="show" :overlay="true" class="container">
-    <h1>{{content.title}}</h1>
-    <button class="btn blue" @click="confirm">{{content.confirmText}}</button>
-    <button class="btn gray" @click="cancel">{{content.cancelText}}</button>
+    <h1>{{ content.title }}</h1>
+    <button class="btn blue" @click="confirm">{{ content.confirmText }}</button>
+    <button class="btn gray" @click="cancel">{{ content.cancelText }}</button>
   </van-popup>
 </template>
 
 <script>
-  export default {
-    name: "Prompt",
-    props: {
-      value: {
-        type: Boolean,
-        default: false
-      },
-      content: {
-        type: Object,
-        default: () => {
-          return {
-            title: '是否删除草稿？',
-            confirmText: '删除草稿',
-            cancelText: '不删除'
-          }
+export default {
+  name: 'Prompt',
+  props: {
+    value: {
+      type: Boolean,
+      default: false
+    },
+    content: {
+      type: Object,
+      default: () => {
+        return {
+          title: '是否删除草稿？',
+          confirmText: '删除草稿',
+          cancelText: '不删除'
         }
       }
+    }
+  },
+  data() {
+    return {
+      show: false
+    }
+  },
+  watch: {
+    value(val) {
+      this.show = val
     },
-    data() {
-      return {
-        show: false
-      }
+    show(val) {
+      this.$emit('input', val)
+    }
+  },
+  methods: {
+    confirm() {
+      this.$emit('confirm')
     },
-    watch: {
-      value(val) {
-        this.show = val;
-      },
-      show(val) {
-        this.$emit("input", val);
-      }
-    },
-    methods: {
-      confirm() {
-        this.$emit('confirm');
-      },
-      cancel() {
-        this.show = false;
-      }
+    cancel() {
+      this.show = false
     }
   }
+}
 </script>
 
 <style lang="less" scoped>
@@ -77,9 +77,9 @@
   margin-bottom: 20px;
 }
 .blue {
-  background: #1C9CFE;
+  background: #1c9cfe;
 }
 .gray {
-  background: #B2B2B2;
+  background: #b2b2b2;
 }
 </style>

@@ -3,14 +3,14 @@
     <img v-if="cover" :src="cover" alt="cover" />
     {{ cover }}
     <div class="slide-read">
-      {{ slideIndex === 0 ? "浏览量: " + slide.read : "总销量: " + slide.sale }}
+      {{ slideIndex === 0 ? '浏览量: ' + slide.read : '总销量: ' + slide.sale }}
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "HomeSlideItem",
+  name: 'HomeSlideItem',
   props: {
     slide: {
       type: Object,
@@ -23,15 +23,15 @@ export default {
   },
   computed: {
     cover() {
-      return this.slide.cover ? this.$backendAPI.getAvatarImage(this.slide.cover) : "";
+      return this.slide.cover ? this.$backendAPI.getAvatarImage(this.slide.cover) : ''
     }
   },
   methods: {
     jumpPage(id) {
-      this.$router.push({ name: "Article", params: { hash: id } });
+      this.$router.push({ name: 'Article', params: { hash: id } })
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>

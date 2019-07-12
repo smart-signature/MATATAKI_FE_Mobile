@@ -15,27 +15,27 @@
 </template>
 
 <script>
-import buyCard from "./buyCard.vue";
+import buyCard from './buyCard.vue'
 
 export default {
-  name: "BuyHistory",
+  name: 'BuyHistory',
   components: {
     buyCard
   },
   data() {
     return {
       buyList: [],
-      params: "",
-      apiUrl: "buyHistory"
-    };
+      params: '',
+      apiUrl: 'buyHistory'
+    }
   },
   created() {},
   methods: {
     getListData(res) {
-      this.buyList = res.list;
+      this.buyList = res.list
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>

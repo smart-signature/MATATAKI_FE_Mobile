@@ -77,15 +77,15 @@
 </template>
 
 <script>
-import { ContentLoader } from "vue-content-loader";
-import homeHead from "./components/homeHead.vue";
-import homeNav from "./components/homeNav.vue";
-import homeSlide from "./components/homeSlide.vue";
-import Sidebar from "./Sidebar.vue";
-import { ArticleCard } from "@/components/";
+import { ContentLoader } from 'vue-content-loader'
+import homeHead from './components/homeHead.vue'
+import homeNav from './components/homeNav.vue'
+import homeSlide from './components/homeSlide.vue'
+import Sidebar from './Sidebar.vue'
+import { ArticleCard } from '@/components/'
 
 export default {
-  name: "Home",
+  name: 'Home',
   components: {
     homeHead,
     homeNav,
@@ -97,124 +97,124 @@ export default {
   data() {
     return {
       showSidebar: false,
-      navList: ["文章", "商品"], // head data
+      navList: ['文章', '商品'], // head data
       nowIndex: 0,
       // 防止数据嵌套太多 把内容提取出来
       content: [
         {
           navMenu: [
             {
-              label: "最新",
-              title: "最新文章",
+              label: '最新',
+              title: '最新文章',
               params: {
                 channel: 1
               },
-              apiUrl: "homeTimeRanking",
+              apiUrl: 'homeTimeRanking',
               articles: [],
               autoRequestTime: 0
             },
             {
-              label: "最热",
-              title: "最热文章",
+              label: '最热',
+              title: '最热文章',
               params: {
                 channel: 1
               },
-              apiUrl: "homeSupportsRanking",
+              apiUrl: 'homeSupportsRanking',
               articles: [],
               autoRequestTime: 0
             }
           ],
           activeIndex: 0,
           recommend: {
-            title: "推荐文章",
+            title: '推荐文章',
             list: []
           }
         },
         {
           navMenu: [
             {
-              label: "最新",
-              title: "最新商品",
+              label: '最新',
+              title: '最新商品',
               params: {
                 channel: 2
               },
-              apiUrl: "homeTimeRanking",
+              apiUrl: 'homeTimeRanking',
               articles: [],
               autoRequestTime: 0
             },
             {
-              label: "最热",
-              title: "最热商品",
+              label: '最热',
+              title: '最热商品',
               params: {
                 channel: 2
               },
-              apiUrl: "homeSupportsRanking",
+              apiUrl: 'homeSupportsRanking',
               articles: [],
               autoRequestTime: 0
             }
           ],
           activeIndex: 0,
           recommend: {
-            title: "推荐商品",
+            title: '推荐商品',
             list: []
           }
         }
       ]
-    };
+    }
   },
   computed: {
     // 内容标题
     contentTitle() {
-      const index = this.content[this.nowIndex].activeIndex;
-      return this.content[this.nowIndex].navMenu[index].title;
+      const index = this.content[this.nowIndex].activeIndex
+      return this.content[this.nowIndex].navMenu[index].title
     },
     // 是否显示推荐文章或者商品
     isShowSlide() {
-      return this.content[this.nowIndex].activeIndex === 0;
+      return this.content[this.nowIndex].activeIndex === 0
     },
     isHaveArticle() {
-      const index = this.content[this.nowIndex].activeIndex;
-      const status = this.content[this.nowIndex].navMenu[index].articles.length;
-      console.log(status);
-      return status;
+      const index = this.content[this.nowIndex].activeIndex
+      const status = this.content[this.nowIndex].navMenu[index].articles.length
+      console.log(status)
+      return status
     }
   },
   created() {
-    document.title = "首页 - SmartSignature";
-    this.postsRecommend(1);
-    this.postsRecommend(2);
+    document.title = '首页 - SmartSignature'
+    this.postsRecommend(1)
+    this.postsRecommend(2)
   },
   mounted() {},
   methods: {
     increaseTime(type, i) {
       // 如果自动刷新的时间为0 并且 内容长度为0 刷新一次组件
-      if (type === "headNav") {
+      if (type === 'headNav') {
         // head 的导航切换
-        const index = this.content[this.nowIndex].activeIndex; // 当前的聚焦索引
-        const navMenuData = this.content[this.nowIndex].navMenu[index]; // 当前聚焦索引的数据
+        const index = this.content[this.nowIndex].activeIndex // 当前的聚焦索引
+        const navMenuData = this.content[this.nowIndex].navMenu[index] // 当前聚焦索引的数据
         if (navMenuData.autoRequestTime === 0 && navMenuData.articles.length === 0)
-          this.content[this.nowIndex].navMenu[index].autoRequestTime += Date.now();
-      } else if (type === "nemuNav") {
+          this.content[this.nowIndex].navMenu[index].autoRequestTime += Date.now()
+      } else if (type === 'nemuNav') {
         // 内容的导航
-        const navMenuData = this.content[this.nowIndex].navMenu[i]; // 当前聚焦索引的数据
+        const navMenuData = this.content[this.nowIndex].navMenu[i] // 当前聚焦索引的数据
         if (navMenuData.autoRequestTime === 0 && navMenuData.articles.length === 0)
-          this.content[this.nowIndex].navMenu[i].autoRequestTime += Date.now();
+          this.content[this.nowIndex].navMenu[i].autoRequestTime += Date.now()
       }
     },
     toggleNav(i) {
-      this.nowIndex = i;
-      this.increaseTime("headNav", i);
+      this.nowIndex = i
+      this.increaseTime('headNav', i)
     },
     toggleNavMenu(i) {
-      let nowIndex = this.nowIndex;
-      this.content[nowIndex].activeIndex = i;
-      this.increaseTime("nemuNav", i);
+      let nowIndex = this.nowIndex
+      this.content[nowIndex].activeIndex = i
+      this.increaseTime('nemuNav', i)
     },
 
     // 获取文章列表数据
     getListData(res) {
       // console.log(this.nowIndex, res.index);
-      this.content[this.nowIndex].navMenu[res.index].articles = res.list;
+      this.content[this.nowIndex].navMenu[res.index].articles = res.list
     },
     // 获取推荐文章或者商品
     async postsRecommend(channel) {
@@ -222,18 +222,18 @@ export default {
         .postsRecommend(channel)
         .then(res => {
           if (res.status === 200 && res.data.code === 0) {
-            if (channel === 1) this.content[0].recommend.list = res.data.data;
-            else if (channel === 2) this.content[1].recommend.list = res.data.data;
+            if (channel === 1) this.content[0].recommend.list = res.data.data
+            else if (channel === 2) this.content[1].recommend.list = res.data.data
           } else {
-            console.log("获取推荐失败");
+            console.log('获取推荐失败')
           }
         })
         .catch(err => {
-          console.log(err);
-        });
+          console.log(err)
+        })
     }
   }
-};
+}
 </script>
 
 <style scoped lang="less" src="./index.less"></style>

@@ -39,10 +39,10 @@
 </template>
 
 <script>
-import { ArticleCard } from "@/components/";
+import { ArticleCard } from '@/components/'
 
 export default {
-  name: "ArticlesList",
+  name: 'ArticlesList',
   components: { ArticleCard },
   props: {
     listtype: {
@@ -51,7 +51,7 @@ export default {
     },
     id: {
       type: String,
-      default: ""
+      default: ''
     },
     isOtherUser: {
       type: Boolean,
@@ -62,89 +62,89 @@ export default {
     return {
       tabsData: [],
       activeIndex: 0
-    };
+    }
   },
   computed: {},
   created() {
-    const { id, listtype } = this;
-    if (listtype === "others") {
+    const { id, listtype } = this
+    if (listtype === 'others') {
       this.tabsData = [
         {
-          label: "原创",
+          label: '原创',
           params: { author: id },
-          apiUrl: "homeTimeRanking",
+          apiUrl: 'homeTimeRanking',
           articles: [],
-          loadingText: "暂无原创",
+          loadingText: '暂无原创',
           autoRequestTime: 0
         },
         {
-          label: "投资",
+          label: '投资',
           params: { user: id },
-          apiUrl: "userArticlesSupportedList",
+          apiUrl: 'userArticlesSupportedList',
           articles: [],
-          loadingText: "暂无投资",
+          loadingText: '暂无投资',
           autoRequestTime: 0
         }
-      ];
-    } else if (listtype === "original") {
+      ]
+    } else if (listtype === 'original') {
       this.tabsData = [
         {
-          label: "文章",
+          label: '文章',
           params: { author: id, channel: 1 },
-          apiUrl: "homeTimeRanking",
+          apiUrl: 'homeTimeRanking',
           articles: [],
-          loadingText: "暂无文章",
+          loadingText: '暂无文章',
           autoRequestTime: 0
         },
         {
-          label: "商品",
+          label: '商品',
           params: { author: id, channel: 2 },
-          apiUrl: "homeTimeRanking",
+          apiUrl: 'homeTimeRanking',
           articles: [],
-          loadingText: "暂无商品",
+          loadingText: '暂无商品',
           autoRequestTime: 0
         }
-      ];
-    } else if (listtype === "reward") {
+      ]
+    } else if (listtype === 'reward') {
       this.tabsData = [
         {
-          label: "文章",
+          label: '文章',
           params: { user: id, channel: 1 },
-          apiUrl: "userArticlesSupportedList",
+          apiUrl: 'userArticlesSupportedList',
           articles: [],
-          loadingText: "暂无文章",
+          loadingText: '暂无文章',
           autoRequestTime: 0
         },
         {
-          label: "商品",
+          label: '商品',
           params: { user: id, channel: 2 },
-          apiUrl: "userArticlesSupportedList",
+          apiUrl: 'userArticlesSupportedList',
           articles: [],
-          loadingText: "暂无商品",
+          loadingText: '暂无商品',
           autoRequestTime: 0
         }
-      ];
+      ]
     }
   },
   methods: {
     toggleTabs(i) {
-      this.activeIndex = i;
+      this.activeIndex = i
 
       // 判断是否自动刷新请求数据
       if (this.tabsData[i].autoRequestTime === 0 && this.tabsData[i].articles.length === 0)
-        this.tabsData[i].autoRequestTime = Date.now();
+        this.tabsData[i].autoRequestTime = Date.now()
     },
     getListDataTab({ index, list }) {
-      this.tabsData[index].articles = list;
+      this.tabsData[index].articles = list
     },
     async getUsername(id) {
       const {
         data: { data }
-      } = await this.$backendAPI.getUser({ id });
-      return data.username;
+      } = await this.$backendAPI.getUser({ id })
+      return data.username
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>

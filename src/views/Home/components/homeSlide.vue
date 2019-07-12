@@ -27,12 +27,12 @@
 </template>
 
 <script>
-import { ContentLoader } from "vue-content-loader";
-import Bscroll from "better-scroll";
-import homeSlideItem from "./homeSlideItem.vue";
+import { ContentLoader } from 'vue-content-loader'
+import Bscroll from 'better-scroll'
+import homeSlideItem from './homeSlideItem.vue'
 
 export default {
-  name: "HomeSlide",
+  name: 'HomeSlide',
   components: {
     homeSlideItem,
     ContentLoader
@@ -55,20 +55,20 @@ export default {
     return {
       // 是否设置
       isSetWrapper: true
-    };
+    }
   },
   watch: {
     nowIndex(newVal) {
       // 为商品 第一次调用执行
       if (newVal === 1 && this.isSetWrapper) {
-        this.setWrapperScroll(1);
-        this.isSetWrapper = false;
+        this.setWrapperScroll(1)
+        this.isSetWrapper = false
       }
     },
     recommend: {
       handler() {
         // 默认执行第一个
-        this.setWrapperScroll(0);
+        this.setWrapperScroll(0)
       },
       deep: true
     }
@@ -83,11 +83,11 @@ export default {
           click: true,
           scrollX: true,
           scrollY: false
-        });
-      });
+        })
+      })
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>

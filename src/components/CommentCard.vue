@@ -21,38 +21,41 @@
 </template>
 
 <script>
-import moment from "moment";
-import { isNDaysAgo } from "@/common/methods";
-import { precision } from "@/common/precisionConversion";
+import moment from 'moment'
+import { isNDaysAgo } from '@/common/methods'
+import { precision } from '@/common/precisionConversion'
 
 export default {
-  name: "CommentCard",
-  props: ["comment", "type"],
+  name: 'CommentCard',
+  props: ['comment', 'type'],
   data() {
     return {
-      defaultAvatar: `this.src="${require("@/assets/avatar-default.svg")}"`
-    };
+      defaultAvatar: `this.src="${require('@/assets/avatar-default.svg')}"`
+    }
   },
   computed: {
     displayMessage() {
-      return this.comment.comment !== "" ? this.comment.comment : "用户没有留下评论";
+      return this.comment.comment !== '' ? this.comment.comment : '用户没有留下评论'
     },
     friendlyDate() {
       // const isAppleSlave = navigator.platform.includes('iPhone');
-      const time = moment(this.comment.create_time);
+      const time = moment(this.comment.create_time)
       // const time = moment(newTime.getTime() - newTime.getTimezoneOffset()
       //              * 60000);// 返回的数据带了时区
-      return isNDaysAgo(2, time) ? time.format("MMMDo HH:mm") : time.fromNow();
+      return isNDaysAgo(2, time) ? time.format('MMMDo HH:mm') : time.fromNow()
     },
     action() {
       if (this.type === 2) {
         if (this.comment.action === 1) {
-          return "投资了";
+          return '投资了'
         } else if (this.comment.action === 2) {
-          return "购买了";
+          return '购买了'
+        } else {
+          // 默认返回
+          return '投资了'
         }
       } else {
-        return "投资了";
+        return '投资了'
       }
     },
     amount() {
@@ -60,16 +63,19 @@ export default {
         return (
           precision(this.comment.amount, this.comment.platform) +
           this.comment.platform.toUpperCase()
-        );
+        )
       } else if (this.comment.action === 2) {
-        return `${this.comment.num}份商品`;
+        return `${this.comment.num}份商品`
+      } else {
+        return ''
       }
     },
     avatar() {
-      if (this.comment.avatar) return this.$backendAPI.getAvatarImage(this.comment.avatar);
+      if (this.comment.avatar) return this.$backendAPI.getAvatarImage(this.comment.avatar)
+      return ''
     }
   }
-};
+}
 </script>
 
 <style scoped lang="less">

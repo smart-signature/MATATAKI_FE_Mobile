@@ -103,7 +103,7 @@
           <img v-if="avatar" v-lazy="avatar" class="userpic" :src="avatar" />
         </div>
         <p class="name">{{ name }}</p>
-        <p class="introduction">简介：{{ introduction || "暂无" }}</p>
+        <p class="introduction">简介：{{ introduction || '暂无' }}</p>
         <p class="userstatus">
           <router-link :to="{ name: 'FollowList', params: { listtype: '关注' } }">
             <span class="statusNumber">{{ follows }}</span>
@@ -149,22 +149,22 @@
 
 <script>
 // 这个页面被改完了 还有一堆没有的方法待删除 -- 希望修改的时候改干净吧 :(
-import { mapGetters } from "vuex";
-import ArticlesList from "./ArticlesList.vue";
+import { mapGetters } from 'vuex'
+import ArticlesList from './ArticlesList.vue'
 
 export default {
-  name: "User",
+  name: 'User',
   components: { ArticlesList },
-  props: ["id"],
+  props: ['id'],
   data() {
     return {
       followed: false,
       follows: 0,
       fans: 0,
-      name: "",
-      email: "",
-      avatar: "",
-      introduction: "",
+      name: '',
+      email: '',
+      avatar: '',
+      introduction: '',
       stats: {
         accounts: 0,
         articles: 0,
@@ -173,25 +173,25 @@ export default {
       },
       showSignInModal: false,
       scrollStatus: false // 根据滚动状态判断是否显示按钮
-    };
+    }
   },
   computed: {
-    ...mapGetters(["currentUserInfo", "displayName", "isLogined", "isMe"])
+    ...mapGetters(['currentUserInfo', 'displayName', 'isLogined', 'isMe'])
   },
   watch: {
     isLogined() {
-      this.refreshUser();
+      this.refreshUser()
     }
   },
   created() {
-    this.refreshUser();
+    this.refreshUser()
   },
   methods: {
     jumpTo(params) {
-      this.$router.push(params);
+      this.$router.push(params)
     },
     async refreshUser() {
-      const { isMe, id } = this;
+      const { isMe, id } = this
       const setUser = ({
         avatar,
         email,
@@ -206,44 +206,44 @@ export default {
         supports,
         drafts
       }) => {
-        this.email = email;
-        this.fans = fans;
-        this.follows = follows;
-        this.introduction = introduction;
-        this.followed = is_follow;
-        this.name = nickname || username;
-        this.setAvatarImage(avatar);
-        this.stats = { accounts, articles, supports, drafts };
-      };
+        this.email = email
+        this.fans = fans
+        this.follows = follows
+        this.introduction = introduction
+        this.followed = is_follow
+        this.name = nickname || username
+        this.setAvatarImage(avatar)
+        this.stats = { accounts, articles, supports, drafts }
+      }
 
       const {
         data: { data }
-      } = await (isMe(id) ? this.$backendAPI.getMyUserData() : this.$backendAPI.getUser({ id }));
+      } = await (isMe(id) ? this.$backendAPI.getMyUserData() : this.$backendAPI.getUser({ id }))
       // console.debug(data);
-      setUser(data);
+      setUser(data)
     },
     async followOrUnfollowUser({ id, type }) {
       if (!this.isLogined) {
-        this.showSignInModal = true;
-        return;
+        this.showSignInModal = true
+        return
       }
-      const message = type === 1 ? "关注" : "取消关注";
+      const message = type === 1 ? '关注' : '取消关注'
       try {
-        if (type === 1) await this.$backendAPI.follow({ id });
-        else await this.$backendAPI.unfollow({ id });
-        this.$toast.success({ duration: 1000, message: `${message}成功` });
-        this.followed = type === 1;
+        if (type === 1) await this.$backendAPI.follow({ id })
+        else await this.$backendAPI.unfollow({ id })
+        this.$toast.success({ duration: 1000, message: `${message}成功` })
+        this.followed = type === 1
       } catch (error) {
-        this.$toast.fail({ duration: 1000, message: `${message}失败` });
-        this.showSignInModal = this.$errorHandling.isNoToken(error);
+        this.$toast.fail({ duration: 1000, message: `${message}失败` })
+        this.showSignInModal = this.$errorHandling.isNoToken(error)
       }
-      this.refreshUser();
+      this.refreshUser()
     },
     setAvatarImage(hash) {
-      if (hash) this.avatar = this.$backendAPI.getAvatarImage(hash);
+      if (hash) this.avatar = this.$backendAPI.getAvatarImage(hash)
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped src="./index.less"></style>

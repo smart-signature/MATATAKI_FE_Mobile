@@ -1,13 +1,13 @@
 <template>
   <div class="about mw">
-    <BaseHeader :pageinfo="{ left: 'back', title: '关于我们', rightPage: 'home' }"/>
+    <BaseHeader :pageinfo="{ left: 'back', title: '关于我们', rightPage: 'home' }" />
     <div class="about-card">
-      <h1 class="about-title">{{items.title}}</h1>
-      <p class="about-detail">{{items.detail}}</p>
-      <div class="about-content" v-for="(item, idx) in items.content" :key="idx">
-        <h3>{{item.title}}</h3>
+      <h1 class="about-title">{{ items.title }}</h1>
+      <p class="about-detail">{{ items.detail }}</p>
+      <div v-for="(item, idx) in items.content" :key="idx" class="about-content">
+        <h3>{{ item.title }}</h3>
         <p v-for="(itemChild, idxChild) in item.detail" :key="idxChild">
-          {{itemChild}}
+          {{ itemChild }}
         </p>
       </div>
     </div>
@@ -15,16 +15,15 @@
 </template>
 
 <script>
-import items from '../assets/QuestionAndAnswer.json';
+import items from '../assets/QuestionAndAnswer.json'
 
 export default {
   name: 'About',
   data: () => ({
-    items,
-  }),
-};
+    items
+  })
+}
 </script>
-
 
 <style scoped>
 .about {
@@ -44,7 +43,7 @@ export default {
   box-shadow: 0px 2px 5px 3px rgba(233, 233, 233, 0.5);
   border-radius: 8px;
   padding: 18px;
-   color: rgba(0, 0, 0, 1);
+  color: rgba(0, 0, 0, 1);
   text-align: left;
 }
 h1.about-title {
@@ -63,11 +62,11 @@ p.about-detail {
 .about-content {
   margin: 14px 0;
 }
-.about-content h3{
+.about-content h3 {
   font-size: 14px;
   font-weight: 600;
 }
-.about-content p{
+.about-content p {
   font-size: 12px;
   line-height: 1.5;
   margin: 6px 0;

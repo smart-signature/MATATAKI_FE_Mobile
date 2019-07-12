@@ -48,159 +48,159 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
-import iconEOS from "@/assets/img/icon_logo_eos.svg";
-import iconTokenpocket from "@/assets/img/icon_tokenpocket.svg";
-import iconMathwallet from "@/assets/img/icon_mathwallet.svg";
-import iconScatter from "@/assets/img/icon_scatter.svg";
-import iconONT from "@/assets/img/icon_logo_ont.svg";
-import iconCyano from "@/assets/img/icon_cyano.svg";
-import iconLeafwallet from "@/assets/img/icon_leafwallet.svg";
-import iconChallte from "@/assets/img/icon_challte.svg";
-import iconMeet from "@/assets/img/icon_meet.svg";
-import iconGithub from "@/assets/img/icon_logo_github.svg";
-import iconOnto from "@/assets/img/icon_logo_onto.svg";
-import iconImtoken from "@/assets/img/icon_logo_imtoken.svg";
+import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
+import iconEOS from '@/assets/img/icon_logo_eos.svg'
+import iconTokenpocket from '@/assets/img/icon_tokenpocket.svg'
+import iconMathwallet from '@/assets/img/icon_mathwallet.svg'
+import iconScatter from '@/assets/img/icon_scatter.svg'
+import iconONT from '@/assets/img/icon_logo_ont.svg'
+import iconCyano from '@/assets/img/icon_cyano.svg'
+import iconLeafwallet from '@/assets/img/icon_leafwallet.svg'
+import iconChallte from '@/assets/img/icon_challte.svg'
+import iconMeet from '@/assets/img/icon_meet.svg'
+import iconGithub from '@/assets/img/icon_logo_github.svg'
+import iconOnto from '@/assets/img/icon_logo_onto.svg'
+import iconImtoken from '@/assets/img/icon_logo_imtoken.svg'
 
 export default {
-  name: "BaseModalForSignIn",
+  name: 'BaseModalForSignIn',
   props: {
     showModal: {
       type: Boolean,
       default: false
     }
   },
+  computed: {
+    ...mapState(['userConfig']),
+    ...mapGetters(['currentUserInfo'])
+  },
   watch: {
     showModal(newVal) {
-      this.showModaCopy = newVal;
+      this.showModaCopy = newVal
     }
-  },
-  computed: {
-    ...mapState(["userConfig"]),
-    ...mapGetters(["currentUserInfo"])
   },
   data() {
     return {
       showModaCopy: this.showModal,
       modalLoading: false,
       modalText: {
-        text: "选择授权方式"
+        text: '选择授权方式'
       },
       iconGithub,
       idProvider: [
         {
           url: iconEOS,
-          title: "EOS登录",
-          type: "EOS",
+          title: 'EOS登录',
+          type: 'EOS',
           wallet: [
             {
               url: iconTokenpocket,
-              href: "https://www.tokenpocket.pro/",
-              alt: "https://www.tokenpocket.pro/"
+              href: 'https://www.tokenpocket.pro/',
+              alt: 'https://www.tokenpocket.pro/'
             },
             {
               url: iconScatter,
-              href: "https://get-scatter.com/",
-              alt: "https://get-scatter.com/"
+              href: 'https://get-scatter.com/',
+              alt: 'https://get-scatter.com/'
             },
             {
               url: iconChallte,
-              href: "http://eblock.io/",
-              alt: "http://eblock.io/"
+              href: 'http://eblock.io/',
+              alt: 'http://eblock.io/'
             },
             {
               url: iconMathwallet,
-              href: "http://www.medishares.org/",
-              alt: "http://www.medishares.org/"
+              href: 'http://www.medishares.org/',
+              alt: 'http://www.medishares.org/'
             },
             {
               url: iconLeafwallet,
-              href: "https://www.leafwallet.io/",
-              alt: "https://www.leafwallet.io/"
+              href: 'https://www.leafwallet.io/',
+              alt: 'https://www.leafwallet.io/'
             },
             {
               url: iconMeet,
-              href: "https://meet.one/",
-              alt: "https://meet.one/"
+              href: 'https://meet.one/',
+              alt: 'https://meet.one/'
             },
             {
               url: iconImtoken,
-              href: "https://token.im/download",
-              alt: "https://token.im/download"
+              href: 'https://token.im/download',
+              alt: 'https://token.im/download'
             }
           ],
           doc: {
-            title: "《如何使用EOS登录》",
-            href: "https://smartsignature.io/article/515"
+            title: '《如何使用EOS登录》',
+            href: 'https://smartsignature.io/article/515'
           }
         },
         {
           url: iconONT,
-          title: "ONT登录",
-          type: "ONT",
+          title: 'ONT登录',
+          type: 'ONT',
           wallet: [
             {
               url: iconOnto,
-              href: "https://onto.app/",
-              alt: "https://onto.app/"
+              href: 'https://onto.app/',
+              alt: 'https://onto.app/'
             },
             {
               url: iconCyano,
               href:
-                "https://chrome.google.com/webstore/detail/cyano-wallet/dkdedlpgdmmkkfjabffeganieamfklkm",
+                'https://chrome.google.com/webstore/detail/cyano-wallet/dkdedlpgdmmkkfjabffeganieamfklkm',
               alt:
-                "https://chrome.google.com/webstore/detail/cyano-wallet/dkdedlpgdmmkkfjabffeganieamfklkm"
+                'https://chrome.google.com/webstore/detail/cyano-wallet/dkdedlpgdmmkkfjabffeganieamfklkm'
             },
             {
               url: iconMathwallet,
-              href: "http://www.medishares.org/",
-              alt: "http://www.medishares.org/"
+              href: 'http://www.medishares.org/',
+              alt: 'http://www.medishares.org/'
             }
           ],
           doc: {
-            title: "《如何使用ONT登录》",
-            href: "https://smartsignature.io/article/516"
+            title: '《如何使用ONT登录》',
+            href: 'https://smartsignature.io/article/516'
           }
         }
       ]
-    };
+    }
   },
   methods: {
-    ...mapActions(["signIn"]),
+    ...mapActions(['signIn']),
     change(status) {
-      if (this.modalLoading) this.modalLoading = false;
-      this.showModaCopy = status;
-      this.$emit("changeInfo", status);
+      if (this.modalLoading) this.modalLoading = false
+      this.showModaCopy = status
+      this.$emit('changeInfo', status)
     },
     async walletLogin(type) {
-      this.modalLoading = true;
-      if (type === "GitHub") {
-        this.$router.push({ name: "Login" });
-        return;
+      this.modalLoading = true
+      if (type === 'GitHub') {
+        this.$router.push({ name: 'Login' })
+        return
       }
-      await this.signInx(type);
-      this.modalLoading = false;
-      this.change(false);
+      await this.signInx(type)
+      this.modalLoading = false
+      this.change(false)
     },
     async signInx(type) {
       try {
-        await this.signIn({ idProvider: type });
-        this.$backendAPI.accessToken = this.currentUserInfo.accessToken;
+        await this.signIn({ idProvider: type })
+        this.$backendAPI.accessToken = this.currentUserInfo.accessToken
       } catch (error) {
         try {
-          await this.signIn({ idProvider: type });
-          this.$backendAPI.accessToken = this.currentUserInfo.accessToken;
+          await this.signIn({ idProvider: type })
+          this.$backendAPI.accessToken = this.currentUserInfo.accessToken
         } catch (err) {
-          console.log(err);
+          console.log(err)
           this.$toast.fail({
             duration: 1000,
-            message: "登陆失败"
-          });
+            message: '登陆失败'
+          })
         }
       }
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>

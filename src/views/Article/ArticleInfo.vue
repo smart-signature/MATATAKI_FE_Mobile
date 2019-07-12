@@ -45,20 +45,20 @@ export default {
   data() {
     return {
       infoModaCopy: this.infoModa
-    };
+    }
   },
   watch: {
     infoModa(newVal) {
-      this.infoModaCopy = newVal;
+      this.infoModaCopy = newVal
     }
   },
   methods: {
     change(status) {
-      this.infoModaCopy = status;
-      this.$emit("changeInfo", status);
+      this.infoModaCopy = status
+      this.$emit('changeInfo', status)
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>

@@ -12,31 +12,31 @@
 </template>
 
 <script>
-import { AssetCard } from "@/components/";
+import { AssetCard } from '@/components/'
 
 export default {
-  name: "AssetList",
+  name: 'AssetList',
   components: { AssetCard },
-  props: ["type"],
+  props: ['type'],
   data() {
     return {
       params: {
         symbol: this.type
       },
-      apiUrl: "assetList",
+      apiUrl: 'assetList',
       asset: [],
-      isObj: { type: "newObject", key: "data", keys: "logs" },
+      isObj: { type: 'newObject', key: 'data', keys: 'logs' },
       needAccessToken: true
-    };
+    }
   },
   computed: {},
-  created() { },
+  created() {},
   methods: {
     getListData(res) {
-      const historyFilter = res.list.filter(i => i.amount !== 0); // 过滤金额为0
-      this.asset = historyFilter;
-      this.$emit("getOtherAsset", res);
+      const historyFilter = res.list.filter(i => i.amount !== 0) // 过滤金额为0
+      this.asset = historyFilter
+      this.$emit('getOtherAsset', res)
     }
   }
-};
+}
 </script>

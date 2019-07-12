@@ -13,7 +13,9 @@
         <p v-clampy="2" class="title">
           {{ buy.title }}
         </p>
-        <p class="money">单价{{ buyPrice }}{{buy.symbol}}&nbsp;&nbsp;总价{{ buyAmount }}{{buy.symbol}}</p>
+        <p class="money">
+          单价{{ buyPrice }}{{ buy.symbol }}&nbsp;&nbsp;总价{{ buyAmount }}{{ buy.symbol }}
+        </p>
       </div>
     </div>
 
@@ -25,14 +27,14 @@
 </template>
 
 <script>
-import { precision } from "@/common/precisionConversion";
-import moment from "moment";
-import clampy from "@clampy-js/vue-clampy";
-import Vue from "vue";
+import { precision } from '@/common/precisionConversion'
+import moment from 'moment'
+import clampy from '@clampy-js/vue-clampy'
+import Vue from 'vue'
 
-Vue.use(clampy);
+Vue.use(clampy)
 export default {
-  name: "BuyCard",
+  name: 'BuyCard',
   directives: {
     clampy
   },
@@ -44,34 +46,34 @@ export default {
   },
   computed: {
     buyAmount() {
-      return precision(this.buy.amount, this.buy.symbol);
+      return precision(this.buy.amount, this.buy.symbol)
     },
     buyPrice() {
-      return precision(this.buy.price, this.buy.symbol);
+      return precision(this.buy.price, this.buy.symbol)
     },
     buyTime() {
-      return moment(this.buy.create_time).format("lll");
+      return moment(this.buy.create_time).format('lll')
     },
     buyCover() {
-      return this.buy.cover ? this.$backendAPI.getAvatarImage(this.buy.cover) : "";
+      return this.buy.cover ? this.$backendAPI.getAvatarImage(this.buy.cover) : ''
     }
   },
   methods: {
     copyText(text) {
       this.$copyText(text).then(
         () => {
-          this.$toast.success({ duration: 1000, message: "复制成功" });
+          this.$toast.success({ duration: 1000, message: '复制成功' })
         },
         () => {
-          this.$toast.fail({ duration: 1000, message: "复制失败" });
+          this.$toast.fail({ duration: 1000, message: '复制失败' })
         }
-      );
+      )
     },
     jumpPage(id) {
-      this.$router.push({ name: "Article", params: { hash: id } });
+      this.$router.push({ name: 'Article', params: { hash: id } })
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>

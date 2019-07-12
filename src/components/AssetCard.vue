@@ -34,13 +34,13 @@
 </template>
 
 <script>
-import moment from "moment";
+import moment from 'moment'
 // import { isNDaysAgo } from '@/common/methods';
-import { precision } from "@/common/precisionConversion";
+import { precision } from '@/common/precisionConversion'
 
 export default {
-  name: "AssetCard",
-  props: ["asset"],
+  name: 'AssetCard',
+  props: ['asset'],
   computed: {
     friendlyDate() {
       // const isAppleSlave = navigator.platform.includes('iPhone');
@@ -48,74 +48,74 @@ export default {
       // const timeZoneOffset = moment(time.getTime() - time.getTimezoneOffset() * 60000 * (isAppleSlave ? 0 : 1));
       // return isNDaysAgo(2, time) ? time.format('MMMDo HH:mm') : time.fromNow();
 
-      return moment(this.asset.create_time).format("MMMDo HH:mm");
+      return moment(this.asset.create_time).format('MMMDo HH:mm')
     },
     assetAmount() {
       const switchType = {
-        support_expenses: "",
-        buy_expenses: "",
-        fission_income: "+",
-        referral_income: "+",
-        author_sale_income: "+",
-        author_supported_income: "+",
-        withdraw: "",
-        buyad: "",
-        earn: "+"
-      };
-      return switchType[this.asset.type] + precision(this.asset.amount, this.asset.symbol);
+        support_expenses: '',
+        buy_expenses: '',
+        fission_income: '+',
+        referral_income: '+',
+        author_sale_income: '+',
+        author_supported_income: '+',
+        withdraw: '',
+        buyad: '',
+        earn: '+'
+      }
+      return switchType[this.asset.type] + precision(this.asset.amount, this.asset.symbol)
     },
     assetColor() {
       const switchType = {
-        support_expenses: "#44D7B6",
-        buy_expenses: "#44D7B6",
-        fission_income: "#FB6877",
-        referral_income: "#FB6877",
-        author_sale_income: "#FB6877",
-        author_supported_income: "#FB6877",
-        withdraw: "#000000",
-        buyad: "#44D7B6",
-        earn: "#FB6877"
-      };
-      return switchType[this.asset.type];
+        support_expenses: '#44D7B6',
+        buy_expenses: '#44D7B6',
+        fission_income: '#FB6877',
+        referral_income: '#FB6877',
+        author_sale_income: '#FB6877',
+        author_supported_income: '#FB6877',
+        withdraw: '#000000',
+        buyad: '#44D7B6',
+        earn: '#FB6877'
+      }
+      return switchType[this.asset.type]
     },
     assetTitle() {
-      const { title, type } = this.asset;
+      const { title, type } = this.asset
       // 有内容显示内容
-      if (title) return title;
+      if (title) return title
       else {
         // 没有内容根据类型判断
-        if (type === "buyad" || type === "earn") return "来自 -Smart Billboard-";
+        if (type === 'buyad' || type === 'earn') return '来自 -Smart Billboard-'
         // 如果是广告牌
-        else return ""; // 防止不是广告牌 但是字段也为空
+        else return '' // 防止不是广告牌 但是字段也为空
       }
     },
     assetType() {
       // type='withdraw'：0 待处理 1已转账待确认 2成功 3失败， 4审核 5审核拒绝
       // type=其他：只有2，表示成功
-      const { status, type } = this.asset;
+      const { status, type } = this.asset
       const switchStatus = {
-        0: "提现待处理",
-        1: "提现待确认",
-        2: "提现成功",
-        3: "提现失败",
-        4: "提现审核中",
-        5: "提现审核失败"
-      };
+        0: '提现待处理',
+        1: '提现待确认',
+        2: '提现成功',
+        3: '提现失败',
+        4: '提现审核中',
+        5: '提现审核失败'
+      }
       const switchType = {
         withdraw: switchStatus[status],
-        support_expenses: "投资支出",
-        buy_expenses: "购买支出",
-        fission_income: "投资裂变收入",
-        referral_income: "推荐收入",
-        author_sale_income: "销售收入",
-        author_supported_income: "被投资收入",
-        buyad: "公告牌支出",
-        earn: "公告牌收入"
-      };
-      return switchType[type];
+        support_expenses: '投资支出',
+        buy_expenses: '购买支出',
+        fission_income: '投资裂变收入',
+        referral_income: '推荐收入',
+        author_sale_income: '销售收入',
+        author_supported_income: '被投资收入',
+        buyad: '公告牌支出',
+        earn: '公告牌收入'
+      }
+      return switchType[type]
     },
     isWithdraw() {
-      return this.asset.type === "withdraw";
+      return this.asset.type === 'withdraw'
     }
   },
   created() {},
@@ -125,19 +125,19 @@ export default {
         () => {
           this.$toast.success({
             duration: 1000,
-            message: "复制成功"
-          });
+            message: '复制成功'
+          })
         },
         () => {
           this.$toast.fail({
             duration: 1000,
-            message: "复制失败"
-          });
+            message: '复制失败'
+          })
         }
-      );
+      )
     }
   }
-};
+}
 </script>
 
 <style scoped lang="less">

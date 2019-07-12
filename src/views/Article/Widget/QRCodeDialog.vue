@@ -34,50 +34,50 @@
       :href="downloadLink"
       :disabled="isAPP"
       @click="close"
-      >{{ isAPP ? "长按图片保存" : "保存" }}
+      >{{ isAPP ? '长按图片保存' : '保存' }}
     </a>
   </div>
 </template>
 
 <script>
-import QRCode from "qrcode";
-import html2canvas from "html2canvas";
+import QRCode from 'qrcode'
+import html2canvas from 'html2canvas'
 
 export default {
-  name: "QRCodeDialog",
+  name: 'QRCodeDialog',
   props: {
     shareInfo: {
       type: Object,
       default: () => {
-        return {};
+        return {}
       }
     }
   },
   data() {
     return {
-      defaultAvatar: `this.src="${require("@/assets/avatar-default.svg")}"`,
+      defaultAvatar: `this.src="${require('@/assets/avatar-default.svg')}"`,
       canvas: null
-    };
+    }
   },
   computed: {
     downloadLink() {
-      if (this.canvas) return this.canvas.toDataURL();
-      return "";
+      if (this.canvas) return this.canvas.toDataURL()
+      return ''
     },
     isAPP() {
       return /Edge|Firefox|Opera|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
         navigator.userAgent
-      );
+      )
     }
   },
   watch: {},
   mounted() {
-    this.genQRCode();
-    console.log(this.isAPP);
+    this.genQRCode()
+    console.log(this.isAPP)
   },
   methods: {
     close() {
-      this.$emit("change", false);
+      this.$emit('change', false)
     },
     save() {
       const loading = this.$toast.loading({
@@ -85,18 +85,18 @@ export default {
         zIndex: 1200,
         duration: 0,
         message: `图片生成中...`
-      });
+      })
       html2canvas(this.$refs.capture, {
         useCORS: true
       }).then(canvas => {
-        let link = document.createElement("a");
-        link.href = canvas.toDataURL();
-        link.setAttribute("download", "smartsignature.png");
-        link.style.display = "none";
-        document.body.appendChild(link);
-        link.click();
-        loading.clear();
-      });
+        let link = document.createElement('a')
+        link.href = canvas.toDataURL()
+        link.setAttribute('download', 'smartsignature.png')
+        link.style.display = 'none'
+        document.body.appendChild(link)
+        link.click()
+        loading.clear()
+      })
     },
     toCanvas() {
       const loading = this.$toast.loading({
@@ -105,25 +105,25 @@ export default {
         forbidClick: true,
         zIndex: 1200,
         message: `图片生成中...`
-      });
+      })
       html2canvas(this.$refs.capture, {
         useCORS: true
       }).then(canvas => {
-        this.canvas = canvas;
+        this.canvas = canvas
         //this.$refs.container.append(canvas);
-        loading.clear();
-      });
+        loading.clear()
+      })
     },
     genQRCode() {
-      console.log(this.$parent);
+      console.log(this.$parent)
       QRCode.toCanvas(this.$refs.qr, this.shareInfo.shareLink, { width: 55 }, error => {
-        if (error) console.error(error);
-        console.log("success!");
-        this.toCanvas();
-      });
+        if (error) console.error(error)
+        console.log('success!')
+        this.toCanvas()
+      })
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>
@@ -181,7 +181,7 @@ export default {
   align-items: center;
   width: inherit;
   height: 130px;
-  background: url("../../../assets/newimg/share-bg.svg");
+  background: url('../../../assets/newimg/share-bg.svg');
   h1 {
     font-size: 20px;
     color: #ffffff;

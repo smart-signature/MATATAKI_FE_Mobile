@@ -34,11 +34,11 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex"; // mapGetters 未使用
-import throttle from "lodash/throttle";
+import { mapGetters } from 'vuex' // mapGetters 未使用
+import throttle from 'lodash/throttle'
 
 export default {
-  name: "BaseHeader",
+  name: 'BaseHeader',
   props: {
     // 页面信息
     pageinfo: {
@@ -67,17 +67,17 @@ export default {
     // 自定义图标颜色
     iconColor: {
       type: String,
-      default: "#000"
+      default: '#000'
     },
     // 自定义头部背景
     customizeHeaderBc: {
       type: String,
-      default: "transparent"
+      default: 'transparent'
     },
     // 滚动切换的背景颜色
     scrollToggleBc: {
       type: String,
-      default: "#fff"
+      default: '#fff'
     },
     // 滚动显示标题
     scrollShowTitle: {
@@ -108,26 +108,31 @@ export default {
   data() {
     return {
       scrollToggleStatus: false
-    };
+    }
   },
   computed: {
     headBc() {
       if (this.scrollToggleStatus) {
         return {
           background: this.scrollToggleBc //  默认当前背景色
-        };
+        }
       } else {
         return {
           background: this.customizeHeaderBc //  默认当前背景色
-        };
+        }
       }
     }
   },
+  watch: {
+    isLogined(newState) {
+      if (newState) this.$Message.success('登录成功')
+    }
+  },
   created() {
-    this.addHandleScroll();
+    this.addHandleScroll()
   },
   destroyed() {
-    this.removeHandleScroll();
+    this.removeHandleScroll()
   },
   // 依據 https://blog.csdn.net/m0_37728716/article/details/81289317
   // 從 crearted 改成 mounted
@@ -138,48 +143,43 @@ export default {
     // console.log('Does this page need to log in?:', this.pageinfo.needLogin);
   },
   methods: {
-    ...mapGetters(["isLogined"]),
+    ...mapGetters(['isLogined']),
     // 返回
     goBack() {
       if (this.customizeBackFunc) {
-        this.$emit("headerBackFunc");
+        this.$emit('headerBackFunc')
       } else {
-        this.$router.go(-1);
+        this.$router.go(-1)
       }
     },
     // 回到首页
     goHome() {
       if (this.customizeHomeFunc) {
-        this.$emit("headerHomeFunc");
+        this.$emit('headerHomeFunc')
       } else {
-        this.$router.push({ name: "home" });
+        this.$router.push({ name: 'home' })
       }
     },
     addHandleScroll() {
-      window.addEventListener("scroll", throttle(this.handleScroll, 150));
+      window.addEventListener('scroll', throttle(this.handleScroll, 150))
     },
     handleScroll() {
       const scrollTop =
-        window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+        window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
       // console.log(scrollTop);
       if (scrollTop > 10) {
-        this.scrollToggleStatus = true;
+        this.scrollToggleStatus = true
       } else {
-        this.scrollToggleStatus = false;
+        this.scrollToggleStatus = false
       }
       // console.log(this.isScrollEmit, this.scrollToggleStatus);
-      this.isScrollEmit && this.$emit("scrollToggleStatus", this.scrollToggleStatus);
+      this.isScrollEmit && this.$emit('scrollToggleStatus', this.scrollToggleStatus)
     },
     removeHandleScroll() {
-      window.removeEventListener("scroll", this.handleScroll);
-    }
-  },
-  watch: {
-    isLogined(newState) {
-      if (newState) this.$Message.success("登录成功");
+      window.removeEventListener('scroll', this.handleScroll)
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>

@@ -15,65 +15,67 @@
 </template>
 
 <script>
-import { CommentCard } from "@/components/";
-import { mapGetters } from "vuex";
+import { CommentCard } from '@/components/'
+import { mapGetters } from 'vuex'
 
 export default {
   components: { CommentCard },
-  props: ["signId", "isRequest", "type"],
-  watch: {
-    signId(newVal) {
-      this.params = {
-        signid: newVal
-      };
-    },
-    isRequest(newVal) {
-      console.log(newVal);
-      if (newVal) {
-        this.timer = setInterval(() => {
-          if (this.autoRequestTime >= 2) {
-            clearInterval(this.timer);
-            this.$emit("stopAutoRequest", false);
-          }
-          this.autoRequestTime += 1;
-        }, 2000);
-      } else {
-        clearInterval(this.timer);
-      }
-    }
-  },
-  created() {},
-  computed: {
-    ...mapGetters(["currentUserInfo"])
-  },
+  props: ['signId', 'isRequest', 'type'],
   data() {
     return {
       params: {
         signid: this.signId
       },
-      apiUrl: "commentsList",
+      apiUrl: 'commentsList',
       articles: [],
       autoRequestTime: 0,
       timer: null,
       isObj: {
-        type: "newObject",
-        key: "data",
+        type: 'newObject',
+        key: 'data',
         kes: null
       }
-    };
+    }
   },
+  computed: {
+    ...mapGetters(['currentUserInfo'])
+  },
+  watch: {
+    signId(newVal) {
+      this.params = {
+        signid: newVal
+      }
+    },
+    isRequest(newVal) {
+      console.log(newVal)
+      if (newVal) {
+        this.timer = setInterval(() => {
+          if (this.autoRequestTime >= 2) {
+            clearInterval(this.timer)
+            this.$emit('stopAutoRequest', false)
+          }
+          this.autoRequestTime += 1
+        }, 2000)
+      } else {
+        clearInterval(this.timer)
+      }
+    }
+  },
+
+  created() {},
+
   methods: {
     getListData(res) {
-      console.log(res);
+      console.log(res)
       if (
         this.isRequest &&
         res.data.data.length !== 0 &&
         res.data.data[0].author === this.currentUserInfo.name
       ) {
-        this.$emit("stopAutoRequest", false);
+        this.$emit('stopAutoRequest', false)
       }
-      this.articles = res.list;
+      this.articles = res.list
     }
   }
-};
+}
 </script>

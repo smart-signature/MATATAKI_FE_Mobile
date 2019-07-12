@@ -1,6 +1,11 @@
 <template>
-  <Modal v-model="showModaCopy" footer-hide class-name="modalCenter signupModal" @on-visible-change="change">
-    <section class="step" v-if="step === 1">
+  <Modal
+    v-model="showModaCopy"
+    footer-hide
+    class-name="modalCenter signupModal"
+    @on-visible-change="change"
+  >
+    <section v-if="step === 1" class="step">
       <h1 class="step-title">选择授权方式</h1>
       <div class="btns">
         <button class="btn-base bg-black" @click="walletLogin('EOS')">
@@ -23,7 +28,7 @@
         </div>
       </div>
     </section>
-    <section class="step" v-if="step === 2">
+    <section v-if="step === 2" class="step">
       <h1 class="step-title">EOS钱包</h1>
       <div class="wallet">
         <a
@@ -47,12 +52,12 @@
         </a>
       </div>
     </section>
-    <div class="footer-arrow" @click="step === 1 ? step = 2: step = 1">
-      <div class="arrow" v-if="step === 2">
+    <div class="footer-arrow" @click="step === 1 ? (step = 2) : (step = 1)">
+      <div v-if="step === 2" class="arrow">
         <van-icon name="arrow-left" />
       </div>
-      <span>{{step === 1 ? '查看支持的钱包' : '返回登录'}}</span>
-      <div class="arrow" v-if="step === 1">
+      <span>{{ step === 1 ? '查看支持的钱包' : '返回登录' }}</span>
+      <div v-if="step === 1" class="arrow">
         <van-icon name="arrow" />
       </div>
     </div>
@@ -60,22 +65,22 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
-import iconEOS from "@/assets/img/icon_logo_eos.svg";
-import iconTokenpocket from "@/assets/img/icon_tokenpocket.svg";
-import iconMathwallet from "@/assets/img/icon_mathwallet.svg";
-import iconScatter from "@/assets/img/icon_scatter.svg";
-import iconONT from "@/assets/img/icon_logo_ont.svg";
-import iconCyano from "@/assets/img/icon_cyano.svg";
-import iconLeafwallet from "@/assets/img/icon_leafwallet.svg";
-import iconChallte from "@/assets/img/icon_challte.svg";
-import iconMeet from "@/assets/img/icon_meet.svg";
-import iconGithub from "@/assets/img/icon_logo_github.svg";
-import iconOnto from "@/assets/img/icon_logo_onto.svg";
-import iconImtoken from "@/assets/img/icon_logo_imtoken.svg";
+import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
+import iconEOS from '@/assets/img/icon_logo_eos.svg'
+import iconTokenpocket from '@/assets/img/icon_tokenpocket.svg'
+import iconMathwallet from '@/assets/img/icon_mathwallet.svg'
+import iconScatter from '@/assets/img/icon_scatter.svg'
+import iconONT from '@/assets/img/icon_logo_ont.svg'
+import iconCyano from '@/assets/img/icon_cyano.svg'
+import iconLeafwallet from '@/assets/img/icon_leafwallet.svg'
+import iconChallte from '@/assets/img/icon_challte.svg'
+import iconMeet from '@/assets/img/icon_meet.svg'
+import iconGithub from '@/assets/img/icon_logo_github.svg'
+import iconOnto from '@/assets/img/icon_logo_onto.svg'
+import iconImtoken from '@/assets/img/icon_logo_imtoken.svg'
 
 export default {
-  name: "BaseModalForSignIn",
+  name: 'BaseModalForSignIn',
   props: {
     showModal: {
       type: Boolean,
@@ -84,12 +89,12 @@ export default {
   },
   watch: {
     showModal(newVal) {
-      this.showModaCopy = newVal;
+      this.showModaCopy = newVal
     }
   },
   computed: {
-    ...mapState(["userConfig"]),
-    ...mapGetters(["currentUserInfo"])
+    ...mapState(['userConfig']),
+    ...mapGetters(['currentUserInfo'])
   },
   data() {
     return {
@@ -98,187 +103,187 @@ export default {
         eos: [
           {
             url: iconTokenpocket,
-            href: "https://www.tokenpocket.pro/",
-            alt: "https://www.tokenpocket.pro/"
+            href: 'https://www.tokenpocket.pro/',
+            alt: 'https://www.tokenpocket.pro/'
           },
           {
             url: iconScatter,
-            href: "https://get-scatter.com/",
-            alt: "https://get-scatter.com/"
+            href: 'https://get-scatter.com/',
+            alt: 'https://get-scatter.com/'
           },
           {
             url: iconChallte,
-            href: "http://eblock.io/",
-            alt: "http://eblock.io/"
+            href: 'http://eblock.io/',
+            alt: 'http://eblock.io/'
           },
           {
             url: iconMathwallet,
-            href: "http://www.medishares.org/",
-            alt: "http://www.medishares.org/"
+            href: 'http://www.medishares.org/',
+            alt: 'http://www.medishares.org/'
           },
           {
             url: iconLeafwallet,
-            href: "https://www.leafwallet.io/",
-            alt: "https://www.leafwallet.io/"
+            href: 'https://www.leafwallet.io/',
+            alt: 'https://www.leafwallet.io/'
           },
           {
             url: iconMeet,
-            href: "https://meet.one/",
-            alt: "https://meet.one/"
+            href: 'https://meet.one/',
+            alt: 'https://meet.one/'
           },
           {
             url: iconImtoken,
-            href: "https://token.im/download",
-            alt: "https://token.im/download"
+            href: 'https://token.im/download',
+            alt: 'https://token.im/download'
           }
         ],
         ont: [
           {
             url: iconOnto,
-            href: "https://onto.app/",
-            alt: "https://onto.app/"
+            href: 'https://onto.app/',
+            alt: 'https://onto.app/'
           },
           {
             url: iconCyano,
             href:
-                "https://chrome.google.com/webstore/detail/cyano-wallet/dkdedlpgdmmkkfjabffeganieamfklkm",
+              'https://chrome.google.com/webstore/detail/cyano-wallet/dkdedlpgdmmkkfjabffeganieamfklkm',
             alt:
-                "https://chrome.google.com/webstore/detail/cyano-wallet/dkdedlpgdmmkkfjabffeganieamfklkm"
+              'https://chrome.google.com/webstore/detail/cyano-wallet/dkdedlpgdmmkkfjabffeganieamfklkm'
           },
           {
             url: iconMathwallet,
-            href: "http://www.medishares.org/",
-            alt: "http://www.medishares.org/"
+            href: 'http://www.medishares.org/',
+            alt: 'http://www.medishares.org/'
           }
         ]
       },
       showModaCopy: this.showModal,
       modalLoading: false,
       modalText: {
-        text: "选择授权方式"
+        text: '选择授权方式'
       },
       iconGithub,
       idProvider: [
         {
           url: iconEOS,
-          title: "EOS登录",
-          type: "EOS",
+          title: 'EOS登录',
+          type: 'EOS',
           wallet: [
             {
               url: iconTokenpocket,
-              href: "https://www.tokenpocket.pro/",
-              alt: "https://www.tokenpocket.pro/"
+              href: 'https://www.tokenpocket.pro/',
+              alt: 'https://www.tokenpocket.pro/'
             },
             {
               url: iconScatter,
-              href: "https://get-scatter.com/",
-              alt: "https://get-scatter.com/"
+              href: 'https://get-scatter.com/',
+              alt: 'https://get-scatter.com/'
             },
             {
               url: iconChallte,
-              href: "http://eblock.io/",
-              alt: "http://eblock.io/"
+              href: 'http://eblock.io/',
+              alt: 'http://eblock.io/'
             },
             {
               url: iconMathwallet,
-              href: "http://www.medishares.org/",
-              alt: "http://www.medishares.org/"
+              href: 'http://www.medishares.org/',
+              alt: 'http://www.medishares.org/'
             },
             {
               url: iconLeafwallet,
-              href: "https://www.leafwallet.io/",
-              alt: "https://www.leafwallet.io/"
+              href: 'https://www.leafwallet.io/',
+              alt: 'https://www.leafwallet.io/'
             },
             {
               url: iconMeet,
-              href: "https://meet.one/",
-              alt: "https://meet.one/"
+              href: 'https://meet.one/',
+              alt: 'https://meet.one/'
             },
             {
               url: iconImtoken,
-              href: "https://token.im/download",
-              alt: "https://token.im/download"
+              href: 'https://token.im/download',
+              alt: 'https://token.im/download'
             }
           ],
           doc: {
-            title: "《如何使用EOS登录》",
-            href: "https://smartsignature.io/article/515"
+            title: '《如何使用EOS登录》',
+            href: 'https://smartsignature.io/article/515'
           }
         },
         {
           url: iconONT,
-          title: "ONT登录",
-          type: "ONT",
+          title: 'ONT登录',
+          type: 'ONT',
           wallet: [
             {
               url: iconOnto,
-              href: "https://onto.app/",
-              alt: "https://onto.app/"
+              href: 'https://onto.app/',
+              alt: 'https://onto.app/'
             },
             {
               url: iconCyano,
               href:
-                "https://chrome.google.com/webstore/detail/cyano-wallet/dkdedlpgdmmkkfjabffeganieamfklkm",
+                'https://chrome.google.com/webstore/detail/cyano-wallet/dkdedlpgdmmkkfjabffeganieamfklkm',
               alt:
-                "https://chrome.google.com/webstore/detail/cyano-wallet/dkdedlpgdmmkkfjabffeganieamfklkm"
+                'https://chrome.google.com/webstore/detail/cyano-wallet/dkdedlpgdmmkkfjabffeganieamfklkm'
             },
             {
               url: iconMathwallet,
-              href: "http://www.medishares.org/",
-              alt: "http://www.medishares.org/"
+              href: 'http://www.medishares.org/',
+              alt: 'http://www.medishares.org/'
             }
           ],
           doc: {
-            title: "《如何使用ONT登录》",
-            href: "https://smartsignature.io/article/516"
+            title: '《如何使用ONT登录》',
+            href: 'https://smartsignature.io/article/516'
           }
         }
       ]
-    };
+    }
   },
   methods: {
-    ...mapActions(["signIn"]),
+    ...mapActions(['signIn']),
     change(status) {
-      if (this.modalLoading) this.modalLoading = false;
-      this.showModaCopy = status;
-      this.$emit("changeInfo", status);
+      if (this.modalLoading) this.modalLoading = false
+      this.showModaCopy = status
+      this.$emit('changeInfo', status)
     },
     async walletLogin(type) {
-      this.modalLoading = true;
-      if (type === "GitHub") {
-        this.$router.push({ name: "Login" });
-        return;
+      this.modalLoading = true
+      if (type === 'GitHub') {
+        this.$router.push({ name: 'Login' })
+        return
       }
-      await this.signInx(type);
-      this.modalLoading = false;
-      this.change(false);
+      await this.signInx(type)
+      this.modalLoading = false
+      this.change(false)
     },
     async signInx(type) {
       try {
-        await this.signIn({ idProvider: type });
-        this.$backendAPI.accessToken = this.currentUserInfo.accessToken;
+        await this.signIn({ idProvider: type })
+        this.$backendAPI.accessToken = this.currentUserInfo.accessToken
       } catch (error) {
         try {
-          await this.signIn({ idProvider: type });
-          this.$backendAPI.accessToken = this.currentUserInfo.accessToken;
+          await this.signIn({ idProvider: type })
+          this.$backendAPI.accessToken = this.currentUserInfo.accessToken
         } catch (err) {
-          console.log(err);
+          console.log(err)
           this.$toast.fail({
             duration: 1000,
-            message: "登陆失败"
-          });
+            message: '登陆失败'
+          })
         }
       }
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>
 .footer-arrow {
   cursor: pointer;
   width: 100%;
-  background: #F1F1F1;
+  background: #f1f1f1;
   padding: 14px 0;
   display: flex;
   align-items: center;
@@ -287,12 +292,12 @@ export default {
   border-bottom-right-radius: 0.375rem;
   font-size: 14px;
   font-weight: 700;
-  color: #B2B2B2;
+  color: #b2b2b2;
   .arrow {
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background: #B2B2B2;
+    background: #b2b2b2;
     color: #ffffff;
     display: flex;
     align-items: center;
@@ -322,7 +327,6 @@ export default {
         border-radius: 50%;
         box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
       }
-
     }
   }
   .guide {
@@ -379,7 +383,7 @@ export default {
     background: #333333;
   }
   .bg-blue {
-    background: #4D9AFD;
+    background: #4d9afd;
   }
   .bg-purple {
     background: #882592;
@@ -524,7 +528,7 @@ export default {
 }
 </style>
 <style>
-  .signupModal .ivu-modal-body {
-    padding: 0;
-  }
+.signupModal .ivu-modal-body {
+  padding: 0;
+}
 </style>

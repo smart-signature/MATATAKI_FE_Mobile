@@ -1,7 +1,7 @@
 <template>
   <div class="home-fixed home-head mw">
     <div v-if="isLogined" class="home-head-avatar" @click="$emit('login')">
-      <img :src="avatar" alt="avatar" :onerror="defaultAvatar"/>
+      <img :src="avatar" alt="avatar" :onerror="defaultAvatar" />
     </div>
     <a v-else href="javascript:void(0);" class="home-head-notlogin" @click="$emit('login')">登录</a>
 
@@ -27,37 +27,37 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
-  name: "HomeHead",
-  props: ["nav", "nowIndex"],
+  name: 'HomeHead',
+  props: ['nav', 'nowIndex'],
   data() {
     return {
-      avatar: "",
-      defaultAvatar: `this.src="${ require('@/assets/avatar-default.svg') }"`,
-    };
+      avatar: '',
+      defaultAvatar: `this.src="${require('@/assets/avatar-default.svg')}"`
+    }
   },
   computed: {
-    ...mapGetters(["currentUserInfo", "isLogined"])
+    ...mapGetters(['currentUserInfo', 'isLogined'])
   },
   watch: {
     isLogined(newState) {
-      if (newState) this.refreshUser();
+      if (newState) this.refreshUser()
     }
   },
   created() {
-    const { isLogined, refreshUser } = this;
-    if (isLogined) refreshUser();
+    const { isLogined, refreshUser } = this
+    if (isLogined) refreshUser()
   },
   methods: {
-    ...mapActions(["getCurrentUser"]),
+    ...mapActions(['getCurrentUser']),
     async refreshUser() {
-      const { avatar } = await this.getCurrentUser();
-      if (avatar) this.avatar = this.$backendAPI.getAvatarImage(avatar);
+      const { avatar } = await this.getCurrentUser()
+      if (avatar) this.avatar = this.$backendAPI.getAvatarImage(avatar)
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>
@@ -114,7 +114,7 @@ export default {
         color: rgba(0, 0, 0, 1);
       }
       &.active::after {
-        content: "";
+        content: '';
         position: absolute;
         bottom: 2px;
         left: -2px;

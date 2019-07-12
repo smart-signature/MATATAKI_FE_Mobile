@@ -1,25 +1,25 @@
 // const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
-const WebpackCdnPlugin = require('webpack-cdn-plugin');
+const WebpackCdnPlugin = require('webpack-cdn-plugin')
 
-const path = require('path');
+const path = require('path')
 
 function resolve(dir) {
-  return path.join(__dirname, dir);
+  return path.join(__dirname, dir)
 }
 
 // 动态计算环境变量并以 `process.env.` 注入网站
 // trick from: https://cli.vuejs.org/zh/guide/mode-and-env.html#在客户端侧代码中使用环境变量
-process.env.VUE_APP_VERSION = require('./package.json').version;
+process.env.VUE_APP_VERSION = require('./package.json').version
 
-process.env.VUE_APP_COMMIT_HASH = process.env.COMMIT_REF;
+process.env.VUE_APP_COMMIT_HASH = process.env.COMMIT_REF
 // console.log(process.env.NODE_ENV);
-const { NODE_ENV } = process.env;
+const { NODE_ENV } = process.env
 // console.debug(process.env.VUE_APP_SIGNATURE_CONTRACT);
 if (NODE_ENV === 'test') {
   module.exports = {
     chainWebpack: config => {
       // 移除 prefetch 插件
-      config.plugins.delete('prefetch');
+      config.plugins.delete('prefetch')
 
       if (NODE_ENV === 'test') {
         config.merge({
@@ -32,42 +32,42 @@ if (NODE_ENV === 'test') {
             'bufferutil',
             'utf-8-validate'
           ]
-        });
+        })
         // when target === 'node', vue-loader will attempt to generate
         // SSR-optimized code. We need to turn that off here.
         config.module
           .rule('vue')
           .use('vue-loader')
           .tap(options => {
-            options.optimizeSSR = false;
-            return options;
-          });
+            options.optimizeSSR = false
+            return options
+          })
       }
     }
-  };
-  return;
+  }
+  return
 }
 module.exports = {
   chainWebpack: config => {
     // 移除 prefetch 插件
-    config.plugins.delete('prefetch');
+    config.plugins.delete('prefetch')
 
     // set svg-sprite-loader
     config.module
-      .rule("svg")
-      .exclude.add(resolve("src/icons"))
-      .end();
-    config.module
-      .rule("icons")
-      .test(/\.svg$/)
-      .include.add(resolve("src/icons"))
+      .rule('svg')
+      .exclude.add(resolve('src/icons'))
       .end()
-      .use("svg-sprite-loader")
-      .loader("svg-sprite-loader")
+    config.module
+      .rule('icons')
+      .test(/\.svg$/)
+      .include.add(resolve('src/icons'))
+      .end()
+      .use('svg-sprite-loader')
+      .loader('svg-sprite-loader')
       .options({
-        symbolId: "icon-[name]"
+        symbolId: 'icon-[name]'
       })
-      .end();
+      .end()
 
     if (NODE_ENV === 'test') {
       config.merge({
@@ -80,16 +80,16 @@ module.exports = {
           'bufferutil',
           'utf-8-validate'
         ]
-      });
+      })
       // when target === 'node', vue-loader will attempt to generate
       // SSR-optimized code. We need to turn that off here.
       config.module
         .rule('vue')
         .use('vue-loader')
         .tap(options => {
-          options.optimizeSSR = false;
-          return options;
-        });
+          options.optimizeSSR = false
+          return options
+        })
     }
   },
   configureWebpack: {
@@ -218,4 +218,4 @@ module.exports = {
   //     }
   //   }
   // }
-};
+}

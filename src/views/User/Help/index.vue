@@ -62,69 +62,68 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions } from 'vuex'
 
 export default {
-  naem: "Help",
+  naem: 'Help',
   data() {
     return {
       articleTransfer: false,
       helpDoc: [
         {
-          title: "用户协议",
-          name: ""
+          title: '用户协议',
+          name: ''
         },
         {
-          title: "隐私政策",
-          name: ""
+          title: '隐私政策',
+          name: ''
         }
       ]
-    };
+    }
   },
   created() {
-    this.getMyUserData();
+    this.getMyUserData()
   },
   methods: {
-    ...mapActions(["signOut"]),
+    ...mapActions(['signOut']),
     btnsignOut() {
-      this.signOut();
-      this.jumpTo({ name: "home" });
+      this.signOut()
+      this.jumpTo({ name: 'home' })
     },
     jumpTo(params) {
-      if (!params.name) return;
-      this.$router.push(params);
+      if (!params.name) return
+      this.$router.push(params)
     },
     // 获取用户信息 - 转让状态
     async getMyUserData() {
       try {
-        const res = await this.$backendAPI.getMyUserData();
-        if (res.status === 200 && res.data.code === 0)
-          this.articleTransfer = !!res.data.data.accept;
-        else console.log("获取转让状态失败");
+        const res = await this.$backendAPI.getMyUserData()
+        if (res.status === 200 && res.data.code === 0) this.articleTransfer = !!res.data.data.accept
+        else console.log('获取转让状态失败')
       } catch (error) {
-        console.log(`获取转让状态失败${error}`);
+        console.log(`获取转让状态失败${error}`)
       }
     },
     // 改变转让状态
     async changeTransfer(status) {
       try {
-        this.articleTransfer = status;
-        let accept = status ? 1 : 0;
-        const res = await this.$backendAPI.setProfile({ accept });
+        this.articleTransfer = status
+        let accept = status ? 1 : 0
+        const res = await this.$backendAPI.setProfile({ accept })
         if (res.status === 200 && res.data.code === 0)
-          return this.$toast.success({ duration: 1000, message: "成功" });
+          return this.$toast.success({ duration: 1000, message: '成功' })
         else {
-          this.$toast.fail({ duration: 1000, message: "失败" });
-          this.articleTransfer = !status;
+          this.$toast.fail({ duration: 1000, message: '失败' })
+          this.articleTransfer = !status
         }
       } catch (error) {
-        this.articleTransfer = !status;
-        console.log(`转让状态错误${error}`);
-        this.$toast.fail({ duration: 1000, message: "失败" });
+        this.articleTransfer = !status
+        console.log(`转让状态错误${error}`)
+        this.$toast.fail({ duration: 1000, message: '失败' })
       }
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped src="./index.less"></style>

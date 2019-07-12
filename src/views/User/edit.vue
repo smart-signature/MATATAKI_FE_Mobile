@@ -40,28 +40,28 @@
 </template>
 
 <script>
-import imgUpload from "@/components/imgUpload/index.vue";
-import { mapActions } from "vuex";
+import imgUpload from '@/components/imgUpload/index.vue'
+import { mapActions } from 'vuex'
 
 export default {
-  name: "User",
+  name: 'User',
   components: { imgUpload },
-  props: ["id"],
+  props: ['id'],
   data() {
     return {
-      defaultAvatar: `this.src="${require("@/assets/avatar-default.svg")}"`,
+      defaultAvatar: `this.src="${require('@/assets/avatar-default.svg')}"`,
       playerincome: 0,
       editing: false,
-      nickname: "", // 昵称
-      newNickName: "", // 昵称
-      avatar: "",
+      nickname: '', // 昵称
+      newNickName: '', // 昵称
+      avatar: '',
       imgUploadDone: 0, // 图片是否上传完成
-      introduction: "", // 简介
-      newIntroduction: "", // 简介
-      email: "",
-      newEmail: "",
+      introduction: '', // 简介
+      newIntroduction: '', // 简介
+      email: '',
+      newEmail: '',
       setProfile: false // 是否编辑信息
-    };
+    }
   },
   computed: {},
   watch: {
@@ -72,8 +72,8 @@ export default {
         this.introduction !== this.newIntroduction ||
         this.email !== this.newEmail
       )
-        this.setProfile = true;
-      else this.setProfile = false;
+        this.setProfile = true
+      else this.setProfile = false
     },
     // 监听内容修改 如果内容改动则改变setProfile
     newIntroduction(newVal) {
@@ -82,8 +82,8 @@ export default {
         this.nickname !== this.newNickName ||
         this.email !== this.newEmail
       )
-        this.setProfile = true;
-      else this.setProfile = false;
+        this.setProfile = true
+      else this.setProfile = false
     },
     // 监听内容修改 如果内容改动则改变setProfile
     newEmail(newVal) {
@@ -92,99 +92,100 @@ export default {
         this.introduction !== this.newIntroduction ||
         this.nickname !== this.newNickName
       )
-        this.setProfile = true;
-      else this.setProfile = false;
+        this.setProfile = true
+      else this.setProfile = false
     }
   },
+  created() {
+    this.refreshUser()
+  },
   methods: {
-    ...mapActions(["getCurrentUser"]),
+    ...mapActions(['getCurrentUser']),
     checkSaveParams() {
       // 中文 字母 数字 1-12
-      const reg = /^[\u4E00-\u9FA5A-Za-z0-9]{1,12}$/;
-      const regEmail = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
-      let canSetProfile = true;
+      const reg = /^[\u4E00-\u9FA5A-Za-z0-9]{1,12}$/
+      const regEmail = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
+      let canSetProfile = true
       if (!reg.test(this.newNickName)) {
-        this.myToasted("昵称长度为1-12位,中文、英文、数字但不包括下划线等符号");
-        canSetProfile = false;
+        this.myToasted('昵称长度为1-12位,中文、英文、数字但不包括下划线等符号')
+        canSetProfile = false
       }
       if (this.newIntroduction.length > 20) {
-        this.myToasted("简介不能超过20个字符");
-        canSetProfile = false;
+        this.myToasted('简介不能超过20个字符')
+        canSetProfile = false
       }
-      if (this.newEmail !== "" && !regEmail.test(this.newEmail)) {
-        this.myToasted("请输入正确的邮件地址");
-        canSetProfile = false;
+      if (this.newEmail !== '' && !regEmail.test(this.newEmail)) {
+        this.myToasted('请输入正确的邮件地址')
+        canSetProfile = false
       }
-      return canSetProfile;
+      return canSetProfile
     },
     myToasted(message) {
-      this.$toast({ duration: 1000, message });
+      this.$toast({ duration: 1000, message })
     },
     async save() {
       // 如果没有改动返回上一页
-      if (!this.setProfile) return this.$router.go(-1);
-      if (!this.checkSaveParams()) return;
+      if (!this.setProfile) return this.$router.go(-1)
+      if (!this.checkSaveParams()) return
       const requestData = {
         nickname: this.newNickName,
         introduction: this.newIntroduction,
         email: this.newEmail
-      };
-      if (this.newNickName === this.nickname) delete requestData.nickname;
-      if (this.newIntroduction === this.introduction) delete requestData.introduction;
-      if (this.newEmail === this.email) delete requestData.email;
-      console.log(requestData);
+      }
+      if (this.newNickName === this.nickname) delete requestData.nickname
+      if (this.newIntroduction === this.introduction) delete requestData.introduction
+      if (this.newEmail === this.email) delete requestData.email
+      console.log(requestData)
       // 设置用户信息
       await this.$backendAPI
         .setProfile(requestData)
         .then(res => {
-          console.log(res);
+          console.log(res)
           if (res.status === 200 && res.data.code === 0) {
-            this.$toast.success({ duration: 1000, message: res.data.message });
-            this.nickname = this.newNickName;
-            this.$navigation.cleanRoutes(); // 清除路由记录
-          } else this.myToasted(res.data.message);
+            this.$toast.success({ duration: 1000, message: res.data.message })
+            this.nickname = this.newNickName
+            this.$navigation.cleanRoutes() // 清除路由记录
+          } else this.myToasted(res.data.message)
         })
         .catch(error => {
-          console.log(error);
+          console.log(error)
           if (error.response.status === 401) {
             this.$toast.fail({
               duration: 1000,
-              message: "没有登陆"
-            });
+              message: '没有登陆'
+            })
           } else {
             this.$toast.fail({
               duration: 1000,
-              message: "登陆失败"
-            });
+              message: '登陆失败'
+            })
           }
-        });
+        })
     },
     async refreshUser() {
       const setUser = data => {
-        this.nickname = data.nickname;
-        this.newNickName = this.nickname || data.username;
-        this.email = data.email;
-        this.newEmail = this.email;
-        this.introduction = data.introduction;
-        this.newIntroduction = this.introduction;
-        this.setAvatarImage(data.avatar);
-      };
+        this.nickname = data.nickname
+        this.newNickName = this.nickname || data.username
+        this.email = data.email
+        this.newEmail = this.email
+        this.introduction = data.introduction
+        this.newIntroduction = this.introduction
+        this.setAvatarImage(data.avatar)
+      }
 
-      setUser(await this.getCurrentUser());
+      setUser(await this.getCurrentUser())
     },
     setAvatarImage(hash) {
-      if (hash) this.avatar = this.$backendAPI.getAvatarImage(hash);
+      if (hash) this.avatar = this.$backendAPI.getAvatarImage(hash)
     },
     // 完成上传
     async doneImageUpload(res) {
-      this.refreshUser();
-      this.imgUploadDone += Date.now();
+      console.log(res)
+      this.refreshUser()
+      this.imgUploadDone += Date.now()
     }
-  },
-  created() {
-    this.refreshUser();
   }
-};
+}
 </script>
 
 <style lang="less" scoped>

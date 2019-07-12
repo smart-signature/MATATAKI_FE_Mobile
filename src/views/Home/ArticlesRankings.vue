@@ -1,42 +1,42 @@
 <template>
   <div class="mw">
-      <div class="head">
-        <div class="head-list">
-          <a
-            href="javascript:;"
-            class="head-list-button"
-            :class="activeIndex===index && 'active'"
-            v-for="(item, index) in tabsData"
-            :key="index"
-            @click="toggleHeadButton(index)">
-            {{item.label}}
-          </a>
-        </div>
-        <Checkbox v-model="channel" class="head-store">
-          <img class="head-store-icon" src="@/assets/img/icon_store.svg" alt="store">商品
-        </Checkbox>
-      <!-- <div class="head" ref="head" :class="isFixedHead && 'fixed'"> -->
-      </div>
-      <BasePull
-        :params="item.params"
-        :apiUrl="item.apiUrl"
-        :activeIndex="activeIndex"
-        :nowIndex="index"
-        @getListData="getListData"
-        :isObj="{type: 'Object', key: 'data'}"
-        :autoRequestTime="autoRequestTime"
-        v-for="(item, index) in tabsData"
-        :key="index"
-        v-show="index === activeIndex"
+    <div class="head">
+      <div class="head-list">
+        <a
+          v-for="(item, index) in tabsData"
+          :key="index"
+          href="javascript:;"
+          class="head-list-button"
+          :class="activeIndex === index && 'active'"
+          @click="toggleHeadButton(index)"
         >
-          <ArticleCard :article="item" v-for="(item, itemIndex) in item.articles" :key="itemIndex"/>
-      </BasePull>
+          {{ item.label }}
+        </a>
+      </div>
+      <Checkbox v-model="channel" class="head-store">
+        <img class="head-store-icon" src="@/assets/img/icon_store.svg" alt="store" />商品
+      </Checkbox>
+      <!-- <div class="head" ref="head" :class="isFixedHead && 'fixed'"> -->
+    </div>
+    <BasePull
+      v-for="(item, index) in tabsData"
+      :key="index"
+      :params="item.params"
+      v-show="index === activeIndex"
+      :api-url="item.apiUrl"
+      :active-index="activeIndex"
+      :now-index="index"
+      :is-obj="{ type: 'Object', key: 'data' }"
+      :auto-request-time="autoRequestTime"
+      @getListData="getListData"
+    >
+      <ArticleCard v-for="(item, itemIndex) in item.articles" :key="itemIndex" :article="item" />
+    </BasePull>
   </div>
-
 </template>
 
 <script>
-import { ArticleCard } from '@/components/';
+import { ArticleCard } from '@/components/'
 // import throttle from 'lodash/throttle';
 
 export default {
@@ -48,48 +48,46 @@ export default {
       tabsData: [
         {
           label: '最新',
-          params: {
-          },
+          params: {},
           apiUrl: 'homeTimeRanking',
-          articles: [],
+          articles: []
         },
         {
           label: '最热',
-          params: {
-          },
+          params: {},
           apiUrl: 'homeSupportsRanking',
-          articles: [],
+          articles: []
         },
         {
           label: 'EOS',
           params: {
-            symbol: 'eos',
+            symbol: 'eos'
           },
           apiUrl: 'homeAmountRankingEOS',
-          articles: [],
+          articles: []
         },
         {
           label: 'ONT',
           params: {
-            symbol: 'ont',
+            symbol: 'ont'
           },
           apiUrl: 'homeAmountRankingONT',
-          articles: [],
-        },
+          articles: []
+        }
       ],
       activeIndex: 0,
       isFixedHead: false,
-      autoRequestTime: 0,
-    };
+      autoRequestTime: 0
+    }
   },
   watch: {
     channel() {
-      this.tabsData.map((i) => {
-        if (this.channel) i.params.channel = 2;
-        else delete i.params.channel;
-      });
-      this.autoRequestTime += Date.now();
-    },
+      this.tabsData.map(i => {
+        if (this.channel) i.params.channel = 2
+        else delete i.params.channel
+      })
+      this.autoRequestTime += Date.now()
+    }
   },
   created() {
     // this.addHandleScroll();
@@ -99,11 +97,11 @@ export default {
   },
   methods: {
     getListData(res) {
-      this.tabsData[res.index].articles = res.list;
+      this.tabsData[res.index].articles = res.list
     },
     toggleHeadButton(name) {
-      this.activeIndex = name;
-    },
+      this.activeIndex = name
+    }
     // addHandleScroll() {
     //   window.addEventListener('scroll', throttle(this.handleScroll, 150));
     // },
@@ -116,15 +114,14 @@ export default {
     // removeHandleScroll() {
     //   window.removeEventListener('scroll', this.handleScroll);
     // },
-  },
-
-};
+  }
+}
 </script>
 
 <style lang="less" scoped>
 .head {
   padding: 20px 16px 10px;
-  transition: all .3s;
+  transition: all 0.3s;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -143,15 +140,15 @@ export default {
 .head-list {
   padding: 0 0 0 10px;
   &-button {
-    font-size:16px;
-    font-weight:600;
-    color:rgba(0,0,0,.24);
+    font-size: 16px;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.24);
     margin: 0 30px 0 0;
-    transition: all .18s;
+    transition: all 0.18s;
     text-align: center;
     display: inline-block;
-    &.active{
-      color:rgba(0,0,0,7);
+    &.active {
+      color: rgba(0, 0, 0, 7);
       position: relative;
       transform: scale(1.3);
       &::after {
@@ -164,7 +161,7 @@ export default {
         height: 2px;
         width: 30px;
         border-radius: 10px;
-        background-color: #00ADF2;
+        background-color: #00adf2;
       }
     }
   }
@@ -180,7 +177,6 @@ export default {
   }
 }
 
-
 @media screen and (max-width: 576px) {
   .head-list-button {
     margin: 0 14px 0 0;
@@ -188,9 +184,8 @@ export default {
       margin: 0;
     }
     &.active {
-        transform: scale(1.2);
+      transform: scale(1.2);
     }
   }
 }
-
 </style>

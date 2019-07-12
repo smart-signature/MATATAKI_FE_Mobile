@@ -169,27 +169,27 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
-import { defaultImagesUploader } from "@/api";
-import { sendPost } from "@/api/ipfs";
-import { mavonEditor } from "mavon-editor";
-import { strTrim } from "@/common/reg";
+import { mapGetters, mapActions } from 'vuex'
+import { defaultImagesUploader } from '@/api'
+import { sendPost } from '@/api/ipfs'
+import { mavonEditor } from 'mavon-editor'
+import { strTrim } from '@/common/reg'
 
-import "mavon-editor/dist/css/index.css"; // editor css
-import VueSlider from "vue-slider-component";
-import "vue-slider-component/theme/default.css";
-import { sleep } from "@/common/methods";
-import debounce from "lodash/debounce";
-import { toolbars } from "./toolbars"; // 编辑器配置
-import imgUpload from "@/components/imgUpload/index.vue"; // 图片上传
-import modalPrompt from "./components/modalPrompt.vue"; // 弹出框提示
-import { Prompt } from "@/components/";
+import 'mavon-editor/dist/css/index.css' // editor css
+import VueSlider from 'vue-slider-component'
+import 'vue-slider-component/theme/default.css'
+import { sleep } from '@/common/methods'
+import debounce from 'lodash/debounce'
+import { toolbars } from './toolbars' // 编辑器配置
+import imgUpload from '@/components/imgUpload/index.vue' // 图片上传
+import modalPrompt from './components/modalPrompt.vue' // 弹出框提示
+import { Prompt } from '@/components/'
 
-import tagCard from "@/components/tagCard/index.vue";
-import articleTransfer from "@/components/articleTransfer/index.vue";
+import tagCard from '@/components/tagCard/index.vue'
+import articleTransfer from '@/components/articleTransfer/index.vue'
 
 export default {
-  name: "NewPost",
+  name: 'NewPost',
   components: {
     mavonEditor,
     VueSlider,
@@ -201,9 +201,9 @@ export default {
   },
   data: () => ({
     prompt: false,
-    title: "",
-    author: "",
-    markdownData: "",
+    title: '',
+    author: '',
+    markdownData: '',
     fissionFactor: 2000,
     toolbars: {},
     screenWidth: document.body.clientWidth || document.documentElement.clientWidth,
@@ -211,19 +211,19 @@ export default {
       minHeight: `${(document.body.clientHeight || document.documentElement.clientHeight) - 174}px`
     },
     fissionNum: 2,
-    cover: "",
-    signature: "",
-    signId: "",
-    id: "",
-    editorMode: "create", // 默认是创建文章
-    saveType: "public", // 发布文章模式， 公开 || 草稿
+    cover: '',
+    signature: '',
+    signId: '',
+    id: '',
+    editorMode: 'create', // 默认是创建文章
+    saveType: 'public', // 发布文章模式， 公开 || 草稿
     isOriginal: false, // 是否原创
     imgUploadDone: 0,
     showModal: false, // 弹框显示
     showSignInModal: false,
     modalText: {
-      text: ["文章尚未保存，是否退出？"], // 退出
-      button: ["再想想", "退出"]
+      text: ['文章尚未保存，是否退出？'], // 退出
+      button: ['再想想', '退出']
     },
     modalMode: null, // header 判断点击的 back 还是 home
     tagCards: [], // 文章标签
@@ -233,143 +233,157 @@ export default {
     allowLeave: false, // 允许离开
     saveInfo: {}
   }),
+  computed: {
+    ...mapGetters(['currentUserInfo', 'isLogined']),
+    isShowEditorMode() {
+      // 创建和草稿的时候是否可以显示编辑器模式（单选按钮显示
+      return !!(this.editorMode === 'create' || this.editorMode === 'draft')
+    },
+    editorText() {
+      let text = '文章'
+      if (this.editorMode === 'create') {
+        // 发布文章
+        text = '文章发布'
+      }
+      if (this.editorMode === 'edit') {
+        // 编辑文章
+        text = '编辑文章'
+      } else if (this.editorMode === 'draft') {
+        // 草稿箱
+        text = '编辑草稿'
+      }
+      return text
+    },
+    sendBtnText() {
+      let text = '发布'
+      if (this.editorMode === 'create') {
+        // 发布文章
+        text = '发布'
+      }
+      if (this.editorMode === 'edit') {
+        // 编辑文章
+        text = '修改'
+      } else if (this.editorMode === 'draft' && this.saveType === 'public') {
+        // 草稿箱  发布
+        text = '发布'
+      } else if (this.editorMode === 'draft' && this.saveType === 'draft') {
+        // 草稿箱 修改
+        text = '修改'
+      }
+      return text
+    },
+    coverEditor() {
+      return this.$backendAPI.getAvatarImage(this.cover)
+    },
+    isShowTransfer() {
+      return this.$route.query.from === 'draft'
+    }
+  },
+  watch: {
+    screenWidth(val) {
+      this.setToolBar(val)
+    },
+    mavonStyle(newVal) {
+      console.log(newVal)
+
+      this.mavonStyle = newVal
+    },
+    fissionNum() {
+      this.fissionFactor = this.fissionNum * 1000
+    }
+  },
   created() {
-    const { id } = this.$route.params;
-    const { from, hash } = this.$route.query;
+    const { id } = this.$route.params
+    const { from, hash } = this.$route.query
     // console.log(id, from);
-    if (id === "create" && !from) {
+    if (id === 'create' && !from) {
       // 发布文章 from 为 undefined
       // console.log('发布文章');
-    } else if (from === "edit") {
+    } else if (from === 'edit') {
       // 编辑文章
-      this.editorMode = from;
-      this.setArticleDataById(hash, id);
-    } else if (from === "draft") {
+      this.editorMode = from
+      this.setArticleDataById(hash, id)
+    } else if (from === 'draft') {
       // 草稿箱
-      this.editorMode = from;
-      this.saveType = "draft";
-      this.getDraft(id);
+      this.editorMode = from
+      this.saveType = 'draft'
+      this.getDraft(id)
     } else {
-      this.editorMode = "create"; // 当作发布文章处理
+      this.editorMode = 'create' // 当作发布文章处理
     }
 
-    this.getTags();
+    this.getTags()
   },
   beforeRouteLeave(to, from, next) {
-    if (this.changed()) next();
+    if (this.changed()) next()
     else {
-      this.showModal = true;
-      this.modalMode = "back";
-      next(false);
+      this.showModal = true
+      this.modalMode = 'back'
+      next(false)
     }
   },
   beforeMount() {
-    window.addEventListener("beforeunload", this.unload);
+    window.addEventListener('beforeunload', this.unload)
   },
   beforeDestroy() {
-    window.removeEventListener("beforeunload", this.unload);
+    window.removeEventListener('beforeunload', this.unload)
   },
   mounted() {
-    this.resize();
-    this.setToolBar(this.screenWidth);
+    this.resize()
+    this.setToolBar(this.screenWidth)
   },
-  computed: {
-    ...mapGetters(["currentUserInfo", "isLogined"]),
-    isShowEditorMode() {
-      // 创建和草稿的时候是否可以显示编辑器模式（单选按钮显示
-      return !!(this.editorMode === "create" || this.editorMode === "draft");
-    },
-    editorText() {
-      let text = "文章";
-      if (this.editorMode === "create") {
-        // 发布文章
-        text = "文章发布";
-      }
-      if (this.editorMode === "edit") {
-        // 编辑文章
-        text = "编辑文章";
-      } else if (this.editorMode === "draft") {
-        // 草稿箱
-        text = "编辑草稿";
-      }
-      return text;
-    },
-    sendBtnText() {
-      let text = "发布";
-      if (this.editorMode === "create") {
-        // 发布文章
-        text = "发布";
-      }
-      if (this.editorMode === "edit") {
-        // 编辑文章
-        text = "修改";
-      } else if (this.editorMode === "draft" && this.saveType === "public") {
-        // 草稿箱  发布
-        text = "发布";
-      } else if (this.editorMode === "draft" && this.saveType === "draft") {
-        // 草稿箱 修改
-        text = "修改";
-      }
-      return text;
-    },
-    coverEditor() {
-      return this.$backendAPI.getAvatarImage(this.cover);
-    },
-    isShowTransfer() {
-      return this.$route.query.from === "draft";
-    }
-  },
+
   methods: {
-    ...mapActions(["getSignatureOfArticle"]),
+    ...mapActions(['getSignatureOfArticle']),
     unload($event) {
       // 刷新页面 关闭页面有提示
       // https://jsfiddle.net/jbf4vL7h/29/
-      var confirmationMessage = "\o/";
-      $event.returnValue = confirmationMessage; // Gecko, Trident, Chrome 34+
-      return confirmationMessage; // Gecko, WebKit, Chrome <34
+      var confirmationMessage = '\o/'
+      $event.returnValue = confirmationMessage // Gecko, Trident, Chrome 34+
+      return confirmationMessage // Gecko, WebKit, Chrome <34
     },
     changed() {
       // 如果允许关闭 或者 内容都为空
-      return this.allowLeave || (!strTrim(this.title) && !strTrim(this.markdownData));
+      return this.allowLeave || (!strTrim(this.title) && !strTrim(this.markdownData))
     },
     popstateFunc() {
       // Your logic
-      alert("pushState");
+      alert('pushState')
     },
     setTag(data) {
-      console.log(data);
-      this.articleData = data; // 设置文章数据
+      console.log(data)
+      this.articleData = data // 设置文章数据
       // 编辑的时候设置tag状态
-      const { from } = this.$route.query;
-      if ((from && from === "edit") || from === "draft") this.setTagStatus();
+      const { from } = this.$route.query
+      if ((from && from === 'edit') || from === 'draft') this.setTagStatus()
     },
     // 通过ID拿数据
     async setArticleDataById(hash, id) {
-      const articleData = await this.$backendAPI.getArticleDatafromIPFS(hash);
+      const articleData = await this.$backendAPI.getArticleDatafromIPFS(hash)
       try {
         // 获取文章信息
-        const { data } = await this.$backendAPI.getMyPost(id);
+        const { data } = await this.$backendAPI.getMyPost(id)
         if (data.code === 0) {
-          this.fissionNum = data.data.fission_factor / 1000;
-          this.signature = data.data.sign;
-          this.cover = data.data.cover;
-          this.signId = data.data.id;
-          this.isOriginal = Boolean(data.data.is_original);
+          this.fissionNum = data.data.fission_factor / 1000
+          this.signature = data.data.sign
+          this.cover = data.data.cover
+          this.signId = data.data.id
+          this.isOriginal = Boolean(data.data.is_original)
 
-          this.setTag(data.data);
+          this.setTag(data.data)
         } else {
-          this.$toast({ duration: 1000, message: data.message });
-          this.$router.push({ name: "home" });
+          this.$toast({ duration: 1000, message: data.message })
+          this.$router.push({ name: 'home' })
         }
       } catch (error) {
-        console.error(error);
-        this.$toast({ duration: 1000, message: "获取文章信息发生错误" });
-        this.$router.push({ name: "home" });
+        console.error(error)
+        this.$toast({ duration: 1000, message: '获取文章信息发生错误' })
+        this.$router.push({ name: 'home' })
       }
       // 设置文章内容
-      const { data } = articleData.data;
-      this.title = data.title;
-      this.markdownData = data.content;
+      const { data } = articleData.data
+      this.title = data.title
+      this.markdownData = data.content
     },
     // 设置文章数据 by hash
     /* async setArticleData(hash) {
@@ -392,30 +406,30 @@ export default {
     }, */
     // 得到草稿箱内容 by id
     async getDraft(id) {
-      const { data } = await this.$backendAPI.getDraft({ id });
-      this.fissionNum = data.fission_factor ? data.fission_factor / 1000 : 2;
-      this.cover = data.cover;
-      this.title = data.title;
-      this.markdownData = data.content;
-      this.id = id;
-      this.isOriginal = Boolean(data.is_original);
+      const { data } = await this.$backendAPI.getDraft({ id })
+      this.fissionNum = data.fission_factor ? data.fission_factor / 1000 : 2
+      this.cover = data.cover
+      this.title = data.title
+      this.markdownData = data.content
+      this.id = id
+      this.isOriginal = Boolean(data.is_original)
 
-      this.setTag(data);
+      this.setTag(data)
     },
     // 错误提示
     failed(error) {
-      console.error("发送失败", error);
-      this.$toast({ duration: 1000, message: error });
+      console.error('发送失败', error)
+      this.$toast({ duration: 1000, message: error })
     },
     // 跳转页面
     jumpToArticle(hash) {
-      this.$router.push({ name: "Article", params: { hash } });
+      this.$router.push({ name: 'Article', params: { hash } })
     },
     // 成功提示
     async success(hash) {
-      this.$toast({ duration: 1000, message: "发送成功,3秒后跳转到你发表的文章" });
-      await sleep(3000); // 休眠三秒
-      this.jumpToArticle(hash);
+      this.$toast({ duration: 1000, message: '发送成功,3秒后跳转到你发表的文章' })
+      await sleep(3000) // 休眠三秒
+      this.jumpToArticle(hash)
     },
     // 发送文章到ipfs
     async sendPost({ title, author, content }) {
@@ -423,117 +437,117 @@ export default {
         title,
         author,
         content,
-        desc: "whatever"
-      });
-      if (data.code !== 200) this.failed("1st step : send post to ipfs failed");
-      return data;
+        desc: 'whatever'
+      })
+      if (data.code !== 200) this.failed('1st step : send post to ipfs failed')
+      return data
     },
     // 文章标签 tag
     setArticleTag(tagCards) {
-      let tags = "";
-      const tagCardsFilter = tagCards.filter(i => i.status === true);
+      let tags = ''
+      const tagCardsFilter = tagCards.filter(i => i.status === true)
       if (tagCardsFilter.length !== 0) {
         tagCardsFilter.map((i, index) => {
-          if (index === 0) tags += i.id;
-          else tags += `,${i.id}`;
-        });
+          if (index === 0) tags += i.id
+          else tags += `,${i.id}`
+        })
       }
-      return tags;
+      return tags
     },
     // 发布文章
     async publishArticle(article) {
       // 设置文章标签 🏷️
-      article.tags = this.setArticleTag(this.tagCards);
-      const { failed, success } = this;
+      article.tags = this.setArticleTag(this.tagCards)
+      const { failed, success } = this
       try {
-        const { author, hash } = article;
-        let signature = null;
-        if (this.currentUserInfo.idProvider !== "GitHub") {
-          signature = await this.getSignatureOfArticle({ author, hash });
+        const { author, hash } = article
+        let signature = null
+        if (this.currentUserInfo.idProvider !== 'GitHub') {
+          signature = await this.getSignatureOfArticle({ author, hash })
         }
         try {
-          const response = await this.$backendAPI.publishArticle({ article, signature });
-          if (response.data.code !== 0) throw new Error(response.data.message);
-          success(response.data.data);
-          console.log(response);
-          return "success";
+          const response = await this.$backendAPI.publishArticle({ article, signature })
+          if (response.data.code !== 0) throw new Error(response.data.message)
+          success(response.data.data)
+          console.log(response)
+          return 'success'
         } catch (error) {
-          this.showSignInModal = this.$errorHandling.isNoToken(error);
-          throw error;
+          this.showSignInModal = this.$errorHandling.isNoToken(error)
+          throw error
         }
       } catch (error) {
-        console.error(error);
-        failed(error);
-        throw error;
+        console.error(error)
+        failed(error)
+        throw error
       }
     },
     confirmSaveDraft() {
-      this.createDraft(this.saveInfo);
+      this.createDraft(this.saveInfo)
     },
     // 创建草稿
     async createDraft(article) {
       // 设置文章标签 🏷️
-      article.tags = this.setArticleTag(this.tagCards);
-      const response = await this.$backendAPI.createDraft(article);
-      if (response.data.msg !== "success") this.failed("失败请重试");
-      this.$toast.success({ duration: 1000, message: "保存成功" });
-      this.$router.go(-1);
+      article.tags = this.setArticleTag(this.tagCards)
+      const response = await this.$backendAPI.createDraft(article)
+      if (response.data.msg !== 'success') this.failed('失败请重试')
+      this.$toast.success({ duration: 1000, message: '保存成功' })
+      this.$router.go(-1)
     },
     // 编辑文章
     async editArticle(article) {
       // 设置文章标签 🏷️
-      article.tags = this.setArticleTag(this.tagCards);
-      const { author, hash } = article;
-      let signature = null;
-      if (this.currentUserInfo.idProvider !== "GitHub") {
-        signature = await this.getSignatureOfArticle({ author, hash });
+      article.tags = this.setArticleTag(this.tagCards)
+      const { author, hash } = article
+      let signature = null
+      if (this.currentUserInfo.idProvider !== 'GitHub') {
+        signature = await this.getSignatureOfArticle({ author, hash })
       }
-      const response = await this.$backendAPI.editArticle({ article, signature });
-      if (response.status === 200 && response.data.code === 0) this.success(response.data.data);
-      else this.failed("失败请重试");
+      const response = await this.$backendAPI.editArticle({ article, signature })
+      if (response.status === 200 && response.data.code === 0) this.success(response.data.data)
+      else this.failed('失败请重试')
     },
     // 删除草稿
     async delDraft(id) {
       if (!id) {
-        this.failed("自动删除草稿失败,请手动删除");
-        return;
+        this.failed('自动删除草稿失败,请手动删除')
+        return
       }
       try {
-        const response = await this.$backendAPI.delDraft({ id });
-        if (response.status !== 200) this.failed("自动删除草稿失败,请手动删除");
+        const response = await this.$backendAPI.delDraft({ id })
+        if (response.status !== 200) this.failed('自动删除草稿失败,请手动删除')
       } catch (error) {
-        this.failed("自动删除草稿失败,请手动删除");
+        this.failed('自动删除草稿失败,请手动删除')
       }
     },
     // 更新草稿
     async updateDraft(article) {
       // 设置文章标签 🏷️
-      article.tags = this.setArticleTag(this.tagCards);
+      article.tags = this.setArticleTag(this.tagCards)
       try {
-        const response = await this.$backendAPI.updateDraft(article);
-        if (response.data.msg !== "success") this.failed("失败请重试");
-        this.$toast({ duration: 1000, message: "草稿更新成功" });
-        this.$navigation.cleanRoutes(); // 清除路由记录
-        this.$router.go(-1);
+        const response = await this.$backendAPI.updateDraft(article)
+        if (response.data.msg !== 'success') this.failed('失败请重试')
+        this.$toast({ duration: 1000, message: '草稿更新成功' })
+        this.$navigation.cleanRoutes() // 清除路由记录
+        this.$router.go(-1)
       } catch (error) {
-        this.failed("失败请重试");
+        this.failed('失败请重试')
       }
     },
     // 发布||修改按钮
     async sendThePost() {
       // 没有登陆 点击发布按钮都提示登陆  编辑获取内容的时候会被前面的func拦截并返回home page
-      if (!this.isLogined) return (this.showSignInModal = true);
+      if (!this.isLogined) return (this.showSignInModal = true)
 
       // 标题或内容为空时
       if (!strTrim(this.title) || !strTrim(this.markdownData))
-        return this.$toast("标题或正文不能为空");
+        return this.$toast('标题或正文不能为空')
 
-      if (this.saveType === "public" && !this.cover)
-        return this.$toast({ duration: 1000, message: "请上传封面" });
+      if (this.saveType === 'public' && !this.cover)
+        return this.$toast({ duration: 1000, message: '请上传封面' })
 
-      if (this.fissionFactor === "") this.fissionFactor = 2; // 用户不填写裂变系数则默认为2
+      if (this.fissionFactor === '') this.fissionFactor = 2 // 用户不填写裂变系数则默认为2
 
-      this.allowLeave = true;
+      this.allowLeave = true
       const {
         currentUserInfo,
         title,
@@ -542,14 +556,14 @@ export default {
         cover,
         editorMode,
         saveType
-      } = this;
-      const { name: author } = currentUserInfo;
-      const isOriginal = Number(this.isOriginal);
-      console.log("sendThePost mode :", editorMode, saveType);
-      if (editorMode === "create" && saveType === "public") {
+      } = this
+      const { name: author } = currentUserInfo
+      const isOriginal = Number(this.isOriginal)
+      console.log('sendThePost mode :', editorMode, saveType)
+      if (editorMode === 'create' && saveType === 'public') {
         // 发布文章
-        const { hash } = await this.sendPost({ title, author, content });
-        console.log("sendPost result :", hash);
+        const { hash } = await this.sendPost({ title, author, content })
+        console.log('sendPost result :', hash)
         this.publishArticle({
           author,
           title,
@@ -557,17 +571,17 @@ export default {
           fissionFactor,
           cover,
           isOriginal
-        });
-      } else if (editorMode === "create" && saveType === "draft") {
+        })
+      } else if (editorMode === 'create' && saveType === 'draft') {
         // 发布到草稿箱
-        this.prompt = true;
+        this.prompt = true
         this.saveInfo = {
           title,
           content,
           fissionFactor,
           cover,
           isOriginal
-        };
+        }
         /*this.createDraft({
           title,
           content,
@@ -575,9 +589,9 @@ export default {
           cover,
           isOriginal
         });*/
-      } else if (editorMode === "edit") {
+      } else if (editorMode === 'edit') {
         // 编辑文章
-        const { hash } = await this.sendPost({ title, author, content });
+        const { hash } = await this.sendPost({ title, author, content })
         this.editArticle({
           signId: this.signId,
           author,
@@ -587,10 +601,10 @@ export default {
           signature: this.signature,
           cover,
           isOriginal
-        });
-      } else if (editorMode === "draft" && saveType === "public") {
+        })
+      } else if (editorMode === 'draft' && saveType === 'public') {
         // 草稿箱编辑 发布
-        const { hash } = await this.sendPost({ title, author, content });
+        const { hash } = await this.sendPost({ title, author, content })
         this.publishArticle({
           author,
           title,
@@ -600,12 +614,12 @@ export default {
           isOriginal
         })
           .then(() => {
-            this.delDraft(this.id);
+            this.delDraft(this.id)
           })
           .catch(() => {
-            console.log("发布错误");
-          });
-      } else if (editorMode === "draft" && saveType === "draft") {
+            console.log('发布错误')
+          })
+      } else if (editorMode === 'draft' && saveType === 'draft') {
         // 草稿箱编辑 更新
         await this.updateDraft({
           id: this.id,
@@ -614,7 +628,7 @@ export default {
           fissionFactor,
           cover,
           isOriginal
-        });
+        })
       }
     },
     $imgAdd(pos, imgfile) {
@@ -622,92 +636,92 @@ export default {
       // 不要在页面组件写具体实现，谢谢合作 - Frank
       // 想要更换默认的 uploader， 请在 src/api/imagesUploader.js 修改 currentImagesUploader
       // 不要在页面组件写具体实现，谢谢合作 - Frank
-      if (imgfile.type === "image/gif") {
+      if (imgfile.type === 'image/gif') {
         defaultImagesUploader(imgfile).then(({ data }) => {
-          const { url } = data.data;
-          this.$refs.md.$img2Url(pos, url);
-        });
+          const { url } = data.data
+          this.$refs.md.$img2Url(pos, url)
+        })
       } else {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        const image = new Image();
+        const canvas = document.createElement('canvas')
+        const ctx = canvas.getContext('2d')
+        const image = new Image()
         image.onload = () => {
-          canvas.width = image.width;
-          canvas.height = image.height;
-          ctx.drawImage(image, 0, 0);
+          canvas.width = image.width
+          canvas.height = image.height
+          ctx.drawImage(image, 0, 0)
           canvas.toBlob(
             blob => {
               defaultImagesUploader(blob).then(({ data }) => {
-                const { url } = data.data;
-                this.$refs.md.$img2Url(pos, url);
-              });
+                const { url } = data.data
+                this.$refs.md.$img2Url(pos, url)
+              })
             },
             imgfile.type,
             0.3
-          );
-        };
-        image.src = imgfile.miniurl;
+          )
+        }
+        image.src = imgfile.miniurl
       }
     },
     setToolBar(val) {
-      if (val > 750) this.toolbars = Object.assign(toolbars.pc, toolbars.public);
-      else this.toolbars = Object.assign(toolbars.mobile, toolbars.public);
+      if (val > 750) this.toolbars = Object.assign(toolbars.pc, toolbars.public)
+      else this.toolbars = Object.assign(toolbars.mobile, toolbars.public)
     },
     resize() {
       window.onresize = debounce(() => {
-        const clientHeight = document.body.clientHeight || document.documentElement.clientHeight;
-        const clientWidth = document.body.clientWidth || document.documentElement.clientWidth;
-        this.screenWidth = clientWidth;
+        const clientHeight = document.body.clientHeight || document.documentElement.clientHeight
+        const clientWidth = document.body.clientWidth || document.documentElement.clientWidth
+        this.screenWidth = clientWidth
         this.mavonStyle = {
           minHeight: `${clientHeight - 174}px`
-        };
-      }, 150);
+        }
+      }, 150)
     },
     // 上传完成
     doneImageUpload(res) {
       // console.log(res);
-      this.imgUploadDone += Date.now();
-      this.cover = res.data.data.cover;
+      this.imgUploadDone += Date.now()
+      this.cover = res.data.data.cover
     },
     // 删除cover
     removeCover() {
-      this.cover = "";
+      this.cover = ''
     },
     // head 返回
     headerBackFunc() {
-      this.modalMode = "back";
-      this.headLeavePageFunc();
+      this.modalMode = 'back'
+      this.headLeavePageFunc()
     },
     // head 返回首页
     headerHomeFunc() {
-      this.modalMode = "home";
-      this.headLeavePageFunc();
+      this.modalMode = 'home'
+      this.headLeavePageFunc()
     },
     // head 离开页面方法
     headLeavePageFunc() {
       if (!strTrim(this.title) && !strTrim(this.markdownData)) {
-        this.allowLeave = true;
-        this.leavePage();
-      } else this.showModal = true;
+        this.allowLeave = true
+        this.leavePage()
+      } else this.showModal = true
     },
     // 关闭modal
     changeInfo(status) {
-      this.showModal = status;
+      this.showModal = status
     },
     changeInfo2(status) {
-      this.showSignInModal = status;
+      this.showSignInModal = status
     },
     // modal 同意
     modalCancel() {
-      this.showModal = false;
-      this.allowLeave = true;
-      this.leavePage();
+      this.showModal = false
+      this.allowLeave = true
+      this.leavePage()
     },
     // 离开页面
     leavePage() {
-      if (this.modalMode === "back") this.$router.go(-1);
-      else if (this.modalMode === "home") this.$router.push({ name: "home" });
-      else this.$router.go(-1);
+      if (this.modalMode === 'back') this.$router.go(-1)
+      else if (this.modalMode === 'home') this.$router.push({ name: 'home' })
+      else this.$router.go(-1)
     },
     // 获取标签
     async getTags() {
@@ -715,48 +729,35 @@ export default {
         .getTags()
         .then(res => {
           if (res.status === 200 && res.data.code === 0) {
-            let { data } = res.data;
-            data.map(i => (i.status = false));
-            this.tagCards = data;
-          } else console.log(res.data.message);
+            let { data } = res.data
+            data.map(i => (i.status = false))
+            this.tagCards = data
+          } else console.log(res.data.message)
         })
         .catch(err => {
-          console.log(err);
-        });
+          console.log(err)
+        })
     },
     // 切换状态
     toggleTagStatus(data) {
-      const tagCardsIndex = this.tagCards.findIndex(i => i.id === data.id);
-      if (tagCardsIndex === -1) return;
-      this.tagCards.map(i => (i.status = false));
-      this.tagCards[tagCardsIndex].status = data.status;
+      const tagCardsIndex = this.tagCards.findIndex(i => i.id === data.id)
+      if (tagCardsIndex === -1) return
+      this.tagCards.map(i => (i.status = false))
+      this.tagCards[tagCardsIndex].status = data.status
       // console.log(this.tagCards, data)
     },
     // 设置标签状态
     setTagStatus() {
-      let tagCardsCopy = this.tagCards;
+      let tagCardsCopy = this.tagCards
       this.articleData.tags.map(i => {
         tagCardsCopy.map((j, index) => {
-          if (i.id === j.id) tagCardsCopy[index].status = true;
-        });
-      });
-      this.tagCards = tagCardsCopy;
-    }
-  },
-  watch: {
-    screenWidth(val) {
-      this.setToolBar(val);
-    },
-    mavonStyle(newVal) {
-      console.log(newVal);
-
-      this.mavonStyle = newVal;
-    },
-    fissionNum() {
-      this.fissionFactor = this.fissionNum * 1000;
+          if (i.id === j.id) tagCardsCopy[index].status = true
+        })
+      })
+      this.tagCards = tagCardsCopy
     }
   }
-};
+}
 </script>
 
 <style scoped lang="less" src="./Publish.less"></style>
@@ -791,7 +792,7 @@ export default {
   border-bottom: 1px solid #eee !important;
 }
 // 工具栏按钮 去掉样式
-.editor [type="button"] {
+.editor [type='button'] {
   -webkit-appearance: none;
 }
 // 工具栏样式下拉阴影

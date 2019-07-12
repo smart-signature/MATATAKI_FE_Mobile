@@ -6,36 +6,36 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import ArticlesList from "./ArticlesList.vue";
+import { mapGetters } from 'vuex'
+import ArticlesList from './ArticlesList.vue'
 
 export default {
-  name: "Original",
+  name: 'Original',
   components: { ArticlesList },
-  props: ["id"],
+  props: ['id'],
   data() {
     return {
       playerincome: null,
       editing: false,
-      user: "",
-      pageTitle: ""
-    };
+      user: '',
+      pageTitle: ''
+    }
   },
   computed: {
-    ...mapGetters(["isMe"])
+    ...mapGetters(['isMe'])
   },
   created() {
-    const { isMe, id } = this;
-    this.user = isMe(id) ? "我的用户页" : `${id} 的用户页`;
-    this.pageTitle = isMe(id) ? "我的投资" : `${id} 的投资`;
-    document.title = `${this.user} - SmartSignature`;
+    const { isMe, id } = this
+    this.user = isMe(id) ? '我的用户页' : `${id} 的用户页`
+    this.pageTitle = isMe(id) ? '我的投资' : `${id} 的投资`
+    document.title = `${this.user} - SmartSignature`
   },
   methods: {
     goBack() {
-      this.$router.go(-1);
+      this.$router.go(-1)
     }
   }
-};
+}
 </script>
 <style scoped>
 .reward {

@@ -29,50 +29,50 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
-  name: "MyBanner",
+  name: 'MyBanner',
   computed: {
-    ...mapGetters(["currentUserInfo", "displayName", "isLogined"]),
+    ...mapGetters(['currentUserInfo', 'displayName', 'isLogined']),
     displayBalance() {
-      const { balance } = this.currentUserInfo;
-      return balance ? balance.slice(0, -4) : "";
+      const { balance } = this.currentUserInfo
+      return balance ? balance.slice(0, -4) : ''
     },
     displayBalanceSymbol() {
-      const { balance } = this.currentUserInfo;
-      return balance ? balance.slice(-4) : "";
+      const { balance } = this.currentUserInfo
+      return balance ? balance.slice(-4) : ''
     }
   },
   data() {
     return {
       showModal: false,
-      avatar: ""
-    };
+      avatar: ''
+    }
   },
   created() {
-    const { isLogined, refreshUser } = this;
+    const { isLogined, refreshUser } = this
     if (isLogined) {
-      refreshUser();
+      refreshUser()
     }
   },
   methods: {
-    ...mapActions(["getCurrentUser"]),
+    ...mapActions(['getCurrentUser']),
     async refreshUser() {
-      const { avatar } = await this.getCurrentUser();
-      if (avatar) this.avatar = this.$backendAPI.getAvatarImage(avatar);
+      const { avatar } = await this.getCurrentUser()
+      if (avatar) this.avatar = this.$backendAPI.getAvatarImage(avatar)
     },
     // 改变modal
     changeInfo(status) {
-      this.showModal = status;
+      this.showModal = status
     }
   },
   watch: {
     isLogined(newState) {
-      if (newState) this.refreshUser();
+      if (newState) this.refreshUser()
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>

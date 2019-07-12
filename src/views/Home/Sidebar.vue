@@ -6,7 +6,7 @@
           <div class="top-container">
             <router-link :to="{ name: 'UserEdit', params: { id } }">
               <div class="avatar-container">
-                <img :src="avatar" alt="avatar" :onerror="defaultAvatar"/>
+                <img :src="avatar" alt="avatar" :onerror="defaultAvatar" />
               </div>
             </router-link>
             <router-link :to="{ name: 'Help' }">
@@ -130,11 +130,11 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import defaultAvatar from "@/assets/avatar-default.svg";
+import { mapGetters } from 'vuex'
+import defaultAvatar from '@/assets/avatar-default.svg'
 
 export default {
-  name: "Sidebar",
+  name: 'Sidebar',
   props: {
     value: {
       type: Boolean,
@@ -143,7 +143,7 @@ export default {
   },
   data() {
     return {
-      defaultAvatar: `this.src="${ require('@/assets/avatar-default.svg') }"`,
+      defaultAvatar: `this.src="${require('@/assets/avatar-default.svg')}"`,
       showModal: false,
       sidebarShow: false,
       balance: 1,
@@ -151,48 +151,48 @@ export default {
       followed: false,
       follows: 0,
       fans: 0,
-      name: "",
-      email: "",
-      avatar: "",
-      introduction: "",
+      name: '',
+      email: '',
+      avatar: '',
+      introduction: '',
       stats: {
         accounts: 0,
         articles: 0,
         supports: 0,
         drafts: 0
       }
-    };
+    }
   },
   computed: {
-    ...mapGetters(["currentUserInfo", "displayName", "isLogined", "isMe"]),
+    ...mapGetters(['currentUserInfo', 'displayName', 'isLogined', 'isMe']),
     displayBalance() {
-      const { balance } = this.currentUserInfo;
-      return balance ? balance.slice(0, -4) : "";
+      const { balance } = this.currentUserInfo
+      return balance ? balance.slice(0, -4) : ''
     },
     displayBalanceSymbol() {
-      const { balance } = this.currentUserInfo;
-      return balance ? balance.slice(-4) : "";
+      const { balance } = this.currentUserInfo
+      return balance ? balance.slice(-4) : ''
     }
   },
   watch: {
     value(val) {
-      this.sidebarShow = val;
+      this.sidebarShow = val
     },
     sidebarShow(val) {
-      this.$emit("input", val);
+      this.$emit('input', val)
     },
     isLogined(newState) {
-      if (newState) this.refreshUser();
+      if (newState) this.refreshUser()
     }
   },
   created() {
-    this.refreshUser();
+    this.refreshUser()
   },
   methods: {
     async refreshUser() {
-      const { isMe } = this;
-      const id = this.currentUserInfo.id;
-      this.id = this.currentUserInfo.id;
+      const { isMe } = this
+      const id = this.currentUserInfo.id
+      this.id = this.currentUserInfo.id
       const setUser = ({
         avatar,
         email,
@@ -207,39 +207,37 @@ export default {
         supports,
         drafts
       }) => {
-        this.email = email;
-        this.fans = fans;
-        this.follows = follows;
-        this.introduction = introduction;
-        this.followed = is_follow;
-        this.name = nickname || username;
-        this.setAvatarImage(avatar);
+        this.email = email
+        this.fans = fans
+        this.follows = follows
+        this.introduction = introduction
+        this.followed = is_follow
+        this.name = nickname || username
+        this.setAvatarImage(avatar)
         this.stats = {
           accounts,
           articles,
           supports,
           drafts
-        };
-      };
+        }
+      }
 
       if (isMe(id)) {
         const {
           data: { data }
-        } = await this.$backendAPI.getMyUserData();
-        setUser(data);
+        } = await this.$backendAPI.getMyUserData()
+        setUser(data)
       }
     },
     setAvatarImage(hash) {
-      if (hash)
-        this.avatar = this.$backendAPI.getAvatarImage(hash);
-      else
-        this.avatar = defaultAvatar;
+      if (hash) this.avatar = this.$backendAPI.getAvatarImage(hash)
+      else this.avatar = defaultAvatar
     },
     changeInfo(status) {
-      this.showModal = status;
+      this.showModal = status
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>
