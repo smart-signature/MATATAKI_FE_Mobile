@@ -23,7 +23,7 @@
             {{ article.read }}浏览&nbsp;&nbsp;{{ article.ups }}投资
           </p>
           <p v-else class="read-ups">
-            {{ article.sale }}销量<span>&nbsp;&nbsp;{{ articleOntValue }}EOS/份</span>
+            {{ article.sale }}销量<span>&nbsp;&nbsp;{{ articleEosValue }}EOS/份</span>
           </p>
         </template>
         <template v-else>
@@ -89,8 +89,8 @@ export default {
       if (this.article.cover) return this.$backendAPI.getAvatarImage(this.article.cover)
       return coverDefault
     },
-    articleOntValue() {
-      return precision(this.article.ontvalue, 'ont')
+    articleEosValue() {
+      return precision(this.article.eosprice, 'eos')
     }
   },
   mounted() {}
