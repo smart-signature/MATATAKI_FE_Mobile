@@ -9,7 +9,6 @@
     :closable="false"
     @on-visible-change="change"
   >
-    >
     <div v-if="widgetModalStatus === 0" class="widget-content-button">
       <div class="widget-button" @click="createWidget">
         <div class="widget-button-img">
@@ -88,10 +87,10 @@
 
 <script>
 import { sleep } from '@/common/methods'
-import { strTrim } from '@/common/reg'
+import { strTrim } from '@/common/reg' // 开发用
+import QRCodeDialog from './QRCodeDialog'
 import { urlAddress } from '@/api/backend'
 // const urlAddress = 'http://localhost:8080'; // 开发用
-import QRCodeDialog from './QRCodeDialog'
 
 export default {
   name: 'Widget',
