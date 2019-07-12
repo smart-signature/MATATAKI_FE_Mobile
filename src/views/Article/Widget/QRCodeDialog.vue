@@ -106,13 +106,15 @@ export default {
         zIndex: 1200,
         message: `图片生成中...`
       });
-      html2canvas(this.$refs.capture, {
-        useCORS: true
-      }).then(canvas => {
-        this.canvas = canvas;
-        //this.$refs.container.append(canvas);
-        loading.clear();
-      });
+      setTimeout(() => {
+        html2canvas(this.$refs.capture, {
+          useCORS: true
+        }).then(canvas => {
+          this.canvas = canvas;
+          //this.$refs.container.append(canvas);
+          loading.clear();
+        });
+      }, 1000);
     },
     genQRCode() {
       console.log(this.$parent);
