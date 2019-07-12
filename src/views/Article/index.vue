@@ -365,7 +365,8 @@
         avatar: articleAvatar,
         name: article.nickname || article.author,
         time: articleCreateTimeComputed,
-        content: compiledMarkdown
+        content: compiledMarkdown,
+        shareLink: getShareLink
       }"
       @changeWidgetModal="status => (widgetModal = status)"
     />
@@ -482,6 +483,14 @@ export default {
       const articleUrl = `${protocol}//${host}/article/${article.id}`;
       const shareLink = this.isLogined ? `${articleUrl}?invite=${currentUserInfo.id}` : articleUrl;
       return `《${article.title}》by ${article.username} \n${shareLink}\n投资好文，分享有收益 ！`;
+    },
+    getShareLink() {
+      const { article, currentUserInfo } = this;
+      const { protocol, host } = window.location;
+      // console.debug(this.article);
+      const articleUrl = `${protocol}//${host}/article/${article.id}`;
+      const shareLink = this.isLogined ? `${articleUrl}?invite=${currentUserInfo.id}` : articleUrl;
+      return shareLink;
     },
     getCopyIpfsHash() {
       return `${this.article.hash}`;
