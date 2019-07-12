@@ -78,7 +78,7 @@
           <img class="cover-img" :src="coverEditor" alt="cover" />
         </div>
         <div class="cover">
-          <p>图文封面 <span class="cover-tip">请上传长宽2:1尺寸的静态图片</span></p>
+          <p>图文封面 <span class="cover-tip">请上传宽高2:1尺寸的图片</span></p>
           <img-upload
             v-show="!cover"
             :img-upload-done="imgUploadDone"
