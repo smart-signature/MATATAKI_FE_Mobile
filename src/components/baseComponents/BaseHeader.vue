@@ -225,7 +225,6 @@ export default {
 .title {
   text-align: center;
   font-size: 16px;
-  font-family: PingFangSC-Regular;
   font-weight: bold;
   letter-spacing: 1px;
   color: #000;

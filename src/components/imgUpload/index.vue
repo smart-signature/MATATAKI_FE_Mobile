@@ -26,7 +26,7 @@
         <p class="modal-header-title">编辑图像</p>
         <p class="modal-header-subtitle">调整图像寸和位置</p>
       </div>
-      <div class="modal-content">
+      <div class="modal-content" :style="computedStyleContent">
         <!-- 目前都只用了单文件上传, 所以裁剪取得files[0] 如果需要支持多图,请扩展组件 -->
         <img v-if="files.length && modal" ref="editImage" :src="files[0].url" />
       </div>
@@ -90,6 +90,21 @@ export default {
       quality: 0.8 // 压缩品质
     };
   },
+  computed: {
+    computedStyleContent() {
+      if (this.updateType === "artileCover") {
+        return {
+          width: "240px",
+          height: "120px"
+        };
+      } else {
+        return {
+          width: "240px",
+          height: "240px"
+        };
+      }
+    }
+  },
   watch: {
     // 显示modal
     modal(value) {
@@ -101,7 +116,16 @@ export default {
           }
           const cropper = new Cropper(this.$refs.editImage, {
             aspectRatio: this.aspectRatio,
-            viewMode: 1
+            viewMode: 3,
+            dragMode: "move",
+            autoCropArea: 1,
+            restore: false,
+            modal: false,
+            guides: false,
+            highlight: false,
+            cropBoxMovable: false,
+            cropBoxResizable: false,
+            toggleDragModeOnDblclick: false
           });
           this.cropper = cropper;
         });

@@ -1,6 +1,6 @@
 <template>
   <div class="outer">
-    <div ref="container" :class="{'white-bg':!canvas}">
+    <div ref="container" :class="{ 'white-bg': !canvas }">
       <div v-if="!canvas" ref="capture" class="container">
         <section class="header">
           <img src="@/assets/newimg/smartsignature.svg" alt="SmartSignature" />
@@ -10,7 +10,7 @@
           <h1>{{ shareInfo.title }}</h1>
           <div class="desc">
             <div class="user">
-              <img class="avatar" :src="shareInfo.avatar" alt=""  :onerror="defaultAvatar"/>
+              <img class="avatar" :src="shareInfo.avatar" alt="" :onerror="defaultAvatar" />
               <span class="name">{{ shareInfo.name }}</span>
             </div>
             <span class="time">{{ shareInfo.time }}</span>
@@ -29,7 +29,7 @@
     </div>
     <a
       :class="['save-btn', { disabled: isAPP }]"
-      :style="{ 'margin-top': canvas ? '-60px': 0 }"
+      :style="{ 'margin-top': canvas ? '-60px' : 0 }"
       download="smartsignature.png"
       :href="downloadLink"
       :disabled="isAPP"
@@ -55,7 +55,7 @@ export default {
   },
   data() {
     return {
-      defaultAvatar: `this.src="${ require('@/assets/avatar-default.svg') }"`,
+      defaultAvatar: `this.src="${require("@/assets/avatar-default.svg")}"`,
       canvas: null
     };
   },
@@ -129,8 +129,6 @@ export default {
 <style lang="less" scoped>
 .markdown-body {
   font-size: 14px;
-  font-family: -apple-system, SF UI Text, Arial, PingFang SC, Hiragino Sans GB, Microsoft YaHei,
-    WenQuanYi Micro Hei, sans-serif;
   color: #000000;
 }
 .white-bg {

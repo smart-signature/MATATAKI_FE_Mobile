@@ -48,28 +48,28 @@ export default {
       visible1: false,
       actions1: [
         {
-          text: 'English',
-          onClick: () => console.log('action 1'),
+          text: "English",
+          onClick: () => console.log("action 1")
         },
         {
-          text: '简体中文',
-          onClick: () => console.log('action 2'),
+          text: "简体中文",
+          onClick: () => console.log("action 2")
         },
         {
-          text: '日本語',
-          onClick: () => console.log('action 3'),
+          text: "日本語",
+          onClick: () => console.log("action 3")
         },
         {
-          theme: 'error',
-          text: '取消',
-          onClick: () => console.log('action -1'),
-        },
+          theme: "error",
+          text: "取消",
+          onClick: () => console.log("action -1")
+        }
       ],
-      addShow: false, // 显示新增菜单
+      addShow: false // 显示新增菜单
     };
   },
   created() {
-    document.title = '首页 - SmartSignature';
+    document.title = "首页 - SmartSignature";
   },
   methods: {
     cancelCb(reason, event) {
@@ -106,7 +106,6 @@ export default {
 h1.title {
   font-size: 32px;
   /* padding-top: 101px; */
-  font-family: BodoniSvtyTwoSCITCTT-Book;
   font-weight: normal;
   width: 100%;
   color: rgba(255, 255, 255, 1);
@@ -115,7 +114,6 @@ h1.title {
 }
 h2.subtitle {
   font-size: 16px;
-  font-family: PingFangSC-Light;
   font-weight: 300;
   color: rgba(255, 255, 255, 1);
   line-height: 18px;
