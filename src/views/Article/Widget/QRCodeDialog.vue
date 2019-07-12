@@ -116,7 +116,7 @@ export default {
     },
     genQRCode() {
       console.log(this.$parent);
-      QRCode.toCanvas(this.$refs.qr, window.location.href, { width: 55 }, error => {
+      QRCode.toCanvas(this.$refs.qr, this.shareInfo.shareLink, { width: 55 }, error => {
         if (error) console.error(error);
         console.log("success!");
         this.toCanvas();
