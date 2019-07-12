@@ -20,9 +20,9 @@
     </div>
     <BasePull
       v-for="(item, index) in tabsData"
+      v-show="index === activeIndex"
       :key="index"
       :params="item.params"
-      v-show="index === activeIndex"
       :api-url="item.apiUrl"
       :active-index="activeIndex"
       :now-index="index"
