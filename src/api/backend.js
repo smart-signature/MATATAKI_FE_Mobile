@@ -202,7 +202,7 @@ const API = {
   },
   // 获取头像
   getAvatarImage(hash) {
-    return `${ssImgAddress}/${hash}`;
+    return `${ssImgAddress}${hash}`;
   },
   // 上传图片
   async uploadImage(type, data) {
