@@ -1,7 +1,6 @@
 <p align="center">
   <a href="https://smartsignature.io">
-    <img width="200" src="https://i.loli.net/2019/07/11/5d26eb24ecd5360829.png
-">
+    <img width="200" src="https://i.loli.net/2019/07/11/5d26eb24ecd5360829.png">
   </a>
 </p>
 
