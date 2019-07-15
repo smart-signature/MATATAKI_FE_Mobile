@@ -34,47 +34,6 @@ export default {
       return this.$route.name === 'Publish'
     }
   },
-  methods: {
-    ...mapActions(['signIn']),
-    updateNotify(desc) {
-      const btnCommonStyle = {
-        type: 'default',
-        size: 'large',
-        style: 'margin: 0px 5px;'
-      }
-      this.$Message.info({
-        render: h =>
-          h('span', [
-            desc,
-            h(
-              'Button',
-              {
-                attrs: {
-                  // icon: 'ios-refresh',
-                  ...btnCommonStyle
-                },
-                on: {
-                  click: () => window.location.reload()
-                }
-              },
-              '立即刷新'
-            )
-          ]),
-        duration: 0
-      })
-    },
-    triggerEasterEgg() {
-      // 当用户在键盘输入 ⬆️⬆️⬇️⬇️⬅️➡️⬅️➡️BA 时触发这个函数
-      this.$Message.info('恭喜你找到了隐藏彩蛋！')
-      this.$router.push({ name: 'EasterEgg' })
-    },
-    async reload() {
-      this.isRouterAlive = false
-      await this.$nextTick()
-      await sleep(800)
-      this.isRouterAlive = true
-    }
-  },
   watch: {
     currentUserInfo: {
       handler(newVal, oldVal) {
@@ -120,11 +79,52 @@ export default {
     const easterEgg = new Konami(() => {
       this.triggerEasterEgg()
     })
+  },
+  methods: {
+    ...mapActions(['signIn']),
+    updateNotify(desc) {
+      const btnCommonStyle = {
+        type: 'default',
+        size: 'large',
+        style: 'margin: 0px 5px;'
+      }
+      this.$Message.info({
+        render: h =>
+          h('span', [
+            desc,
+            h(
+              'Button',
+              {
+                attrs: {
+                  // icon: 'ios-refresh',
+                  ...btnCommonStyle
+                },
+                on: {
+                  click: () => window.location.reload()
+                }
+              },
+              '立即刷新'
+            )
+          ]),
+        duration: 0
+      })
+    },
+    triggerEasterEgg() {
+      // 当用户在键盘输入 ⬆️⬆️⬇️⬇️⬅️➡️⬅️➡️BA 时触发这个函数
+      this.$Message.info('恭喜你找到了隐藏彩蛋！')
+      this.$router.push({ name: 'EasterEgg' })
+    },
+    async reload() {
+      this.isRouterAlive = false
+      await this.$nextTick()
+      await sleep(800)
+      this.isRouterAlive = true
+    }
   }
 }
 </script>
 
-<style scoped>
+<style scoped lang="less">
 #app {
   /*text-align: center;*/
   margin: auto;
@@ -135,5 +135,8 @@ export default {
   width: 40px;
   height: 40px;
   cursor: pointer;
+}
+.ivu-back-top-show {
+  animation: slideInUp 300ms ease-in-out both;
 }
 </style>
