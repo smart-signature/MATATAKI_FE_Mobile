@@ -11,7 +11,7 @@
     >
       <DraftBoxList
         v-for="(item, index) in draftBoxList"
-        :key="index"
+        :key="item.id"
         class="card-margin"
         :draftbox="item"
         :index="index"
@@ -53,7 +53,7 @@ export default {
   mounted() {},
   methods: {
     getListData(res) {
-      console.log(res)
+      // console.log(res)
       this.draftBoxList = res.list
     },
     confirmDel() {

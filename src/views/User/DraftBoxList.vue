@@ -70,7 +70,16 @@ export default {
   directives: {
     clampy
   },
-  props: ['draftbox', 'index'],
+  props: {
+    draftbox: {
+      type: Object,
+      default: () => {}
+    },
+    index: {
+      type: Number,
+      required: true
+    }
+  },
   data() {
     return {
       defaultAvatar: `this.src="${require('@/assets/avatar-default.svg')}"`
