@@ -127,18 +127,15 @@ const API = {
    * 根据用户名，公钥，客户端签名请求access_token
    */
   async auth({ idProvider, publicKey: publickey, signature: sign, username }) {
-    return axiosforApiServer.post(
-      '/auth',
-      {
+    const response = await axiosforApiServer.post('/auth', {
         platform: idProvider.toLowerCase(),
         publickey,
         sign,
         username
-      },
-      {
-        headers: { Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==' }
-      }
-    )
+    }, { headers: { Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==' } })
+    
+    if (!response.data.code) return response;
+    else throw new Error(response.data.message);
   },
   async getArticleDatafromIPFS(hash) {
     return axios.get(`${apiServer}/ipfs/catJSON/${hash}`)
