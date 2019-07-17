@@ -9,7 +9,7 @@ export const urlAddress = process.env.VUE_APP_URL
 // 获取图片直接使用接口地址
 export const apiServer = process.env.VUE_APP_API
 
-const ssImgAddress = 'http://ssimg.frontenduse.top'
+const ssImgAddress = 'https://ssimg.frontenduse.top'
 
 // 代理使用地址
 // export const apiServerAdders = process.env.NODE_ENV === 'development' ? '/' : process.env.VUE_APP_API;
@@ -127,15 +127,18 @@ const API = {
    * 根据用户名，公钥，客户端签名请求access_token
    */
   async auth({ idProvider, publicKey: publickey, signature: sign, username }) {
-    const response = await axiosforApiServer.post('/auth', {
+    return axiosforApiServer.post(
+      '/auth',
+      {
         platform: idProvider.toLowerCase(),
         publickey,
         sign,
         username
-    }, { headers: { Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==' } })
-    
-    if (!response.data.code) return response;
-    else throw new Error(response.data.message);
+      },
+      {
+        headers: { Authorization: 'Basic bXlfYXBwOm15X3NlY3JldA==' }
+      }
+    )
   },
   async getArticleDatafromIPFS(hash) {
     return axios.get(`${apiServer}/ipfs/catJSON/${hash}`)

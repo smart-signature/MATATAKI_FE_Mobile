@@ -15,7 +15,7 @@
             </div>
             <span class="time">{{ shareInfo.time }}</span>
           </div>
-          <div class="content markdown-body" v-html="shareInfo.content"></div>
+          <div class="content markdown-body" v-html="htmlStr"></div>
         </section>
         <div class="hide-article-box">
           <span>—— 扫描二维码 免费读全文 ——</span>
@@ -25,17 +25,18 @@
           <canvas ref="qr" class="qrcode" width="55" height="55"></canvas>
         </section>
       </div>
-      <img v-else :src="downloadLink" alt="" style="width: 100%;transform: scale(0.7)" />
+      <img v-else :src="downloadLink" alt="" style="width: 100%;" />
     </div>
-    <a
+    <button v-if="canvas" class="save-btn" disabled>长按图片保存</button>
+    <button v-else class="save-btn" @click="toCanvas" >生成图片</button>
+    <!--<a
       :class="['save-btn', { disabled: isAPP }]"
-      :style="{ 'margin-top': canvas ? '-60px' : 0 }"
       download="smartsignature.png"
       :href="downloadLink"
       :disabled="isAPP"
       @click="close"
       >{{ isAPP ? '长按图片保存' : '保存' }}
-    </a>
+    </a>-->
   </div>
 </template>
 
@@ -68,6 +69,9 @@ export default {
       return /Edge|Firefox|Opera|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
         navigator.userAgent
       )
+    },
+    htmlStr() {
+      return this.filterStr(this.shareInfo.content).substr(0, 200);
     }
   },
   watch: {},
@@ -76,6 +80,11 @@ export default {
     console.log(this.isAPP)
   },
   methods: {
+    filterStr(str) {
+      let re = /<[^>]+>/gi;
+      str = str.replace(re, '');
+      return str;
+    },
     close() {
       this.$emit('change', false)
     },
@@ -92,11 +101,19 @@ export default {
         let link = document.createElement('a')
         link.href = canvas.toDataURL()
         link.setAttribute('download', 'smartsignature.png')
+        //this.$refs.container.append(canvas);
         link.style.display = 'none'
         document.body.appendChild(link)
         link.click()
         loading.clear()
       })
+    },
+    saveLocal(canvas) {
+      let link = document.createElement('a')
+      link.href = canvas.toDataURL()
+      link.setAttribute('download', 'smartsignature.png')
+      link.style.display = 'none'
+      link.click()
     },
     toCanvas() {
       const loading = this.$toast.loading({
@@ -106,22 +123,19 @@ export default {
         zIndex: 1200,
         message: `图片生成中...`
       })
-      setTimeout(() => {
-        html2canvas(this.$refs.capture, {
-          useCORS: true
-        }).then(canvas => {
-          this.canvas = canvas
-          //this.$refs.container.append(canvas);
-          loading.clear()
-        })
-      }, 1000)
+      html2canvas(this.$refs.capture, {
+        useCORS: true
+      }).then(canvas => {
+        this.canvas = canvas
+        this.saveLocal(canvas)
+        loading.clear()
+      })
     },
     genQRCode() {
-      console.log(this.$parent)
       QRCode.toCanvas(this.$refs.qr, this.shareInfo.shareLink, { width: 55 }, error => {
         if (error) console.error(error)
         console.log('success!')
-        this.toCanvas()
+        //this.toCanvas()
       })
     }
   }
@@ -171,6 +185,9 @@ export default {
   &.disabled {
     background: #b2b2b2;
   }
+  &:disabled {
+    background: #b2b2b2;
+  }
 }
 .container {
   width: 100%;
@@ -203,7 +220,7 @@ export default {
   }
 }
 .content {
-  max-height: 320px;
+  // max-height: 180px;
   overflow: hidden;
 }
 .desc {
