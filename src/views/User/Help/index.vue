@@ -55,7 +55,7 @@
       </div>-->
     </div>
     <div class="signout">
-      <p class="version">-version2.4.0-</p>
+      <p class="version">-version2.4.1-</p>
       <a class="signout-button" href="javascript:;" @click="btnsignOut">登出</a>
     </div>
   </div>
