@@ -129,6 +129,10 @@ export default {
         this.canvas = canvas
         this.saveLocal(canvas)
         loading.clear()
+      }).catch((error) => {
+        console.log(error);
+        loading.clear()
+        this.$toast('图片生成失败');
       })
     },
     genQRCode() {
@@ -154,6 +158,7 @@ export default {
 }
 .outer {
   background: transparent;
+  margin-top: 150px;
 }
 .hide-article-box {
   width: 100%;
