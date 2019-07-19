@@ -71,7 +71,7 @@ export default {
       )
     },
     htmlStr() {
-      return this.filterStr(this.shareInfo.content).substr(0, 200);
+      return this.filterStr(this.shareInfo.content).substr(0, 300);
     }
   },
   watch: {},
@@ -124,7 +124,9 @@ export default {
         message: `图片生成中...`
       })
       html2canvas(this.$refs.capture, {
-        useCORS: true
+        useCORS: true,
+        scrollX: 0,
+        scrollY: 0
       }).then(canvas => {
         this.canvas = canvas
         this.saveLocal(canvas)
