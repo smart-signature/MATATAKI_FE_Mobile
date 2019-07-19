@@ -386,6 +386,7 @@ import { mavonEditor } from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
 import moment from 'moment'
 import { ContentLoader } from 'vue-content-loader'
+import wx from 'weixin-js-sdk'
 import { xssFilter } from '@/common/xss'
 import { sleep, isNDaysAgo } from '@/common/methods'
 import { ontAddressVerify } from '@/common/reg'
@@ -396,8 +397,6 @@ import ArticleInfo from './ArticleInfo.vue'
 import Widget from './Widget'
 import articleTransfer from '@/components/articleTransfer'
 import tagCard from '@/components/tagCard/index'
-import wx from 'weixin-js-sdk';
-
 
 // MarkdownIt 实例
 const markdownIt = mavonEditor.getMarkdownIt()
@@ -616,41 +615,43 @@ export default {
       const link = encodeURIComponent(window.location.href);
       this.$backendAPI.wxShare(link).then(res => {
         if (res.status === 200 && res.data.code === 0) {
-          let { hash, timestamp, nonce} = res.data.data;
+          let { hash, timestamp, nonce } = res.data.data
           wx.config({
-            debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
             appId: 'wx5c94f87f6c670341', // 必填，公众号的唯一标识
             timestamp, // 必填，生成签名的时间戳
             nonceStr: nonce, // 必填，生成签名的随机串
-            signature: hash,// 必填，签名
+            signature: hash, // 必填，签名
             jsApiList: ['updateAppMessageShareData', 'updateTimelineShareData'] // 必填，需要使用的JS接口列表
-          });
-          const title = this.article.title;
+          })
+          const title = this.article.title
           const desc = this.regRemoveContent(this.post.content) // .substr(0, 200);
-          const imgUrl = this.$backendAPI.getAvatarImage(this.article.cover);
-          wx.ready(function () {   //需在用户可能点击分享按钮前就先调用
+          const imgUrl = this.$backendAPI.getAvatarImage(this.article.cover)
+          wx.ready(function() {
+            //需在用户可能点击分享按钮前就先调用
             wx.updateAppMessageShareData({
               title, // 分享标题
               desc, // 分享描述
               link, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
               imgUrl, // 分享图标
-              success: function () {
+              success: function() {
                 // 设置成功
               }
             })
-          });
-          wx.ready(function () {      //需在用户可能点击分享按钮前就先调用
+          })
+          wx.ready(function() {
+            //需在用户可能点击分享按钮前就先调用
             wx.updateTimelineShareData({
               title, // 分享标题
               link, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
               imgUrl, // 分享图标
-              success: function () {
+              success: function() {
                 // 设置成功
               }
             })
-          });
+          })
         }
-      });
+      })
     },
     ...mapActions(['makeShare', 'makeOrder']),
     changeInfo(status) {
@@ -673,7 +674,7 @@ export default {
         .getArticleInfo(hash)
         .then(res => {
           if (res.status === 200 && res.data.code === 0) {
-            this.article = res.data.data;
+            this.article = res.data.data
             this.setArticle(res.data.data, supportDialog)
             // 默认会执行获取文章方法，更新文章调用则不需要获取内容
             if (!supportDialog) {
