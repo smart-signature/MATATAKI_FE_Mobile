@@ -673,6 +673,7 @@ export default {
         .getArticleInfo(hash)
         .then(res => {
           if (res.status === 200 && res.data.code === 0) {
+            this.article = res.data.data;
             this.setArticle(res.data.data, supportDialog)
             // 默认会执行获取文章方法，更新文章调用则不需要获取内容
             if (!supportDialog) {
@@ -709,7 +710,6 @@ export default {
       } catch (error) {
         console.error('addReadAmount :', error)
       }
-      this.article = article
       if (article.channel_id === 2) {
         this.product = {
           eosPrice: article.prices[0].price / 10 ** article.prices[0].decimals,
