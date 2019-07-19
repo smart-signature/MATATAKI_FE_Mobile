@@ -352,7 +352,10 @@ const API = {
         channel
       }
     })
-  }
+  },
+  async wxShare(url) {
+    return axios.get(`${apiServer}/wx/sign?url=${url}`)
+  },
 }
 
 export default API
