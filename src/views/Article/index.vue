@@ -647,6 +647,16 @@ export default {
                 // 设置成功
               }
             })
+            // 即将废弃，适配电脑版微信，参考：https://mp.weixin.qq.com/wiki?action=doc&id=mp1421141115#10
+            wx.onMenuShareAppMessage({
+              title, // 分享标题
+              desc, // 分享描述
+              link, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+              imgUrl, // 分享图标
+              success: function() {
+                // 用户点击了分享后执行的回调函数
+              }
+            })
           })
         }
       })
