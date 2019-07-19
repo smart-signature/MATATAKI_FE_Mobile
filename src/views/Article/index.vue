@@ -611,8 +611,9 @@ export default {
       return strTrim(regRemoveMarkdownTagResult)
     },
     setWxShare() {
-      const articleUrl = `https://sstest.frontenduse.top/article/${this.article.id}`;
-      const link = this.isLogined ? `${articleUrl}?invite=${this.currentUserInfo.id}` : articleUrl;
+      /*const articleUrl = `https://sstest.frontenduse.top/article/${this.article.id}`;
+      const link = this.isLogined ? `${articleUrl}?invite=${this.currentUserInfo.id}` : articleUrl;*/
+      const link = window.location.href;
       this.$backendAPI.wxShare(link).then(res => {
         if (res.status === 200 && res.data.code === 0) {
           let { hash, timestamp, nonce} = res.data.data;
