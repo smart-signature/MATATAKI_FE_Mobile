@@ -15,6 +15,11 @@ export default new VueRouter({
       component: Home
     },
     {
+      path: '/likeButton',
+      name: 'likeButton',
+      component: () => import('./views/likeButton.vue')
+    },
+    {
       path: '/about',
       name: 'About',
       // 路由级 code-splitting
