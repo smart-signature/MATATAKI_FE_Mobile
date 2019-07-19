@@ -614,11 +614,11 @@ export default {
       /*const articleUrl = `https://sstest.frontenduse.top/article/${this.article.id}`;
       const link = this.isLogined ? `${articleUrl}?invite=${this.currentUserInfo.id}` : articleUrl;*/
       const link = window.location.href;
-      this.$backendAPI.wxShare(link).then(res => {
+      this.$backendAPI.wxShare(encodeURIComponent(link)).then(res => {
         if (res.status === 200 && res.data.code === 0) {
           let { hash, timestamp, nonce} = res.data.data;
           wx.config({
-            debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
             appId: 'wx5c94f87f6c670341', // 必填，公众号的唯一标识
             timestamp, // 必填，生成签名的时间戳
             nonceStr: nonce, // 必填，生成签名的随机串
