@@ -10,13 +10,13 @@
 </template>
 
 <script>
-import Konami from 'konami'
-import { mapActions, mapGetters } from 'vuex'
-import { version } from '../package.json'
-import { accessTokenAPI } from '@/api'
-import { sleep } from '@/common/methods'
+  import Konami from 'konami'
+  import {mapActions, mapGetters} from 'vuex'
+  import {version} from '../package.json'
+  import {accessTokenAPI} from '@/api'
+  import {sleep} from '@/common/methods'
 
-export default {
+  export default {
   data() {
     return {
       isRouterAlive: true
@@ -52,6 +52,8 @@ export default {
   created() {
     // https://juejin.im/post/5bfa4bb951882558ae3c171e
     console.info('Smart Signature version :', version)
+    console.log(navigator.userAgent.toLowerCase(),window.location);
+    this.tz();
 
     const { signIn, updateNotify } = this
 
@@ -81,6 +83,14 @@ export default {
     })
   },
   methods: {
+    tz() {
+      const { href, origin } = window.location;
+      const wxOrigin = 'https://sstest.frontenduse.top';
+      const isWeixin = () => /micromessenger/.test(navigator.userAgent.toLowerCase());
+      if (isWeixin() && origin !== wxOrigin) {
+        window.location.href = href.replace(origin, wxOrigin);
+      }
+    },
     ...mapActions(['signIn']),
     updateNotify(desc) {
       const btnCommonStyle = {
