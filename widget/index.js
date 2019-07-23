@@ -48,10 +48,18 @@ const regRemoveContent = str => {
   // 去除 markdown 标签
   const regRemoveMarkdownTag = str => str.replace(/[\\\`\*\_\[\]\#\+\-\!\>]/gi, '')
 
+  // 去除 剩下的括号内容(链接地址)
+  const regRemoveLinkBrackets = str => str.replace(/\(.*?\)/gi, '')
+
+  // 回车 ↵ 复制下来的时候会有, 那就多一层处理吧!
+  const regRemoveLinkEnter = str => str.replace(/↵/gi, '')
+
   const regRemoveTagResult = regRemoveTag(str)
   const regRemoveMarkdownImgResult = regRemoveMarkdownImg(regRemoveTagResult)
   const regRemoveMarkdownTagResult = regRemoveMarkdownTag(regRemoveMarkdownImgResult)
-  return strTrim(regRemoveMarkdownTagResult)
+  const regRemoveLinkBracketsResult = regRemoveLinkBrackets(regRemoveMarkdownTagResult)
+  const regRemoveLinkEnterResult = regRemoveLinkEnter(regRemoveLinkBracketsResult)
+  return strTrim(regRemoveLinkEnterResult)
 }
 
 // url 参数解析
