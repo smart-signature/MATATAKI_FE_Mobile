@@ -41,6 +41,8 @@ const axiosApi = axios.create({
 const regRemoveContent = str => {
   // 去除空格
   const strTrim = str => str.replace(/\s+/g, '')
+  // 去除html video标签
+  const regRemoveHtmlVideoTag = str => str.replace(/\<video.*?\>.*?\<\/video\>/g, '123')
   // 去除标签
   const regRemoveTag = str => str.replace(/<[^>]+>/gi, '')
   // 去除markdown img
@@ -54,7 +56,9 @@ const regRemoveContent = str => {
   // 回车 ↵ 复制下来的时候会有, 那就多一层处理吧!
   const regRemoveLinkEnter = str => str.replace(/↵/gi, '')
 
-  const regRemoveTagResult = regRemoveTag(str)
+  // 提前去一次换行空格
+  const regRemoveHtmlVideoTagResult = regRemoveHtmlVideoTag(strTrim(str))
+  const regRemoveTagResult = regRemoveTag(regRemoveHtmlVideoTagResult)
   const regRemoveMarkdownImgResult = regRemoveMarkdownImg(regRemoveTagResult)
   const regRemoveMarkdownTagResult = regRemoveMarkdownTag(regRemoveMarkdownImgResult)
   const regRemoveLinkBracketsResult = regRemoveLinkBrackets(regRemoveMarkdownTagResult)
