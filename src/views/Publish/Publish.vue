@@ -439,7 +439,7 @@ export default {
         content,
         desc: 'whatever'
       })
-      if (data.code !== 200) this.failed('1st step : send post to ipfs failed')
+      if (data.code !== 0) this.failed('1st step : send post to ipfs failed')
       return data
     },
     // 文章标签 tag

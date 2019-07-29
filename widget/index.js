@@ -120,7 +120,7 @@ const setAppDom = ({ title, content, img, ups, read, username }) => {
 
 // 获取内容
 const getArticleContent = hash => {
-  const url = `/ipfs/catJSON/${hash}`
+  const url = `/post/ipfs/${hash}`
   axiosApi
     .get(url)
     .then(res => {
