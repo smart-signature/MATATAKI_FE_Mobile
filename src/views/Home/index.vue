@@ -42,7 +42,7 @@
         :api-url="itemList.apiUrl"
         :active-index="item.activeIndex"
         :now-index="indexList"
-        :is-obj="{ type: 'Object', key: 'data' }"
+        :is-obj="{ type: 'newObject', key: 'data', keys: 'list' }"
         :auto-request-time="itemList.autoRequestTime"
         @getListData="getListData"
       >

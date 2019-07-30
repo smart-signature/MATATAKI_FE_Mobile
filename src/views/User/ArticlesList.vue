@@ -22,7 +22,7 @@
       :now-index="index"
       :auto-request-time="item.autoRequestTime"
       :loading-text="item.loadingText"
-      :is-obj="{ type: 'Object', key: 'data' }"
+      :is-obj="{ type: 'newObject', key: 'data', keys: 'list' }"
       :show-no-more-icon="listtype !== 'others'"
       @getListData="getListDataTab"
     >

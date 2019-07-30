@@ -20,7 +20,7 @@
       class="tag-article"
       :loading-text="'无草稿'"
       :params="params"
-      :is-obj="{ type: 'Object', key: 'data' }"
+      :is-obj="{ type: 'newObject', key: 'data', keys: 'list' }"
       :api-url="apiUrl"
       @getListData="getListData"
     >
