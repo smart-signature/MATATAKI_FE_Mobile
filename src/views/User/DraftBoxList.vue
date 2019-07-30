@@ -22,7 +22,8 @@
     </div>
     <div class="container">
       <div class="img-outer">
-        <img v-lazy="cover" :src="cover" alt="cover" class="img-inner" />
+        <img v-if="cover" v-lazy="cover" :src="cover" alt="cover" class="img-inner" />
+        <img v-else src="@/assets/img/article_bg.svg" alt="cover" class="img-inner" />
         <div class="full"></div>
       </div>
       <div class="card-text">
@@ -61,8 +62,6 @@ import { isNDaysAgo } from '@/common/methods'
 import clampy from '@clampy-js/vue-clampy'
 import Vue from 'vue'
 
-import coverDefault from '@/assets/img/cover_default.png'
-
 Vue.use(clampy)
 
 export default {
@@ -99,7 +98,7 @@ export default {
     },
     cover() {
       if (this.draftbox.cover) return this.$backendAPI.getAvatarImage(this.draftbox.cover)
-      return coverDefault
+      return ''
     }
   },
   methods: {

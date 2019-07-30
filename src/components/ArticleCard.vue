@@ -12,7 +12,8 @@
     </div>
     <div class="container">
       <div class="img-outer">
-        <img v-lazy="cover" :src="cover" alt="cover" class="img-inner" />
+        <img v-if="cover" v-lazy="cover" :src="cover" alt="cover" class="img-inner" />
+        <img v-else src="@/assets/img/article_bg.svg" alt="cover" class="img-inner" />
         <div class="full"></div>
       </div>
       <div class="card-text">
@@ -43,8 +44,6 @@ import { precision } from '@/common/precisionConversion'
 
 import clampy from '@clampy-js/vue-clampy'
 import Vue from 'vue'
-
-import coverDefault from '@/assets/img/cover_default.png'
 
 Vue.use(clampy)
 
@@ -87,7 +86,7 @@ export default {
     },
     cover() {
       if (this.article.cover) return this.$backendAPI.getAvatarImage(this.article.cover)
-      return coverDefault
+      return ''
     },
     articleEosValue() {
       return precision(this.article.eosprice, 'eos')
