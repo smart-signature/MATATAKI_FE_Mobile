@@ -5,7 +5,7 @@
       :params="params"
       :api-url="apiUrl"
       :loading-text="'暂无购买记录'"
-      :is-obj="{ type: 'Object', key: 'data' }"
+      :is-obj="{ type: 'newObject', key: 'data', keys: 'list' }"
       :need-access-token="true"
       @getListData="getListData"
     >
