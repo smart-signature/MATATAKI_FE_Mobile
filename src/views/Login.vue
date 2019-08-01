@@ -11,8 +11,8 @@ export default {
   computed: {},
   created() {
     const { protocol, host } = window.location
-    const { path, query, pc } = this.$route
-    const { code, from } = query
+    const { path, query } = this.$route
+    const { code, from, pc } = query
     const clientID = process.env.VUE_APP_GITHUB_CLIENT_ID
     const scope = 'read:public_repo,read:user'
     const redirectUri = `${protocol}//${host}${path}?from=${from}` // 範例值
