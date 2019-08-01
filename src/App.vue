@@ -77,6 +77,22 @@ export default {
     window.updateNotify = updateNotify
   },
   mounted() {
+    ;(function() {
+      const isPC = () => {
+        const userAgentInfo = navigator.userAgent
+        const Agents = ['Android', 'iPhone', 'SymbianOS', 'Windows Phone', 'iPad', 'iPod']
+        let flag = true
+        for (let v = 0; v < Agents.length; v++) {
+          if (userAgentInfo.indexOf(Agents[v]) > 0) {
+            flag = false
+            break
+          }
+        }
+        return flag
+      }
+
+      if (isPC()) window.location.href = process.env.VUE_APP_PC_URL
+    })()
     // eslint-disable-next-line no-unused-vars
     const easterEgg = new Konami(() => {
       this.triggerEasterEgg()
@@ -88,7 +104,7 @@ export default {
       const wxOrigin = 'https://sstest.frontenduse.top'
       const isWeixin = () => /micromessenger/.test(navigator.userAgent.toLowerCase())
       if (isWeixin() && origin !== wxOrigin) {
-        window.location.href = href.replace(origin, wxOrigin);
+        window.location.href = href.replace(origin, wxOrigin)
       }
     },
     ...mapActions(['signIn']),
