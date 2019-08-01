@@ -49,6 +49,7 @@ import VueUploadComponent from 'vue-upload-component'
 import Cropper from 'cropperjs'
 import { ifpsUpload } from '@/api/ipfs'
 import Compressor from 'compressorjs'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'ImgUpload',
@@ -91,6 +92,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['isLogined']),
     computedStyleContent() {
       if (this.updateType === 'artileCover') {
         return {
@@ -215,6 +217,7 @@ export default {
     },
     // 上传图片
     async uploadButton() {
+      if (!this.checkLogin) return
       this.modalLoading = true
       let file = this.files[0].file
       // 如果是gif不作处理
@@ -261,6 +264,16 @@ export default {
       }
       if (!newFile && oldFile) {
       }
+    },
+    checkLogin() {
+      if (!this.isLogined) {
+        this.$toast.fail({
+          duration: 1000,
+          message: '请先登录'
+        })
+        return false
+      }
+      return true
     }
   }
 }
