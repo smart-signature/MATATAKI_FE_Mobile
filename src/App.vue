@@ -90,8 +90,8 @@ export default {
         }
         return flag
       }
-
-      if (isPC()) window.location.href = process.env.VUE_APP_PC_URL
+      if (isPC() && window.location.pathname !== '/login/github')
+        window.location.href = process.env.VUE_APP_PC_URL
     })()
     // eslint-disable-next-line no-unused-vars
     const easterEgg = new Konami(() => {
