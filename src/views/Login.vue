@@ -23,7 +23,6 @@ export default {
       // 如果是pc的话，需要跳转到pc端
       if (from === 'pc') {
         window.location = `${process.env.VUE_PC_URL}/login?code=${code}&from=${from}`
-        return
       }
       this.signIn({ code, idProvider: 'GitHub' })
         .then(() => {
