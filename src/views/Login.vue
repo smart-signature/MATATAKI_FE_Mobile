@@ -11,7 +11,7 @@ export default {
   computed: {},
   created() {
     const { protocol, host } = window.location
-    const { path, query } = this.$route
+    const { path, query, pc } = this.$route
     const { code, from } = query
     const clientID = process.env.VUE_APP_GITHUB_CLIENT_ID
     const scope = 'read:public_repo,read:user'
@@ -20,6 +20,11 @@ export default {
       // 跳轉
       window.location = `https://github.com/login/oauth/authorize?client_id=${clientID}&redirect_uri=${redirectUri}&scope=${scope}`
     } else {
+      // 如果是pc的话，需要跳转到pc端
+      if (pc) {
+        window.location = `${process.env.VUE_PC_URL}/login?code=${code}&from=${from}`
+        return
+      }
       this.signIn({ code, idProvider: 'GitHub' })
         .then(() => {
           this.$backendAPI.accessToken = this.currentUserInfo.accessToken
