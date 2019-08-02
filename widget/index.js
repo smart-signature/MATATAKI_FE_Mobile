@@ -124,7 +124,7 @@ const getArticleContent = hash => {
   axiosApi
     .get(url)
     .then(res => {
-      if (res.status === 200 && res.data.code === 200) {
+      if (res.status === 200 && res.data.code === 0) {
         const { data } = res.data
 
         urlSearchData.content = regRemoveContent(data.content)
