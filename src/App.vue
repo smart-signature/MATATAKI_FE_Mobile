@@ -101,7 +101,11 @@ export default {
   methods: {
     tz() {
       const { href, origin } = window.location
-      const wxOrigin = 'https://sstest.frontenduse.top'
+      const wxOrigin =
+        process.env.NODE_ENV === 'development'
+          ? 'https://sstest.frontenduse.top'
+          : 'https://smartsignature.frontenduse.top'
+
       const isWeixin = () => /micromessenger/.test(navigator.userAgent.toLowerCase())
       if (isWeixin() && origin !== wxOrigin) {
         window.location.href = href.replace(origin, wxOrigin)
