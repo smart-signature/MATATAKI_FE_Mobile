@@ -832,4 +832,7 @@ export default {
     margin-right: 1px !important;
   }
 }
+.ivu-poptip-popper  {
+  z-index: 500;
+}
 </style>
