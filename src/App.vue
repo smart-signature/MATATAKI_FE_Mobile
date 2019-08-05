@@ -90,8 +90,15 @@ export default {
         }
         return flag
       }
+      // 规则只匹配了 文章详情页面 其他直接使用 all
+      const pathname = window.location.pathname.includes('/article/')
+        ? '/p/' + window.location.pathname.slice(9)
+        : window.location.pathname === '/'
+        ? ''
+        : window.location.pathname
+
       if (isPC() && window.location.pathname !== '/login/github')
-        window.location.href = process.env.VUE_APP_PC_URL
+        window.location.href = process.env.VUE_APP_PC_URL + pathname
     })()
     // eslint-disable-next-line no-unused-vars
     const easterEgg = new Konami(() => {
@@ -107,8 +114,25 @@ export default {
           : 'https://smartsignature.frontenduse.top'
 
       const isWeixin = () => /micromessenger/.test(navigator.userAgent.toLowerCase())
+
+      // 规则只匹配了 文章详情页面 其他直接使用 all
+      let pathname = window.location.pathname
+
+      let pathURL = ''
+      // 如果是pc
+      if (pathname.includes('/p/')) {
+        pathURL = '/article/' + pathname.slice(3)
+        // 如果是 m
+      } else if (pathname.includes('/article/')) {
+        pathURL = '/p/' + pathname.slice(9)
+      } else if (pathname === '/') {
+        pathURL = ''
+      } else {
+        pathURL = pathname
+      }
+
       if (isWeixin() && origin !== wxOrigin) {
-        window.location.href = href.replace(origin, wxOrigin)
+        window.location.href = href.replace(origin, wxOrigin + pathURL)
       }
     },
     ...mapActions(['signIn']),
