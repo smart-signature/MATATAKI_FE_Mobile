@@ -90,6 +90,10 @@ export default {
         }
         return flag
       }
+
+      const isWeixin = () => /micromessenger/.test(navigator.userAgent.toLowerCase())
+      if (isWeixin()) return
+
       // 规则只匹配了 文章详情页面 其他直接使用 all
       const pathname = window.location.pathname.includes('/article/')
         ? '/p/' + window.location.pathname.slice(9)
@@ -132,7 +136,7 @@ export default {
       }
 
       if (isWeixin() && origin !== wxOrigin) {
-        window.location.href = href.replace(origin, wxOrigin + pathURL)
+        window.location.href = wxOrigin + pathURL
       }
     },
     ...mapActions(['signIn']),
