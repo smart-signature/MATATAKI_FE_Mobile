@@ -525,10 +525,11 @@ export default {
       article.tags = this.setArticleTag(this.tagCards)
       try {
         const response = await this.$backendAPI.updateDraft(article)
-        if (response.data.msg !== 'success') this.failed('失败请重试')
-        this.$toast({ duration: 1000, message: '草稿更新成功' })
-        this.$navigation.cleanRoutes() // 清除路由记录
-        this.$router.go(-1)
+        if (response.status === 200 && response.data.code === 0) {
+          this.$toast({ duration: 1000, message: '草稿更新成功' })
+          this.$navigation.cleanRoutes() // 清除路由记录
+          this.$router.go(-1)
+        } else this.failed('失败请重试')
       } catch (error) {
         this.failed('失败请重试')
       }
