@@ -124,7 +124,7 @@ export default {
         pathURL = '/article/' + pathname.slice(3)
         // 如果是 m
       } else if (pathname.includes('/article/')) {
-        pathURL = '/p/' + pathname.slice(9)
+        pathURL = pathname
       } else if (pathname === '/') {
         pathURL = ''
       } else {
