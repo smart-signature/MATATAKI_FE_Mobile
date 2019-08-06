@@ -124,6 +124,17 @@
           </div>
         </a>
       </div>
+      <div class="cell-container">
+        <a href="https://wj.qq.com/s2/4206369/e337">
+          <div class="cell">
+            <div class="cell-left">
+              <svg-icon icon-class="feedback" class="left-img icon-feedback" /> 
+              <span class="left-text">用户反馈</span>
+            </div>
+            <div class="cell-right"><span></span></div>
+          </div>
+        </a>
+      </div>
     </div>
     <BaseModalForSignIn :show-modal="showModal" @changeInfo="changeInfo" />
   </van-popup>
@@ -363,5 +374,9 @@ export default {
       color: #1c9cfe;
     }
   }
+}
+.icon-feedback {
+  color: #000;
+  font-size: 20px;
 }
 </style>
