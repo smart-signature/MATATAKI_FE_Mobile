@@ -1,3 +1,25 @@
+<p align="center">
+  <a href="https://smartsignature.io">
+    <img width="200" src="https://i.loli.net/2019/07/11/5d26eb24ecd5360829.png">
+  </a>
+</p>
+
+<h1 align="center">Smart Signature</h1>
+
+<div align="center">
+
+一套基于智能合约的优质内容价值挖掘方案</br>
+通过区块链智能合约对用户的交易行为赋能，助力优质内容快速脱颖而出。
+
+</div>
+
+## ✨ 特性
+
+- 便捷得将内容发布到IPFS上。
+- 灵活且强大的去中心化登录和支付系统
+- 强大的内容投资和回馈系统
+- 商品的购买和交付系统
+
 # Smart Signature Front End
 Sign it if you mean it. Let's Buidl! 🏄
 
