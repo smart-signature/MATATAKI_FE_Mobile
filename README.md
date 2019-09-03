@@ -5,7 +5,7 @@
 </p>
 
 <h1 align="center">Smart Signature</h1>
-
+<h5 align="center" style="color:#F7B500">本文档已经需求未更新，部分资料内容失效，等团队有空了就来写！</h5>
 <div align="center">
 
 一套基于智能合约的优质内容价值挖掘方案</br>
