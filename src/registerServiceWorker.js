@@ -1,32 +1,36 @@
 /* eslint-disable no-console */
 
-import { register } from 'register-service-worker';
+import { register } from 'register-service-worker'
+
+const consoleForSW = str =>
+  console.log('%c%s', 'color: red; background: yellow; font-size: 16px;', `[Service worker] ${str}`)
 
 if (process.env.NODE_ENV === 'production') {
   register(`${process.env.BASE_URL}service-worker.js`, {
     ready() {
-      console.log(
-        'App is being served from cache by a service worker.\n'
-        + 'For more details, visit https://goo.gl/AFskqB',
-      );
+      consoleForSW(
+        'App 正在使用 Service worker 缓存.\n' +
+          '更多关于 Service worker 的详情请访问： https://goo.gl/AFskqB'
+      )
     },
     registered() {
-      console.log('Service worker has been registered.');
+      consoleForSW('注册成功')
     },
     cached() {
-      console.log('Content has been cached for offline use.');
+      consoleForSW('已缓存网站前端')
     },
     updatefound() {
-      console.log('New content is downloading.');
+      consoleForSW('发现更新，后台正在静默下载中。')
     },
     updated() {
-      console.log('New content is available; please refresh.');
+      consoleForSW('静默更新完毕，请关闭这个标签并在新的标签页打开以使用更新后的版本。')
+      window.updateNotify('新更新可用')
     },
     offline() {
-      console.log('No internet connection found. App is running in offline mode.');
+      consoleForSW('无网络链接。正在使用离线模式')
     },
     error(error) {
-      console.error('Error during service worker registration:', error);
-    },
-  });
+      console.error('Service worker 注册时出错:', error)
+    }
+  })
 }
