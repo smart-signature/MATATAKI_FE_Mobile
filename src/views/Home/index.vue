@@ -30,6 +30,8 @@
         :now-index="nowIndex"
       />
 
+      <banner :class="!isShowSlide && 'margin'" />
+
       <!-- 标题 -->
       <div class="now-title" :class="!isShowSlide && 'nav-hide'">{{ contentTitle }}</div>
 
@@ -83,6 +85,7 @@ import homeNav from './components/homeNav.vue'
 import homeSlide from './components/homeSlide.vue'
 import Sidebar from './Sidebar.vue'
 import { ArticleCard } from '@/components/'
+import banner from '@/components/banner/index.vue'
 
 export default {
   name: 'Home',
@@ -92,7 +95,8 @@ export default {
     homeSlide,
     ArticleCard,
     ContentLoader,
-    Sidebar
+    Sidebar,
+    banner
   },
   data() {
     return {
@@ -237,3 +241,9 @@ export default {
 </script>
 
 <style scoped lang="less" src="./index.less"></style>
+
+<style lang="less" scoped>
+.margin {
+  margin-top: 60px;
+}
+</style>
